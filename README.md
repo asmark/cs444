@@ -1,4 +1,8 @@
-CS444
+CS 444: Compiler Construction
 =====
 
-Joos 1W Compiler
+### Setup
+
+- Execute `./setup`
+- Add `scala-runtime/bin` to `PATH`
+- Add `sbt-runtime` to `PATH`
