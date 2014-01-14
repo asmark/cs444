@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Variables
+SCALA_VERSION=scala-2.10.3
+SCALA_DIR=scala-runtime
+SCALA_TAR=${SCALA_VERSION}.tgz
+SBT_DIR=sbt-runtime
+SBT_BIN=sbt-launch.jar
+
+# Set up Scala
+rm -rf ${SCALA_DIR}
+wget "http://www.scala-lang.org/files/archive/${SCALA_TAR}"
+tar -xzf ${SCALA_TAR}
+mv ${SCALA_VERSION} ${SCALA_DIR}
+rm ${SCALA_TAR}
+
+# Set up SBT
+rm -rf ${SBT_DIR}
+mkdir ${SBT_DIR}
+cd ${SBT_DIR}
+wget "http://repo.typesafe.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/0.13.1/${SBT_BIN}"
+wget -O sbt "https://www.dropbox.com/s/mw8er71hk80rinj/sbt"
+chmod u+x sbt
