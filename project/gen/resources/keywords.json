@@ -1,0 +1,25 @@
+{
+  "INT": "int",
+  
+  "FINAL": "final",
+  "ABSTRACT": "abstract",
+
+  "PUBLIC": "public",
+  "PRIVATE": "private",
+  "PROTECTED": "protected",
+  
+  "FOR": "for",
+  "WHILE": "while",
+  "DO": "do",
+  "IF": "if",
+  "ELSE": "else",
+  
+  "LPAREN": "(",
+  "RPAREN": ")",
+  "LBRACE": "{",
+  "RBRACE": "}",
+  "LBRACK": "[",
+  "RBRACK": "]"
+}
+
+
