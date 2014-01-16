@@ -4,7 +4,7 @@ import Keys._
 object Joos1WCompilerBuild extends Build {
 
   def getFilePath(baseDir : File, fileName : String) : File = {
-    return baseDir / GeneratorConstants.GENERATED_PACKAGE / fileName
+    return baseDir / GeneratorConstants.GeneratedPackage / fileName
   }
 
   def generateTokenKinds(dir : File) : File = {
