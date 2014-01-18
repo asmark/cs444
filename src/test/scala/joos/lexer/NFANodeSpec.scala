@@ -12,7 +12,7 @@ class NFANodeSpec extends FlatSpec {
     assert(node.followTransition(CharacterC).isEmpty)
   }
 
-  "A node with C neighbours" should "only have C transitiions" in {
+  "A node with C neighbours" should "only have C transitions" in {
     val node = NonAcceptingNFANode().addTransition(CharacterC, NonAcceptingNFANode())
     assert(node.followTransition(CharacterA).isEmpty)
     assert(node.followTransition(CharacterC).length === 1)

@@ -28,7 +28,7 @@ sealed abstract class NFANode {
       val node = nodesToExamine.dequeue()
       epsilonClosure.+=(node)
       node.followTransition(char).
-        filter(neighbour => !epsilonClosure.contains(neighbour)).
+        withFilter(neighbour => !epsilonClosure.contains(neighbour)).
         foreach(neighbour => nodesToExamine.enqueue(neighbour))
     }
     return epsilonClosure
