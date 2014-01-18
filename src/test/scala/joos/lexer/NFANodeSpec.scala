@@ -69,5 +69,6 @@ class NFANodeSpec extends FlatSpec {
     node.addTransition(Epsilon, NonAcceptingNFANode().addTransition(CharacterA, NonAcceptingNFANode())).
       addTransition(Epsilon, AcceptingNFANode().addTransition(Epsilon, NonAcceptingNFANode()))
 
+    assert(node.getClosure(Epsilon).size === 4)
   }
 }
