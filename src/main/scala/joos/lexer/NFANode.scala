@@ -1,6 +1,6 @@
 package joos.lexer
 
-import scala.collection.{immutable, mutable}
+import scala.collection.mutable
 
 sealed abstract class NFANode {
   val edges = mutable.HashMap[Char, List[NFANode]]()
@@ -34,7 +34,7 @@ sealed abstract class NFANode {
     return epsilonClosure
   }
 
-  override def equals(other : Any) : Boolean = super.equals(other)
+  override def equals(other: Any): Boolean = super.equals(other)
 }
 
 object NFANode {
