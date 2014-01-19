@@ -20,15 +20,12 @@
       <sourceFolder url="file://$MODULE_DIR$/../src/test/scala" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../src/test/resources" isTestSource="true" />
-      <excludeFolder url="file://$MODULE_DIR$/../.idea" />
-      <excludeFolder url="file://$MODULE_DIR$" />
       <excludeFolder url="file://$MODULE_DIR$/../target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="SBT: org.scala-lang:scala-library:2.10.3" level="project" />
-    <orderEntry type="library" scope="TEST" name="SBT: org.scalatest:scalatest_2.10:2.0:test" level="project" />
-    <orderEntry type="library" scope="TEST" name="SBT: org.scala-lang:scala-reflect:2.10.0:test" level="project" />
+    <orderEntry type="library" name="SBT: com.eed3si9n:treehugger_2.10:0.3.0" level="project" />
   </component>
 </module>
 
