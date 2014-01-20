@@ -20,13 +20,6 @@ class Atom(src: NFANode, dst: NFANode, input: Char) extends RegularExpression {
 
   def char = this.character
   def char_= (character: Char) = this.character = character
-
-//  def node = singleNode
-//  def node_= (node: NFANode) = this.singleNode = node
-
-//  def addTransition(char: Char, dst: Atom) = {
-//    this.singleNode.addTransition(char, dst.singleNode)
-//  }
 }
 
 class Concatenation() extends RegularExpression {
