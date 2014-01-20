@@ -16,6 +16,7 @@ scala-runtime/
 sbt-runtime
 
 # Intellij specific
-.idea/workspace.xml
-.idea/tasks.xml
+# .idea and .idea_module can be auto generated using 'sbt gen-idea'
+.idea/
+.idea_modules/
 out/
