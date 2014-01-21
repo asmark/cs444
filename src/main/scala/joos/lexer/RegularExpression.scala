@@ -11,10 +11,12 @@ class RegularExpression {
   }
 
   def entrance = entranceNode
-  def entrance_= (entranceNode: NFANode) = this.entranceNode = entranceNode
+
+  def entrance_=(entranceNode: NFANode) = this.entranceNode = entranceNode
 
   def exit = exitNode
-  def exit_= (exitNode: NFANode) = this.exitNode = exitNode
+
+  def exit_=(exitNode: NFANode) = this.exitNode = exitNode
 
   def +(input: RegularExpression): RegularExpression = {
     this.exit.addTransition(NFANode.Epsilon, input.entrance)
@@ -36,7 +38,7 @@ class RegularExpression {
     this
   }
 
-  def |(input:RegularExpression) : RegularExpression = {
+  def |(input: RegularExpression): RegularExpression = {
     val inner_entrance = this.entrance
     val inner_exit = this.exit
 
@@ -56,6 +58,10 @@ object RegularExpression {
 }
 
 case class Atom(src: NFANode, dst: NFANode, input: Char) extends RegularExpression {
+  def this(input: Char) {
+    this(NonAcceptingNFANode(), NonAcceptingNFANode(), input)
+  }
+
   protected var character = input
   entranceNode = src
   exitNode = dst
@@ -63,13 +69,14 @@ case class Atom(src: NFANode, dst: NFANode, input: Char) extends RegularExpressi
   entranceNode.addTransition(character, exitNode)
 
   def char = this.character
-  def char_= (character: Char) = this.character = character
+
+  def char_=(character: Char) = this.character = character
 }
 
 case class MultiConcat() extends RegularExpression {
-  def this(inputs:Array[RegularExpression]) = {
+  def this(inputs: Array[RegularExpression]) = {
     this()
-    if (inputs.length > 1) {
+    if (inputs.length <= 1) {
       this.entrance = inputs(0).entrance
       this.exit = inputs(0).exit
     } else {
@@ -81,10 +88,11 @@ case class MultiConcat() extends RegularExpression {
     }
   }
 }
+
 case class MultiAlter() extends RegularExpression {
   def this(inputs: Array[RegularExpression]) = {
     this()
-    if (inputs.length > 1) {
+    if (inputs.length <= 1) {
       this.entrance = inputs(0).entrance
       this.exit = inputs(0).exit
     } else {
@@ -97,4 +105,5 @@ case class MultiAlter() extends RegularExpression {
     }
   }
 }
+
 case class Closure() extends RegularExpression

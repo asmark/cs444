@@ -16,7 +16,7 @@ object TokenKinds {
   final val ID = {
     val java_letters = symbolsToAtoms(alphabets)
     val java_letters_or_number = java_letters ++ symbolsToAtoms(digits)
-    new MultiAlter(java_letters) + (new MultiAlter(java_letters_or_number)*)
+    new MultiAlter(java_letters) + (new MultiAlter(java_letters_or_number) *) + new Atom(NonAcceptingNFANode(), AcceptingNFANode("ID"), NFANode.Epsilon)
   }
 
   // Keywords
@@ -40,11 +40,11 @@ object TokenKinds {
     val first_digit_atoms = digit_atoms.slice(1, digit_atoms.length)
     val non_postfix =
       new MultiAlter(first_digit_atoms) +
-        ((new MultiAlter(digit_atoms))*)
+        ((new MultiAlter(digit_atoms)) *)
 
     val postfix =
       new MultiAlter(first_digit_atoms) +
-        (new MultiAlter(digit_atoms)*) +
+        (new MultiAlter(digit_atoms) *) +
         (lower_l | upper_l)
 
     non_postfix | postfix
@@ -63,7 +63,7 @@ object TokenKinds {
     val prefix = new Atom(NonAcceptingNFANode(), NonAcceptingNFANode(), '0') +
       new Atom(NonAcceptingNFANode(), NonAcceptingNFANode(), 'x')
 
-    val non_postfix = prefix + new MultiConcat(digit_atoms) + (new MultiConcat(digit_atoms)*)
+    val non_postfix = prefix + new MultiConcat(digit_atoms) + (new MultiConcat(digit_atoms) *)
     val postfix = non_postfix + (lower_l | upper_l)
     (non_postfix | postfix)
   }
@@ -80,6 +80,16 @@ object TokenKinds {
 
   // StringLiteral
   // TODO
+
+  // Test literal
+  final val TEST = {
+    (new Atom('T') | new Atom('t')) + new Atom('e') + new Atom('s') + new Atom('t') + new Atom(NonAcceptingNFANode(), AcceptingNFANode("test"), NFANode.Epsilon)
+  }
+
+  // E* Literal
+  final val ESTAR = {
+    new Atom('t') + (new Atom('e') *) + new Atom(NonAcceptingNFANode(), AcceptingNFANode("te*"), NFANode.Epsilon)
+  }
 
   // Null Literal
   final val NULL = {

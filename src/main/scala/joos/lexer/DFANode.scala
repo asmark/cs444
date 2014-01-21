@@ -1,6 +1,7 @@
 package joos.lexer
 
 import scala.collection.mutable
+import joos.lexer.exceptions.DuplicateTransitionException
 
 sealed abstract class DFANode {
   val edges = mutable.HashMap[Char, DFANode]()
@@ -26,4 +27,4 @@ sealed abstract class DFANode {
 
 case class NonAcceptingDFANode() extends DFANode
 
-case class AcceptingDFANode(token: Any) extends DFANode
+case class AcceptingDFANode(tokenKind: Any) extends DFANode
