@@ -40,30 +40,19 @@ object Token {
       }
 
       val lower_l = new Atom(NonAcceptingNFANode(), AcceptingNFANode(), 'l')
-      var upper_l = new Atom(NonAcceptingNFANode(), AcceptingNFANode(), 'L')
+      val upper_l = new Atom(NonAcceptingNFANode(), AcceptingNFANode(), 'L')
 
       val first_digit_atoms = digit_atoms.slice(1, digit_atoms.length)
       val non_postfix =
-        RegularExpression.concatAll(
-          Array(
-            RegularExpression.alterAll(first_digit_atoms),
-            (RegularExpression.alterAll(digit_atoms))*
-          )
-        )
-      val postfix =
-        RegularExpression.concatAll(
-          Array(
-            RegularExpression.concatAll(
-              Array(
-                RegularExpression.alterAll(first_digit_atoms),
-                (RegularExpression.alterAll(digit_atoms))*
-              )
-            ),
-            RegularExpression.alterAll(Array(lower_l, upper_l))
-          )
-        )
+        RegularExpression.alterAll(first_digit_atoms) +
+        ((RegularExpression.alterAll(digit_atoms))*)
 
-      RegularExpression.alterAll(Array(non_postfix, postfix))
+      val postfix =
+          (RegularExpression.alterAll(first_digit_atoms)) +
+          ((RegularExpression.alterAll(digit_atoms))*) +
+          (lower_l | upper_l)
+
+      non_postfix | postfix
     }
 
   // HexNumeral
@@ -79,13 +68,7 @@ object Token {
     val prefix = new Atom(NonAcceptingNFANode(), NonAcceptingNFANode(), '0') +
       new Atom(NonAcceptingNFANode(), NonAcceptingNFANode(), 'x')
 
-    RegularExpression.concatAll(
-      Array(
-        prefix,
-        RegularExpression.concatAll(digit_atoms),
-        (RegularExpression.concatAll(digit_atoms))*
-      )
-    )
+    prefix + RegularExpression.concatAll(digit_atoms) + ((RegularExpression.concatAll(digit_atoms))*)
   }
 
   // HexNumeral
