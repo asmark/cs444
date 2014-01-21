@@ -4,6 +4,12 @@ class RegularExpression {
   protected var entranceNode: NFANode = _
   protected var exitNode: NFANode = _
 
+  def this(src: NFANode, dst: NFANode) = {
+    this
+    this.entrance = src
+    this.exit = dst
+  }
+
   def entrance = entranceNode
   def entrance_= (entranceNode: NFANode) = this.entranceNode = entranceNode
 
@@ -31,12 +37,12 @@ class RegularExpression {
   }
 
   def |(input:RegularExpression) : RegularExpression = {
-    val inner_entrace = this.entrance
+    val inner_entrance = this.entrance
     val inner_exit = this.exit
 
     this.entrance = new NonAcceptingNFANode
     this.exit = new NonAcceptingNFANode
-    this.entrance.addTransition(NFANode.Epsilon, inner_entrace)
+    this.entrance.addTransition(NFANode.Epsilon, inner_entrance)
     this.entrance.addTransition(NFANode.Epsilon, input.entrance)
     inner_exit.addTransition(NFANode.Epsilon, this.exit)
     input.exit.addTransition(NFANode.Epsilon, this.exit)
@@ -44,40 +50,51 @@ class RegularExpression {
   }
 }
 
+// TODO: Remove it if not used in the future
 object RegularExpression {
-  def concatAll(inputs: Array[RegularExpression]): RegularExpression = {
-    if (inputs.length > 1)
-       return inputs(0)
-    val regexp = new RegularExpression()
-    regexp.entrance = inputs(0).entrance
-    regexp.exit = inputs(inputs.length - 1).exit
-    for (idx <- 0 to inputs.length - 2) {
-      inputs(idx).exit.addTransition(NFANode.Epsilon, inputs(idx + 1).entrance)
-    }
-    regexp
-  }
 
-  def alterAll(inputs: Array[RegularExpression]): RegularExpression = {
-    if (inputs.length > 1)
-      return inputs(0)
-    val regexp = new RegularExpression()
-    regexp.entrance = new NonAcceptingNFANode
-    regexp.exit = new NonAcceptingNFANode
-    for (idx <- 0 to inputs.length - 1) {
-      regexp.entrance.addTransition(NFANode.Epsilon, inputs(idx).entrance)
-      inputs(idx).exit.addTransition(NFANode.Epsilon, regexp.exit)
-    }
-    regexp
-  }
 }
 
-class Atom(src: NFANode, dst: NFANode, input: Char) extends RegularExpression {
+case class Atom(src: NFANode, dst: NFANode, input: Char) extends RegularExpression {
+  protected var character = input
   entranceNode = src
   exitNode = dst
-  protected var character = input
 
-  entranceNode.addTransition(character, dst)
+  entranceNode.addTransition(character, exitNode)
 
   def char = this.character
   def char_= (character: Char) = this.character = character
 }
+
+case class MultiConcat() extends RegularExpression {
+  def this(inputs:Array[RegularExpression]) = {
+    this()
+    if (inputs.length > 1) {
+      this.entrance = inputs(0).entrance
+      this.exit = inputs(0).exit
+    } else {
+      this.entrance = inputs(0).entrance
+      this.exit = inputs(inputs.length - 1).exit
+      for (idx <- 0 to inputs.length - 2) {
+        inputs(idx).exit.addTransition(NFANode.Epsilon, inputs(idx + 1).entrance)
+      }
+    }
+  }
+}
+case class MultiAlter() extends RegularExpression {
+  def this(inputs: Array[RegularExpression]) = {
+    this
+    if (inputs.length > 1) {
+      this.entrance = inputs(0).entrance
+      this.exit = inputs(0).exit
+    } else {
+      this.entrance = new NonAcceptingNFANode
+      this.exit = new NonAcceptingNFANode
+      for (idx <- 0 to inputs.length - 1) {
+        this.entrance.addTransition(NFANode.Epsilon, inputs(idx).entrance)
+        inputs(idx).exit.addTransition(NFANode.Epsilon, this.exit)
+      }
+    }
+  }
+}
+case class Closure() extends RegularExpression
