@@ -66,7 +66,7 @@ case class Atom(src: NFANode, dst: NFANode, input: Char) extends RegularExpressi
   def char_= (character: Char) = this.character = character
 }
 
-case class MultiConcat(inputs:Array[RegularExpression]) extends RegularExpression {
+case class MultiConcat() extends RegularExpression {
   def this(inputs:Array[RegularExpression]) = {
     this()
     if (inputs.length > 1) {
@@ -81,9 +81,9 @@ case class MultiConcat(inputs:Array[RegularExpression]) extends RegularExpressio
     }
   }
 }
-case class MultiAlter(inputs: Array[RegularExpression]) extends RegularExpression {
+case class MultiAlter() extends RegularExpression {
   def this(inputs: Array[RegularExpression]) = {
-    this
+    this()
     if (inputs.length > 1) {
       this.entrance = inputs(0).entrance
       this.exit = inputs(0).exit

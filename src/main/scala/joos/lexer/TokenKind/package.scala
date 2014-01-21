@@ -16,6 +16,10 @@ package object TokenKind {
     atoms
   }
 
+  // The postfix for integer literals
+  final val lower_l = new Atom(NonAcceptingNFANode(), AcceptingNFANode(), 'l')
+  final val upper_l = new Atom(NonAcceptingNFANode(), AcceptingNFANode(), 'L')
+
   final val digits = Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
   final val alphabets = {
     val lower = "abcdefghijklmnopqrstuvwxyz".toCharArray()

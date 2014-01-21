@@ -16,7 +16,7 @@ object TokenKinds {
   final val ID = {
     val java_letters = symbolsToAtoms(alphabets)
     val java_letters_or_number = java_letters ++ symbolsToAtoms(digits)
-    MultiAlter(java_letters) + (MultiAlter(java_letters_or_number)*)
+    new MultiAlter(java_letters) + (new MultiAlter(java_letters_or_number)*)
   }
 
   // Keywords
@@ -37,24 +37,21 @@ object TokenKinds {
       digit_atoms(i) = new Atom(NonAcceptingNFANode(), AcceptingNFANode(), digit_symbols(i))
     }
 
-    val lower_l = new Atom(NonAcceptingNFANode(), AcceptingNFANode(), 'l')
-    val upper_l = new Atom(NonAcceptingNFANode(), AcceptingNFANode(), 'L')
-
     val first_digit_atoms = digit_atoms.slice(1, digit_atoms.length)
     val non_postfix =
-      MultiAlter(first_digit_atoms) +
-        ((MultiAlter(digit_atoms))*)
+      new MultiAlter(first_digit_atoms) +
+        ((new MultiAlter(digit_atoms))*)
 
     val postfix =
-      MultiAlter(first_digit_atoms) +
-        (MultiAlter(digit_atoms)*) +
+      new MultiAlter(first_digit_atoms) +
+        (new MultiAlter(digit_atoms)*) +
         (lower_l | upper_l)
 
     non_postfix | postfix
   }
 
   // HexNumeral
-  // Regular Expression: 0x[1-9a-fA-F][1-9a-fA-F]*
+  // Regular Expression: (0x[1-9a-fA-F][1-9a-fA-F]*|0x[1-9a-fA-F][1-9a-fA-F]*(l|L))
   final val HEX_NUMERAL = {
     val digit_symbols = Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
       'A', 'B', 'C', 'D', 'E', 'F')
@@ -66,10 +63,12 @@ object TokenKinds {
     val prefix = new Atom(NonAcceptingNFANode(), NonAcceptingNFANode(), '0') +
       new Atom(NonAcceptingNFANode(), NonAcceptingNFANode(), 'x')
 
-    prefix + MultiConcat(digit_atoms) + (MultiConcat(digit_atoms)*)
+    val non_postfix = prefix + new MultiConcat(digit_atoms) + (new MultiConcat(digit_atoms)*)
+    val postfix = non_postfix + (lower_l | upper_l)
+    (non_postfix | postfix)
   }
 
-  // HexNumeral
+  // OctalIntegerLiteral
   // Regular Expression: 0[0-7][0-7]*
   // TODO
 
