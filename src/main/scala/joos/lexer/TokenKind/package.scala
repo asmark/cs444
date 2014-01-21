@@ -3,14 +3,23 @@ package joos.lexer
 package object TokenKind {
   def generateStaticWord(word:String):RegularExpression = {
     val symbols = word.toCharArray
-    val atoms = new Array[RegularExpression](symbols.length)
-    for (i <- 0 to symbols.length - 1) {
-      if (i != symbols.length - 1) {
-        atoms(i) = new Atom(NonAcceptingNFANode(), NonAcceptingNFANode(), symbols(i))
-      } else {
-        atoms(i) = new Atom(NonAcceptingNFANode(), AcceptingNFANode(word), symbols(i))
-      }
-    }
+    val atoms = symbolsToAtoms(symbols)
+    atoms.last.exit = AcceptingNFANode(word)
     new MultiConcat(atoms)
+  }
+
+  def symbolsToAtoms(symbols:Array[Char]): Array[RegularExpression] = {
+    val atoms = new Array[RegularExpression](symbols.length)
+    for (i <- 0 to atoms.length) {
+      atoms(i) = new Atom(NonAcceptingNFANode(), NonAcceptingNFANode(), symbols(i))
+    }
+    atoms
+  }
+
+  final val digits = Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
+  final val alphabets = {
+    val lower = "abcdefghijklmnopqrstuvwxyz".toCharArray()
+    val upper = lower.map( _.toUpper)
+    lower ++ upper
   }
 }

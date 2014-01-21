@@ -12,10 +12,14 @@ object TokenKinds {
   // TODO
 
   // Identifier
-  // TODO
+  // Regular Expression: [JavaLetter][JavaLetter or Digits]*
+  final val ID = {
+    val java_letters = symbolsToAtoms(alphabets)
+    val java_letters_or_number = java_letters ++ symbolsToAtoms(digits)
+    MultiAlter(java_letters) + (MultiAlter(java_letters_or_number)*)
+  }
 
   // Keywords
-
   final val FINAL = {
     generateStaticWord("final")
   }
@@ -27,7 +31,7 @@ object TokenKinds {
   // DecimalIntegerLiteral
   // Regular Expression: ([1-9][0-9]*|[1-9][0-9]*(l|L))
   final val INTEGER_LITERAL = {
-    val digit_symbols = Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
+    val digit_symbols = digits.clone()
     val digit_atoms = new Array[RegularExpression](digit_symbols.length)
     for (i <- 0 until digit_symbols.length) {
       digit_atoms(i) = new Atom(NonAcceptingNFANode(), AcceptingNFANode(), digit_symbols(i))
@@ -38,12 +42,12 @@ object TokenKinds {
 
     val first_digit_atoms = digit_atoms.slice(1, digit_atoms.length)
     val non_postfix =
-      new MultiAlter(first_digit_atoms) +
-        ((new MultiAlter(digit_atoms))*)
+      MultiAlter(first_digit_atoms) +
+        ((MultiAlter(digit_atoms))*)
 
     val postfix =
-      (new MultiAlter(first_digit_atoms)) +
-        ((new MultiAlter(digit_atoms))*) +
+      MultiAlter(first_digit_atoms) +
+        (MultiAlter(digit_atoms)*) +
         (lower_l | upper_l)
 
     non_postfix | postfix
@@ -62,7 +66,7 @@ object TokenKinds {
     val prefix = new Atom(NonAcceptingNFANode(), NonAcceptingNFANode(), '0') +
       new Atom(NonAcceptingNFANode(), NonAcceptingNFANode(), 'x')
 
-    prefix + new MultiConcat(digit_atoms) + ((new MultiConcat(digit_atoms))*)
+    prefix + MultiConcat(digit_atoms) + (MultiConcat(digit_atoms)*)
   }
 
   // HexNumeral
