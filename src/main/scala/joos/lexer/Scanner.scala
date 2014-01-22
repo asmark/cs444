@@ -44,8 +44,7 @@ class Scanner(root: DFANode) {
   private def reducePath() {
     val extraChars = mutable.Stack[Char]()
     while (getCurrentNode().isAccepting().isEmpty) {
-      val lastChar = if (charPath.isEmpty) throw new ScanningException() else charPath.top
-      extraChars.push(lastChar)
+      if (charPath.isEmpty) throw new ScanningException() else extraChars.push(charPath.pop())
       dfaPath.pop()
     }
 
@@ -60,7 +59,7 @@ class Scanner(root: DFANode) {
 }
 
 object Scanner {
-  def fromRegexp(regexp : Any): Scanner = {
+  def fromRegexp(regexp: Any): Scanner = {
     // TODO: Before we can do this we need to define priorities and our TokenKind class
     return null
   }
