@@ -4,20 +4,20 @@ package object TokenKind {
   def generateStaticWord(word: String): RegularExpression = {
     val symbols = word.toCharArray
     val atoms = symbolsToAtoms(symbols)
-    new MultiConcat(atoms) + new Atom(NonAcceptingNFANode(), AcceptingNFANode(word), NFANode.Epsilon)
+    new MultiConcat(atoms) + new Atom(NonAcceptingNfaNode(), AcceptingNfaNode(word), NfaNode.Epsilon)
   }
 
   def symbolsToAtoms(symbols: Array[Char]): Array[RegularExpression] = {
     val atoms = new Array[RegularExpression](symbols.length)
     for (i <- 0 to atoms.length - 1) {
-      atoms(i) = new Atom(NonAcceptingNFANode(), NonAcceptingNFANode(), symbols(i))
+      atoms(i) = new Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), symbols(i))
     }
     atoms
   }
 
   // The postfix for integer literals
-  final val lower_l = new Atom(NonAcceptingNFANode(), AcceptingNFANode(), 'l')
-  final val upper_l = new Atom(NonAcceptingNFANode(), AcceptingNFANode(), 'L')
+  final val lower_l = new Atom(NonAcceptingNfaNode(), AcceptingNfaNode(), 'l')
+  final val upper_l = new Atom(NonAcceptingNfaNode(), AcceptingNfaNode(), 'L')
 
   final val digits = Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
   final val alphabets = {
