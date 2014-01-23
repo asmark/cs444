@@ -95,7 +95,9 @@ class ScannerSpec extends FlatSpec with Matchers {
   behavior of "An alternating word regular expression (T|test) to DFA conversion"
 
   it should "accept tokenizable (test) inputs" in {
-    val scanner = Scanner.forRegexp(TokenKind.TokenKinds.TEST)
+    val TestRegexp = (new Atom('T') | new Atom('t')) + new Atom('e') + new Atom('s') + new Atom('t') + new Atom(NonAcceptingNFANode(), AcceptingNFANode("test"), NFANode.Epsilon)
+
+    val scanner = Scanner.forRegexp(TestRegexp)
 
     "test".toCharArray.foreach(c => scanner.parse(c))
 
@@ -105,7 +107,8 @@ class ScannerSpec extends FlatSpec with Matchers {
   }
 
   it should "accept tokenizable (Test) inputs" in {
-    val scanner = Scanner.forRegexp(TokenKind.TokenKinds.TEST)
+    val TestRegexp = (new Atom('T') | new Atom('t')) + new Atom('e') + new Atom('s') + new Atom('t') + new Atom(NonAcceptingNFANode(), AcceptingNFANode("test"), NFANode.Epsilon)
+    val scanner = Scanner.forRegexp(TestRegexp)
 
     "Test".toCharArray.foreach(c => scanner.parse(c))
 

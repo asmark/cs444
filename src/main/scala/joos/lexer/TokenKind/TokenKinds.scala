@@ -6,6 +6,7 @@ import joos.lexer.Atom
 import joos.lexer.NonAcceptingNFANode
 import joos.lexer.MultiConcat
 import joos.lexer.AcceptingNFANode
+import scala.language.postfixOps
 
 object TokenKinds {
   // Comments
@@ -84,11 +85,6 @@ object TokenKinds {
   // Test literal
   final val TEST = {
     (new Atom('T') | new Atom('t')) + new Atom('e') + new Atom('s') + new Atom('t') + new Atom(NonAcceptingNFANode(), AcceptingNFANode("test"), NFANode.Epsilon)
-  }
-
-  // E* Literal
-  final val ESTAR = {
-    new Atom('t') + (new Atom('e') *) + new Atom(NonAcceptingNFANode(), AcceptingNFANode("te*"), NFANode.Epsilon)
   }
 
   // Null Literal
