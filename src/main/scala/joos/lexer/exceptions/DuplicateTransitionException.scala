@@ -1,3 +1,3 @@
-package joos.lexer
+package joos.lexer.exceptions
 
 class DuplicateTransitionException(msg: String) extends RuntimeException(msg)

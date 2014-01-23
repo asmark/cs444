@@ -3,9 +3,10 @@ package joos.lexer.TokenKind
 import joos.lexer._
 import joos.lexer.MultiAlter
 import joos.lexer.Atom
-import joos.lexer.NonAcceptingNFANode
+import joos.lexer.NonAcceptingNfaNode
 import joos.lexer.MultiConcat
-import joos.lexer.AcceptingNFANode
+import joos.lexer.AcceptingNfaNode
+import scala.language.postfixOps
 
 object TokenKinds {
   // Comments
@@ -16,7 +17,7 @@ object TokenKinds {
   final val ID = {
     val java_letters = symbolsToAtoms(alphabets)
     val java_letters_or_number = java_letters ++ symbolsToAtoms(digits)
-    new MultiAlter(java_letters) + (new MultiAlter(java_letters_or_number)*)
+    new MultiAlter(java_letters) + (new MultiAlter(java_letters_or_number) *) + new Atom(NonAcceptingNfaNode(), AcceptingNfaNode("ID"), NfaNode.Epsilon)
   }
 
   // Keywords
@@ -34,17 +35,17 @@ object TokenKinds {
     val digit_symbols = digits.clone()
     val digit_atoms = new Array[RegularExpression](digit_symbols.length)
     for (i <- 0 until digit_symbols.length) {
-      digit_atoms(i) = new Atom(NonAcceptingNFANode(), AcceptingNFANode(), digit_symbols(i))
+      digit_atoms(i) = new Atom(NonAcceptingNfaNode(), AcceptingNfaNode(), digit_symbols(i))
     }
 
     val first_digit_atoms = digit_atoms.slice(1, digit_atoms.length)
     val non_postfix =
       new MultiAlter(first_digit_atoms) +
-        ((new MultiAlter(digit_atoms))*)
+        ((new MultiAlter(digit_atoms)) *)
 
     val postfix =
       new MultiAlter(first_digit_atoms) +
-        (new MultiAlter(digit_atoms)*) +
+        (new MultiAlter(digit_atoms) *) +
         (lower_l | upper_l)
 
     non_postfix | postfix
@@ -57,13 +58,13 @@ object TokenKinds {
       'A', 'B', 'C', 'D', 'E', 'F')
     val digit_atoms = new Array[RegularExpression](digit_symbols.length)
     for (i <- 0 until digit_symbols.length) {
-      digit_atoms(i) = new Atom(NonAcceptingNFANode(), AcceptingNFANode(), digit_symbols(i))
+      digit_atoms(i) = new Atom(NonAcceptingNfaNode(), AcceptingNfaNode(), digit_symbols(i))
     }
 
-    val prefix = new Atom(NonAcceptingNFANode(), NonAcceptingNFANode(), '0') +
-      new Atom(NonAcceptingNFANode(), NonAcceptingNFANode(), 'x')
+    val prefix = new Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), '0') +
+      new Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), 'x')
 
-    val non_postfix = prefix + new MultiConcat(digit_atoms) + (new MultiConcat(digit_atoms)*)
+    val non_postfix = prefix + new MultiConcat(digit_atoms) + (new MultiConcat(digit_atoms) *)
     val postfix = non_postfix + (lower_l | upper_l)
     (non_postfix | postfix)
   }
@@ -80,6 +81,11 @@ object TokenKinds {
 
   // StringLiteral
   // TODO
+
+  // Test literal
+  final val TEST = {
+    (new Atom('T') | new Atom('t')) + new Atom('e') + new Atom('s') + new Atom('t') + new Atom(NonAcceptingNfaNode(), AcceptingNfaNode("test"), NfaNode.Epsilon)
+  }
 
   // Null Literal
   final val NULL = {
