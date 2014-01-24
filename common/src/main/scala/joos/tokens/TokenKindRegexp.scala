@@ -22,14 +22,12 @@ object TokenKindRegexp {
   // Identifier
   // Regular Expression: [JavaLetter][JavaLetter or Digits]*
   final val ID = {
-    Alternation(JAVA_LETTERS) +
-      (Alternation(JAVA_LETTERS + DIGITS) *) +
-      Atom(NonAcceptingNfaNode(), AcceptingNfaNode("ID"), NfaNode.Epsilon)
+    Alternation(JAVA_LETTERS) + (Alternation(JAVA_LETTERS + DIGITS) *) := TokenKind.Id
   }
 
   // Keywords
   final val Final = {
-    Concatenation("final") + Atom(NonAcceptingNfaNode(), AcceptingNfaNode("final"), NfaNode.Epsilon)
+    Concatenation("final") := TokenKind.Final
   }
 
 
@@ -194,7 +192,7 @@ object TokenKindRegexp {
     Atom('!')
   }
 
-  final val Period = {
+  final val Grave = {
     Atom('~')
   }
 

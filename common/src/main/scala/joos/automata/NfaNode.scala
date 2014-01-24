@@ -1,5 +1,6 @@
 package joos.automata
 
+import joos.tokens.TokenKind.TokenKind
 import scala.collection.mutable
 
 sealed abstract class NfaNode {
@@ -15,7 +16,7 @@ sealed abstract class NfaNode {
     return edges.getOrElse(char, Set.empty[NfaNode])
   }
 
-  def isAccepting(): Option[Any] = this match {
+  def isAccepting(): Option[TokenKind] = this match {
     case NonAcceptingNfaNode() => None
     case AcceptingNfaNode(token) => Some(token)
   }
@@ -43,4 +44,4 @@ object NfaNode {
 
 case class NonAcceptingNfaNode() extends NfaNode
 
-case class AcceptingNfaNode(tokenKind: Any) extends NfaNode
+case class AcceptingNfaNode(kind: TokenKind) extends NfaNode

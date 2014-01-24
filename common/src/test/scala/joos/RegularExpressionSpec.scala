@@ -2,6 +2,7 @@ package joos
 
 import joos.automata.{NfaNode, AcceptingNfaNode, NonAcceptingNfaNode}
 import joos.regexp.Atom
+import joos.tokens.TokenKind
 import org.scalatest._
 import scala.language.postfixOps
 
@@ -12,8 +13,8 @@ class RegularExpressionSpec extends FlatSpec with Matchers {
   val test_atom2 = Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), '2')
   val test_concat = test_atom1 + test_atom2
 
-  val test_atom3 = Atom(NonAcceptingNfaNode(), AcceptingNfaNode(), '3')
-  val test_atom4 = Atom(NonAcceptingNfaNode(), AcceptingNfaNode(), '4')
+  val test_atom3 = Atom(NonAcceptingNfaNode(), AcceptingNfaNode(TokenKind.DecimalInteger), '3')
+  val test_atom4 = Atom(NonAcceptingNfaNode(), AcceptingNfaNode(TokenKind.DecimalInteger), '4')
   val test_alter = test_atom3 | test_atom4
 
   val test_atom5 = Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), '5')
@@ -30,11 +31,11 @@ class RegularExpressionSpec extends FlatSpec with Matchers {
 
   it should "be able to hold AcceptingNFANode and update the node property" in {
     val node1 = NonAcceptingNfaNode()
-    val node2 = AcceptingNfaNode('a')
+    val node2 = AcceptingNfaNode(TokenKind.Assign)
     val test_atom = Atom(node1, node2, 'c')
     test_atom.entrance should be(node1)
-    test_atom.exit.isAccepting() should be(Some('a'))
-    val node3 = AcceptingNfaNode()
+    test_atom.exit.isAccepting() should be(Some(TokenKind.Assign))
+    val node3 = NonAcceptingNfaNode()
     test_atom.entrance = node3
     test_atom.entrance should be(node3)
   }

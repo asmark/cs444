@@ -2,13 +2,11 @@ package joos
 
 import joos.automata._
 import joos.exceptions.ScanningException
+import joos.regexp.RegularExpression
+import joos.tokens.{TokenKind, Token}
+import scala.Some
 import scala.collection.mutable
 import scala.io.Source
-import joos.automata.AcceptingDfaNode
-import joos.tokens.Token
-import scala.Some
-import joos.automata.NonAcceptingDfaNode
-import joos.regexp.RegularExpression
 
 class Scanner(root: DfaNode) {
 
@@ -75,15 +73,11 @@ object Scanner {
 
   private def newDfaNode(nfaNodes: Set[NfaNode]): DfaNode = {
 
-    val acceptingToken = nfaNodes.collectFirst {
-      case node: AcceptingNfaNode => node.tokenKind
+    val acceptingKinds = nfaNodes.collect {
+      case node: AcceptingNfaNode => node.kind
     }
-    return acceptingToken match {
-      case Some(tokenKind: Any) =>
-        AcceptingDfaNode(tokenKind)
-      case None =>
-        NonAcceptingDfaNode()
-    }
+
+    return if (acceptingKinds.isEmpty) NonAcceptingDfaNode() else AcceptingDfaNode(TokenKind.getHighestPriority(acceptingKinds))
   }
 
   private def getOrCreateDfaNode(dfaNodes: mutable.HashMap[Set[NfaNode], DfaNode], nfaNodes: Set[NfaNode]): DfaNode = {

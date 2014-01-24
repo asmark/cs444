@@ -1,10 +1,9 @@
 package joos.regexp
 
-import joos.automata.{NonAcceptingNfaNode, NfaNode}
+import joos.automata.{AcceptingNfaNode, NonAcceptingNfaNode, NfaNode}
+import joos.tokens.TokenKind.TokenKind
 
 abstract class RegularExpression {
-
-
   protected var entranceNode: NfaNode = _
   protected var exitNode: NfaNode = _
 
@@ -60,6 +59,11 @@ abstract class RegularExpression {
     this.entranceNode.addTransition(NfaNode.Epsilon, this.exitNode)
     inner_exit.addTransition(NfaNode.Epsilon, this.exitNode)
     this
+  }
+
+  // Mark as accepting
+  def :=(kind: TokenKind) : RegularExpression = {
+    this + Atom(NonAcceptingNfaNode(), AcceptingNfaNode(kind), NfaNode.Epsilon)
   }
 
 }

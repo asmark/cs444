@@ -1,7 +1,8 @@
 package joos.automata
 
-import scala.collection.mutable
 import joos.automata.exceptions.DuplicateTransitionException
+import joos.tokens.TokenKind.TokenKind
+import scala.collection.mutable
 
 sealed abstract class DfaNode {
   val edges = mutable.HashMap[Char, DfaNode]()
@@ -17,7 +18,7 @@ sealed abstract class DfaNode {
     return edges.get(char)
   }
 
-  def isAccepting(): Option[Any] = this match {
+  def isAccepting(): Option[TokenKind] = this match {
     case NonAcceptingDfaNode() => None
     case AcceptingDfaNode(token) => Some(token)
   }
@@ -27,4 +28,4 @@ sealed abstract class DfaNode {
 
 case class NonAcceptingDfaNode() extends DfaNode
 
-case class AcceptingDfaNode(tokenKind: Any) extends DfaNode
+case class AcceptingDfaNode(kind: TokenKind) extends DfaNode

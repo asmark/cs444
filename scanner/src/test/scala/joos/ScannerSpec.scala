@@ -2,9 +2,8 @@ package joos
 
 import joos.automata.{AcceptingNfaNode, NfaNode, NonAcceptingNfaNode}
 import joos.exceptions.ScanningException
-import joos.regexp.Atom
-import joos.tokens.TokenKindRegexp
-import joos.tokens.Token
+import joos.regexp.{Concatenation, Alternation, Atom}
+import joos.tokens.{TokenKind, TokenKindRegexp, Token}
 import org.scalatest.{FlatSpec, Matchers}
 
 class ScannerSpec extends FlatSpec with Matchers {
@@ -15,8 +14,8 @@ class ScannerSpec extends FlatSpec with Matchers {
   private val CharacterB = 'B'
   private val CharacterC = 'C'
 
-  private val TokenKind1 = "TOKEN-1"
-  private val TokenKind2 = "TOKEN-2"
+  private val TokenKind1 = TokenKind.Id
+  private val TokenKind2 = TokenKind.Dot
 
   private val testDfaNoLoops = NonAcceptingDfaNode().
     addTransition(CharacterA, AcceptingDfaNode(TokenKind1)).
@@ -87,7 +86,7 @@ class ScannerSpec extends FlatSpec with Matchers {
     "final".toCharArray.foreach(c => scanner.parse(c))
     val tokens = scanner.getTokens()
     tokens should have length 1
-    tokens should contain(new Token("final", "final"))
+    tokens should contain(new Token(TokenKind.Final, "final"))
   }
 
   it should "reject non-tokenizable (final3) inputs" in {
@@ -102,7 +101,7 @@ class ScannerSpec extends FlatSpec with Matchers {
   behavior of "An alternating word regular expression (T|test) to DFA conversion"
 
   it should "accept tokenizable (test) inputs" in {
-    val TestRegexp = (Atom('T') | Atom('t')) + Atom('e') + Atom('s') + Atom('t') + Atom(NonAcceptingNfaNode(), AcceptingNfaNode("test"), NfaNode.Epsilon)
+    val TestRegexp = Alternation("tT") + Concatenation("est") := TokenKind1
 
     val scanner = Scanner.forRegexp(TestRegexp)
 
@@ -110,18 +109,18 @@ class ScannerSpec extends FlatSpec with Matchers {
 
     val tokens = scanner.getTokens()
     tokens should have length 1
-    tokens should contain(new Token("test", "test"))
+    tokens should contain(new Token(TokenKind1, "test"))
   }
 
   it should "accept tokenizable (Test) inputs" in {
-    val TestRegexp = (Atom('T') | Atom('t')) + Atom('e') + Atom('s') + Atom('t') + Atom(NonAcceptingNfaNode(), AcceptingNfaNode("test"), NfaNode.Epsilon)
+    val TestRegexp = Alternation("tT") + Concatenation("est") := TokenKind1
     val scanner = Scanner.forRegexp(TestRegexp)
 
     "Test".toCharArray.foreach(c => scanner.parse(c))
 
     val tokens = scanner.getTokens()
     tokens should have length 1
-    tokens should contain(new Token("test", "Test"))
+    tokens should contain(new Token(TokenKind1, "Test"))
   }
 
 
@@ -134,7 +133,7 @@ class ScannerSpec extends FlatSpec with Matchers {
 
     val tokens = scanner.getTokens()
     tokens should have length 1
-    tokens should contain(new Token("ID", "t998"))
+    tokens should contain(new Token(TokenKind.Id, "t998"))
   }
 
   it should "reject non-tokenizable (9112abc) inputs" in {
