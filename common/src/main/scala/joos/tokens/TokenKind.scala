@@ -8,8 +8,6 @@ object TokenKind extends Enumeration {
   type TokenKind = Value
   // Same order as TokenKindRegexp
 
-  // Identifier
-  final val Id = Value("Id")
 
   // Keywords
   final val Final = Value("Final")
@@ -56,5 +54,8 @@ object TokenKind extends Enumeration {
   final val Greater = Value("Greater")
 
   // ...
+
+  // Identifier
+  final val Id = Value("Id")
 
 }

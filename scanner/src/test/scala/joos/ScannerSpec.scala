@@ -78,6 +78,17 @@ class ScannerSpec extends FlatSpec with Matchers {
     }
   }
 
+  "An epsilon closure with multiple accepting states" should "accept the highest priority token" in {
+    val testRegexp = Concatenation("final") := TokenKind.Id := TokenKind.Final
+
+    val scanner = Scanner.forRegexp(testRegexp)
+
+    "final".toCharArray.foreach(c => scanner.parse(c))
+    val tokens = scanner.getTokens()
+    tokens should have length 1
+    tokens should contain(new Token(TokenKind.Final, "final"))
+  }
+
   behavior of "A static word regular expression (final) to DFA conversion"
 
   it should "accept tokenizable (final) inputs" in {
@@ -101,9 +112,9 @@ class ScannerSpec extends FlatSpec with Matchers {
   behavior of "An alternating word regular expression (T|test) to DFA conversion"
 
   it should "accept tokenizable (test) inputs" in {
-    val TestRegexp = Alternation("tT") + Concatenation("est") := TokenKind1
+    val testRegexp = Alternation("tT") + Concatenation("est") := TokenKind1
 
-    val scanner = Scanner.forRegexp(TestRegexp)
+    val scanner = Scanner.forRegexp(testRegexp)
 
     "test".toCharArray.foreach(c => scanner.parse(c))
 
@@ -113,8 +124,8 @@ class ScannerSpec extends FlatSpec with Matchers {
   }
 
   it should "accept tokenizable (Test) inputs" in {
-    val TestRegexp = Alternation("tT") + Concatenation("est") := TokenKind1
-    val scanner = Scanner.forRegexp(TestRegexp)
+    val testRegexp = Alternation("tT") + Concatenation("est") := TokenKind1
+    val scanner = Scanner.forRegexp(testRegexp)
 
     "Test".toCharArray.foreach(c => scanner.parse(c))
 
