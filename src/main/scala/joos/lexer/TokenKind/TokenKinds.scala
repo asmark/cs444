@@ -11,15 +11,15 @@ import scala.language.postfixOps
 object TokenKinds {
   // Comments
   // TODO: Adjust this part when we get to parsing
-  final val TRADITIONAL_COMMENT_PREFIX = {
+  final val TraditionalCommentPrefix = {
     Concatenation("/*")
   }
 
-  final val TRADITIONAL_COMMENT_POSTFIX = {
+  final val TraditionalCommentPostfix = {
     Concatenation("*/")
   }
 
-  final val EOL_COMMENT_START = {
+  final val EOLCommentPrefix = {
     Concatenation("//")
   }
 
@@ -32,7 +32,7 @@ object TokenKinds {
   }
 
   // Keywords
-  final val FINAL = {
+  final val Final = {
     Concatenation("final")
   }
 
@@ -75,14 +75,54 @@ object TokenKinds {
   // FloatingPointLiteral
   // TODO: TOO LONG
   final val FLOAT_LITERAL = {
-    val digit_
+    val first_form =
+      Concatenation(DIGITS) +
+      Atom('.') +
+      Optional(Concatenation(DIGITS)) +
+      Optional(exponentPart()) +
+      Optional(floatTypeSuffix())
+
+    val second_form =
+      Atom('.') +
+      Concatenation(DIGITS) +
+      Optional(exponentPart()) +
+      Optional(floatTypeSuffix())
+
+    val third_form =
+      Concatenation(DIGITS) +
+      exponentPart() +
+      Optional(floatTypeSuffix())
+
+    val fourth_form =
+      Concatenation(DIGITS) +
+      Optional(exponentPart()) +
+      floatTypeSuffix()
+
+    (first_form | second_form | third_form | fourth_form)
   }
 
   // BooleanLiteral
   // TODO
+  final val TRUE = {
+    Concatenation("true")
+  }
+
+  final val FALSE = {
+    Concatenation("false")
+  }
+
+  // CharacterLiteral
+  // Regular Expression:
+  final val CharacterLiteral = {
+    Atom('\'') + Alternation(SingleCharacter.mkString("")) + Atom('\'') |
+      Atom('\'') + escapeSequence() + Atom('\'')
+  }
 
   // StringLiteral
-  // TODO
+  // Regular Expression: "StringCharacter*" | "", StringCharacter -> InputCharacter but not " or \ | EscapeSequence
+  final val StringLiteral = {
+    Atom('\"') + (stringCharacter()*) + Atom('\"')
+  }
 
   // Test literal
   final val TEST = {
@@ -127,33 +167,167 @@ object TokenKinds {
   }
 
   // ;
-  final val SEMI_COMMA = {
+  final val SemiComma = {
     Atom(';')
   }
 
   // ,
-  // TODO
-  final val COMMA = {
+  final val Comma = {
     Atom(',')
   }
 
   // .
-  // TODO
-  final val PERIOD = {
+  final val Dot = {
     Atom('.')
   }
 
   // Operators
   // TODO: 37 operators in total
-  final val EQUAL = {
+  final val Assign = {
     Atom('=')
   }
 
-  final val GT = {
+  final val Greater = {
     Atom('>')
   }
 
-  final val LT = {
+  final val Less = {
     Atom('<')
+  }
+
+  final val Exclamation = {
+    Atom('!')
+  }
+
+  final val Period = {
+    Atom('~')
+  }
+
+  final val Question = {
+    Atom('?')
+  }
+
+  final val Colon = {
+    Atom(':')
+  }
+
+  final val Equal = {
+    Concatenation("==")
+  }
+
+  final val LessEqual = {
+    Concatenation("<=")
+  }
+
+  final val GreaterEqual = {
+    Concatenation("<=")
+  }
+
+  final val NotEqual = {
+    Concatenation("!=")
+  }
+
+  final val And = {
+    Concatenation("&&")
+  }
+
+  final val Or = {
+    Concatenation("||")
+  }
+
+  final val Increment = {
+    Concatenation("++")
+  }
+
+  final val Decrement = {
+    Concatenation("++")
+  }
+
+  final val Plus = {
+    Atom('+')
+  }
+
+  final val Minus = {
+    Atom('-')
+  }
+
+  final val Multiply = {
+    Atom('*')
+  }
+
+  final val DIVIDE = {
+    Atom('/')
+  }
+
+  final val BitAnd = {
+    Atom('&')
+  }
+
+  final val BitOr = {
+    Atom('|')
+  }
+
+  final val Carrot = {
+    Atom('^')
+  }
+
+  final val Modulo = {
+    Atom('%')
+  }
+
+  final val LeftShift = {
+    Concatenation("<<")
+  }
+
+  final val RightShift = {
+    Concatenation(">>")
+  }
+
+  final val UnsignedShift = {
+    Concatenation(">>>")
+  }
+
+  final val PlusAssign = {
+    Concatenation("+=")
+  }
+
+  final val MinusAssign = {
+    Concatenation("-=")
+  }
+
+  final val MultiplyAssign = {
+    Concatenation("*=")
+  }
+
+  final val DivideAssign = {
+    Concatenation("/=")
+  }
+
+  final val BitAndAssign = {
+    Concatenation("&=")
+  }
+
+  final val BitOrAssign = {
+    Concatenation("|=")
+  }
+
+  final val CarrotAssign = {
+    Concatenation("^=")
+  }
+
+  final val ModuloAssign = {
+    Concatenation("%=")
+  }
+
+  final val LeftShiftAssign = {
+    Concatenation("<<=")
+  }
+
+  final val RightShiftAssign = {
+    Concatenation(">>=")
+  }
+
+  final val UsignedRightShiftAssign = {
+    Concatenation(">>>=")
   }
 }
