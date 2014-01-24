@@ -1,4 +1,4 @@
-package joos
+package joos.automata
 
 import scala.collection.mutable
 

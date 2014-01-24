@@ -5,7 +5,8 @@ import scala.language.postfixOps
 
 class RegularExpressionSpec extends FlatSpec with Matchers {
 
-  import joos.{Atom, AcceptingNfaNode, NonAcceptingNfaNode}
+  import joos.automata.{AcceptingNfaNode, NonAcceptingNfaNode}
+  import joos.regexp.Atom
 
   val test_atom1 = Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), '1')
   val test_atom2 = Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), '2')
@@ -19,7 +20,6 @@ class RegularExpressionSpec extends FlatSpec with Matchers {
   val test_closure = test_atom5 *
 
   "An Atom" should "be able to hold NonAcceptingNFANode with entrance and exit set properly" in {
-    import joos.{Atom, NonAcceptingNfaNode}
     val node1 = NonAcceptingNfaNode()
     val node2 = NonAcceptingNfaNode()
     val test_atom = Atom(node1, node2, 'c')
@@ -29,7 +29,6 @@ class RegularExpressionSpec extends FlatSpec with Matchers {
   }
 
   it should "be able to hold AcceptingNFANode and update the node property" in {
-    import joos.{Atom, AcceptingNfaNode, NonAcceptingNfaNode}
     val node1 = NonAcceptingNfaNode()
     val node2 = AcceptingNfaNode('a')
     val test_atom = Atom(node1, node2, 'c')
@@ -41,7 +40,7 @@ class RegularExpressionSpec extends FlatSpec with Matchers {
   }
 
   "A Concatenation" should "be able to concatenate two different Regular Expressions" in {
-    import joos.{Atom, NonAcceptingNfaNode, NfaNode}
+    import joos.automata.NfaNode
     test_concat.entrance should be(test_atom1.entrance)
     test_concat.exit should be(test_atom2.exit)
 
@@ -56,7 +55,7 @@ class RegularExpressionSpec extends FlatSpec with Matchers {
   }
 
   "An Alternation" should "accept two Regular Expressions" in {
-    import joos.{Atom, NonAcceptingNfaNode, NfaNode}
+    import joos.automata.NfaNode
     val test_atom = Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), 'c')
     val test_closure_entrance = test_closure.entrance
     val test_closure_exit = test_closure.exit
@@ -70,7 +69,7 @@ class RegularExpressionSpec extends FlatSpec with Matchers {
   }
 
   "A Closure" should "accept one Regular Expression" in {
-    import joos.NfaNode
+    import joos.automata.NfaNode
     val inner_entrance = test_alter.entrance
     val inner_exit = test_alter.exit
     val closure = test_alter.*

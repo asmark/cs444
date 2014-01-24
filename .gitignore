@@ -16,5 +16,6 @@ project/plugins/project/
 .scala_dependencies
 
 # IDEA
-.idea/workspace.xml
+.idea/*
+!.idea/scala_settings.xml
 out/

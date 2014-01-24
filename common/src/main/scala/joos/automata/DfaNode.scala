@@ -1,4 +1,4 @@
-package joos
+package joos.automata
 
 import joos.exceptions.DuplicateTransitionException
 import scala.collection.mutable
