@@ -4,7 +4,7 @@ package object TokenKind {
   def generateStaticWord(word: String): RegularExpression = {
     val symbols = word.toCharArray
     val atoms = symbolsToAtoms(symbols)
-    new MultiConcat(atoms) + new Atom(NonAcceptingNfaNode(), AcceptingNfaNode(word), NfaNode.Epsilon)
+    new Concatenation(atoms) + new Atom(NonAcceptingNfaNode(), AcceptingNfaNode(word), NfaNode.Epsilon)
   }
 
   def symbolsToAtoms(symbols: Array[Char]): Array[RegularExpression] = {
@@ -16,13 +16,24 @@ package object TokenKind {
   }
 
   // The postfix for integer literals
-  final val lower_l = new Atom(NonAcceptingNfaNode(), AcceptingNfaNode(), 'l')
-  final val upper_l = new Atom(NonAcceptingNfaNode(), AcceptingNfaNode(), 'L')
+  final val LOWER_L = new Atom(NonAcceptingNfaNode(), AcceptingNfaNode(), 'l')
+  final val UPPER_L = new Atom(NonAcceptingNfaNode(), AcceptingNfaNode(), 'L')
 
-  final val digits = Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
-  final val alphabets = {
-    val lower = "abcdefghijklmnopqrstuvwxyz".toCharArray()
-    val upper = lower.map(_.toUpper)
-    lower ++ upper
+  final val DIGITS = Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9').mkString("")
+  final val NON_ZERO_DIGITS = DIGITS.slice(1, DIGITS.length - 1).mkString("")
+  final val HEX_DIGITS = (DIGITS ++ Array('a', 'b', 'c', 'd', 'e', 'f',
+    'A', 'B', 'C', 'D', 'E', 'F')).mkString("")
+  final val OCTAL_DIGITS = DIGITS.slice(0, 7).mkString("")
+
+  final val ALPHABETS = {
+    val lower = "abcdefghijklmnopqrstuvwxyz"
+    val upper = lower.toUpperCase
+    lower + upper
   }
+
+  final val JAVA_LETTERS = {
+    ALPHABETS + '_' + '$'
+  }
+
+
 }

@@ -1,14 +1,8 @@
 package joos.lexer
 
-class RegularExpression {
+abstract class RegularExpression {
   protected var entranceNode: NfaNode = _
   protected var exitNode: NfaNode = _
-
-  def this(src: NfaNode, dst: NfaNode) = {
-    this
-    this.entrance = src
-    this.exit = dst
-  }
 
   def entrance = entranceNode
 
@@ -52,16 +46,7 @@ class RegularExpression {
   }
 }
 
-// TODO: Remove it if not used in the future
-object RegularExpression {
-
-}
-
 case class Atom(src: NfaNode, dst: NfaNode, input: Char) extends RegularExpression {
-  def this(input: Char) {
-    this(NonAcceptingNfaNode(), NonAcceptingNfaNode(), input)
-  }
-
   protected var character = input
   entranceNode = src
   exitNode = dst
@@ -73,9 +58,13 @@ case class Atom(src: NfaNode, dst: NfaNode, input: Char) extends RegularExpressi
   def char_=(character: Char) = this.character = character
 }
 
-case class MultiConcat() extends RegularExpression {
-  def this(inputs: Array[RegularExpression]) = {
-    this()
+object Atom {
+  def apply(input: Char) = {
+    new Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), input)
+  }
+}
+
+case class Concatenation(inputs: Seq[RegularExpression]) extends RegularExpression {
     if (inputs.length <= 1) {
       this.entrance = inputs(0).entrance
       this.exit = inputs(0).exit
@@ -86,12 +75,15 @@ case class MultiConcat() extends RegularExpression {
         inputs(idx).exit.addTransition(NfaNode.Epsilon, inputs(idx + 1).entrance)
       }
     }
+}
+
+object Concatenation {
+  def apply(str: String) = {
+    new Concatenation(str.map(char => Atom(char)))
   }
 }
 
-case class MultiAlter() extends RegularExpression {
-  def this(inputs: Array[RegularExpression]) = {
-    this()
+case class Alternation(inputs: Seq[RegularExpression]) extends RegularExpression {
     if (inputs.length <= 1) {
       this.entrance = inputs(0).entrance
       this.exit = inputs(0).exit
@@ -103,6 +95,16 @@ case class MultiAlter() extends RegularExpression {
         inputs(idx).exit.addTransition(NfaNode.Epsilon, this.exit)
       }
     }
+}
+
+object Alternation {
+  def apply(str: String, accept_char: Boolean = false) = {
+    new Alternation(
+      str.map(
+        char =>
+          Atom(NonAcceptingNfaNode(), if (accept_char) AcceptingNfaNode(char) else NonAcceptingNfaNode(), char)
+      )
+    )
   }
 }
 
