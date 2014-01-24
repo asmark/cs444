@@ -1,5 +1,5 @@
-import Keys._
 import sbt._
+import Keys._
 
 object Dependencies {
   val scalaTest = "org.scalatest" % "scalatest_2.10" % "2.0" % "test"

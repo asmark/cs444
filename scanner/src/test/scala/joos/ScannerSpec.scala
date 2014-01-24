@@ -4,6 +4,7 @@ import joos.automata.{AcceptingNfaNode, NfaNode, NonAcceptingNfaNode}
 import joos.exceptions.ScanningException
 import joos.regexp.Atom
 import joos.tokens.TokenKindRegexp
+import joos.tokens.Token
 import org.scalatest.{FlatSpec, Matchers}
 
 class ScannerSpec extends FlatSpec with Matchers {
