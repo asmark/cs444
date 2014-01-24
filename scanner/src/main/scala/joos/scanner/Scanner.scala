@@ -1,4 +1,4 @@
-package joos
+package joos.scanner
 
 import joos.automata._
 import joos.exceptions.ScanningException

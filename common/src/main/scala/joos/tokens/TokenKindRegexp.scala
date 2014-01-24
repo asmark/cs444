@@ -21,13 +21,13 @@ object TokenKindRegexp {
 
   // Identifier
   // Regular Expression: [JavaLetter][JavaLetter or Digits]*
-  final val ID = {
-    Alternation(JAVA_LETTERS) + (Alternation(JAVA_LETTERS + DIGITS) *) := TokenKind.Id
+  final val Id = {
+    Alternation(JAVA_LETTERS) + (Alternation(JAVA_LETTERS + DIGITS) *)
   }
 
   // Keywords
   final val Final = {
-    Concatenation("final") := TokenKind.Final
+    Concatenation("final")
   }
 
 
