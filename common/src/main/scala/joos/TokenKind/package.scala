@@ -25,9 +25,10 @@ package object TokenKind {
 
   // helper functions for floating point
   def exponentPart(): RegularExpression = {
-    import joos.{Optional, Concatenation, Atom}
-    (Atom('e') | Atom('E')) + Optional((Atom('+')|Atom('-'))) + Concatenation(DIGITS)
+    import joos.{Concatenation, Atom}
+    (Atom('e') | Atom('E')) + ~(Atom('+') | Atom('-')) + Concatenation(DIGITS)
   }
+
   def floatTypeSuffix(): RegularExpression = {
     import joos.{Alternation, Atom}
     Alternation(Seq(Atom('f'), Atom('F'), Atom('d'), Atom('D')))
@@ -36,8 +37,9 @@ package object TokenKind {
   // Unicode
   def unicodeMarker(): RegularExpression = {
     import joos.Atom
-    Atom('u') + (Atom('u')*)
+    Atom('u') + (Atom('u') *)
   }
+
   def unicodeEscape(): RegularExpression = {
     import joos.{Alternation, Concatenation, Atom}
     Concatenation(
@@ -51,6 +53,7 @@ package object TokenKind {
       )
     )
   }
+
   final val allUnicode: Array[Char] = {
     val ret = Array[Char](127)
     for (i <- ret.indices) {
@@ -58,21 +61,24 @@ package object TokenKind {
     }
     ret
   }
+
   def rawInputCharacter(): RegularExpression = {
     import joos.Alternation
     Alternation(allUnicode.mkString(""))
   }
+
   def unitcodeInputCharacter(): RegularExpression = {
     (rawInputCharacter() | unicodeEscape())
   }
+
   final val InputCharacter: Array[Char] = {
-    val valid_unicode = ArrayBuffer(allUnicode : _*)
+    val valid_unicode = ArrayBuffer(allUnicode: _*)
     valid_unicode -= 13.asInstanceOf[Char] // Remove CR
     valid_unicode -= 10.asInstanceOf[Char] // Remove LF
     valid_unicode.toArray
   }
   final val SingleCharacter: Array[Char] = {
-    val valid_unicode = ArrayBuffer(InputCharacter : _*)
+    val valid_unicode = ArrayBuffer(InputCharacter: _*)
     valid_unicode -= 39.asInstanceOf[Char] // Remove CR
     valid_unicode -= 92.asInstanceOf[Char] // Remove LF
     valid_unicode.toArray
@@ -83,12 +89,14 @@ package object TokenKind {
     import joos.{Alternation, Atom}
     Alternation(Seq(Atom('0'), Atom('1'), Atom('2'), Atom('3')))
   }
+
   def octalEscape(): RegularExpression = {
     import joos.{Alternation, Atom}
     Atom('\\') + Alternation(OCTAL_DIGITS) |
       Atom('\\') + Alternation(OCTAL_DIGITS) + Alternation(OCTAL_DIGITS) |
       Atom('\\') + zeroToThree() + Alternation(OCTAL_DIGITS) + Alternation(OCTAL_DIGITS)
   }
+
   def escapeSequence(): RegularExpression = {
     import joos.{Alternation, Concatenation}
     Alternation(
@@ -109,7 +117,7 @@ package object TokenKind {
   // String
   def stringCharacter(): RegularExpression = {
     import joos.Alternation
-    val valid_unicode = ArrayBuffer(InputCharacter : _*)
+    val valid_unicode = ArrayBuffer(InputCharacter: _*)
     valid_unicode -= 34.asInstanceOf[Char] // Remove "
     valid_unicode -= 10.asInstanceOf[Char] // Remove LF
     valid_unicode.toArray

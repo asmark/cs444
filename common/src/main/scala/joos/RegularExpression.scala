@@ -12,18 +12,18 @@ abstract class RegularExpression {
 
   def exit_=(exitNode: NfaNode) = this.exitNode = exitNode
 
+  // Concatenation
   def +(input: RegularExpression): RegularExpression = {
     this.exit.addTransition(NfaNode.Epsilon, input.entrance)
     this.exit = input.exit
     this
   }
 
+  // Multiple (0 or more instances)
   def * = {
-    // Loop the exit of the atom back to the entrance of the atom
     val inner_entrance = this.entrance
     val inner_exit = this.exit
     inner_exit.addTransition(NfaNode.Epsilon, inner_entrance)
-    // Connect the entrance and exit of the closure to the atom
     this.entranceNode = NonAcceptingNfaNode()
     this.exitNode = NonAcceptingNfaNode()
     this.entranceNode.addTransition(NfaNode.Epsilon, inner_entrance)
@@ -32,6 +32,7 @@ abstract class RegularExpression {
     this
   }
 
+  // Alternation
   def |(input: RegularExpression): RegularExpression = {
     val inner_entrance = this.entrance
     val inner_exit = this.exit
@@ -44,6 +45,19 @@ abstract class RegularExpression {
     input.exit.addTransition(NfaNode.Epsilon, this.exit)
     this
   }
+
+  // Optional (O or 1 instances)
+  def unary_~ : RegularExpression = {
+    val inner_entrance = this.entrance
+    val inner_exit = this.exit
+    this.entranceNode = NonAcceptingNfaNode()
+    this.exitNode = NonAcceptingNfaNode()
+    this.entranceNode.addTransition(NfaNode.Epsilon, inner_entrance)
+    this.entranceNode.addTransition(NfaNode.Epsilon, this.exitNode)
+    inner_exit.addTransition(NfaNode.Epsilon, this.exitNode)
+    this
+  }
+
 }
 
 case class Atom(src: NfaNode, dst: NfaNode, input: Char) extends RegularExpression {
@@ -65,16 +79,16 @@ object Atom {
 }
 
 case class Concatenation(inputs: Seq[RegularExpression]) extends RegularExpression {
-    if (inputs.length <= 1) {
-      this.entrance = inputs(0).entrance
-      this.exit = inputs(0).exit
-    } else {
-      this.entrance = inputs(0).entrance
-      this.exit = inputs(inputs.length - 1).exit
-      for (idx <- 0 to inputs.length - 2) {
-        inputs(idx).exit.addTransition(NfaNode.Epsilon, inputs(idx + 1).entrance)
-      }
+  if (inputs.length <= 1) {
+    this.entrance = inputs(0).entrance
+    this.exit = inputs(0).exit
+  } else {
+    this.entrance = inputs(0).entrance
+    this.exit = inputs(inputs.length - 1).exit
+    for (idx <- 0 to inputs.length - 2) {
+      inputs(idx).exit.addTransition(NfaNode.Epsilon, inputs(idx + 1).entrance)
     }
+  }
 }
 
 object Concatenation {
@@ -84,34 +98,21 @@ object Concatenation {
 }
 
 case class Alternation(inputs: Seq[RegularExpression]) extends RegularExpression {
-    if (inputs.length <= 1) {
-      this.entrance = inputs(0).entrance
-      this.exit = inputs(0).exit
-    } else {
-      this.entrance = NonAcceptingNfaNode()
-      this.exit = NonAcceptingNfaNode()
-      for (idx <- 0 to inputs.length - 1) {
-        this.entrance.addTransition(NfaNode.Epsilon, inputs(idx).entrance)
-        inputs(idx).exit.addTransition(NfaNode.Epsilon, this.exit)
-      }
+  if (inputs.length <= 1) {
+    this.entrance = inputs(0).entrance
+    this.exit = inputs(0).exit
+  } else {
+    this.entrance = NonAcceptingNfaNode()
+    this.exit = NonAcceptingNfaNode()
+    for (idx <- 0 to inputs.length - 1) {
+      this.entrance.addTransition(NfaNode.Epsilon, inputs(idx).entrance)
+      inputs(idx).exit.addTransition(NfaNode.Epsilon, this.exit)
     }
+  }
 }
 
 object Alternation {
   def apply(str: String) = {
     new Alternation(str.map(char => Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), char)))
   }
-}
-
-// Either accept the char or bypass it
-case class Optional(input: RegularExpression) extends RegularExpression {
-  // Loop the exit of the atom back to the entrance of the atom
-  val inner_entrance = this.entrance
-  val inner_exit = this.exit
-  // Allow empty transition from start to end to bypass this
-  this.entranceNode = NonAcceptingNfaNode()
-  this.exitNode = NonAcceptingNfaNode()
-  this.entranceNode.addTransition(NfaNode.Epsilon, inner_entrance)
-  this.entranceNode.addTransition(NfaNode.Epsilon, this.exitNode)
-  inner_exit.addTransition(NfaNode.Epsilon, this.exitNode)
 }

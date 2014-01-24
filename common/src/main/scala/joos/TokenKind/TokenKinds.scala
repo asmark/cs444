@@ -1,9 +1,9 @@
 package joos.TokenKind
 
-import scala.language.postfixOps
-import joos._
-import joos.NonAcceptingNfaNode
 import joos.AcceptingNfaNode
+import joos.NonAcceptingNfaNode
+import joos._
+import scala.language.postfixOps
 
 object TokenKinds {
   // Comments
@@ -24,14 +24,15 @@ object TokenKinds {
   // Regular Expression: [JavaLetter][JavaLetter or Digits]*
   final val ID = {
     Alternation(JAVA_LETTERS) +
-      (Alternation(JAVA_LETTERS + DIGITS)*) +
+      (Alternation(JAVA_LETTERS + DIGITS) *) +
       Atom(NonAcceptingNfaNode(), AcceptingNfaNode("ID"), NfaNode.Epsilon)
   }
 
   // Keywords
   final val Final = {
-    Concatenation("final")
+    Concatenation("final") + Atom(NonAcceptingNfaNode(), AcceptingNfaNode("final"), NfaNode.Epsilon)
   }
+
 
   // Literals
 
@@ -40,8 +41,8 @@ object TokenKinds {
   // DecimalIntegerLiteral
   // Regular Expression: ([1-9][0-9]*|[1-9][0-9]*(l|L))
   final val DecimalIntLiteral = {
-    val non_postfix = Alternation(NON_ZERO_DIGITS) + (Alternation(DIGITS)*)
-    val postfix = Alternation(NON_ZERO_DIGITS) + (Alternation(DIGITS)*) + (Atom('l') | Atom('L'))
+    val non_postfix = Alternation(NON_ZERO_DIGITS) + (Alternation(DIGITS) *)
+    val postfix = Alternation(NON_ZERO_DIGITS) + (Alternation(DIGITS) *) + (Atom('l') | Atom('L'))
     non_postfix | postfix
   }
 
@@ -50,13 +51,13 @@ object TokenKinds {
   final val HexIntLiteral = {
     val prefix = Atom('0') + Atom('x')
 
-    val non_postfix = prefix + Alternation(HEX_DIGITS) + (Alternation(HEX_DIGITS)*)
+    val non_postfix = prefix + Alternation(HEX_DIGITS) + (Alternation(HEX_DIGITS) *)
     val postfix =
       Concatenation(
         Seq(
           prefix,
           Alternation(HEX_DIGITS),
-          (Alternation(HEX_DIGITS)*),
+          (Alternation(HEX_DIGITS) *),
           Atom('l') | Atom('L')
         )
       )
@@ -67,37 +68,38 @@ object TokenKinds {
   // OctalIntegerLiteral
   // Regular Expression: 0[0-7][0-7]*
   final val OctalIntLiteral = {
-    Concatenation(Seq(Atom('0'), Alternation(OCTAL_DIGITS), (Alternation(OCTAL_DIGITS))*)) |
-      Concatenation(Seq(Atom('0'), Alternation(OCTAL_DIGITS), (Alternation(OCTAL_DIGITS))*, Atom('l') | Atom('L')))
+    Concatenation(Seq(Atom('0'), Alternation(OCTAL_DIGITS), (Alternation(OCTAL_DIGITS)) *)) |
+      Concatenation(Seq(Atom('0'), Alternation(OCTAL_DIGITS), (Alternation(OCTAL_DIGITS)) *, Atom('l') | Atom('L')))
   }
+
 
   // FloatingPointLiteral
   // Regular Expression: TOO LONG
   final val FloatLiteral = {
     val first_form =
       Concatenation(DIGITS) +
-      Atom('.') +
-      Optional(Concatenation(DIGITS)) +
-      Optional(exponentPart()) +
-      Optional(floatTypeSuffix())
+        Atom('.') +
+        ~Concatenation(DIGITS) +
+        ~exponentPart() +
+        ~floatTypeSuffix()
 
     val second_form =
       Atom('.') +
-      Concatenation(DIGITS) +
-      Optional(exponentPart()) +
-      Optional(floatTypeSuffix())
+        Concatenation(DIGITS) +
+        ~exponentPart() +
+        ~floatTypeSuffix()
 
     val third_form =
       Concatenation(DIGITS) +
-      exponentPart() +
-      Optional(floatTypeSuffix())
+        exponentPart() +
+        ~floatTypeSuffix()
 
     val fourth_form =
       Concatenation(DIGITS) +
-      Optional(exponentPart()) +
-      floatTypeSuffix()
+        ~exponentPart() +
+        floatTypeSuffix()
 
-    (first_form | second_form | third_form | fourth_form)
+    first_form | second_form | third_form | fourth_form
   }
 
   // BooleanLiteral
@@ -120,7 +122,7 @@ object TokenKinds {
   // StringLiteral
   // Regular Expression: "StringCharacter*" | "", StringCharacter -> InputCharacter but not " or \ | EscapeSequence
   final val StringLiteral = {
-    Atom('\"') + (stringCharacter()*) + Atom('\"')
+    Atom('\"') + (stringCharacter() *) + Atom('\"')
   }
 
   // Null Literal
