@@ -1,9 +1,8 @@
 package joos.tokens
 
-import joos._
 import scala.language.postfixOps
 
-object TokenKinds {
+object TokenKindRegexp {
   // Comments
   // TODO: Adjust this part when we get to parsing
   final val TraditionalCommentPrefix = {

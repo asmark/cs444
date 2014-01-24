@@ -1,11 +1,10 @@
 package joos
 
+import joos.regexp._
 import scala.collection.mutable.ArrayBuffer
 import scala.language.postfixOps
 
 package object tokens {
-
-  import joos.regexp.RegularExpression
 
   final val DIGITS = Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9').mkString("")
   final val NON_ZERO_DIGITS = DIGITS.slice(1, DIGITS.length - 1).mkString("")
@@ -25,23 +24,19 @@ package object tokens {
 
   // helper functions for floating point
   def exponentPart(): RegularExpression = {
-    import joos.regexp.{Concatenation, Atom}
     (Atom('e') | Atom('E')) + ~(Atom('+') | Atom('-')) + Concatenation(DIGITS)
   }
 
   def floatTypeSuffix(): RegularExpression = {
-    import joos.regexp.{Alternation, Atom}
     Alternation(Seq(Atom('f'), Atom('F'), Atom('d'), Atom('D')))
   }
 
   // Unicode
   def unicodeMarker(): RegularExpression = {
-    import joos.regexp.Atom
     Atom('u') + (Atom('u') *)
   }
 
   def unicodeEscape(): RegularExpression = {
-    import joos.regexp.{Alternation, Concatenation, Atom}
     Concatenation(
       Seq(
         Atom(92.asInstanceOf[Char]),
@@ -63,7 +58,6 @@ package object tokens {
   }
 
   def rawInputCharacter(): RegularExpression = {
-    import joos.regexp.Alternation
     Alternation(allUnicode.mkString(""))
   }
 
@@ -86,19 +80,16 @@ package object tokens {
 
   // Escape Sequence
   def zeroToThree(): RegularExpression = {
-    import joos.regexp.{Alternation, Atom}
     Alternation(Seq(Atom('0'), Atom('1'), Atom('2'), Atom('3')))
   }
 
   def octalEscape(): RegularExpression = {
-    import joos.regexp.{Alternation, Atom}
     Atom('\\') + Alternation(OCTAL_DIGITS) |
       Atom('\\') + Alternation(OCTAL_DIGITS) + Alternation(OCTAL_DIGITS) |
       Atom('\\') + zeroToThree() + Alternation(OCTAL_DIGITS) + Alternation(OCTAL_DIGITS)
   }
 
   def escapeSequence(): RegularExpression = {
-    import joos.regexp.{Alternation, Concatenation}
     Alternation(
       Seq(
         Concatenation("\\b"),
@@ -116,7 +107,6 @@ package object tokens {
 
   // String
   def stringCharacter(): RegularExpression = {
-    import joos.regexp.Alternation
     val valid_unicode = ArrayBuffer(InputCharacter: _*)
     valid_unicode -= 34.asInstanceOf[Char] // Remove "
     valid_unicode -= 10.asInstanceOf[Char] // Remove LF

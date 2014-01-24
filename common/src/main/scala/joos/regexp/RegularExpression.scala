@@ -1,10 +1,9 @@
 package joos.regexp
 
-import joos.automata.NfaNode
+import joos.automata.{NonAcceptingNfaNode, NfaNode}
 
 abstract class RegularExpression {
 
-  import joos.automata.NfaNode
 
   protected var entranceNode: NfaNode = _
   protected var exitNode: NfaNode = _
@@ -26,7 +25,6 @@ abstract class RegularExpression {
 
   // Multiple (0 or more instances)
   def * = {
-    import joos.automata.NonAcceptingNfaNode
     val inner_entrance = this.entrance
     val inner_exit = this.exit
     inner_exit.addTransition(NfaNode.Epsilon, inner_entrance)
@@ -40,7 +38,6 @@ abstract class RegularExpression {
 
   // Alternation
   def |(input: RegularExpression): RegularExpression = {
-    import joos.automata.NonAcceptingNfaNode
     val inner_entrance = this.entrance
     val inner_exit = this.exit
 
@@ -55,7 +52,6 @@ abstract class RegularExpression {
 
   // Optional (O or 1 instances)
   def unary_~ : RegularExpression = {
-    import joos.automata.NonAcceptingNfaNode
     val inner_entrance = this.entrance
     val inner_exit = this.exit
     this.entranceNode = NonAcceptingNfaNode()
@@ -82,7 +78,6 @@ case class Atom(src: NfaNode, dst: NfaNode, input: Char) extends RegularExpressi
 
 object Atom {
   def apply(input: Char) = {
-    import joos.automata.NonAcceptingNfaNode
     new Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), input)
   }
 }
@@ -111,7 +106,6 @@ case class Alternation(inputs: Seq[RegularExpression]) extends RegularExpression
     this.entrance = inputs(0).entrance
     this.exit = inputs(0).exit
   } else {
-    import joos.automata.NonAcceptingNfaNode
     this.entrance = NonAcceptingNfaNode()
     this.exit = NonAcceptingNfaNode()
     for (idx <- 0 to inputs.length - 1) {
@@ -123,7 +117,6 @@ case class Alternation(inputs: Seq[RegularExpression]) extends RegularExpression
 
 object Alternation {
   def apply(str: String) = {
-    import joos.automata.NonAcceptingNfaNode
     new Alternation(str.map(char => Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), char)))
   }
 }

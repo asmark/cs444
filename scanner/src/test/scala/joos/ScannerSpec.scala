@@ -1,6 +1,9 @@
 package joos
 
+import joos.automata.{AcceptingNfaNode, NfaNode, NonAcceptingNfaNode}
 import joos.exceptions.ScanningException
+import joos.regexp.Atom
+import joos.tokens.TokenKindRegexp
 import org.scalatest.{FlatSpec, Matchers}
 
 class ScannerSpec extends FlatSpec with Matchers {
@@ -36,7 +39,6 @@ class ScannerSpec extends FlatSpec with Matchers {
 
 
   "A state with no transition" should "backtrack once to accepting nodes" in {
-    import joos.Scanner
     val scanner = new Scanner(testDfaDeadEnds)
     val input = Seq(CharacterB, CharacterB, CharacterA, CharacterC, CharacterB, CharacterB)
 
@@ -47,7 +49,6 @@ class ScannerSpec extends FlatSpec with Matchers {
   }
 
   it should "backtrack twice to accepting nodes" in {
-    import joos.Scanner
     val scanner = new Scanner(testDfaNoLoops)
     val input = Seq(CharacterB, CharacterA, CharacterB)
 
@@ -58,7 +59,6 @@ class ScannerSpec extends FlatSpec with Matchers {
   }
 
   "A state with loops" should "loop correctly" in {
-    import joos.Scanner
     val scanner = new Scanner(testDfaWithLoops)
     val input = Seq(CharacterA, CharacterA, CharacterA, CharacterB, CharacterA, CharacterA, CharacterB)
 
@@ -69,7 +69,6 @@ class ScannerSpec extends FlatSpec with Matchers {
   }
 
   "Non-tokenizable input" should "throw a scanning exception" in {
-    import joos.Scanner
     val scanner = new Scanner(testDfaWithLoops)
     val input = Seq(CharacterA, CharacterA, CharacterA, CharacterB, CharacterB, CharacterB, CharacterA, CharacterA)
 
@@ -82,9 +81,7 @@ class ScannerSpec extends FlatSpec with Matchers {
   behavior of "A static word regular expression (final) to DFA conversion"
 
   it should "accept tokenizable (final) inputs" in {
-    import joos.{Scanner}
-    import joos.tokens.{TokenKinds, Token}
-    val scanner = Scanner.forRegexp(TokenKinds.Final)
+    val scanner = Scanner.forRegexp(TokenKindRegexp.Final)
 
     "final".toCharArray.foreach(c => scanner.parse(c))
     val tokens = scanner.getTokens()
@@ -93,9 +90,7 @@ class ScannerSpec extends FlatSpec with Matchers {
   }
 
   it should "reject non-tokenizable (final3) inputs" in {
-    import joos.Scanner
-    import joos.tokens.TokenKinds
-    val scanner = Scanner.forRegexp(TokenKinds.Final)
+    val scanner = Scanner.forRegexp(TokenKindRegexp.Final)
 
     intercept[ScanningException] {
       "final3".toCharArray.foreach(c => scanner.parse(c))
@@ -106,10 +101,6 @@ class ScannerSpec extends FlatSpec with Matchers {
   behavior of "An alternating word regular expression (T|test) to DFA conversion"
 
   it should "accept tokenizable (test) inputs" in {
-    import joos._
-    import joos.automata.{AcceptingNfaNode, NonAcceptingNfaNode, NfaNode}
-    import joos.regexp.Atom
-    import joos.tokens.Token
     val TestRegexp = (Atom('T') | Atom('t')) + Atom('e') + Atom('s') + Atom('t') + Atom(NonAcceptingNfaNode(), AcceptingNfaNode("test"), NfaNode.Epsilon)
 
     val scanner = Scanner.forRegexp(TestRegexp)
@@ -122,10 +113,6 @@ class ScannerSpec extends FlatSpec with Matchers {
   }
 
   it should "accept tokenizable (Test) inputs" in {
-    import joos._
-    import joos.automata.{AcceptingNfaNode, NonAcceptingNfaNode, NfaNode}
-    import joos.regexp.Atom
-    import joos.tokens.Token
     val TestRegexp = (Atom('T') | Atom('t')) + Atom('e') + Atom('s') + Atom('t') + Atom(NonAcceptingNfaNode(), AcceptingNfaNode("test"), NfaNode.Epsilon)
     val scanner = Scanner.forRegexp(TestRegexp)
 
@@ -140,9 +127,7 @@ class ScannerSpec extends FlatSpec with Matchers {
   behavior of "A looping word regular expression (ID) to DFA conversion"
 
   it should "accept tokenizable (t998) inputs" in {
-    import joos.{Scanner}
-    import joos.tokens.{TokenKinds, Token}
-    val scanner = Scanner.forRegexp(TokenKinds.ID)
+    val scanner = Scanner.forRegexp(TokenKindRegexp.ID)
 
     "t998".toCharArray.foreach(c => scanner.parse(c))
 
@@ -152,9 +137,7 @@ class ScannerSpec extends FlatSpec with Matchers {
   }
 
   it should "reject non-tokenizable (9112abc) inputs" in {
-    import joos.Scanner
-    import joos.tokens.TokenKinds
-    val scanner = Scanner.forRegexp(TokenKinds.ID)
+    val scanner = Scanner.forRegexp(TokenKindRegexp.ID)
 
     intercept[ScanningException] {
       "9122abc".toCharArray.foreach(c => scanner.parse(c))

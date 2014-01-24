@@ -1,12 +1,12 @@
 package joos
 
+import joos.automata.{NfaNode, AcceptingNfaNode, NonAcceptingNfaNode}
+import joos.regexp.Atom
 import org.scalatest._
 import scala.language.postfixOps
 
 class RegularExpressionSpec extends FlatSpec with Matchers {
 
-  import joos.automata.{AcceptingNfaNode, NonAcceptingNfaNode}
-  import joos.regexp.Atom
 
   val test_atom1 = Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), '1')
   val test_atom2 = Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), '2')
@@ -40,7 +40,6 @@ class RegularExpressionSpec extends FlatSpec with Matchers {
   }
 
   "A Concatenation" should "be able to concatenate two different Regular Expressions" in {
-    import joos.automata.NfaNode
     test_concat.entrance should be(test_atom1.entrance)
     test_concat.exit should be(test_atom2.exit)
 
@@ -55,7 +54,6 @@ class RegularExpressionSpec extends FlatSpec with Matchers {
   }
 
   "An Alternation" should "accept two Regular Expressions" in {
-    import joos.automata.NfaNode
     val test_atom = Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), 'c')
     val test_closure_entrance = test_closure.entrance
     val test_closure_exit = test_closure.exit
@@ -69,7 +67,6 @@ class RegularExpressionSpec extends FlatSpec with Matchers {
   }
 
   "A Closure" should "accept one Regular Expression" in {
-    import joos.automata.NfaNode
     val inner_entrance = test_alter.entrance
     val inner_exit = test_alter.exit
     val closure = test_alter.*

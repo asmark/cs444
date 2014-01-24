@@ -1,5 +1,5 @@
-import sbt._
 import Keys._
+import sbt._
 
 object Dependencies {
   val scalaTest = "org.scalatest" % "scalatest_2.10" % "2.0" % "test"
@@ -39,7 +39,7 @@ object Joos1wCompilerBuild extends Build {
     id = "preprocessor",
     base = file("preprocessor"),
     settings = commonSettings
-  ) dependsOn(common)
+  ) dependsOn (common)
 
   lazy val scanner = Project(
     id = "scanner",

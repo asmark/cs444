@@ -1,13 +1,16 @@
 package joos
 
+import joos.automata._
 import joos.exceptions.ScanningException
 import scala.collection.mutable
 import scala.io.Source
-import joos.automata.DfaNode
+import joos.automata.AcceptingDfaNode
+import joos.tokens.Token
+import scala.Some
+import joos.automata.NonAcceptingDfaNode
+import joos.regexp.RegularExpression
 
 class Scanner(root: DfaNode) {
-
-  import joos.tokens.Token
 
   private var dfaPath = mutable.Stack[DfaNode](root)
   private var charPath = mutable.Stack[Char]()
@@ -64,9 +67,6 @@ class Scanner(root: DfaNode) {
 
 object Scanner {
 
-  import joos.automata.NfaNode
-  import joos.regexp.RegularExpression
-
   private def getEpsilonClosure(nfaNodes: Set[NfaNode]): Set[NfaNode] = {
     val epsilonClosure = mutable.Set[NfaNode]()
     nfaNodes.foreach(node => epsilonClosure ++= node.getClosure(NfaNode.Epsilon))
@@ -74,15 +74,14 @@ object Scanner {
   }
 
   private def newDfaNode(nfaNodes: Set[NfaNode]): DfaNode = {
-    import joos.automata.AcceptingNfaNode
 
     val acceptingToken = nfaNodes.collectFirst {
       case node: AcceptingNfaNode => node.tokenKind
     }
     return acceptingToken match {
-      case Some(tokenKind: Any) => import joos.automata.AcceptingDfaNode
+      case Some(tokenKind: Any) =>
         AcceptingDfaNode(tokenKind)
-      case None => import joos.automata.NonAcceptingDfaNode
+      case None =>
         NonAcceptingDfaNode()
     }
   }
