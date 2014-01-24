@@ -26,8 +26,196 @@ object TokenKindRegexp {
   }
 
   // Keywords
+  final val Abstract = {
+    Concatenation("abstract")
+  }
+
+  final val Default = {
+    Concatenation("default")
+  }
+
+  final val If = {
+    Concatenation("if")
+  }
+
+  final val Private = {
+    Concatenation("private")
+  }
+
+  final val This = {
+    Concatenation("this")
+  }
+
+  final val Boolean = {
+    Concatenation("boolean")
+  }
+
+  final val Do = {
+    Concatenation("do")
+  }
+
+  final val Implements = {
+    Concatenation("implements")
+  }
+
+  final val Protected = {
+    Concatenation("proteced")
+  }
+
+  final val Throw = {
+    Concatenation("throw")
+  }
+
+  final val Break = {
+    Concatenation("break")
+  }
+
+  final val Double = {
+    Concatenation("double")
+  }
+
+  final val Import = {
+    Concatenation("import")
+  }
+
+  final val Public = {
+    Concatenation("public")
+  }
+
+  final val Throws = {
+    Concatenation("throws")
+  }
+
+  final val Byte = {
+    Concatenation("byte")
+  }
+
+  final val Else = {
+    Concatenation("byte")
+  }
+
+  final val InstanceOf = {
+    Concatenation("instanceof")
+  }
+
+  final val Return = {
+    Concatenation("return")
+  }
+
+  final val Transient = {
+    Concatenation("transient")
+  }
+
+  final val Case = {
+    Concatenation("case")
+  }
+
+  final val Extends = {
+    Concatenation("extends")
+  }
+
+  final val Int = {
+    Concatenation("int")
+  }
+
+  final val Short = {
+    Concatenation("short")
+  }
+
+  final val Try = {
+    Concatenation("try")
+  }
+
+  final val Catch = {
+    Concatenation("catch")
+  }
+
   final val Final = {
     Concatenation("final")
+  }
+
+  final val Interface = {
+    Concatenation("interface")
+  }
+
+  final val Static = {
+    Concatenation("static")
+  }
+
+  final val Void = {
+    Concatenation("void")
+  }
+
+  final val Char = {
+    Concatenation("char")
+  }
+
+  final val Finally = {
+    Concatenation("finally")
+  }
+
+  final val Long = {
+    Concatenation("long")
+  }
+
+  final val Strictfp = {
+    Concatenation("strictfp")
+  }
+
+  final val Volatile = {
+    Concatenation("volatile")
+  }
+
+  final val Class = {
+    Concatenation("class")
+  }
+
+  final val Float = {
+    Concatenation("float")
+  }
+
+  final val Native = {
+    Concatenation("native")
+  }
+
+  final val Super = {
+    Concatenation("super")
+  }
+
+  final val While = {
+    Concatenation("while")
+  }
+
+  final val Const = {
+    Concatenation("const")
+  }
+
+  final val For = {
+    Concatenation("for")
+  }
+
+  final val New = {
+    Concatenation("new")
+  }
+
+  final val Switch = {
+    Concatenation("switch")
+  }
+
+  final val Continue = {
+    Concatenation("continue")
+  }
+
+  final val Goto = {
+    Concatenation("goto")
+  }
+
+  final val Package = {
+    Concatenation("package")
+  }
+
+  final val Synchronized = {
+    Concatenation("synchronized")
   }
 
 
