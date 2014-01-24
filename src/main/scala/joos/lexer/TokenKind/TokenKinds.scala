@@ -19,7 +19,7 @@ object TokenKinds {
     Concatenation("*/")
   }
 
-  final val EOLCommentPrefix = {
+  final val EolCommentPrefix = {
     Concatenation("//")
   }
 
@@ -42,15 +42,15 @@ object TokenKinds {
 
   // DecimalIntegerLiteral
   // Regular Expression: ([1-9][0-9]*|[1-9][0-9]*(l|L))
-  final val DECIMAL_INT_LITERAL = {
+  final val DecimalIntLiteral = {
     val non_postfix = Alternation(NON_ZERO_DIGITS) + (Alternation(DIGITS)*)
-    val postfix = Alternation(NON_ZERO_DIGITS) + (Alternation(DIGITS)*) + (LOWER_L | UPPER_L)
+    val postfix = Alternation(NON_ZERO_DIGITS) + (Alternation(DIGITS)*) + (Atom('l') | Atom('L'))
     non_postfix | postfix
   }
 
   // HexNumeral
   // Regular Expression: (0x[0-9a-fA-F][0-9a-fA-F]*|0x[0-9a-fA-F][0-9a-fA-F]*(l|L))
-  final val HEX_INT_LITERAL = {
+  final val HexIntLiteral = {
     val prefix = Atom('0') + Atom('x')
 
     val non_postfix = prefix + Alternation(HEX_DIGITS) + (Alternation(HEX_DIGITS)*)
@@ -59,7 +59,8 @@ object TokenKinds {
         Seq(
           prefix,
           Alternation(HEX_DIGITS),
-          (Alternation(HEX_DIGITS)*)
+          (Alternation(HEX_DIGITS)*),
+          Atom('l') | Atom('L')
         )
       )
 
@@ -68,13 +69,14 @@ object TokenKinds {
 
   // OctalIntegerLiteral
   // Regular Expression: 0[0-7][0-7]*
-  final val OCTAL_INT_LITERAL = {
-    Concatenation(Seq(Atom('0'), Alternation(OCTAL_DIGITS), (Alternation(OCTAL_DIGITS))*))
+  final val OctalIntLiteral = {
+    Concatenation(Seq(Atom('0'), Alternation(OCTAL_DIGITS), (Alternation(OCTAL_DIGITS))*)) |
+      Concatenation(Seq(Atom('0'), Alternation(OCTAL_DIGITS), (Alternation(OCTAL_DIGITS))*, Atom('l') | Atom('L')))
   }
 
   // FloatingPointLiteral
-  // TODO: TOO LONG
-  final val FLOAT_LITERAL = {
+  // Regular Expression: TOO LONG
+  final val FloatLiteral = {
     val first_form =
       Concatenation(DIGITS) +
       Atom('.') +
@@ -103,11 +105,11 @@ object TokenKinds {
 
   // BooleanLiteral
   // TODO
-  final val TRUE = {
+  final val True = {
     Concatenation("true")
   }
 
-  final val FALSE = {
+  final val False = {
     Concatenation("false")
   }
 
@@ -124,50 +126,45 @@ object TokenKinds {
     Atom('\"') + (stringCharacter()*) + Atom('\"')
   }
 
-  // Test literal
-  final val TEST = {
-    (Atom('T') | Atom('t')) + Atom('e') + Atom('s') + Atom('t') + Atom(NonAcceptingNfaNode(), AcceptingNfaNode("test"), NfaNode.Epsilon)
-  }
-
   // Null Literal
-  final val NULL = {
+  final val Null = {
     Concatenation("null")
   }
 
   // Separators
 
   // (
-  final val LEFT_PAREN = {
+  final val LeftParen = {
     Atom('(')
   }
 
   // )
-  final val RIGHT_PAREN = {
+  final val RightParen = {
     Atom(')')
   }
 
   // {
-  final val LEFT_BRACE = {
+  final val LeftBrace = {
     Atom('{')
   }
 
   // }
-  final val RIGHT_BRACE = {
+  final val RightBrace = {
     Atom('}')
   }
 
   // [
-  final val LEFT_BRACKET = {
+  final val LeftBracket = {
     Atom('[')
   }
 
   // ]
-  final val RIGHT_BRACKET = {
+  final val RightBracket = {
     Atom(']')
   }
 
   // ;
-  final val SemiComma = {
+  final val SemiColon = {
     Atom(';')
   }
 

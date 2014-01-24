@@ -24,8 +24,8 @@ abstract class RegularExpression {
     val inner_exit = this.exit
     inner_exit.addTransition(NfaNode.Epsilon, inner_entrance)
     // Connect the entrance and exit of the closure to the atom
-    this.entranceNode = new NonAcceptingNfaNode
-    this.exitNode = new NonAcceptingNfaNode
+    this.entranceNode = NonAcceptingNfaNode()
+    this.exitNode = NonAcceptingNfaNode()
     this.entranceNode.addTransition(NfaNode.Epsilon, inner_entrance)
     this.entranceNode.addTransition(NfaNode.Epsilon, this.exitNode)
     inner_exit.addTransition(NfaNode.Epsilon, this.exitNode)
@@ -36,8 +36,8 @@ abstract class RegularExpression {
     val inner_entrance = this.entrance
     val inner_exit = this.exit
 
-    this.entrance = new NonAcceptingNfaNode
-    this.exit = new NonAcceptingNfaNode
+    this.entrance = NonAcceptingNfaNode()
+    this.exit = NonAcceptingNfaNode()
     this.entrance.addTransition(NfaNode.Epsilon, inner_entrance)
     this.entrance.addTransition(NfaNode.Epsilon, input.entrance)
     inner_exit.addTransition(NfaNode.Epsilon, this.exit)
@@ -88,8 +88,8 @@ case class Alternation(inputs: Seq[RegularExpression]) extends RegularExpression
       this.entrance = inputs(0).entrance
       this.exit = inputs(0).exit
     } else {
-      this.entrance = new NonAcceptingNfaNode
-      this.exit = new NonAcceptingNfaNode
+      this.entrance = NonAcceptingNfaNode()
+      this.exit = NonAcceptingNfaNode()
       for (idx <- 0 to inputs.length - 1) {
         this.entrance.addTransition(NfaNode.Epsilon, inputs(idx).entrance)
         inputs(idx).exit.addTransition(NfaNode.Epsilon, this.exit)
@@ -98,27 +98,20 @@ case class Alternation(inputs: Seq[RegularExpression]) extends RegularExpression
 }
 
 object Alternation {
-  def apply(str: String, accept_char: Boolean = false) = {
-    new Alternation(
-      str.map(
-        char =>
-          Atom(NonAcceptingNfaNode(), if (accept_char) AcceptingNfaNode(char) else NonAcceptingNfaNode(), char)
-      )
-    )
+  def apply(str: String) = {
+    new Alternation(str.map(char => Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), char)))
   }
 }
-
-case class Closure() extends RegularExpression
 
 // Either accept the char or bypass it
 case class Optional(input: RegularExpression) extends RegularExpression {
   // Loop the exit of the atom back to the entrance of the atom
   val inner_entrance = this.entrance
   val inner_exit = this.exit
-  inner_exit.addTransition(NfaNode.Epsilon, inner_entrance)
-  // Connect the entrance and exit of the closure to the atom
-  this.entranceNode = new NonAcceptingNfaNode
-  this.exitNode = new NonAcceptingNfaNode
+  // Allow empty transition from start to end to bypass this
+  this.entranceNode = NonAcceptingNfaNode()
+  this.exitNode = NonAcceptingNfaNode()
   this.entranceNode.addTransition(NfaNode.Epsilon, inner_entrance)
   this.entranceNode.addTransition(NfaNode.Epsilon, this.exitNode)
+  inner_exit.addTransition(NfaNode.Epsilon, this.exitNode)
 }
