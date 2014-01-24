@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Joos 1W Compiler.iml" filepath="$PROJECT_DIR$/.idea/modules/Joos 1W Compiler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Joos 1W Compiler-build.iml" filepath="$PROJECT_DIR$/.idea/modules/Joos 1W Compiler-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common.iml" filepath="$PROJECT_DIR$/.idea/modules/common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common-build.iml" filepath="$PROJECT_DIR$/.idea/modules/common-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/parser.iml" filepath="$PROJECT_DIR$/.idea/modules/parser.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/parser-build.iml" filepath="$PROJECT_DIR$/.idea/modules/parser-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/preprocessor.iml" filepath="$PROJECT_DIR$/.idea/modules/preprocessor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/preprocessor-build.iml" filepath="$PROJECT_DIR$/.idea/modules/preprocessor-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/root.iml" filepath="$PROJECT_DIR$/.idea/modules/root.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/root-build.iml" filepath="$PROJECT_DIR$/.idea/modules/root-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/scanner.iml" filepath="$PROJECT_DIR$/.idea/modules/scanner.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/scanner-build.iml" filepath="$PROJECT_DIR$/.idea/modules/scanner-build.iml" />
+    </modules>
+  </component>
+</project>
+
