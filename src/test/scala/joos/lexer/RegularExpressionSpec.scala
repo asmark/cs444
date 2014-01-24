@@ -4,33 +4,33 @@ import org.scalatest._
 
 class RegularExpressionSpec extends FlatSpec with Matchers {
 
-  val test_atom1 = new Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), '1')
-  val test_atom2 = new Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), '2')
+  val test_atom1 = Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), '1')
+  val test_atom2 = Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), '2')
   val test_concat = test_atom1 + test_atom2
 
-  val test_atom3 = new Atom(NonAcceptingNfaNode(), AcceptingNfaNode(), '3')
-  val test_atom4 = new Atom(NonAcceptingNfaNode(), AcceptingNfaNode(), '4')
+  val test_atom3 = Atom(NonAcceptingNfaNode(), AcceptingNfaNode(), '3')
+  val test_atom4 = Atom(NonAcceptingNfaNode(), AcceptingNfaNode(), '4')
   val test_alter = test_atom3 | test_atom4
 
-  val test_atom5 = new Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), '5')
+  val test_atom5 = Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), '5')
   val test_closure = test_atom5 *
 
   "An Atom" should "be able to hold NonAcceptingNFANode with entrance and exit set properly" in {
-    val node1 = new NonAcceptingNfaNode()
-    val node2 = new NonAcceptingNfaNode()
-    val test_atom = new Atom(node1, node2, 'c')
+    val node1 = NonAcceptingNfaNode()
+    val node2 = NonAcceptingNfaNode()
+    val test_atom = Atom(node1, node2, 'c')
     test_atom.char should be('c')
     test_atom.entrance should be(node1)
     test_atom.exit should be(node2)
   }
 
   it should "be able to hold AcceptingNFANode and update the node property" in {
-    val node1 = new NonAcceptingNfaNode()
-    val node2 = new AcceptingNfaNode('a')
-    val test_atom = new Atom(node1, node2, 'c')
+    val node1 = NonAcceptingNfaNode()
+    val node2 = AcceptingNfaNode('a')
+    val test_atom = Atom(node1, node2, 'c')
     test_atom.entrance should be(node1)
     test_atom.exit.isAccepting() should be(Some('a'))
-    val node3 = new AcceptingNfaNode()
+    val node3 = AcceptingNfaNode()
     test_atom.entrance = node3
     test_atom.entrance should be(node3)
   }
@@ -39,7 +39,7 @@ class RegularExpressionSpec extends FlatSpec with Matchers {
     test_concat.entrance should be(test_atom1.entrance)
     test_concat.exit should be(test_atom2.exit)
 
-    val test_atom = new Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), 'c')
+    val test_atom = Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), 'c')
     val atom_exit = test_atom.exit
     val concat = test_atom + test_alter
 
@@ -50,7 +50,7 @@ class RegularExpressionSpec extends FlatSpec with Matchers {
   }
 
   "An Alternation" should "accept two Regular Expressions" in {
-    val test_atom = new Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), 'c')
+    val test_atom = Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), 'c')
     val test_closure_entrance = test_closure.entrance
     val test_closure_exit = test_closure.exit
     val alter = test_closure | test_atom
