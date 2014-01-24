@@ -1,7 +1,7 @@
-package joos.lexer
+package joos
 
+import joos.exceptions.DuplicateTransitionException
 import scala.collection.mutable
-import joos.lexer.exceptions.DuplicateTransitionException
 
 sealed abstract class DfaNode {
   val edges = mutable.HashMap[Char, DfaNode]()

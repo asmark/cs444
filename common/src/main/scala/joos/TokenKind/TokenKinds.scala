@@ -1,12 +1,9 @@
-package joos.lexer.TokenKind
+package joos.TokenKind
 
-import joos.lexer._
-import joos.lexer.Alternation
-import joos.lexer.Atom
-import joos.lexer.NonAcceptingNfaNode
-import joos.lexer.Concatenation
-import joos.lexer.AcceptingNfaNode
 import scala.language.postfixOps
+import joos._
+import joos.NonAcceptingNfaNode
+import joos.AcceptingNfaNode
 
 object TokenKinds {
   // Comments

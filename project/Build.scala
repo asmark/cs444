@@ -70,6 +70,6 @@ object Joos1wCompilerBuild extends Build {
         val b = (run in Compile in preprocessor).toTask("")
       }
     )
-  ) aggregate(compiler)
+  ) aggregate(compiler, common, preprocessor, scanner, parser)
 
 }

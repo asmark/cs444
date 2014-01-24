@@ -1,4 +1,4 @@
-package joos.lexer
+package joos
 
 import scala.collection.mutable
 

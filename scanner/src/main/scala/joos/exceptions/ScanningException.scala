@@ -1,3 +1,3 @@
-package joos.lexer.exceptions
+package joos.exceptions
 
 class ScanningException extends RuntimeException

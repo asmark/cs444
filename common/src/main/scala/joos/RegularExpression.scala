@@ -1,4 +1,4 @@
-package joos.lexer
+package joos
 
 abstract class RegularExpression {
   protected var entranceNode: NfaNode = _

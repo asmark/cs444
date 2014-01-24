@@ -1,7 +1,7 @@
-package joos.lexer
+package joos
 
-import org.scalatest._
 import joos.lexer.TokenKind.TokenKinds
+import org.scalatest._
 
 class TokenSpec extends FlatSpec with Matchers {
 

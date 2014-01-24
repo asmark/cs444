@@ -1,9 +1,8 @@
-package joos.lexer
+package joos
 
+import joos.exceptions.ScanningException
 import scala.collection.mutable
-import joos.lexer.exceptions.ScanningException
 import scala.io.Source
-import joos.lexer.NfaNode.Epsilon
 
 class Scanner(root: DfaNode) {
   private var dfaPath = mutable.Stack[DfaNode](root)
@@ -63,7 +62,7 @@ object Scanner {
 
   private def getEpsilonClosure(nfaNodes: Set[NfaNode]): Set[NfaNode] = {
     val epsilonClosure = mutable.Set[NfaNode]()
-    nfaNodes.foreach(node => epsilonClosure ++= node.getClosure(Epsilon))
+    nfaNodes.foreach(node => epsilonClosure ++= node.getClosure(NfaNode.Epsilon))
     return epsilonClosure.toSet
   }
 
@@ -120,7 +119,7 @@ object Scanner {
       val dfaNode = getOrCreateDfaNode(dfaNodeSet, closure)
       val transitions = unionTransitions(closure)
 
-      transitions.withFilter(transition => transition._1 != Epsilon).foreach {
+      transitions.withFilter(transition => transition._1 != NfaNode.Epsilon).foreach {
         transition =>
           val char = transition._1
           val neighbourClosure = getEpsilonClosure(transition._2)
