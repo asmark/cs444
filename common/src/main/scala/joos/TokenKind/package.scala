@@ -1,6 +1,7 @@
 package joos
 
 import scala.collection.mutable.ArrayBuffer
+import scala.language.postfixOps
 
 package object TokenKind {
 

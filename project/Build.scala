@@ -65,9 +65,10 @@ object Joos1wCompilerBuild extends Build {
     id = "cs-444",
     base = file("."),
     settings = commonSettings ++ Seq(
+      name := "CS 444",
       Tasks.compileAll := {
-        val a = (compile in Compile).toTask.value
-        val b = (run in Compile in preprocessor).toTask("")
+        val a = (compile in Compile in compiler).toTask.value
+        val b = (run in Compile in preprocessor).toTask("").value
       }
     )
   ) aggregate(compiler, common, preprocessor, scanner, parser)

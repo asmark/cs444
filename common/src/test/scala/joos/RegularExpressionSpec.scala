@@ -1,6 +1,7 @@
 package joos
 
 import org.scalatest._
+import scala.language.postfixOps
 
 class RegularExpressionSpec extends FlatSpec with Matchers {
 
