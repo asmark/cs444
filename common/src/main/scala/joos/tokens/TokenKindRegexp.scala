@@ -8,7 +8,7 @@ object TokenKindRegexp {
 
   // Whitespace
   def Whitespace = {
-    Alternation(" \n\r\t") *
+    Alternation(" \n\r\t")
   }
   // Comments
   // TODO: Adjust this part when we get to parsing

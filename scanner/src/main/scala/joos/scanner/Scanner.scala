@@ -14,17 +14,17 @@ class Scanner(root: DfaNode) {
   private val tokens = mutable.MutableList[Token]()
 
   def tokenize(file: Source): List[Token] = {
-    file.foreach(parse(_))
+    file.foreach(scan(_))
     return getTokens()
   }
 
-  def parse(char: Char) {
+  def scan(char: Char) {
     val nextNode = getCurrentNode().followTransition(char)
     nextNode match {
       case Some(node: DfaNode) => updatePath(char, node)
       case None => {
         reducePath()
-        parse(char)
+        scan(char)
       }
     }
   }
@@ -58,7 +58,7 @@ class Scanner(root: DfaNode) {
 
     dfaPath = mutable.Stack[DfaNode](root)
     charPath = mutable.Stack[Char]()
-    extraChars.foreach(char => parse(char))
+    extraChars.foreach(char => scan(char))
   }
 }
 

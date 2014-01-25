@@ -41,7 +41,7 @@ class ScannerSpec extends FlatSpec with Matchers {
     val scanner = new Scanner(testDfaDeadEnds)
     val input = Seq(CharacterB, CharacterB, CharacterA, CharacterC, CharacterB, CharacterB)
 
-    input.foreach(char => scanner.parse(char))
+    input.foreach(char => scanner.scan(char))
 
     val tokens = scanner.getTokens()
     tokens.map(token => token.kind) should contain theSameElementsInOrderAs Seq(TokenKind2, TokenKind1, TokenKind2)
@@ -51,7 +51,7 @@ class ScannerSpec extends FlatSpec with Matchers {
     val scanner = new Scanner(testDfaNoLoops)
     val input = Seq(CharacterB, CharacterA, CharacterB)
 
-    input.foreach(char => scanner.parse(char))
+    input.foreach(char => scanner.scan(char))
 
     val tokens = scanner.getTokens()
     tokens.map(token => token.kind) should contain theSameElementsInOrderAs Seq(TokenKind2, TokenKind1, TokenKind2)
@@ -61,7 +61,7 @@ class ScannerSpec extends FlatSpec with Matchers {
     val scanner = new Scanner(testDfaWithLoops)
     val input = Seq(CharacterA, CharacterA, CharacterA, CharacterB, CharacterA, CharacterA, CharacterB)
 
-    input.foreach(char => scanner.parse(char))
+    input.foreach(char => scanner.scan(char))
 
     val tokens = scanner.getTokens()
     tokens.map(token => token.kind) should contain theSameElementsInOrderAs Seq(TokenKind1, TokenKind2)
@@ -72,7 +72,7 @@ class ScannerSpec extends FlatSpec with Matchers {
     val input = Seq(CharacterA, CharacterA, CharacterA, CharacterB, CharacterB, CharacterB, CharacterA, CharacterA)
 
     intercept[ScanningException] {
-      input.foreach(char => scanner.parse(char))
+      input.foreach(char => scanner.scan(char))
       scanner.getTokens()
     }
   }
@@ -82,7 +82,7 @@ class ScannerSpec extends FlatSpec with Matchers {
 
     val scanner = Scanner(DfaNode(testRegexp))
 
-    "final".toCharArray.foreach(c => scanner.parse(c))
+    "final".toCharArray.foreach(c => scanner.scan(c))
     val tokens = scanner.getTokens()
     tokens should have length 1
     tokens should contain(Token(TokenKind.Final, "final"))
@@ -93,7 +93,7 @@ class ScannerSpec extends FlatSpec with Matchers {
   it should "accept tokenizable (final) inputs" in {
     val scanner = Scanner(DfaNode(TokenKind.Final.getRegexp()))
 
-    "final".toCharArray.foreach(c => scanner.parse(c))
+    "final".toCharArray.foreach(c => scanner.scan(c))
     val tokens = scanner.getTokens()
     tokens should have length 1
     tokens should contain(Token(TokenKind.Final, "final"))
@@ -103,7 +103,7 @@ class ScannerSpec extends FlatSpec with Matchers {
     val scanner = Scanner(DfaNode(TokenKind.Final.getRegexp()))
 
     intercept[ScanningException] {
-      "final3".toCharArray.foreach(c => scanner.parse(c))
+      "final3".toCharArray.foreach(c => scanner.scan(c))
       scanner.getTokens()
     }
   }
@@ -115,7 +115,7 @@ class ScannerSpec extends FlatSpec with Matchers {
 
     val scanner = Scanner(DfaNode(testRegexp))
 
-    "test".toCharArray.foreach(c => scanner.parse(c))
+    "test".toCharArray.foreach(c => scanner.scan(c))
 
     val tokens = scanner.getTokens()
     tokens should have length 1
@@ -126,7 +126,7 @@ class ScannerSpec extends FlatSpec with Matchers {
     val testRegexp = Alternation("tT") + Concatenation("est") := TokenKind1
     val scanner = Scanner(DfaNode(testRegexp))
 
-    "Test".toCharArray.foreach(c => scanner.parse(c))
+    "Test".toCharArray.foreach(c => scanner.scan(c))
 
     val tokens = scanner.getTokens()
     tokens should have length 1
@@ -139,7 +139,7 @@ class ScannerSpec extends FlatSpec with Matchers {
   it should "accept tokenizable (t998) inputs" in {
     val scanner = Scanner(DfaNode(TokenKind.Id.getRegexp()))
 
-    "t998".toCharArray.foreach(c => scanner.parse(c))
+    "t998".toCharArray.foreach(c => scanner.scan(c))
 
     val tokens = scanner.getTokens()
     tokens should have length 1
@@ -150,7 +150,7 @@ class ScannerSpec extends FlatSpec with Matchers {
     val scanner = Scanner(DfaNode(TokenKind.Id.getRegexp()))
 
     intercept[ScanningException] {
-      "9122abc".toCharArray.foreach(c => scanner.parse(c))
+      "9122abc".toCharArray.foreach(c => scanner.scan(c))
       scanner.getTokens()
     }
   }
