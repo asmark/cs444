@@ -13,8 +13,8 @@ class Scanner(root: DfaNode) {
   private var charPath = mutable.Stack[Char]()
   private val tokens = mutable.MutableList[Token]()
 
-  def tokenize(file: String): List[Token] = {
-    Source.fromFile(file).foreach(char => parse(char))
+  def tokenize(file: Source): List[Token] = {
+    file.foreach(parse(_))
     return getTokens()
   }
 

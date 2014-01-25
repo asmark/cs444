@@ -5,6 +5,11 @@ import joos.regexp._
 import scala.language.postfixOps
 
 object TokenKindRegexp {
+
+  // Whitespace
+  def Whitespace = {
+    Alternation(" \n\r\t") *
+  }
   // Comments
   // TODO: Adjust this part when we get to parsing
   def TraditionalCommentPrefix = {

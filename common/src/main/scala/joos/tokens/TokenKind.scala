@@ -236,4 +236,7 @@ object TokenKind extends Enumeration {
   // Identifier
   final val Id = TokenKindValue("Id", () => TokenKindRegexp.Id)
 
+  // Whitespace
+  final val Whitespace = TokenKindValue("Whitespace", () => TokenKindRegexp.Whitespace)
+
 }
