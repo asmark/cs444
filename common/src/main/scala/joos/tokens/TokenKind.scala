@@ -7,6 +7,7 @@ object TokenKind extends Enumeration {
 
   case class TokenKindValue(val name: String, regexp: Function0[RegularExpression]) extends Val(name) {
     def getRegexp() = regexp() := this
+    def getName() = name
   }
 
   def getHighestPriority(kinds: Set[TokenKind]): TokenKind = {
@@ -77,6 +78,8 @@ object TokenKind extends Enumeration {
   final val Void = TokenKindValue("Void", () => TokenKindRegexp.Void)
 
   final val Char = TokenKindValue("Char", () => TokenKindRegexp.Char)
+
+  final val Finally = TokenKindValue("Finally", () => TokenKindRegexp.Finally)
 
   final val Long = TokenKindValue("Long", () => TokenKindRegexp.Long)
 
@@ -149,7 +152,7 @@ object TokenKind extends Enumeration {
   final val Dot = TokenKindValue("Dot", () => TokenKindRegexp.Dot)
 
   // Operators
-  final val Assign = TokenKindValue("=", () => TokenKindRegexp.Assign)
+  final val Assign = TokenKindValue("Assign", () => TokenKindRegexp.Assign)
 
   final val Greater = TokenKindValue("Greater", () => TokenKindRegexp.Greater)
 

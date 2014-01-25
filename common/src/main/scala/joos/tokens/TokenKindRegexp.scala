@@ -223,17 +223,15 @@ object TokenKindRegexp {
   // IntegerLiteral
 
   // DecimalIntegerLiteral
-  // Regular Expression: ([1-9][0-9]*|[1-9][0-9]*(l|L))
+  // Regular Expression: (0 | 0(l|L) | [1-9][0-9]* | [1-9][0-9]*(l|L))
   def DecimalIntLiteral = {
-    val non_postfix = Alternation(NON_ZERO_DIGITS) + (Alternation(DIGITS) *)
-    val postfix = Alternation(NON_ZERO_DIGITS) + (Alternation(DIGITS) *) + (Atom('l') | Atom('L'))
-    non_postfix | postfix
+    (Atom('0') | (Alternation(NON_ZERO_DIGITS) + (Alternation(DIGITS) *))) + ~(Atom('l') | Atom('L'))
   }
 
   // HexNumeral
   // Regular Expression: (0x[0-9a-fA-F][0-9a-fA-F]*|0x[0-9a-fA-F][0-9a-fA-F]*(l|L))
   def HexIntLiteral = {
-    val prefix = Atom('0') + Atom('x')
+    val prefix = Atom('0') + (Atom('x') | Atom('X'))
 
     val non_postfix = prefix + Alternation(HEX_DIGITS) + (Alternation(HEX_DIGITS) *)
     val postfix =
@@ -252,8 +250,7 @@ object TokenKindRegexp {
   // OctalIntegerLiteral
   // Regular Expression: 0[0-7][0-7]*
   def OctalIntLiteral = {
-    Concatenation(Seq(Atom('0'), Alternation(OCTAL_DIGITS), Alternation(OCTAL_DIGITS) *)) |
-      Concatenation(Seq(Atom('0'), Alternation(OCTAL_DIGITS), Alternation(OCTAL_DIGITS) *, Atom('l') | Atom('L')))
+    Concatenation(Seq(Atom('0'), Alternation(OCTAL_DIGITS), Alternation(OCTAL_DIGITS) *)) + ~(Atom('l') | Atom('L'))
   }
 
 
@@ -261,25 +258,25 @@ object TokenKindRegexp {
   // Regular Expression: TOO LONG
   def FloatLiteral = {
     val first_form =
-      Concatenation(DIGITS) +
+      Alternation(DIGITS) + (Alternation(DIGITS) *) +
         Atom('.') +
-        ~Concatenation(DIGITS) +
+        ~(Alternation(DIGITS) + (Alternation(DIGITS) *)) +
         ~exponentPart() +
         ~floatTypeSuffix()
 
     val second_form =
       Atom('.') +
-        Concatenation(DIGITS) +
+        Alternation(DIGITS) + (Alternation(DIGITS) *) +
         ~exponentPart() +
         ~floatTypeSuffix()
 
     val third_form =
-      Concatenation(DIGITS) +
+      Alternation(DIGITS) + (Alternation(DIGITS) *) +
         exponentPart() +
         ~floatTypeSuffix()
 
     val fourth_form =
-      Concatenation(DIGITS) +
+      Alternation(DIGITS) + (Alternation(DIGITS) *) +
         ~exponentPart() +
         floatTypeSuffix()
 
@@ -299,8 +296,7 @@ object TokenKindRegexp {
   // CharacterLiteral
   // Regular Expression:
   def CharacterLiteral = {
-    Atom('\'') + Alternation(SingleCharacter.mkString("")) + Atom('\'') |
-      Atom('\'') + escapeSequence() + Atom('\'')
+    (Atom('\'') + singleCharacter() + Atom('\'')) | (Atom('\'') + escapeSequence() + Atom('\''))
   }
 
   // StringLiteral
