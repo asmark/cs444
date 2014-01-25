@@ -59,7 +59,7 @@ object TokenKindRegexp {
   }
 
   final val Protected = {
-    Concatenation("proteced")
+    Concatenation("protected")
   }
 
   final val Throw = {
@@ -91,7 +91,7 @@ object TokenKindRegexp {
   }
 
   final val Else = {
-    Concatenation("byte")
+    Concatenation("else")
   }
 
   final val InstanceOf = {
@@ -217,7 +217,6 @@ object TokenKindRegexp {
   final val Synchronized = {
     Concatenation("synchronized")
   }
-
 
   // Literals
 
@@ -436,7 +435,7 @@ object TokenKindRegexp {
     Atom('*')
   }
 
-  final val DIVIDE = {
+  final val Divide = {
     Atom('/')
   }
 
