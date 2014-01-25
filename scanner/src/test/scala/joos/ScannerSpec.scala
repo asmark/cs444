@@ -85,7 +85,7 @@ class ScannerSpec extends FlatSpec with Matchers {
     "final".toCharArray.foreach(c => scanner.parse(c))
     val tokens = scanner.getTokens()
     tokens should have length 1
-    tokens should contain(new Token(TokenKind.Final, "final"))
+    tokens should contain(Token(TokenKind.Final, "final"))
   }
 
   behavior of "A static word regular expression (final) to DFA conversion"
@@ -96,7 +96,7 @@ class ScannerSpec extends FlatSpec with Matchers {
     "final".toCharArray.foreach(c => scanner.parse(c))
     val tokens = scanner.getTokens()
     tokens should have length 1
-    tokens should contain(new Token(TokenKind.Final, "final"))
+    tokens should contain(Token(TokenKind.Final, "final"))
   }
 
   it should "reject non-tokenizable (final3) inputs" in {
@@ -119,7 +119,7 @@ class ScannerSpec extends FlatSpec with Matchers {
 
     val tokens = scanner.getTokens()
     tokens should have length 1
-    tokens should contain(new Token(TokenKind1, "test"))
+    tokens should contain(Token(TokenKind1, "test"))
   }
 
   it should "accept tokenizable (Test) inputs" in {
@@ -130,7 +130,7 @@ class ScannerSpec extends FlatSpec with Matchers {
 
     val tokens = scanner.getTokens()
     tokens should have length 1
-    tokens should contain(new Token(TokenKind1, "Test"))
+    tokens should contain(Token(TokenKind1, "Test"))
   }
 
 
@@ -143,7 +143,7 @@ class ScannerSpec extends FlatSpec with Matchers {
 
     val tokens = scanner.getTokens()
     tokens should have length 1
-    tokens should contain(new Token(TokenKind.Id, "t998"))
+    tokens should contain(Token(TokenKind.Id, "t998"))
   }
 
   it should "reject non-tokenizable (9112abc) inputs" in {

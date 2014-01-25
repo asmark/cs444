@@ -40,7 +40,9 @@ object TokenKind extends Enumeration {
 
   final val Double = TokenKindValue("Double", () => TokenKindRegexp.Double)
 
-  final val Import = TokenKindValue("Import", () => TokenKindRegexp.Public)
+  final val Import = TokenKindValue("Import", () => TokenKindRegexp.Import)
+
+  final val Public = TokenKindValue("Public", () => TokenKindRegexp.Public)
 
   final val Throws = TokenKindValue("Throws", () => TokenKindRegexp.Throws)
 
