@@ -9,7 +9,9 @@ class DFANodeSpec extends FlatSpec with Matchers {
   val CharacterA = 'A'
   val CharacterB = 'B'
 
-  "A node with an 'A' transition" should "throw an exception when adding another" in {
+  behavior of "A node with an 'A' transition"
+
+  it should "throw an exception when adding another" in {
     intercept[DuplicateTransitionException] {
       NonAcceptingDfaNode().
         addTransition(CharacterA, NonAcceptingDfaNode()).
@@ -17,7 +19,7 @@ class DFANodeSpec extends FlatSpec with Matchers {
     }
   }
 
-  "A node with an 'A' transition" should "follow that transition" in {
+  it should "follow that transition" in {
     import joos.automata.{AcceptingDfaNode, NonAcceptingDfaNode, DfaNode}
     val node = NonAcceptingDfaNode().addTransition(CharacterA, AcceptingDfaNode(TokenKind.Id))
     node.followTransition(CharacterA) match {
@@ -40,6 +42,5 @@ class DFANodeSpec extends FlatSpec with Matchers {
   "A node that is not accepting" should "return none" in {
     NonAcceptingDfaNode().isAccepting() should be(None)
   }
-
 
 }

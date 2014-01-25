@@ -2,8 +2,7 @@ package joos.scanner
 
 import joos.automata._
 import joos.exceptions.ScanningException
-import joos.regexp.RegularExpression
-import joos.tokens.{TokenKind, Token}
+import joos.tokens.Token
 import scala.Some
 import scala.collection.mutable
 import scala.io.Source
@@ -64,79 +63,7 @@ class Scanner(root: DfaNode) {
 }
 
 object Scanner {
-
-  private def getEpsilonClosure(nfaNodes: Set[NfaNode]): Set[NfaNode] = {
-    val epsilonClosure = mutable.Set[NfaNode]()
-    nfaNodes.foreach(node => epsilonClosure ++= node.getClosure(NfaNode.Epsilon))
-    return epsilonClosure.toSet
-  }
-
-  private def newDfaNode(nfaNodes: Set[NfaNode]): DfaNode = {
-
-    val acceptingKinds = nfaNodes.collect {
-      case node: AcceptingNfaNode => node.kind
-    }
-
-    return if (acceptingKinds.isEmpty) NonAcceptingDfaNode() else AcceptingDfaNode(TokenKind.getHighestPriority(acceptingKinds))
-  }
-
-  private def getOrCreateDfaNode(dfaNodes: mutable.HashMap[Set[NfaNode], DfaNode], nfaNodes: Set[NfaNode]): DfaNode = {
-    return dfaNodes.get(nfaNodes) match {
-      case Some(dfaNode: DfaNode) => return dfaNode
-      case None => {
-        val dfaNode = newDfaNode(nfaNodes)
-        dfaNodes += ((nfaNodes, dfaNode))
-        return dfaNode
-      }
-    }
-  }
-
-  private def unionTransitions(nfaNodes: Set[NfaNode]): mutable.HashMap[Char, Set[NfaNode]] = {
-    val unionTransitions = mutable.HashMap[Char, Set[NfaNode]]()
-
-    nfaNodes.foreach {
-      node =>
-        node.edges.foreach {
-          transition =>
-            val char = transition._1
-            val neighbours = transition._2
-
-            val existingNeighbours = unionTransitions.getOrElse(char, Set.empty[NfaNode])
-
-            unionTransitions += ((char, existingNeighbours ++ neighbours))
-        }
-    }
-
-    return unionTransitions
-  }
-
-  def forRegexp(regexp: RegularExpression): Scanner = {
-    val dfaNodeSet = mutable.HashMap.empty[Set[NfaNode], DfaNode]
-    val rootNode = getEpsilonClosure(Set.apply(regexp.entrance))
-
-    val visitClosures = mutable.Queue.apply(rootNode)
-    val visitedClosures = mutable.HashSet.apply(rootNode)
-
-    while (!visitClosures.isEmpty) {
-      val closure = visitClosures.dequeue()
-
-      val dfaNode = getOrCreateDfaNode(dfaNodeSet, closure)
-      val transitions = unionTransitions(closure)
-
-      transitions.withFilter(transition => transition._1 != NfaNode.Epsilon).foreach {
-        transition =>
-          val char = transition._1
-          val neighbourClosure = getEpsilonClosure(transition._2)
-
-          dfaNode.edges += ((char, getOrCreateDfaNode(dfaNodeSet, neighbourClosure)))
-
-          if (!visitedClosures.contains(neighbourClosure)) {
-            visitClosures.enqueue(neighbourClosure)
-            visitedClosures += neighbourClosure
-          }
-      }
-    }
-
-    return new Scanner(dfaNodeSet.get(rootNode).get)
+  def apply(dfa: DfaNode): Scanner = {
+    return new Scanner(dfa)
   }
 }

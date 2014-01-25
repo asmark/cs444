@@ -5,10 +5,9 @@ import joos.regexp.{Concatenation, Alternation}
 import joos.tokens.{TokenKind, TokenKindRegexp, Token}
 import org.scalatest.{FlatSpec, Matchers}
 import joos.scanner.Scanner
+import joos.automata.{AcceptingDfaNode, NonAcceptingDfaNode, DfaNode}
 
 class ScannerSpec extends FlatSpec with Matchers {
-
-  import joos.automata.{AcceptingDfaNode, NonAcceptingDfaNode, DfaNode}
 
   private val CharacterA = 'A'
   private val CharacterB = 'B'
@@ -81,7 +80,7 @@ class ScannerSpec extends FlatSpec with Matchers {
   "An epsilon closure with multiple accepting states" should "accept the highest priority token" in {
     val testRegexp = Concatenation("final") := TokenKind.Id := TokenKind.Final
 
-    val scanner = Scanner.forRegexp(testRegexp)
+    val scanner = Scanner(DfaNode(testRegexp))
 
     "final".toCharArray.foreach(c => scanner.parse(c))
     val tokens = scanner.getTokens()
@@ -92,7 +91,7 @@ class ScannerSpec extends FlatSpec with Matchers {
   behavior of "A static word regular expression (final) to DFA conversion"
 
   it should "accept tokenizable (final) inputs" in {
-    val scanner = Scanner.forRegexp(TokenKind.Final.getRegexp())
+    val scanner = Scanner(DfaNode(TokenKind.Final.getRegexp()))
 
     "final".toCharArray.foreach(c => scanner.parse(c))
     val tokens = scanner.getTokens()
@@ -101,7 +100,7 @@ class ScannerSpec extends FlatSpec with Matchers {
   }
 
   it should "reject non-tokenizable (final3) inputs" in {
-    val scanner = Scanner.forRegexp(TokenKind.Final.getRegexp())
+    val scanner = Scanner(DfaNode(TokenKind.Final.getRegexp()))
 
     intercept[ScanningException] {
       "final3".toCharArray.foreach(c => scanner.parse(c))
@@ -114,7 +113,7 @@ class ScannerSpec extends FlatSpec with Matchers {
   it should "accept tokenizable (test) inputs" in {
     val testRegexp = Alternation("tT") + Concatenation("est") := TokenKind1
 
-    val scanner = Scanner.forRegexp(testRegexp)
+    val scanner = Scanner(DfaNode(testRegexp))
 
     "test".toCharArray.foreach(c => scanner.parse(c))
 
@@ -125,7 +124,7 @@ class ScannerSpec extends FlatSpec with Matchers {
 
   it should "accept tokenizable (Test) inputs" in {
     val testRegexp = Alternation("tT") + Concatenation("est") := TokenKind1
-    val scanner = Scanner.forRegexp(testRegexp)
+    val scanner = Scanner(DfaNode(testRegexp))
 
     "Test".toCharArray.foreach(c => scanner.parse(c))
 
@@ -138,7 +137,7 @@ class ScannerSpec extends FlatSpec with Matchers {
   behavior of "A looping word regular expression (ID) to DFA conversion"
 
   it should "accept tokenizable (t998) inputs" in {
-    val scanner = Scanner.forRegexp(TokenKind.Id.getRegexp())
+    val scanner = Scanner(DfaNode(TokenKind.Id.getRegexp()))
 
     "t998".toCharArray.foreach(c => scanner.parse(c))
 
@@ -148,7 +147,7 @@ class ScannerSpec extends FlatSpec with Matchers {
   }
 
   it should "reject non-tokenizable (9112abc) inputs" in {
-    val scanner = Scanner.forRegexp(TokenKind.Id.getRegexp())
+    val scanner = Scanner(DfaNode(TokenKind.Id.getRegexp()))
 
     intercept[ScanningException] {
       "9122abc".toCharArray.foreach(c => scanner.parse(c))

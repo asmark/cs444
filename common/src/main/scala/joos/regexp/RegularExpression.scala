@@ -17,9 +17,10 @@ abstract class RegularExpression {
 
   // Concatenation
   def +(input: RegularExpression): RegularExpression = {
-    this.exit.addTransition(NfaNode.Epsilon, input.entrance)
-    this.exit = input.exit
-    this
+    return Concatenation(Seq(this, input))
+//    this.exit.addTransition(NfaNode.Epsilon, input.entrance)
+//    this.exit = input.exit
+//    this
   }
 
   // Multiple (0 or more instances)
@@ -37,16 +38,17 @@ abstract class RegularExpression {
 
   // Alternation
   def |(input: RegularExpression): RegularExpression = {
-    val inner_entrance = this.entrance
-    val inner_exit = this.exit
-
-    this.entrance = NonAcceptingNfaNode()
-    this.exit = NonAcceptingNfaNode()
-    this.entrance.addTransition(NfaNode.Epsilon, inner_entrance)
-    this.entrance.addTransition(NfaNode.Epsilon, input.entrance)
-    inner_exit.addTransition(NfaNode.Epsilon, this.exit)
-    input.exit.addTransition(NfaNode.Epsilon, this.exit)
-    this
+    return Alternation(Seq(this, input))
+//    val inner_entrance = this.entrance
+//    val inner_exit = this.exit
+//
+//    this.entrance = NonAcceptingNfaNode()
+//    this.exit = NonAcceptingNfaNode()
+//    this.entrance.addTransition(NfaNode.Epsilon, inner_entrance)
+//    this.entrance.addTransition(NfaNode.Epsilon, input.entrance)
+//    inner_exit.addTransition(NfaNode.Epsilon, this.exit)
+//    input.exit.addTransition(NfaNode.Epsilon, this.exit)
+//    this
   }
 
   // Optional (O or 1 instances)
@@ -121,6 +123,6 @@ case class Alternation(inputs: Seq[RegularExpression]) extends RegularExpression
 
 object Alternation {
   def apply(str: String) = {
-    new Alternation(str.map(char => Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), char)))
+    new Alternation(str.map(char => Atom(char)))
   }
 }
