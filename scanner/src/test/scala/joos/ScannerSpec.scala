@@ -177,7 +177,6 @@ class ScannerSpec extends FlatSpec with Matchers {
       val tokens = scanner.getTokens()
       tokens should have length 1
       tokens should contain(new Token(TokenKind.Id, id))
-      println(id + " cool")
     })
   }
 
@@ -202,7 +201,6 @@ class ScannerSpec extends FlatSpec with Matchers {
           tokens should have length counter
           counter += 1
           tokens should contain(new Token(value, keyword))
-          println(keyword + " cool")
         }
       }
     )
@@ -231,7 +229,6 @@ class ScannerSpec extends FlatSpec with Matchers {
         tokens should have length counter
         counter += 1
         tokens should contain(new Token(separators(sep), sep))
-        println(sep + " cool")
       }
     )
   }
@@ -260,7 +257,6 @@ class ScannerSpec extends FlatSpec with Matchers {
         tokens should have length counter
         counter += 1
         tokens should contain(new Token(integers(sep), sep))
-        println(sep + " cool")
       }
     )
   }
@@ -292,7 +288,6 @@ class ScannerSpec extends FlatSpec with Matchers {
         tokens should have length counter
         counter += 1
         tokens should contain(new Token(floating_points(num), num))
-        println(num + " cool")
       }
     )
   }
@@ -313,7 +308,6 @@ class ScannerSpec extends FlatSpec with Matchers {
         tokens should have length counter
         counter += 1
         tokens should contain(new Token(floating_points(num), num))
-        println(num + " cool")
       }
     )
   }
@@ -341,7 +335,6 @@ class ScannerSpec extends FlatSpec with Matchers {
         tokens should have length counter
         counter += 1
         tokens should contain(new Token(characters(char), char))
-        println(char + " cool")
       }
     )
   }
