@@ -1,3 +1,5 @@
 package joos.tokens
 
-case class Token(val kind: Any, val lexeme: String)
+import joos.tokens.TokenKind.TokenKind
+
+case class Token(val kind: TokenKind, val lexeme: String)

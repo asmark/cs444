@@ -5,50 +5,238 @@ import joos.regexp._
 import scala.language.postfixOps
 
 object TokenKindRegexp {
+
+  // Whitespace
+  def Whitespace = {
+    Alternation(" \n\r\t")
+  }
   // Comments
   // TODO: Adjust this part when we get to parsing
-  final val TraditionalCommentPrefix = {
+  def TraditionalCommentPrefix = {
     Concatenation("/*")
   }
 
-  final val TraditionalCommentPostfix = {
+  def TraditionalCommentPostfix = {
     Concatenation("*/")
   }
 
-  final val EolCommentPrefix = {
+  def EolCommentPrefix = {
     Concatenation("//")
   }
 
   // Identifier
   // Regular Expression: [JavaLetter][JavaLetter or Digits]*
-  final val ID = {
-    Alternation(JAVA_LETTERS) +
-      (Alternation(JAVA_LETTERS + DIGITS) *) +
-      Atom(NonAcceptingNfaNode(), AcceptingNfaNode("ID"), NfaNode.Epsilon)
+  def Id = {
+    Alternation(JAVA_LETTERS) + (Alternation(JAVA_LETTERS + DIGITS) *)
   }
 
   // Keywords
-  final val Final = {
-    Concatenation("final") + Atom(NonAcceptingNfaNode(), AcceptingNfaNode("final"), NfaNode.Epsilon)
+  def Abstract = {
+    Concatenation("abstract")
   }
 
+  def Default = {
+    Concatenation("default")
+  }
+
+  def If = {
+    Concatenation("if")
+  }
+
+  def Private = {
+    Concatenation("private")
+  }
+
+  def This() = {
+    Concatenation("this")
+  }
+
+  def Boolean = {
+    Concatenation("boolean")
+  }
+
+  def Do = {
+    Concatenation("do")
+  }
+
+  def Implements = {
+    Concatenation("implements")
+  }
+
+  def Protected = {
+    Concatenation("protected")
+  }
+
+  def Throw = {
+    Concatenation("throw")
+  }
+
+  def Break = {
+    Concatenation("break")
+  }
+
+  def Double = {
+    Concatenation("double")
+  }
+
+  def Import = {
+    Concatenation("import")
+  }
+
+  def Public = {
+    Concatenation("public")
+  }
+
+  def Throws = {
+    Concatenation("throws")
+  }
+
+  def Byte = {
+    Concatenation("byte")
+  }
+
+  def Else = {
+    Concatenation("else")
+  }
+
+  def InstanceOf = {
+    Concatenation("instanceof")
+  }
+
+  def Return = {
+    Concatenation("return")
+  }
+
+  def Transient = {
+    Concatenation("transient")
+  }
+
+  def Case = {
+    Concatenation("case")
+  }
+
+  def Extends = {
+    Concatenation("extends")
+  }
+
+  def Int = {
+    Concatenation("int")
+  }
+
+  def Short = {
+    Concatenation("short")
+  }
+
+  def Try = {
+    Concatenation("try")
+  }
+
+  def Catch = {
+    Concatenation("catch")
+  }
+
+  def Final = {
+    Concatenation("final")
+  }
+
+  def Interface = {
+    Concatenation("interface")
+  }
+
+  def Static = {
+    Concatenation("static")
+  }
+
+  def Void = {
+    Concatenation("void")
+  }
+
+  def Char = {
+    Concatenation("char")
+  }
+
+  def Finally = {
+    Concatenation("finally")
+  }
+
+  def Long = {
+    Concatenation("long")
+  }
+
+  def Strictfp = {
+    Concatenation("strictfp")
+  }
+
+  def Volatile = {
+    Concatenation("volatile")
+  }
+
+  def Class = {
+    Concatenation("class")
+  }
+
+  def Float = {
+    Concatenation("float")
+  }
+
+  def Native = {
+    Concatenation("native")
+  }
+
+  def Super = {
+    Concatenation("super")
+  }
+
+  def While = {
+    Concatenation("while")
+  }
+
+  def Const = {
+    Concatenation("const")
+  }
+
+  def For = {
+    Concatenation("for")
+  }
+
+  def New = {
+    Concatenation("new")
+  }
+
+  def Switch = {
+    Concatenation("switch")
+  }
+
+  def Continue = {
+    Concatenation("continue")
+  }
+
+  def Goto = {
+    Concatenation("goto")
+  }
+
+  def Package = {
+    Concatenation("package")
+  }
+
+  def Synchronized = {
+    Concatenation("synchronized")
+  }
 
   // Literals
 
   // IntegerLiteral
 
   // DecimalIntegerLiteral
-  // Regular Expression: ([1-9][0-9]*|[1-9][0-9]*(l|L))
-  final val DecimalIntLiteral = {
-    val non_postfix = Alternation(NON_ZERO_DIGITS) + (Alternation(DIGITS) *)
-    val postfix = Alternation(NON_ZERO_DIGITS) + (Alternation(DIGITS) *) + (Atom('l') | Atom('L'))
-    non_postfix | postfix
+  // Regular Expression: (0 | 0(l|L) | [1-9][0-9]* | [1-9][0-9]*(l|L))
+  def DecimalIntLiteral = {
+    (Atom('0') | (Alternation(NON_ZERO_DIGITS) + (Alternation(DIGITS) *))) + ~(Atom('l') | Atom('L'))
   }
 
   // HexNumeral
   // Regular Expression: (0x[0-9a-fA-F][0-9a-fA-F]*|0x[0-9a-fA-F][0-9a-fA-F]*(l|L))
-  final val HexIntLiteral = {
-    val prefix = Atom('0') + Atom('x')
+  def HexIntLiteral = {
+    val prefix = Atom('0') + (Atom('x') | Atom('X'))
 
     val non_postfix = prefix + Alternation(HEX_DIGITS) + (Alternation(HEX_DIGITS) *)
     val postfix =
@@ -56,45 +244,44 @@ object TokenKindRegexp {
         Seq(
           prefix,
           Alternation(HEX_DIGITS),
-          (Alternation(HEX_DIGITS) *),
+          Alternation(HEX_DIGITS) *,
           Atom('l') | Atom('L')
         )
       )
 
-    (non_postfix | postfix)
+    non_postfix | postfix
   }
 
   // OctalIntegerLiteral
   // Regular Expression: 0[0-7][0-7]*
-  final val OctalIntLiteral = {
-    Concatenation(Seq(Atom('0'), Alternation(OCTAL_DIGITS), (Alternation(OCTAL_DIGITS)) *)) |
-      Concatenation(Seq(Atom('0'), Alternation(OCTAL_DIGITS), (Alternation(OCTAL_DIGITS)) *, Atom('l') | Atom('L')))
+  def OctalIntLiteral = {
+    Concatenation(Seq(Atom('0'), Alternation(OCTAL_DIGITS), Alternation(OCTAL_DIGITS) *)) + ~(Atom('l') | Atom('L'))
   }
 
 
   // FloatingPointLiteral
   // Regular Expression: TOO LONG
-  final val FloatLiteral = {
+  def FloatLiteral = {
     val first_form =
-      Concatenation(DIGITS) +
+      Alternation(DIGITS) + (Alternation(DIGITS) *) +
         Atom('.') +
-        ~Concatenation(DIGITS) +
+        ~(Alternation(DIGITS) + (Alternation(DIGITS) *)) +
         ~exponentPart() +
         ~floatTypeSuffix()
 
     val second_form =
       Atom('.') +
-        Concatenation(DIGITS) +
+        Alternation(DIGITS) + (Alternation(DIGITS) *) +
         ~exponentPart() +
         ~floatTypeSuffix()
 
     val third_form =
-      Concatenation(DIGITS) +
+      Alternation(DIGITS) + (Alternation(DIGITS) *) +
         exponentPart() +
         ~floatTypeSuffix()
 
     val fourth_form =
-      Concatenation(DIGITS) +
+      Alternation(DIGITS) + (Alternation(DIGITS) *) +
         ~exponentPart() +
         floatTypeSuffix()
 
@@ -103,226 +290,225 @@ object TokenKindRegexp {
 
   // BooleanLiteral
   // TODO
-  final val True = {
+  def True = {
     Concatenation("true")
   }
 
-  final val False = {
+  def False = {
     Concatenation("false")
   }
 
   // CharacterLiteral
   // Regular Expression:
-  final val CharacterLiteral = {
-    Atom('\'') + Alternation(SingleCharacter.mkString("")) + Atom('\'') |
-      Atom('\'') + escapeSequence() + Atom('\'')
+  def CharacterLiteral = {
+    (Atom('\'') + singleCharacter() + Atom('\'')) | (Atom('\'') + escapeSequence() + Atom('\''))
   }
 
   // StringLiteral
   // Regular Expression: "StringCharacter*" | "", StringCharacter -> InputCharacter but not " or \ | EscapeSequence
-  final val StringLiteral = {
+  def StringLiteral = {
     Atom('\"') + (stringCharacter() *) + Atom('\"')
   }
 
   // Null Literal
-  final val Null = {
+  def Null = {
     Concatenation("null")
   }
 
   // Separators
 
   // (
-  final val LeftParen = {
+  def LeftParen = {
     Atom('(')
   }
 
   // )
-  final val RightParen = {
+  def RightParen = {
     Atom(')')
   }
 
   // {
-  final val LeftBrace = {
+  def LeftBrace = {
     Atom('{')
   }
 
   // }
-  final val RightBrace = {
+  def RightBrace = {
     Atom('}')
   }
 
   // [
-  final val LeftBracket = {
+  def LeftBracket = {
     Atom('[')
   }
 
   // ]
-  final val RightBracket = {
+  def RightBracket = {
     Atom(']')
   }
 
   // ;
-  final val SemiColon = {
+  def SemiColon = {
     Atom(';')
   }
 
   // ,
-  final val Comma = {
+  def Comma = {
     Atom(',')
   }
 
   // .
-  final val Dot = {
+  def Dot = {
     Atom('.')
   }
 
   // Operators
   // TODO: 37 operators in total
-  final val Assign = {
+  def Assign = {
     Atom('=')
   }
 
-  final val Greater = {
+  def Greater = {
     Atom('>')
   }
 
-  final val Less = {
+  def Less = {
     Atom('<')
   }
 
-  final val Exclamation = {
+  def Exclamation = {
     Atom('!')
   }
 
-  final val Period = {
+  def Grave = {
     Atom('~')
   }
 
-  final val Question = {
+  def Question = {
     Atom('?')
   }
 
-  final val Colon = {
+  def Colon = {
     Atom(':')
   }
 
-  final val Equal = {
+  def Equal = {
     Concatenation("==")
   }
 
-  final val LessEqual = {
+  def LessEqual = {
     Concatenation("<=")
   }
 
-  final val GreaterEqual = {
+  def GreaterEqual = {
     Concatenation("<=")
   }
 
-  final val NotEqual = {
+  def NotEqual = {
     Concatenation("!=")
   }
 
-  final val And = {
+  def And = {
     Concatenation("&&")
   }
 
-  final val Or = {
+  def Or = {
     Concatenation("||")
   }
 
-  final val Increment = {
+  def Increment = {
     Concatenation("++")
   }
 
-  final val Decrement = {
+  def Decrement = {
     Concatenation("++")
   }
 
-  final val Plus = {
+  def Plus = {
     Atom('+')
   }
 
-  final val Minus = {
+  def Minus = {
     Atom('-')
   }
 
-  final val Multiply = {
+  def Multiply = {
     Atom('*')
   }
 
-  final val DIVIDE = {
+  def Divide = {
     Atom('/')
   }
 
-  final val BitAnd = {
+  def BitAnd = {
     Atom('&')
   }
 
-  final val BitOr = {
+  def BitOr = {
     Atom('|')
   }
 
-  final val Carrot = {
+  def Carrot = {
     Atom('^')
   }
 
-  final val Modulo = {
+  def Modulo = {
     Atom('%')
   }
 
-  final val LeftShift = {
+  def LeftShift = {
     Concatenation("<<")
   }
 
-  final val RightShift = {
+  def RightShift = {
     Concatenation(">>")
   }
 
-  final val UnsignedShift = {
+  def UnsignedShift = {
     Concatenation(">>>")
   }
 
-  final val PlusAssign = {
+  def PlusAssign = {
     Concatenation("+=")
   }
 
-  final val MinusAssign = {
+  def MinusAssign = {
     Concatenation("-=")
   }
 
-  final val MultiplyAssign = {
+  def MultiplyAssign = {
     Concatenation("*=")
   }
 
-  final val DivideAssign = {
+  def DivideAssign = {
     Concatenation("/=")
   }
 
-  final val BitAndAssign = {
+  def BitAndAssign = {
     Concatenation("&=")
   }
 
-  final val BitOrAssign = {
+  def BitOrAssign = {
     Concatenation("|=")
   }
 
-  final val CarrotAssign = {
+  def CarrotAssign = {
     Concatenation("^=")
   }
 
-  final val ModuloAssign = {
+  def ModuloAssign = {
     Concatenation("%=")
   }
 
-  final val LeftShiftAssign = {
+  def LeftShiftAssign = {
     Concatenation("<<=")
   }
 
-  final val RightShiftAssign = {
+  def RightShiftAssign = {
     Concatenation(">>=")
   }
 
-  final val UsignedRightShiftAssign = {
+  def UsignedRightShiftAssign = {
     Concatenation(">>>=")
   }
 }

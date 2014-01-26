@@ -7,10 +7,10 @@ import scala.language.postfixOps
 package object tokens {
 
   final val DIGITS = Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9').mkString("")
-  final val NON_ZERO_DIGITS = DIGITS.slice(1, DIGITS.length - 1).mkString("")
+  final val NON_ZERO_DIGITS = DIGITS.slice(1, DIGITS.length).mkString("")
   final val HEX_DIGITS = (DIGITS ++ Array('a', 'b', 'c', 'd', 'e', 'f',
     'A', 'B', 'C', 'D', 'E', 'F')).mkString("")
-  final val OCTAL_DIGITS = DIGITS.slice(0, 7).mkString("")
+  final val OCTAL_DIGITS = DIGITS.slice(0, 8).mkString("")
 
   final val ALPHABETS = {
     val lower = "abcdefghijklmnopqrstuvwxyz"
@@ -24,7 +24,7 @@ package object tokens {
 
   // helper functions for floating point
   def exponentPart(): RegularExpression = {
-    (Atom('e') | Atom('E')) + ~(Atom('+') | Atom('-')) + Concatenation(DIGITS)
+    (Atom('e') | Atom('E')) + ((~(Atom('+') | Atom('-'))) + Alternation(DIGITS) + (Alternation(DIGITS) *))
   }
 
   def floatTypeSuffix(): RegularExpression = {
@@ -39,7 +39,7 @@ package object tokens {
   def unicodeEscape(): RegularExpression = {
     Concatenation(
       Seq(
-        Atom(92.asInstanceOf[Char]),
+        Atom('\\'),
         unicodeMarker(),
         Alternation(HEX_DIGITS),
         Alternation(HEX_DIGITS),
@@ -50,7 +50,7 @@ package object tokens {
   }
 
   final val allUnicode: Array[Char] = {
-    val ret = Array[Char](127)
+    val ret = new Array[Char](127)
     for (i <- ret.indices) {
       ret(i) = i.asInstanceOf[Char]
     }
@@ -62,20 +62,23 @@ package object tokens {
   }
 
   def unitcodeInputCharacter(): RegularExpression = {
-    (rawInputCharacter() | unicodeEscape())
+    rawInputCharacter() | unicodeEscape()
   }
 
-  final val InputCharacter: Array[Char] = {
-    val valid_unicode = ArrayBuffer(allUnicode: _*)
-    valid_unicode -= 13.asInstanceOf[Char] // Remove CR
-    valid_unicode -= 10.asInstanceOf[Char] // Remove LF
-    valid_unicode.toArray
+  def inputCharacter(): RegularExpression = {
+    val raw_input_char = ArrayBuffer(allUnicode: _*)
+    raw_input_char -= 13.asInstanceOf[Char] // Remove CR
+    raw_input_char -= 10.asInstanceOf[Char] // Remove LF
+    Alternation(raw_input_char.mkString("")) | unicodeEscape()
   }
-  final val SingleCharacter: Array[Char] = {
-    val valid_unicode = ArrayBuffer(InputCharacter: _*)
-    valid_unicode -= 39.asInstanceOf[Char] // Remove CR
-    valid_unicode -= 92.asInstanceOf[Char] // Remove LF
-    valid_unicode.toArray
+
+  def singleCharacter(): RegularExpression = {
+    val raw_input_char = ArrayBuffer(allUnicode: _*)
+    raw_input_char -= 13.asInstanceOf[Char] // Remove CR
+    raw_input_char -= 10.asInstanceOf[Char] // Remove LF
+    raw_input_char -= 39.asInstanceOf[Char] // Remove "
+    raw_input_char -= 92.asInstanceOf[Char] // Remove \
+    Alternation(raw_input_char.mkString("")) | unicodeEscape()
   }
 
   // Escape Sequence
@@ -84,9 +87,9 @@ package object tokens {
   }
 
   def octalEscape(): RegularExpression = {
-    Atom('\\') + Alternation(OCTAL_DIGITS) |
-      Atom('\\') + Alternation(OCTAL_DIGITS) + Alternation(OCTAL_DIGITS) |
-      Atom('\\') + zeroToThree() + Alternation(OCTAL_DIGITS) + Alternation(OCTAL_DIGITS)
+    (Atom('\\') + Alternation(OCTAL_DIGITS)) |
+      (Atom('\\') + Alternation(OCTAL_DIGITS) + Alternation(OCTAL_DIGITS)) |
+      (Atom('\\') + zeroToThree() + Alternation(OCTAL_DIGITS) + Alternation(OCTAL_DIGITS))
   }
 
   def escapeSequence(): RegularExpression = {
@@ -107,11 +110,11 @@ package object tokens {
 
   // String
   def stringCharacter(): RegularExpression = {
-    val valid_unicode = ArrayBuffer(InputCharacter: _*)
-    valid_unicode -= 34.asInstanceOf[Char] // Remove "
-    valid_unicode -= 10.asInstanceOf[Char] // Remove LF
-    valid_unicode.toArray
-
-    Alternation(valid_unicode.mkString("")) | escapeSequence()
+    val raw_input_char = ArrayBuffer(allUnicode: _*)
+    raw_input_char -= 13.asInstanceOf[Char] // Remove CR
+    raw_input_char -= 10.asInstanceOf[Char] // Remove LF
+    raw_input_char -= 34.asInstanceOf[Char] // Remove "
+    raw_input_char -= 10.asInstanceOf[Char] // Remove LF
+    Alternation(raw_input_char.mkString("")) | escapeSequence()
   }
 }
