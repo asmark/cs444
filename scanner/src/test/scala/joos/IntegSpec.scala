@@ -2,6 +2,7 @@ package joos
 
 import joos.automata.DfaNode
 import joos.scanner.Scanner
+import joos.exceptions.ScanningException
 import joos.tokens.TokenKind
 import joos.tokens.TokenKind.TokenKindValue
 import org.scalatest.{FlatSpec, Matchers}
@@ -12,6 +13,7 @@ class IntegSpec extends FlatSpec with Matchers {
   final val casesDirectory = "/cases"
   final val expectDirectory = "/expect"
   final val uncheckedDirectory = "/unchecked"
+  final val illegalDirectory = "/illegal"
 
   def getSource(dir: String) = Source.fromURL(getClass.getResource(dir))
   def getSource(dir: String, file: String) = Source.fromURL(getClass.getResource(dir + "/" + file))
@@ -42,6 +44,18 @@ class IntegSpec extends FlatSpec with Matchers {
 
         val tokens = scanner.tokenize(getSource(uncheckedDirectory, file))
 
+      }
+  }
+
+  behavior of "Scanning illegal java programs"
+  getSource(illegalDirectory).getLines().foreach {
+    file =>
+      it should s"throw an exception when tokenizing ${file}" in {
+        val scanner = Scanner(JavaDfa)
+
+        intercept[ScanningException] {
+          scanner.tokenize(getSource(illegalDirectory, file))
+        }
       }
   }
 
