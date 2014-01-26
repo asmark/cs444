@@ -1,0 +1,12 @@
+Public public
+Class class
+Id Je_Native
+LeftBrace {
+Public public
+Native native
+Int int
+Id m
+LeftParen (
+RightParen )
+SemiColon ;
+RightBrace }

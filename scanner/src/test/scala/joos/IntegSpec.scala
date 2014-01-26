@@ -1,8 +1,8 @@
 package joos
 
 import joos.automata.DfaNode
-import joos.scanner.Scanner
 import joos.exceptions.ScanningException
+import joos.scanner.Scanner
 import joos.tokens.TokenKind
 import joos.tokens.TokenKind.TokenKindValue
 import org.scalatest.{FlatSpec, Matchers}
@@ -16,6 +16,7 @@ class IntegSpec extends FlatSpec with Matchers {
   final val illegalDirectory = "/illegal"
 
   def getSource(dir: String) = Source.fromURL(getClass.getResource(dir))
+
   def getSource(dir: String, file: String) = Source.fromURL(getClass.getResource(dir + "/" + file))
 
   val JoosRegexp = TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a, b) => a | b)
@@ -31,8 +32,8 @@ class IntegSpec extends FlatSpec with Matchers {
         val expect = getSource(expectDirectory, file + ".expect")
 
         // Filter out whitespace tokens
-        tokens.withFilter(_.kind != TokenKind.Whitespace).map(_.kind.asInstanceOf[TokenKindValue].getName()) should contain theSameElementsInOrderAs
-          expect.getLines().toSeq
+        tokens.withFilter(_.kind != TokenKind.Whitespace).map((t) => t.kind + " " + t.lexeme) should contain theSameElementsInOrderAs
+          expect.getLines().toList
       }
   }
 
@@ -42,8 +43,7 @@ class IntegSpec extends FlatSpec with Matchers {
       it should s"tokenize ${file}" in {
         val scanner = Scanner(JavaDfa)
 
-        val tokens = scanner.tokenize(getSource(uncheckedDirectory, file))
-
+        scanner.tokenize(getSource(uncheckedDirectory, file))
       }
   }
 
@@ -58,6 +58,4 @@ class IntegSpec extends FlatSpec with Matchers {
         }
       }
   }
-
-
 }
