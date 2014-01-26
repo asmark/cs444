@@ -1,11 +1,12 @@
 package joos
 
 import joos.exceptions.ScanningException
-import joos.regexp.{Concatenation, Alternation}
+import joos.regexp.{RegularExpression, Concatenation, Alternation}
 import joos.tokens.{TokenKind, TokenKindRegexp, Token}
 import org.scalatest.{FlatSpec, Matchers}
 import joos.scanner.Scanner
 import joos.automata.{AcceptingDfaNode, NonAcceptingDfaNode, DfaNode}
+import joos.tokens.TokenKind.TokenKindValue
 
 class ScannerSpec extends FlatSpec with Matchers {
 
@@ -36,6 +37,16 @@ class ScannerSpec extends FlatSpec with Matchers {
           NonAcceptingDfaNode().addTransition(CharacterC,
             NonAcceptingDfaNode()))))
 
+  def testSingleToken(str: String, value: TokenKindValue, joosRegexp: RegularExpression) = {
+    println("testing token: " + str)
+    val scanner = Scanner(DfaNode(joosRegexp))
+    println("finish building scanner")
+    str.toCharArray.foreach(c => scanner.scan(c))
+    val tokens = scanner.getTokens()
+    tokens should have length 1
+    tokens should contain(new Token(value, str))
+    println(str + " cool")
+  }
 
   "A state with no transition" should "backtrack once to accepting nodes" in {
     val scanner = new Scanner(testDfaDeadEnds)
@@ -153,5 +164,197 @@ class ScannerSpec extends FlatSpec with Matchers {
       "9122abc".toCharArray.foreach(c => scanner.scan(c))
       scanner.getTokens()
     }
+  }
+
+  /*
+  Things we want to test:
+  Identifier
+  Keyword
+  Literal
+  Separator
+  Operator
+  comment ??
+*/
+    //Identifiers
+  "Scanner" should "recognize valid IDs" in {
+    val test_ids = Seq[String]("String", "i3", "MAX_VALUE", "isLetterOrDigit")
+    test_ids.map(id => {
+      val scanner = Scanner(DfaNode(TokenKind.Id.getRegexp()))
+      id.toCharArray.foreach(c => scanner.scan(c))
+      val tokens = scanner.getTokens()
+      tokens should have length 1
+      tokens should contain(new Token(TokenKind.Id, id))
+      println(id + " cool")
+    })
+  }
+
+  it should "recognize all valid keywords" in {
+    val test_keywords = Set[String]("abstract", "default", "if", "private", "this", "boolean", "do",
+      "implements", "protected", "throw", "break", "double", "import", "public", "throws", "byte", "else",
+      "instanceof", "return", "transient", "case", "extends", "int", "short", "try", "catch", "final",
+      "interface", "static", "void", "char", "finally", "long", "strictfp", "volatile", "class", "float",
+      "native", "super", "while", "const", "for", "new", "switch", "continue", "goto", "package", "synchronized")
+
+    val joosRegexp = TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a,b) => a | b)
+    val scanner = Scanner(DfaNode(joosRegexp))
+    var counter = 1
+
+    TokenKind.values.map(
+      value =>
+      {
+        val token_kind_value = value.asInstanceOf[TokenKindValue]
+        val keyword = token_kind_value.getName().toLowerCase()
+        if (test_keywords.contains(keyword)) {
+          keyword.toCharArray.foreach(c => scanner.scan(c))
+          val tokens = scanner.getTokens()
+          tokens should have length counter
+          counter += 1
+          tokens should contain(new Token(value, keyword))
+          println(keyword + " cool")
+        }
+      }
+    )
+  }
+
+  it should "recognize all separators" in {
+    val separators =
+      Map[String, TokenKindValue](
+        "(" -> TokenKind.LeftParen,
+        ")" -> TokenKind.RightParen,
+        "{" -> TokenKind.LeftBrace,
+        "}" -> TokenKind.RightBrace,
+        "[" -> TokenKind.LeftBracket,
+        "]" -> TokenKind.RightBracket,
+        ";" -> TokenKind.SemiColon,
+        "," -> TokenKind.Comma,
+        "." -> TokenKind.Dot
+      )
+    val joosRegexp = TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a,b) => a | b)
+    val scanner = Scanner(DfaNode(joosRegexp))
+    var counter = 1
+
+    separators.keys.foreach(
+      sep => {
+        sep.toCharArray.foreach(c => scanner.scan(c))
+        val tokens = scanner.getTokens()
+        tokens should have length counter
+        counter += 1
+        tokens should contain(new Token(separators(sep), sep))
+        println(sep + " cool")
+      }
+    )
+  }
+
+  it should "recognize valid IntegerLiterals" in {
+    val integers =
+      Map[String, TokenKindValue](
+        "0" -> TokenKind.DecimalInteger,
+        "2" -> TokenKind.DecimalInteger,
+        "0372" -> TokenKind.OctalInteger,
+        "0xDadaCafe" -> TokenKind.HexInteger,
+        "1996" -> TokenKind.DecimalInteger,
+        "0x00FF00FF" -> TokenKind.HexInteger,
+        "0l" -> TokenKind.DecimalInteger,
+        "0x100000000L" -> TokenKind.HexInteger,
+        "2147483648L" -> TokenKind.DecimalInteger,
+        "0xC0B0L" -> TokenKind.HexInteger
+      )
+    val joosRegexp = TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a,b) => a | b)
+    val scanner = Scanner(DfaNode(joosRegexp))
+    var counter = 1
+
+    integers.keys.foreach(
+      sep => {
+        sep.toCharArray.foreach(c => scanner.scan(c))
+        val tokens = scanner.getTokens()
+        tokens should have length counter
+        counter += 1
+        tokens should contain(new Token(integers(sep), sep))
+        println(sep + " cool")
+      }
+    )
+  }
+
+  it should "recognize floating point values" in {
+    val floating_points =
+      Map[String, TokenKindValue](
+        "1e1f" -> TokenKind.FloatingPoint,
+        "2.f" -> TokenKind.FloatingPoint,
+        ".3f" -> TokenKind.FloatingPoint,
+        "0f" -> TokenKind.FloatingPoint,
+        "3.14f" -> TokenKind.FloatingPoint,
+        "6.022137e+23f" -> TokenKind.FloatingPoint,
+        "1e1" -> TokenKind.FloatingPoint,
+        "2." -> TokenKind.FloatingPoint,
+        ".3" -> TokenKind.FloatingPoint,
+        "0.0" -> TokenKind.FloatingPoint,
+        "3.14" -> TokenKind.FloatingPoint,
+        "1e-9d" -> TokenKind.FloatingPoint,
+        "1e137" -> TokenKind.FloatingPoint
+      )
+    val joosRegexp = TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a,b) => a | b)
+    val scanner = Scanner(DfaNode(joosRegexp))
+    var counter = 1
+
+    floating_points.keys.foreach(
+      num => {
+        num.toCharArray.foreach(c => scanner.scan(c))
+        val tokens = scanner.getTokens()
+        tokens should have length counter
+        counter += 1
+        tokens should contain(new Token(floating_points(num), num))
+        println(num + " cool")
+      }
+    )
+  }
+
+  it should "recognize boolean literals" in {
+    val floating_points =
+      Map[String, TokenKindValue](
+        "true" -> TokenKind.True,
+        "false" -> TokenKind.False
+      )
+    val joosRegexp = TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a,b) => a | b)
+    val scanner = Scanner(DfaNode(joosRegexp))
+    var counter = 1
+
+    floating_points.keys.foreach(
+      num => {
+        num.toCharArray.foreach(c => scanner.scan(c))
+        val tokens = scanner.getTokens()
+        tokens should have length counter
+        counter += 1
+        tokens should contain(new Token(floating_points(num), num))
+        println(num + " cool")
+      }
+    )
+  }
+
+  it should "recognize character literals" in {
+    val characters =
+      Map[String, TokenKindValue](
+        "'a'" -> TokenKind.Character,
+        "'%'" -> TokenKind.Character,
+        "'\\t'" -> TokenKind.Character,
+        "'\\\\'" -> TokenKind.Character,
+        "'\\''" -> TokenKind.Character,
+        "'\\u03a9'" -> TokenKind.Character,
+        "'\\uFFFF'" -> TokenKind.Character,
+        "'\\177'" -> TokenKind.Character
+      )
+    val joosRegexp = TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a,b) => a | b)
+    val scanner = Scanner(DfaNode(joosRegexp))
+    var counter = 1
+
+    characters.keys.foreach(
+      char => {
+        char.toCharArray.foreach(c => scanner.scan(c))
+        val tokens = scanner.getTokens()
+        tokens should have length counter
+        counter += 1
+        tokens should contain(new Token(characters(char), char))
+        println(char + " cool")
+      }
+    )
   }
 }
