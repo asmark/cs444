@@ -37,17 +37,10 @@ class ScannerSpec extends FlatSpec with Matchers {
           NonAcceptingDfaNode().addTransition(CharacterC,
             NonAcceptingDfaNode()))))
 
-  def testSingleToken(str: String, value: TokenKindValue, joosRegexp: RegularExpression) = {
-    println("testing token: " + str)
-    val scanner = Scanner(DfaNode(joosRegexp))
-    println("finish building scanner")
-    str.toCharArray.foreach(c => scanner.scan(c))
-    val tokens = scanner.getTokens()
-    tokens should have length 1
-    tokens should contain(new Token(value, str))
-    println(str + " cool")
-  }
+  final val joosDfa =
+    DfaNode(TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a,b) => a | b))
 
+  // Tests begin here
   "A state with no transition" should "backtrack once to accepting nodes" in {
     val scanner = new Scanner(testDfaDeadEnds)
     val input = Seq(CharacterB, CharacterB, CharacterA, CharacterC, CharacterB, CharacterB)
@@ -179,7 +172,7 @@ class ScannerSpec extends FlatSpec with Matchers {
   "Scanner" should "recognize valid IDs" in {
     val test_ids = Seq[String]("String", "i3", "MAX_VALUE", "isLetterOrDigit")
     test_ids.map(id => {
-      val scanner = Scanner(DfaNode(TokenKind.Id.getRegexp()))
+      val scanner = Scanner(joosDfa)
       id.toCharArray.foreach(c => scanner.scan(c))
       val tokens = scanner.getTokens()
       tokens should have length 1
@@ -195,8 +188,7 @@ class ScannerSpec extends FlatSpec with Matchers {
       "interface", "static", "void", "char", "finally", "long", "strictfp", "volatile", "class", "float",
       "native", "super", "while", "const", "for", "new", "switch", "continue", "goto", "package", "synchronized")
 
-    val joosRegexp = TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a,b) => a | b)
-    val scanner = Scanner(DfaNode(joosRegexp))
+    val scanner = Scanner(joosDfa)
     var counter = 1
 
     TokenKind.values.map(
@@ -229,8 +221,7 @@ class ScannerSpec extends FlatSpec with Matchers {
         "," -> TokenKind.Comma,
         "." -> TokenKind.Dot
       )
-    val joosRegexp = TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a,b) => a | b)
-    val scanner = Scanner(DfaNode(joosRegexp))
+    val scanner = Scanner(joosDfa)
     var counter = 1
 
     separators.keys.foreach(
@@ -259,8 +250,7 @@ class ScannerSpec extends FlatSpec with Matchers {
         "2147483648L" -> TokenKind.DecimalInteger,
         "0xC0B0L" -> TokenKind.HexInteger
       )
-    val joosRegexp = TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a,b) => a | b)
-    val scanner = Scanner(DfaNode(joosRegexp))
+    val scanner = Scanner(joosDfa)
     var counter = 1
 
     integers.keys.foreach(
@@ -292,8 +282,7 @@ class ScannerSpec extends FlatSpec with Matchers {
         "1e-9d" -> TokenKind.FloatingPoint,
         "1e137" -> TokenKind.FloatingPoint
       )
-    val joosRegexp = TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a,b) => a | b)
-    val scanner = Scanner(DfaNode(joosRegexp))
+    val scanner = Scanner(joosDfa)
     var counter = 1
 
     floating_points.keys.foreach(
@@ -314,8 +303,7 @@ class ScannerSpec extends FlatSpec with Matchers {
         "true" -> TokenKind.True,
         "false" -> TokenKind.False
       )
-    val joosRegexp = TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a,b) => a | b)
-    val scanner = Scanner(DfaNode(joosRegexp))
+    val scanner = Scanner(joosDfa)
     var counter = 1
 
     floating_points.keys.foreach(
@@ -342,8 +330,8 @@ class ScannerSpec extends FlatSpec with Matchers {
         "'\\uFFFF'" -> TokenKind.Character,
         "'\\177'" -> TokenKind.Character
       )
-    val joosRegexp = TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a,b) => a | b)
-    val scanner = Scanner(DfaNode(joosRegexp))
+
+    val scanner = Scanner(joosDfa)
     var counter = 1
 
     characters.keys.foreach(
