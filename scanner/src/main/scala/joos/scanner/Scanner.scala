@@ -7,7 +7,9 @@ import scala.Some
 import scala.collection.mutable
 import scala.io.Source
 
-class Scanner(root: DfaNode) {
+class Scanner(dfa: Dfa) {
+
+  val root = dfa.root
 
   private var dfaPath = mutable.Stack[DfaNode](root)
   private var charPath = mutable.Stack[Char]()
@@ -63,7 +65,7 @@ class Scanner(root: DfaNode) {
 }
 
 object Scanner {
-  def apply(dfa: DfaNode): Scanner = {
+  def apply(dfa: Dfa): Scanner = {
     return new Scanner(dfa)
   }
 }
