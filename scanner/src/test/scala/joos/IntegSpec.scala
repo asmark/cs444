@@ -1,6 +1,6 @@
 package joos
 
-import joos.automata.DfaNode
+import joos.automata.Dfa
 import joos.exceptions.ScanningException
 import joos.scanner.Scanner
 import joos.tokens.TokenKind
@@ -20,7 +20,7 @@ class IntegSpec extends FlatSpec with Matchers {
   def getSource(dir: String, file: String) = Source.fromURL(getClass.getResource(dir + "/" + file))
 
   val JoosRegexp = TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a, b) => a | b)
-  val JavaDfa = DfaNode(JoosRegexp)
+  val JavaDfa = Dfa(JoosRegexp)
 
   behavior of "Scanning java programs (checked)"
   getSource(casesDirectory).getLines().foreach {

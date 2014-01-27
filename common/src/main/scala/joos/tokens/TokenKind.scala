@@ -7,6 +7,7 @@ object TokenKind extends Enumeration {
 
   case class TokenKindValue(val name: String, regexp: Function0[RegularExpression]) extends Val(name) {
     def getRegexp() = regexp() := this
+
     def getName() = name
   }
 
@@ -17,7 +18,7 @@ object TokenKind extends Enumeration {
   // In order of priority
 
   // Keywords
-  final val Abstract = TokenKindValue("Abstract", () => TokenKindRegexp.Abstract )
+  final val Abstract = TokenKindValue("Abstract", () => TokenKindRegexp.Abstract)
 
   final val Default = TokenKindValue("Default", () => TokenKindRegexp.Default)
 
@@ -160,7 +161,7 @@ object TokenKind extends Enumeration {
 
   final val Exclamation = TokenKindValue("Exclamation", () => TokenKindRegexp.Exclamation)
 
-  final val Grave = TokenKindValue("Grave", () => TokenKindRegexp.Grave)
+  final val Tilde = TokenKindValue("Tilde", () => TokenKindRegexp.Tilde)
 
   final val Question = TokenKindValue("Question", () => TokenKindRegexp.Question)
 
@@ -183,6 +184,8 @@ object TokenKind extends Enumeration {
   final val Decrement = TokenKindValue("Decrement", () => TokenKindRegexp.Decrement)
 
   final val Plus = TokenKindValue("Plus", () => TokenKindRegexp.Plus)
+
+  final val Minus = TokenKindValue("Minus", () => TokenKindRegexp.Minus)
 
   final val Multiply = TokenKindValue("Multiply", () => TokenKindRegexp.Multiply)
 
@@ -208,7 +211,7 @@ object TokenKind extends Enumeration {
 
   final val MultiplyAssign = TokenKindValue("MultiplyAssign", () => TokenKindRegexp.MultiplyAssign)
 
-  final val DivideAssign = TokenKindValue("Minus", () => TokenKindRegexp.Minus)
+  final val DivideAssign = TokenKindValue("DivideAssign", () => TokenKindRegexp.DivideAssign)
 
   final val BitAndAssign = TokenKindValue("BitAndAssign", () => TokenKindRegexp.BitAndAssign)
 
@@ -222,7 +225,7 @@ object TokenKind extends Enumeration {
 
   final val RightShiftAssign = TokenKindValue("RightShiftAssign", () => TokenKindRegexp.RightShiftAssign)
 
-  final val UsignedRightShiftAssign = TokenKindValue("UsignedRightShiftAssign", () => TokenKindRegexp.UsignedRightShiftAssign)
+  final val UnsignedShiftRightAssign = TokenKindValue("UnsignedRightShiftAssign", () => TokenKindRegexp.UnsignedRightShiftAssign)
 
   // Comments
   final val TraditionalCommentPrefix =
