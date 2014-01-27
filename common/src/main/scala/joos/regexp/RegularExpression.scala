@@ -51,7 +51,7 @@ abstract class RegularExpression {
   }
 
   // Mark as accepting
-  def :=(kind: TokenKind) : RegularExpression = {
+  def :=(kind: TokenKind): RegularExpression = {
     this + Atom(NonAcceptingNfaNode(), AcceptingNfaNode(kind), NfaNode.Epsilon)
   }
 

@@ -2,8 +2,8 @@ package joos
 
 import joos.automata.exceptions.DuplicateTransitionException
 import joos.automata.{AcceptingDfaNode, NonAcceptingDfaNode}
-import org.scalatest.{Matchers, FlatSpec}
 import joos.tokens.TokenKind
+import org.scalatest.{Matchers, FlatSpec}
 
 class DFANodeSpec extends FlatSpec with Matchers {
   val CharacterA = 'A'

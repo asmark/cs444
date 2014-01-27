@@ -1,6 +1,5 @@
 package joos.tokens
 
-import joos.automata.{AcceptingNfaNode, NonAcceptingNfaNode, NfaNode}
 import joos.regexp._
 import scala.language.postfixOps
 
@@ -10,6 +9,7 @@ object TokenKindRegexp {
   def Whitespace = {
     Alternation(" \n\r\t")
   }
+
   // Comments
   // TODO: Adjust this part when we get to parsing
   def TraditionalCommentPrefix = {
@@ -380,7 +380,7 @@ object TokenKindRegexp {
     Atom('!')
   }
 
-  def Grave = {
+  def Tilde = {
     Atom('~')
   }
 
@@ -508,7 +508,7 @@ object TokenKindRegexp {
     Concatenation(">>=")
   }
 
-  def UsignedRightShiftAssign = {
+  def UnsignedRightShiftAssign = {
     Concatenation(">>>=")
   }
 }
