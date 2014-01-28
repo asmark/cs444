@@ -1,14 +1,19 @@
 package joos.automata
 
+import java.io._
 import java.util.regex.Pattern
 import joos.regexp.RegularExpression
 import joos.tokens.TokenKind
 import joos.tokens.TokenKind.TokenKind
+import scala.Some
+import scala.Tuple2
 import scala.collection.mutable
+
 
 class Dfa(val root: DfaNode) {
 
-  def serialize(): String = {
+  def serialize(ostream: OutputStream) {
+    val writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(ostream)))
     var nextId = 0
     val nodeToId = mutable.HashMap[DfaNode, Integer]()
 
@@ -29,11 +34,12 @@ class Dfa(val root: DfaNode) {
       }
     }
 
-    val serialized = StringBuilder.newBuilder.append(s"${nextId}\n")
+    writer.append(s"${nextId}\n")
 
-    type Row = mutable.MutableList[Tuple2[Integer, Int]]
+    type Row = mutable.MutableList[Tuple2[Integer, Integer]]
     type AdjacencyList = Array[Row]
 
+    // Construct the adjacency list and list all nodes followed by their accepting tokens (if any)
     val adjacencyList = new AdjacencyList(nextId)
     nodeToId.foreach {
       entry =>
@@ -47,24 +53,26 @@ class Dfa(val root: DfaNode) {
         }
 
         node match {
-          case AcceptingDfaNode(token: TokenKind) => serialized.append(s"${id}:${token}\n")
-          case NonAcceptingDfaNode() => serialized.append(s"${id}:\n")
+          case AcceptingDfaNode(token: TokenKind) => writer.append(s"${id}:${token}\n")
+          case NonAcceptingDfaNode() => writer.append(s"${id}:\n")
         }
+        writer.flush()
     }
 
+    // For each node, list its edges
     adjacencyList.indices.foreach {
       i =>
-        serialized.append(s"${i}:${adjacencyList(i).mkString(",")}\n")
-        val a = adjacencyList(i).mkString(",")
-        val b = a
+        writer.append(s"${i}:${adjacencyList(i).mkString(",")}\n")
+        writer.flush()
     }
-
-    return serialized.result()
   }
 
 }
 
 object Dfa {
+
+  private val EdgeMatcher = Pattern.compile("\\(([0-9]+),([0-9]+)\\)+")
+
   private def getEpsilonClosure(nfaNodes: Set[NfaNode]): Set[NfaNode] = {
     val epsilonClosure = mutable.Set[NfaNode]()
     nfaNodes.foreach(node => epsilonClosure ++= node.getClosure(NfaNode.Epsilon))
@@ -144,28 +152,27 @@ object Dfa {
     return new Dfa(root)
   }
 
-  def deserialize(dfaString: String): Dfa = {
-    val lines = dfaString.split('\n')
-    val numNodes = lines(0).toInt
+  def deserialize(istream: InputStream): Dfa = {
+    val reader = new BufferedReader(new InputStreamReader(istream));
+    val numNodes = reader.readLine().toInt
 
     val nodeMap = mutable.HashMap.empty[Integer, DfaNode]
 
     for (i <- 0 until numNodes) {
-      val nodeData = lines(i + 1).split(":")
+      val nodeData = reader.readLine().split(":")
       nodeData.length match {
         case 2 => nodeMap += ((nodeData(0).toInt, AcceptingDfaNode(TokenKind.withName(nodeData(1)))))
         case 1 => nodeMap += ((nodeData(0).toInt, NonAcceptingDfaNode()))
       }
     }
 
-
-    for (i <- numNodes + 1 until lines.length) {
-      val nodeData = lines(i).split(":")
+    while (reader.ready()) {
+      val nodeData = reader.readLine().split(":")
       if (nodeData.length > 1) {
         val nodeNum = nodeData(0).toInt
         val edges = nodeData(1)
 
-        val matcher = Pattern.compile("\\(([0-9]+),([0-9]+)\\)+").matcher(edges)
+        val matcher = EdgeMatcher.matcher(edges)
         while (matcher.find()) {
           val neighbour = matcher.group(1).toInt
           val char = matcher.group(2).toInt.toChar

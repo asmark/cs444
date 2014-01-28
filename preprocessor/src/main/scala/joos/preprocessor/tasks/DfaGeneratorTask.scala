@@ -1,6 +1,6 @@
 package joos.preprocessor.tasks
 
-import java.io.FileWriter
+import java.io.FileOutputStream
 import joos.automata.Dfa
 import joos.tokens.TokenKind
 import joos.tokens.TokenKind.TokenKindValue
@@ -18,9 +18,8 @@ object DfaGeneratorTask extends PreProcessorTask {
 
   def executeTask() {
     val path = getResourceDirPath() + DfaFile
-    val writer = new FileWriter(path)
-    writer.write(JoosDfa.serialize())
-    writer.flush()
+    val writer = new FileOutputStream(path)
+    JoosDfa.serialize(writer)
     writer.close()
   }
 }
