@@ -1,3 +1,5 @@
+CompilationUnit
+
 Literal:
   integerliteral
   floatingpointliteral
@@ -275,7 +277,7 @@ ExplicitConstructorInvocation:
 InterfaceDeclaration:
   InterfaceModifiers interface Identifier ExtendsInterfaces InterfaceBody
   interface Identifier ExtendsInterfaces InterfaceBody
-InterfaceModifiers interface Identifier InterfaceBody
+  InterfaceModifiers interface Identifier InterfaceBody
   interface Identifier InterfaceBody
 
 InterfaceModifiers:

@@ -8,6 +8,7 @@ import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
 
 case class ContextFreeGrammar(
+  val start: String,
   val terminals: util.Set[String],
   val nonTerminals: util.Set[String],
   val rules: ListBuffer[ProductionRule]
@@ -20,6 +21,7 @@ case class ContextFreeGrammar(
         terminals.foreach(writer.println)
         writer.println(nonTerminals.size)
         nonTerminals.foreach(writer.println)
+        writer.println(start)
         writer.println(rules.size)
         rules.foreach {
           rule =>
@@ -46,6 +48,8 @@ object ContextFreeGrammar {
         var rules = new ListBuffer[ProductionRule]
         var left = ""
         var line: String = reader.readLine()
+        val start = line
+        line = reader.readLine()
 
         while (line != null) {
           if (!line.isEmpty) {
@@ -77,7 +81,7 @@ object ContextFreeGrammar {
           line = reader.readLine()
         }
 
-        new ContextFreeGrammar(terminals, nonTerminals, rules)
+        new ContextFreeGrammar(start, terminals, nonTerminals, rules)
     }
   }
 }
