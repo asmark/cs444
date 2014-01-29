@@ -48,18 +48,22 @@ object ContextFreeGrammar {
         var rules = new ListBuffer[ProductionRule]
         var left = ""
         var line: String = reader.readLine()
-        val start = line
-        line = reader.readLine()
+        var start = ""
 
         while (line != null) {
-          if (!line.isEmpty) {
+          // Skip comments and empty lines
+          if (!line.isEmpty && line(0) != '#') {
             // If the line does not start with whitespace, then it's the left side
             if (!line(0).isWhitespace) {
-
-              // Remove the ':' at the end if there is one
-              left = line.substring(0, line.length - 1)
+              val colonIndex = line.lastIndexOf(':')
+              // Remove ':' at the end if there is one
+              left =
+                if (colonIndex >= 0) line.substring(0, colonIndex)
+                else line
               terminals -= left
               nonTerminals += left
+
+              start = if (start.isEmpty) left else start
             } else {
               val tokenizer = new StringTokenizer(line)
               val list = new ListBuffer[String]

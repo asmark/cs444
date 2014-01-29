@@ -1,6 +1,6 @@
 package joos.preprocessor
 
-import java.io.{BufferedOutputStream, BufferedInputStream, FileInputStream, FileOutputStream}
+import java.io._
 import java.util.Properties
 import joos.language.ContextFreeGrammar
 import joos.preprocessing.ActionTableGenerator
@@ -18,13 +18,14 @@ object Runner {
 
     val inputStream = getClass().getResourceAsStream('/' + prop.getProperty("grammar"))
     val grammar = ContextFreeGrammar.fromHumanReadableFormat(inputStream)
-    val outputStream = new FileOutputStream(prop.getProperty("machine-grammar"))
+    val machineGrammarFile = new File(prop.getProperty("managed-resource-directory"), prop.getProperty("machine-grammar"))
+    val outputStream = new FileOutputStream(machineGrammarFile)
     grammar.toMachineReadableFormat(outputStream)
     val tableGenerator = new ActionTableGenerator
     tableGenerator
       .createActionTable(
-      new BufferedInputStream(new FileInputStream(prop.getProperty("machine-grammar"))),
-      new BufferedOutputStream(new FileOutputStream("action-table.txt"))
+      new BufferedInputStream(new FileInputStream(machineGrammarFile)),
+      new BufferedOutputStream(new FileOutputStream(new File(prop.getProperty("managed-resource-directory"), "action-table.txt")))
     )
 
     in.close()

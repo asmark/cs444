@@ -1,3 +1,4 @@
+# Start symbol
 CompilationUnit
 
 Literal:

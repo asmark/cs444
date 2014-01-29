@@ -45,8 +45,10 @@ object Joos1wCompilerBuild extends Build {
     settings = commonSettings ++ Seq(
       resourceGenerators in Compile <+= Def.task {
         // Generate a build.properties that the preprocessor can use
-        val file = (resourceManaged in Compile).value / "build.properties"
+        val managedResourceDirectory = (resourceManaged in Compile).value
+        val file = managedResourceDirectory / "build.properties"
         val properties = Map(
+          "managed-resource-directory" -> managedResourceDirectory.getPath.replace('\\', '/'),
           "grammar" -> grammar,
           "machine-grammar" -> machineGrammar
         )
