@@ -103,26 +103,30 @@ TypeDeclaration:
   ;
 
 ClassDeclaration:
-  ClassModifiers class Identifier Super Interfaces ClassBody
-  ClassModifiers class Identifier Interfaces ClassBody
-  ClassModifiers class Identifier Super ClassBody
-  ClassModifiers class Identifier ClassBody
+  Modifiers class Identifier Super Interfaces ClassBody
+  Modifiers class Identifier Interfaces ClassBody
+  Modifiers class Identifier Super ClassBody
+  Modifiers class Identifier ClassBody
   class Identifier Super Interfaces ClassBody
   class Identifier Interfaces ClassBody
   class Identifier Super ClassBody
   class Identifier ClassBody
 
-ClassModifiers:
-  ClassModifier
-  ClassModifiers ClassModifier
+Modifiers:
+  Modifier
+  Modifiers Modifier
 
-ClassModifier:
+Modifier:
   public
   protected
   private
-  abstract
   static
+  abstract
   final
+  native
+  synchronized
+  transient
+  volatile
   strictfp
 
 Super:
@@ -154,8 +158,8 @@ ClassMemberDeclaration:
   ;
 
 FieldDeclaration:
-  FieldModifiers Type VariableDeclarators ;
-  FieldModifiers Type VariableDeclarators ;
+  Modifiers Type VariableDeclarators ;
+  Modifiers Type VariableDeclarators ;
 VariableDeclarators:
   VariableDeclarator
   VariableDeclarators , VariableDeclarator
@@ -169,25 +173,12 @@ VariableInitializer:
   Expression
   ArrayInitializer
 
-FieldModifiers:
-  FieldModifier
-  FieldModifiers FieldModifier
-
-FieldModifier:
-  public
-  protected
-  private
-  static
-  final
-  transient
-  volatile
-
 MethodDeclaration:
   MethodHeader MethodBody
 
 MethodHeader:
-  MethodModifiers ResultType MethodDeclarator Throws
-  MethodModifiers ResultType MethodDeclarator
+  Modifiers ResultType MethodDeclarator Throws
+  Modifiers ResultType MethodDeclarator
   ResultType MethodDeclarator Throws
   ResultType MethodDeclarator
 
@@ -211,22 +202,6 @@ VariableDeclaratorId:
   Identifier
   VariableDeclaratorId [ ]
 
-MethodModifiers:
-  MethodModifier
-  MethodModifiers MethodModifier
-
-MethodModifier:
-  public
-  protected
-  private
-  protected
-  abstract
-  static
-  final
-  synchronized
-  native
-  strictfp
-
 Throws:
   throws ClassTypeList
 ClassTypeList:
@@ -243,22 +218,13 @@ StaticInitializer:
   static Block
 
 ConstructorDeclaration:
-  ConstructorModifiers ConstructorDeclarator Throws ConstructorBody
-  ConstructorModifiers ConstructorDeclarator ConstructorBody
+  Modifiers ConstructorDeclarator Throws ConstructorBody
+  Modifiers ConstructorDeclarator ConstructorBody
   ConstructorDeclarator Throws ConstructorBody
   ConstructorDeclarator ConstructorBody
 ConstructorDeclarator:
   SimpleTypeName ( FormalParameterList )
   SimpleTypeName ( )
-
-ConstructorModifiers:
-  ConstructorModifier
-  ConstructorModifiers ConstructorModifier
-
-ConstructorModifier:
-  public
-  protected
-  private
 
 ConstructorBody:
   { ExplicitConstructorInvocation BlockStatements }
@@ -275,22 +241,10 @@ ExplicitConstructorInvocation:
   Primary . super ( ) ;
 
 InterfaceDeclaration:
-  InterfaceModifiers interface Identifier ExtendsInterfaces InterfaceBody
+  Modifiers interface Identifier ExtendsInterfaces InterfaceBody
   interface Identifier ExtendsInterfaces InterfaceBody
-  InterfaceModifiers interface Identifier InterfaceBody
+  Modifiers interface Identifier InterfaceBody
   interface Identifier InterfaceBody
-
-InterfaceModifiers:
-  InterfaceModifier
-  InterfaceModifiers InterfaceModifier
-
-InterfaceModifier:
-  public
-  protected
-  private
-  abstract
-  static
-  strictfp
 
 ExtendsInterfaces:
   extends InterfaceType
@@ -312,31 +266,14 @@ InterfaceMemberDeclaration:
   ;
 
 ConstantDeclaration:
-  ConstantModifiers Type VariableDeclarators
+  Modifiers Type VariableDeclarators
   Type VariableDeclarators
 
-ConstantModifiers:
-  ConstantModifier
-  ConstantModifiers ConstantModifier
-
-ConstantModifier:
-  public
-  static
-  final
-
 AbstractMethodDeclaration:
-  AbstractMethodModifiers ResultType MethodDeclarator Throws ;
+  Modifiers ResultType MethodDeclarator Throws ;
   ResultType MethodDeclarator Throws ;
-  AbstractMethodModifiers ResultType MethodDeclarator ;
+  Modifiers ResultType MethodDeclarator ;
   ResultType MethodDeclarator ;
-
-AbstractMethodModifiers:
-  AbstractMethodModifier
-  AbstractMethodModifiers AbstractMethodModifier
-
-AbstractMethodModifier:
-  public
-  abstract
 
 ArrayInitializer:
   { VariableInitializers , }
