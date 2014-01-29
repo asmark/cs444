@@ -53,6 +53,7 @@
         <entry key="xml" value="XML" />
       </map>
     </option>
+    <option name="showArgumentsToByNameParams" value="true" />
     <option name="sortImports" value="true" />
   </component>
 </project>

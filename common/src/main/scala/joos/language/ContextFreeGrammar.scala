@@ -1,0 +1,66 @@
+package joos.language
+
+import java.io._
+import java.util
+import java.util.StringTokenizer
+import joos.core._
+import scala.collection.JavaConversions._
+import scala.collection.mutable.ListBuffer
+
+case class ContextFreeGrammar(
+  val terminals: Set[String],
+  val nonTerminals: Set[String],
+  val rules: List[ProductionRule]
+) {
+
+  def toMachineReadableFormat(outputStream: OutputStream): this.type = {
+
+    this
+  }
+}
+
+object ContextFreeGrammar {
+  def fromHumanReadableFormat(inputStream: InputStream): ContextFreeGrammar = {
+
+    using(new BufferedReader(new InputStreamReader(inputStream))) {
+      reader =>
+        val terminals = new util.LinkedHashSet[String]
+        val nonTerminals = new util.LinkedHashSet[String]
+        var rules = List.empty[ProductionRule]
+        var left = ""
+        var line: String = reader.readLine()
+
+        while (line != null) {
+          if (!line.isEmpty) {
+            // If the line does not start with whitespace, then it's the left side
+            if (!line(0).isWhitespace) {
+
+              // Remove the ':' at the end if there is one
+              left = line.substring(0, line.length - 1)
+              terminals -= left
+              nonTerminals += left
+            } else {
+              val tokenizer = new StringTokenizer(line)
+              val list = new ListBuffer[String]
+              while (tokenizer.hasMoreTokens) {
+                val token = tokenizer.nextToken()
+                // If the token is not a non-terminal, add it to terminals
+                if (!nonTerminals.contains(token)) {
+                  terminals += token
+                }
+                list += token
+              }
+
+              if (list.size > 0) {
+                rules = ProductionRule(left, list.toList) :: rules
+              }
+            }
+          }
+
+          line = reader.readLine()
+        }
+
+        new ContextFreeGrammar(terminals.toSet, nonTerminals.toSet, rules)
+    }
+  }
+}
