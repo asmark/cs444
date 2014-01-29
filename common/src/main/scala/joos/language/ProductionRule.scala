@@ -1,3 +1,5 @@
 package joos.language
 
-case class ProductionRule(val left: String, val right: List[String])
+import scala.collection.mutable.ListBuffer
+
+case class ProductionRule(val left: String, val right: ListBuffer[String])

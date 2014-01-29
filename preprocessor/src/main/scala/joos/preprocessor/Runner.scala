@@ -1,7 +1,7 @@
 package joos.preprocessor
 
 import joos.preprocessor.tasks.DfaGeneratorTask
-import java.io.{FileInputStream, InputStream}
+import java.io.{FileOutputStream}
 import java.util.Properties
 import joos.language.ContextFreeGrammar
 
@@ -17,6 +17,8 @@ object Runner {
 
     val inputStream = getClass().getResourceAsStream('/' + prop.getProperty("grammar"))
     val grammar = ContextFreeGrammar.fromHumanReadableFormat(inputStream)
+    val outputStream = new FileOutputStream(prop.getProperty("machine-grammar"))
+    grammar.toMachineReadableFormat(outputStream)
 
     in.close()
   }

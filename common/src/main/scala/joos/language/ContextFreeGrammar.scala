@@ -8,13 +8,30 @@ import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
 
 case class ContextFreeGrammar(
-  val terminals: Set[String],
-  val nonTerminals: Set[String],
-  val rules: List[ProductionRule]
+  val terminals: util.Set[String],
+  val nonTerminals: util.Set[String],
+  val rules: ListBuffer[ProductionRule]
 ) {
 
   def toMachineReadableFormat(outputStream: OutputStream): this.type = {
-
+    using(new PrintWriter(new OutputStreamWriter(outputStream))) {
+      writer =>
+        writer.println(terminals.size)
+        terminals.foreach(writer.println)
+        writer.println(nonTerminals.size)
+        nonTerminals.foreach(writer.println)
+        writer.println(rules.size)
+        rules.foreach {
+          rule =>
+            writer.print(rule.left)
+            rule.right.foreach {
+              token =>
+                writer.print(' ')
+                writer.print(token)
+            }
+            writer.println()
+        }
+    }
     this
   }
 }
@@ -26,7 +43,7 @@ object ContextFreeGrammar {
       reader =>
         val terminals = new util.LinkedHashSet[String]
         val nonTerminals = new util.LinkedHashSet[String]
-        var rules = List.empty[ProductionRule]
+        var rules = new ListBuffer[ProductionRule]
         var left = ""
         var line: String = reader.readLine()
 
@@ -52,7 +69,7 @@ object ContextFreeGrammar {
               }
 
               if (list.size > 0) {
-                rules = ProductionRule(left, list.toList) :: rules
+                rules += ProductionRule(left, list)
               }
             }
           }
@@ -60,7 +77,7 @@ object ContextFreeGrammar {
           line = reader.readLine()
         }
 
-        new ContextFreeGrammar(terminals.toSet, nonTerminals.toSet, rules)
+        new ContextFreeGrammar(terminals, nonTerminals, rules)
     }
   }
 }
