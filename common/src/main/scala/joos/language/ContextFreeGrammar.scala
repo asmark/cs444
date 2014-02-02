@@ -1,17 +1,16 @@
 package joos.language
 
 import java.io._
-import java.util
 import java.util.StringTokenizer
 import joos.core._
-import scala.collection.JavaConversions._
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.{ArrayBuffer}
+import scala.collection.mutable
 
 case class ContextFreeGrammar(
-  val start: String,
-  val terminals: util.Set[String],
-  val nonTerminals: util.Set[String],
-  val rules: ListBuffer[ProductionRule]
+  start: String,
+  terminals: collection.Set[String],
+  nonTerminals: collection.Set[String],
+  rules: IndexedSeq[ProductionRule]
 ) {
 
   def toMachineReadableFormat(outputStream: OutputStream): this.type = {
@@ -43,9 +42,9 @@ object ContextFreeGrammar {
 
     using(new BufferedReader(new InputStreamReader(inputStream))) {
       reader =>
-        val terminals = new util.LinkedHashSet[String]
-        val nonTerminals = new util.LinkedHashSet[String]
-        var rules = new ListBuffer[ProductionRule]
+        val terminals = mutable.LinkedHashSet.empty[String]
+        val nonTerminals = mutable.LinkedHashSet.empty[String]
+        var rules = ArrayBuffer.empty[ProductionRule]
         var left = ""
         var line: String = reader.readLine()
         var start = ""
@@ -66,7 +65,7 @@ object ContextFreeGrammar {
               start = if (start.isEmpty) left else start
             } else {
               val tokenizer = new StringTokenizer(line)
-              val list = new ListBuffer[String]
+              val list = new ArrayBuffer[String]
               while (tokenizer.hasMoreTokens) {
                 val token = tokenizer.nextToken()
                 // If the token is not a non-terminal, add it to terminals
