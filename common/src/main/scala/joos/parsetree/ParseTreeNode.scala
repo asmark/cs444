@@ -1,6 +1,6 @@
 package joos.parsetree
 
-import scala.collection.mutable
+import java.util
 
 abstract class ParseTreeNode() {
   val itemType: String
@@ -9,9 +9,10 @@ abstract class ParseTreeNode() {
 }
 
 case class NonTerminalNode(itemType: String,
-                           val producedSymbols: mutable.LinkedHashMap[String, ParseTreeNode]) extends ParseTreeNode {
+                           val producedSymbols: util.ArrayList[ParseTreeNode]) extends ParseTreeNode {
   def getProducedSymboles = producedSymbols
 }
+
 case class TerminalNode(itemType: String,
                         val value:Any) extends ParseTreeNode {
   def getValue = value
