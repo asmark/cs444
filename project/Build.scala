@@ -1,17 +1,19 @@
 import sbt._
-import Keys._
+import sbt.Keys._
+import sbtassembly.Plugin._
+import AssemblyKeys._
 
 object Dependencies {
   val scalaTest = "org.scalatest" % "scalatest_2.10" % "2.0" % "test"
 }
 
-object Tasks {
-  val compileAll = TaskKey[Unit]("compile-all", "Compile everything")
-}
-
 object Joos1wCompilerBuild extends Build {
 
+  val grammar = "joos-1w-grammar.txt"
+  val machineGrammar = "joos-1w-machine-grammar.txt"
+
   val commonSettings = Defaults.defaultSettings ++ Seq(
+    crossPaths := false,
     fork in run := true,
     version := "1.0.0",
     scalaVersion := "2.10.3",
@@ -26,6 +28,8 @@ object Joos1wCompilerBuild extends Build {
     libraryDependencies ++= Seq(
       Dependencies.scalaTest
     )
+  ) ++ assemblySettings ++ Seq(
+    assemblyOption in assembly ~= { _.copy(includeScala = false) }
   )
 
   // Codes shared across multiple components
@@ -35,10 +39,33 @@ object Joos1wCompilerBuild extends Build {
     settings = commonSettings
   )
 
-  lazy val preprocessor = Project(
+  lazy val preprocessor: Project = Project(
     id = "preprocessor",
     base = file("preprocessor"),
-    settings = commonSettings
+    settings = commonSettings ++ Seq(
+      resourceGenerators in Compile <+= Def.task {
+        // Generate a build.properties that the preprocessor can use
+        val managedResourceDirectory = (resourceManaged in Compile).value
+        val file = managedResourceDirectory / "build.properties"
+        val properties = Map(
+          "managed-resource-directory" -> managedResourceDirectory.getPath.replace('\\', '/'),
+          "grammar" -> grammar,
+          "machine-grammar" -> machineGrammar
+        )
+
+        val builder = new StringBuilder()
+        for ((key, value) <- properties) {
+          builder
+            .append(key)
+            .append('=')
+            .append(value)
+            .append('\n')
+        }
+
+        IO.write(file, builder.toString())
+        Seq(file)
+      }
+    )
   ) dependsOn (common)
 
   lazy val scanner = Project(
@@ -51,26 +78,20 @@ object Joos1wCompilerBuild extends Build {
     id = "parser",
     base = file("parser"),
     settings = commonSettings
-  ) dependsOn(common, scanner)
+  ) dependsOn(common, scanner, preprocessor)
 
   lazy val compiler = Project(
     id = "compiler",
     base = file("compiler"),
     settings = commonSettings ++ Seq(
-      name := "Joos 1W Compiler"
+      description := "Joos 1W Compiler"
     )
   ) dependsOn(common, preprocessor, scanner, parser)
 
   lazy val project = Project(
     id = "cs-444",
     base = file("."),
-    settings = commonSettings ++ Seq(
-      name := "CS 444",
-      Tasks.compileAll := {
-        val a = (compile in Compile in compiler).toTask.value
-        val b = (run in Compile in preprocessor).toTask("").value
-      }
-    )
+    settings = commonSettings
   ) aggregate(compiler, common, preprocessor, scanner, parser)
 
 }
