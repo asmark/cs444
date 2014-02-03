@@ -1,8 +1,7 @@
 package joos
 
+import java.io.FileInputStream
 import org.scalatest.{Matchers, FlatSpec}
-import scala.io.Source
-import java.io.{FileInputStream, InputStream}
 
 class LrOneReaderSpec extends FlatSpec with Matchers {
   final val sampleFileName = "/sample.lr1"

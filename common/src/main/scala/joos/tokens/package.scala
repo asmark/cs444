@@ -8,8 +8,10 @@ package object tokens {
 
   final val DIGITS = Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9').mkString("")
   final val NON_ZERO_DIGITS = DIGITS.slice(1, DIGITS.length).mkString("")
-  final val HEX_DIGITS = (DIGITS ++ Array('a', 'b', 'c', 'd', 'e', 'f',
-    'A', 'B', 'C', 'D', 'E', 'F')).mkString("")
+  final val HEX_DIGITS = (DIGITS ++ Array(
+    'a', 'b', 'c', 'd', 'e', 'f',
+    'A', 'B', 'C', 'D', 'E', 'F'
+  )).mkString("")
   final val OCTAL_DIGITS = DIGITS.slice(0, 8).mkString("")
 
   final val ALPHABETS = {

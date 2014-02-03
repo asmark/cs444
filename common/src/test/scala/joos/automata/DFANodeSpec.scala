@@ -1,7 +1,6 @@
-package joos
+package joos.automata
 
 import joos.automata.exceptions.DuplicateTransitionException
-import joos.automata.{AcceptingDfaNode, NonAcceptingDfaNode}
 import joos.tokens.TokenKind
 import org.scalatest.{Matchers, FlatSpec}
 

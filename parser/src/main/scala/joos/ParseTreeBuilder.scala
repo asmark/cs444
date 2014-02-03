@@ -37,7 +37,7 @@ class ParseTreeBuilder(actionTable: LrOneActionTable) {
 }
 
 object ParseTreeBuilder {
-  def apply(actionTable : LrOneActionTable) : ParseTreeBuilder = {
+  def apply(actionTable: LrOneActionTable): ParseTreeBuilder = {
     new ParseTreeBuilder(actionTable)
   }
 }

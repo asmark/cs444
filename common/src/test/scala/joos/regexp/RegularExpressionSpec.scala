@@ -1,7 +1,6 @@
-package joos
+package joos.regexp
 
 import joos.automata.{NfaNode, AcceptingNfaNode, NonAcceptingNfaNode}
-import joos.regexp.Atom
 import joos.tokens.TokenKind
 import org.scalatest._
 import scala.language.postfixOps

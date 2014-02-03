@@ -225,7 +225,10 @@ object TokenKind extends Enumeration {
 
   final val RightShiftAssign = TokenKindValue("RightShiftAssign", () => TokenKindRegexp.RightShiftAssign)
 
-  final val UnsignedShiftRightAssign = TokenKindValue("UnsignedRightShiftAssign", () => TokenKindRegexp.UnsignedRightShiftAssign)
+  final val UnsignedShiftRightAssign = TokenKindValue(
+    "UnsignedRightShiftAssign",
+    () => TokenKindRegexp.UnsignedRightShiftAssign
+  )
 
   // Comments
   final val TraditionalCommentPrefix =

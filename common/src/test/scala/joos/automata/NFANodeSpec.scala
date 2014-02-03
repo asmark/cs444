@@ -1,6 +1,5 @@
-package joos
+package joos.automata
 
-import joos.automata._
 import joos.tokens.TokenKind
 import org.scalatest.{Matchers, FlatSpec}
 

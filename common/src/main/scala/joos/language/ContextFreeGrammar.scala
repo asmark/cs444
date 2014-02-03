@@ -3,8 +3,8 @@ package joos.language
 import java.io._
 import java.util.StringTokenizer
 import joos.core._
-import scala.collection.mutable.{ArrayBuffer}
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 case class ContextFreeGrammar(
   start: String,

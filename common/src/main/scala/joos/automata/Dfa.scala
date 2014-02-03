@@ -85,7 +85,11 @@ object Dfa {
       case node: AcceptingNfaNode => node.kind
     }
 
-    return if (acceptingKinds.isEmpty) NonAcceptingDfaNode() else AcceptingDfaNode(TokenKind.getHighestPriority(acceptingKinds))
+    return if (acceptingKinds.isEmpty) NonAcceptingDfaNode()
+    else AcceptingDfaNode(
+      TokenKind
+        .getHighestPriority(acceptingKinds)
+    )
   }
 
   private def getOrCreateDfaNode(dfaNodes: mutable.HashMap[Set[NfaNode], DfaNode], nfaNodes: Set[NfaNode]): DfaNode = {
