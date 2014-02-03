@@ -44,7 +44,7 @@ class LrOneReader(source: InputStream) {
   assert(parseActions.size == numActions)
   assert(!reader.ready())
 
-  def actionTable = new LrOneActionTable(parseActions)
+  def actionTable = new LrOneActionTable(startSymbol, parseActions)
 }
 
 object LrOneReader {

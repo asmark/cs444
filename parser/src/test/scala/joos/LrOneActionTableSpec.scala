@@ -28,11 +28,15 @@ class LrOneActionTableSpec extends FlatSpec with Matchers {
     actionTable.isShift(15, "BOF") shouldEqual false
   }
 
+  it should "return the correct start symbol" in {
+    actionTable.startSymbol shouldEqual "S"
+  }
+
   behavior of "reduce"
   it should "determine the correct production rule on a valid reduce" in {
     val productionRule = actionTable.reduce(8, "EOF")
-    productionRule.left shouldEqual ("expr")
-    productionRule.right shouldEqual Seq("expr", "-", "term")
+    productionRule.base shouldEqual ("expr")
+    productionRule.derivation shouldEqual Seq("expr", "-", "term")
   }
 
   it should "throw an exception on an invalid reduce" in {

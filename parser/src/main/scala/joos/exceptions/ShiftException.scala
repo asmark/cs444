@@ -1,3 +1,3 @@
 package joos.exceptions
 
-class ShiftException(msg: String) extends RuntimeException(msg)
+class ShiftException(msg: String) extends JoosParseException(msg)
