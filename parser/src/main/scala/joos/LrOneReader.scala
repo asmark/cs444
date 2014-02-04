@@ -8,11 +8,11 @@ class LrOneReader(source: InputStream) {
   private val reader = new BufferedReader(new InputStreamReader(source));
 
   val numTerminals = reader.readLine().toInt
-  val terminals = Range(0, numTerminals).map(i => reader.readLine()).toSet
+  val terminals = Range(0, numTerminals).foldRight(mutable.Set.empty[String])((idx,set) => set += reader.readLine())
   assert(terminals.size == numTerminals)
 
   val numNonTerminals = reader.readLine().toInt
-  val nonTerminals = Range(0, numNonTerminals).map(i => reader.readLine()).toSet
+  val nonTerminals = Range(0, numNonTerminals).foldRight(mutable.Set.empty[String])((idx,set) => set += reader.readLine())
   assert(nonTerminals.size == numNonTerminals)
 
   val startSymbol = reader.readLine()
@@ -24,13 +24,13 @@ class LrOneReader(source: InputStream) {
       val rule = reader.readLine().split(" ", 2)
       assert(rule.length == 2)
       ProductionRule(rule(0), rule(1).split(" "))
-  }.toVector
+  }
   assert(productionRules.size == numProductionRules)
 
   val numStates = reader.readLine().toInt
 
   val numActions = reader.readLine().toInt
-  val parseActions = Range(0, numActions).foldRight(mutable.HashMap.empty[Tuple2[Int, String], ParseAction]) {
+  val parseActions = Range(0, numActions).foldRight(mutable.HashMap.empty[(Int, String), ParseAction]) {
     (idx, map) =>
       val actionData = reader.readLine().split(" ")
       assert(actionData.length == 4)
@@ -39,8 +39,8 @@ class LrOneReader(source: InputStream) {
         case "shift" => ShiftAction(actionData(0).toInt, actionData(1), actionData(3).toInt)
         case "reduce" => ReduceAction(actionData(0).toInt, actionData(1), productionRules(actionData(3).toInt))
       }
-      map += Tuple2((action.startState, action.trigger), action)
-  }.toMap
+      map += (((action.startState, action.trigger), action))
+  }
   assert(parseActions.size == numActions)
   assert(!reader.ready())
 

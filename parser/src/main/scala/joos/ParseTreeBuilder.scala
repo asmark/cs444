@@ -21,7 +21,7 @@ class ParseTreeBuilder(actionTable: LrOneActionTable) {
 
           val childNodes = Range(0, productionRule.derivation.length).map {
             i => stateStack.pop(); nodeStack.pop()
-          }.toVector.reverse
+          }.reverse
 
           nodeStack.push(TreeNode(productionRule.base, childNodes))
           stateStack.push(actionTable.shift(stateStack.top, productionRule.base))
@@ -32,7 +32,7 @@ class ParseTreeBuilder(actionTable: LrOneActionTable) {
     }
 
     assert(nodeStack.length == 3)
-    ParseTree(TreeNode("root", nodeStack.toVector.reverse))
+    ParseTree(nodeStack(1))
   }
 }
 

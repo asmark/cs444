@@ -14,16 +14,15 @@ class ParseTreeBuilderSpec extends FlatSpec with Matchers {
 
     val tree = parseTreeBuilder.build(Seq("(", "id", "-", "(", "id", "-", "id", ")", ")")).levelOrder
 
-    tree.length shouldEqual 9
-    tree(0) shouldEqual Seq("root")
-    tree(1) shouldEqual Seq("BOF", "expr", "EOF")
-    tree(2) shouldEqual Seq("term")
-    tree(3) shouldEqual Seq("(", "expr", ")")
-    tree(4) shouldEqual Seq("expr", "-", "term")
-    tree(5) shouldEqual Seq("term", "(", "expr", ")")
-    tree(6) shouldEqual Seq("id", "expr", "-", "term")
-    tree(7) shouldEqual Seq("term", "id")
-    tree(8) shouldEqual Seq("id")
+    tree.length shouldEqual 8
+    tree(0) shouldEqual Seq("expr")
+    tree(1) shouldEqual Seq("term")
+    tree(2) shouldEqual Seq("(", "expr", ")")
+    tree(3) shouldEqual Seq("expr", "-", "term")
+    tree(4) shouldEqual Seq("term", "(", "expr", ")")
+    tree(5) shouldEqual Seq("id", "expr", "-", "term")
+    tree(6) shouldEqual Seq("term", "id")
+    tree(7) shouldEqual Seq("id")
   }
 
   "An invalid sequence of tokens" should "result in an exception" in {
