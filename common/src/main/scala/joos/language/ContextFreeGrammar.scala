@@ -44,7 +44,7 @@ object ContextFreeGrammar {
       reader =>
         val terminals = mutable.LinkedHashSet.empty[String]
         val nonTerminals = mutable.LinkedHashSet.empty[String]
-        var rules = ArrayBuffer.empty[ProductionRule]
+        val rulesBuilder = ArrayBuffer.empty[ProductionRule]
         var left = ""
         var line: String = reader.readLine()
         var start = ""
@@ -67,7 +67,10 @@ object ContextFreeGrammar {
               val tokenizer = new StringTokenizer(line)
               val list = new ArrayBuffer[String]
               while (tokenizer.hasMoreTokens) {
-                val token = tokenizer.nextToken()
+                var token = tokenizer.nextToken()
+                if (token.endsWith("opt")) {
+                  token = token.substring(0, token.length - 3)
+                }
                 // If the token is not a non-terminal, add it to terminals
                 if (!nonTerminals.contains(token)) {
                   terminals += token
@@ -76,7 +79,7 @@ object ContextFreeGrammar {
               }
 
               if (list.size > 0) {
-                rules += ProductionRule(left, list)
+                ProductionRule(left, list).expand(rulesBuilder)
               }
             }
           }
@@ -84,7 +87,7 @@ object ContextFreeGrammar {
           line = reader.readLine()
         }
 
-        new ContextFreeGrammar(start, terminals, nonTerminals, rules)
+        new ContextFreeGrammar(start, terminals, nonTerminals, rulesBuilder)
     }
   }
 }
