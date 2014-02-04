@@ -1,19 +1,9 @@
 package joos.parsetree
 
-import java.util
-
-abstract class ParseTreeNode() {
-  val itemType: String
-
-  def getItemType = itemType
+abstract class ParseTreeNode {
+  def symbol: String
 }
 
-case class NonTerminalNode(itemType: String,
-                           val producedSymbols: util.ArrayList[ParseTreeNode]) extends ParseTreeNode {
-  def getProducedSymboles = producedSymbols
-}
+case class TreeNode(val symbol: String, val children: IndexedSeq[ParseTreeNode]) extends ParseTreeNode
 
-case class TerminalNode(itemType: String,
-                        val value:Any) extends ParseTreeNode {
-  def getValue = value
-}
+case class LeafNode(val symbol: String) extends ParseTreeNode

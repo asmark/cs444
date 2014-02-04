@@ -3,8 +3,8 @@ package joos.language
 import java.io._
 import java.util.StringTokenizer
 import joos.core._
-import scala.collection.mutable.{ArrayBuffer}
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 case class ContextFreeGrammar(
   start: String,
@@ -24,8 +24,8 @@ case class ContextFreeGrammar(
         writer.println(rules.size)
         rules.foreach {
           rule =>
-            writer.print(rule.left)
-            rule.right.foreach {
+            writer.print(rule.base)
+            rule.derivation.foreach {
               token =>
                 writer.print(' ')
                 writer.print(token)
