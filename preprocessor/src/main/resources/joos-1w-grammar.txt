@@ -6,8 +6,6 @@ Literal:
 
   IntegerLiteral
 
-  FloatingPointLiteral
-
   BooleanLiteral
 
   CharacterLiteral
@@ -19,10 +17,6 @@ Literal:
 IntegerLiteral:
 
   DecimalIntLiteral
-
-  HexIntLiteral
-
-  OctalIntLiteral
 
 BooleanLiteral:
 
@@ -46,18 +40,11 @@ NumericType:
 
   IntegralType
 
-  FloatingPointType
-
 IntegralType:
   byte
   short
   int
-  long
   char
-
-FloatingPointType:
-  float
-  double
 
 ReferenceType:
 
@@ -82,8 +69,6 @@ ArrayType:
   PrimitiveType [ ]
 
   Name [ ]
-
-  ArrayType [ ]
 
 Name:
 
@@ -150,19 +135,14 @@ Modifiers:
 Modifier:
   public
   protected
-  private
   static
   abstract
   final
   native
-  synchronized
-  transient
-  volatile
-  strictfp
 
 ClassDeclaration:
 
-  Modifiersopt class Identifier SuperClauseopt Interfacesopt ClassBody
+  Modifiers class Identifier SuperClauseopt Interfacesopt ClassBody
 
 SuperClause:
 
@@ -192,8 +172,6 @@ ClassBodyDeclaration:
 
   ClassMemberDeclaration
 
-  StaticInitializer
-
   ConstructorDeclaration
 
 ClassMemberDeclaration:
@@ -204,13 +182,7 @@ ClassMemberDeclaration:
 
 FieldDeclaration:
 
-  Modifiersopt Type VariableDeclarators ;
-
-VariableDeclarators:
-
-  VariableDeclarator
-
-  VariableDeclarators , VariableDeclarator
+  Modifiers Type VariableDeclarator ;
 
 VariableDeclarator:
 
@@ -222,13 +194,9 @@ VariableDeclaratorId:
 
   Identifier
 
-  VariableDeclaratorId [ ]
-
 VariableInitializer:
 
   Expression
-
-  ArrayInitializer
 
 MethodDeclaration:
 
@@ -236,15 +204,13 @@ MethodDeclaration:
 
 MethodHeader:
 
-  Modifiersopt Type MethodDeclarator ThrowsClauseopt
+  Modifiers Type MethodDeclarator
 
-  Modifiersopt void MethodDeclarator ThrowsClauseopt
+  Modifiers void MethodDeclarator
 
 MethodDeclarator:
 
   Identifier ( FormalParameterListopt )
-
-  MethodDeclarator [ ]
 
 FormalParameterList:
 
@@ -255,10 +221,6 @@ FormalParameterList:
 FormalParameter:
 
   Type VariableDeclaratorId
-
-ThrowsClause:
-
-  throws ClassTypeList
 
 ClassTypeList:
 
@@ -272,13 +234,9 @@ MethodBody:
 
   ;
 
-StaticInitializer:
-
-  static Block
-
 ConstructorDeclaration:
 
-  Modifiersopt ConstructorDeclarator ThrowsClauseopt ConstructorBody
+  Modifiers ConstructorDeclarator ConstructorBody
 
 ConstructorDeclarator:
 
@@ -286,17 +244,11 @@ ConstructorDeclarator:
 
 ConstructorBody:
 
-  { ExplicitConstructorInvocationopt BlockStatementsopt }
-
-ExplicitConstructorInvocation:
-
-  this ( ArgumentListopt ) ;
-
-  super ( ArgumentListopt ) ;
+  { BlockStatementsopt }
 
 InterfaceDeclaration:
 
-  Modifiersopt interface Identifier ExtendsInterfacesopt InterfaceBody
+  Modifiers interface Identifier ExtendsInterfacesopt InterfaceBody
 
 ExtendsInterfaces:
 
@@ -328,10 +280,6 @@ AbstractMethodDeclaration:
 
   MethodHeader ;
 
-ArrayInitializer:
-
-  { VariableInitializersopt ,opt }
-
 VariableInitializers:
 
   VariableInitializer
@@ -360,13 +308,11 @@ LocalVariableDeclarationStatement:
 
 LocalVariableDeclaration:
 
-  Type VariableDeclarators
+  Type VariableDeclarator
 
 Statement:
 
   StatementWithoutTrailingSubstatement
-
-  LabeledStatement
 
   IfThenStatement
 
@@ -379,8 +325,6 @@ Statement:
 StatementNoShortIf:
 
   StatementWithoutTrailingSubstatement
-
-  LabeledStatementNoShortIf
 
   IfThenElseStatementNoShortIf
 
@@ -396,33 +340,11 @@ StatementWithoutTrailingSubstatement:
 
   ExpressionStatement
 
-  SwitchStatement
-
-  DoStatement
-
-  BreakStatement
-
-  ContinueStatement
-
   ReturnStatement
-
-  SynchronizedStatement
-
-  ThrowStatement
-
-  TryStatement
 
 EmptyStatement:
 
   ;
-
-LabeledStatement:
-
-  Identifier : Statement
-
-LabeledStatementNoShortIf:
-
-  Identifier : StatementNoShortIf
 
 ExpressionStatement:
 
@@ -456,36 +378,6 @@ IfThenElseStatementNoShortIf:
 
   if ( Expression ) StatementNoShortIf else StatementNoShortIf
 
-SwitchStatement:
-
-  switch ( Expression ) SwitchBlock
-
-SwitchBlock:
-
-  { SwitchBlockStatementGroupsopt SwitchLabelsopt }
-
-SwitchBlockStatementGroups:
-
-  SwitchBlockStatementGroup
-
-  SwitchBlockStatementGroups SwitchBlockStatementGroup
-
-SwitchBlockStatementGroup:
-
-  SwitchLabels BlockStatements
-
-SwitchLabels:
-
-  SwitchLabel
-
-  SwitchLabels SwitchLabel
-
-SwitchLabel:
-
-  case ConstantExpression :
-
-  default :
-
 WhileStatement:
 
   while ( Expression ) Statement
@@ -493,10 +385,6 @@ WhileStatement:
 WhileStatementNoShortIf:
 
   while ( Expression ) StatementNoShortIf
-
-DoStatement:
-
-  do Statement while ( Expression ) ;
 
 ForStatement:
 
@@ -508,59 +396,17 @@ ForStatementNoShortIf:
 
 ForInit:
 
-  StatementExpressionList
+  StatementExpression
 
   LocalVariableDeclaration
 
 ForUpdate:
 
-  StatementExpressionList
-
-StatementExpressionList:
-
   StatementExpression
-
-  StatementExpressionList , StatementExpression
-
-BreakStatement:
-
-  break Identifieropt ;
-
-ContinueStatement:
-
-  continue Identifieropt ;
 
 ReturnStatement:
 
   return Expressionopt ;
-
-ThrowStatement:
-
-  throw Expression ;
-
-SynchronizedStatement:
-
-  synchronized ( Expression ) Block
-
-TryStatement:
-
-  try Block Catches
-
-  try Block Catchesopt FinallyClause
-
-Catches:
-
-  CatchClause
-
-  Catches CatchClause
-
-CatchClause:
-
-  catch ( FormalParameter ) Block
-
-FinallyClause:
-
-  finally Block
 
 Primary:
 
@@ -596,17 +442,13 @@ ArgumentList:
 
 ArrayCreationExpression:
 
-  new PrimitiveType DimExprs Dimsopt
+  new PrimitiveType DimExpr
 
-  new ClassOrInterfaceType DimExprs Dimsopt
-
-DimExprs:
-
-  DimExpr
-
-  DimExprs DimExpr
+  new ClassOrInterfaceType DimExpr
 
 DimExpr:
+
+  Dims
 
   [ Expression ]
 
@@ -614,21 +456,15 @@ Dims:
 
   [ ]
 
-  Dims [ ]
-
 FieldAccess:
 
   Primary . Identifier
-
-  super . Identifier
 
 MethodInvocation:
 
   Name ( ArgumentListopt )
 
   Primary . Identifier ( ArgumentListopt )
-
-  super . Identifier ( ArgumentListopt )
 
 ArrayAccess:
 
@@ -642,37 +478,11 @@ PostfixExpression:
 
   Name
 
-  PostIncrementExpression
-
-  PostDecrementExpression
-
-PostIncrementExpression:
-
-  PostfixExpression ++
-
-PostDecrementExpression:
-
-  PostfixExpression --
-
 UnaryExpression:
-
-  PreIncrementExpression
-
-  PreDecrementExpression
-
-  + UnaryExpression
 
   - UnaryExpression
 
   UnaryExpressionNotPlusMinus
-
-PreIncrementExpression:
-
-  ++ UnaryExpression
-
-PreDecrementExpression:
-
-  -- UnaryExpression
 
 UnaryExpressionNotPlusMinus:
 
@@ -776,8 +586,6 @@ ConditionalExpression:
 
   ConditionalOrExpression
 
-  ConditionalOrExpression ? Expression : ConditionalExpression
-
 AssignmentExpression:
 
   ConditionalExpression
@@ -786,7 +594,7 @@ AssignmentExpression:
 
 Assignment:
 
-  LeftHandSide AssignmentOperator AssignmentExpression
+  LeftHandSide = AssignmentExpression
 
 LeftHandSide:
 
@@ -795,20 +603,6 @@ LeftHandSide:
   FieldAccess
 
   ArrayAccess
-
-AssignmentOperator:
-  =
-  *=
-  /=
-  %=
-  +=
-  -=
-  <<=
-  >>=
-  >>>=
-  &=
-  ^=
-  |=
 
 Expression:
 
