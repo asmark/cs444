@@ -22,11 +22,11 @@ object Runner {
     val outputStream = new FileOutputStream(machineGrammarFile)
     grammar.toMachineReadableFormat(outputStream)
     val tableGenerator = new ActionTableGenerator
-//    tableGenerator
-//      .createActionTable(
-//      new BufferedInputStream(new FileInputStream(machineGrammarFile)),
-//      new BufferedOutputStream(new FileOutputStream(new File(prop.getProperty("managed-resource-directory"), "action-table.txt")))
-//    )
+    tableGenerator
+      .createActionTable(
+      new BufferedInputStream(new FileInputStream(machineGrammarFile)),
+      new BufferedOutputStream(new FileOutputStream(new File(prop.getProperty("managed-resource-directory"), "action-table.txt")))
+    )
 
     in.close()
   }
