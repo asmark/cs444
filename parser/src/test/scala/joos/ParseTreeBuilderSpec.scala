@@ -50,11 +50,11 @@ class ParseTreeBuilderSpec extends FlatSpec with Matchers {
     }
   }
 
-  final val joosFile = "/grammar.lr1"
-  final val grammar = LrOneReader(getClass.getResourceAsStream(joosFile))
-  final val aTable = grammar.actionTable
 
-  "Build parse tree" should "B p t" in {
+  "test Build parse tree" should "work when we have token name to symbol mappings" ignore {
+    val joosFile = "/grammar.lr1"
+    val grammar = LrOneReader(getClass.getResourceAsStream(joosFile))
+    val aTable = grammar.actionTable
     val parseTreeBuilder = ParseTreeBuilder(aTable)
 
     parseTreeBuilder.build(Seq(

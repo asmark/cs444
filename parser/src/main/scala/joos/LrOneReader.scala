@@ -22,8 +22,11 @@ class LrOneReader(source: InputStream) {
   val productionRules = Range(0, numProductionRules).map {
     idx =>
       val rule = reader.readLine().split(" ", 2)
-      assert(rule.length == 2)
-      ProductionRule(rule(0), rule(1).split(" "))
+      assert(rule.length >= 1)
+      rule.length match {
+        case 1 => ProductionRule(rule(0), IndexedSeq.empty[String])
+        case _ => ProductionRule(rule(0), rule(1).split(" "))
+      }
   }
   assert(productionRules.size == numProductionRules)
 

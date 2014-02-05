@@ -28,6 +28,17 @@ object Runner {
       new BufferedOutputStream(new FileOutputStream(new File(prop.getProperty("managed-resource-directory"), "action-table.txt")))
     )
 
+    // Create .lr1 file
+    val cfgFile = new File(prop.getProperty("managed-resource-directory"), prop.getProperty("machine-grammar"))
+    val grammarFile =  new File(prop.getProperty("managed-resource-directory"), "grammar.lr1")
+
+    new FileOutputStream(grammarFile) getChannel() transferFrom(
+      new FileInputStream(cfgFile) getChannel, 0, Long.MaxValue)
+
+    val actionTableFile = new File(prop.getProperty("managed-resource-directory"), "action-table.txt")
+    new FileOutputStream(grammarFile, true) getChannel() transferFrom(
+      new FileInputStream(actionTableFile) getChannel, 0, Long.MaxValue)
+
     in.close()
   }
 }
