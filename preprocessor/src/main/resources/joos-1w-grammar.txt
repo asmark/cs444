@@ -162,9 +162,9 @@ Modifier:
 
 ClassDeclaration:
 
-  Modifiersopt class Identifier Superopt Interfacesopt ClassBody
+  Modifiersopt class Identifier SuperClauseopt Interfacesopt ClassBody
 
-Super:
+SuperClause:
 
   extends ClassType
 
@@ -236,9 +236,9 @@ MethodDeclaration:
 
 MethodHeader:
 
-  Modifiersopt Type MethodDeclarator Throwsopt
+  Modifiersopt Type MethodDeclarator ThrowsClauseopt
 
-  Modifiersopt void MethodDeclarator Throwsopt
+  Modifiersopt void MethodDeclarator ThrowsClauseopt
 
 MethodDeclarator:
 
@@ -256,7 +256,7 @@ FormalParameter:
 
   Type VariableDeclaratorId
 
-Throws:
+ThrowsClause:
 
   throws ClassTypeList
 
@@ -278,7 +278,7 @@ StaticInitializer:
 
 ConstructorDeclaration:
 
-  Modifiersopt ConstructorDeclarator Throwsopt ConstructorBody
+  Modifiersopt ConstructorDeclarator ThrowsClauseopt ConstructorBody
 
 ConstructorDeclarator:
 
@@ -546,7 +546,7 @@ TryStatement:
 
   try Block Catches
 
-  try Block Catchesopt Finally
+  try Block Catchesopt FinallyClause
 
 Catches:
 
@@ -558,7 +558,7 @@ CatchClause:
 
   catch ( FormalParameter ) Block
 
-Finally:
+FinallyClause:
 
   finally Block
 
