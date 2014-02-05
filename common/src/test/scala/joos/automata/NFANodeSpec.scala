@@ -73,7 +73,7 @@ class NFANodeSpec extends FlatSpec with Matchers {
   "An epsilon closure without loops" should "return all unique nodes that are part of the epsilon closure" in {
     val node = NonAcceptingNfaNode()
     node.addTransition(Epsilon, NonAcceptingNfaNode().addTransition(CharacterA, NonAcceptingNfaNode())).
-      addTransition(Epsilon, AcceptingNfaNode(TokenKind.Character).addTransition(Epsilon, NonAcceptingNfaNode()))
+      addTransition(Epsilon, AcceptingNfaNode(TokenKind.CharacterLiteral).addTransition(Epsilon, NonAcceptingNfaNode()))
 
     node.getClosure(Epsilon) should have size 4
   }

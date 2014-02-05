@@ -16,7 +16,11 @@ object TokenKind extends Enumeration {
   }
 
   def kindToSymbol(kind: TokenKind) = {
-    kindToSymbolMap(kind.asInstanceOf[TokenKindValue].getName())
+    val tokenName = kind.asInstanceOf[TokenKindValue].getName()
+    kindToSymbolMap.get(tokenName) match {
+      case Some(symbol: String) => symbol
+      case None => tokenName
+    }
   }
 
   // In order of priority
@@ -119,23 +123,23 @@ object TokenKind extends Enumeration {
   final val Synchronized = TokenKindValue("Synchronized", () => TokenKindRegexp.Synchronized)
 
   // Literals
-  final val DecimalInteger = TokenKindValue("DecimalInteger", () => TokenKindRegexp.DecimalIntLiteral)
+  final val DecimalIntLiteral = TokenKindValue("DecimalIntLiteral", () => TokenKindRegexp.DecimalIntLiteral)
 
-  final val HexInteger = TokenKindValue("HexInteger", () => TokenKindRegexp.HexIntLiteral)
+  final val HexIntLiteral = TokenKindValue("HexIntLiteral", () => TokenKindRegexp.HexIntLiteral)
 
-  final val OctalInteger = TokenKindValue("OctalInteger", () => TokenKindRegexp.OctalIntLiteral)
+  final val OctalIntLiteral = TokenKindValue("OctalIntLiteral", () => TokenKindRegexp.OctalIntLiteral)
 
-  final val FloatingPoint = TokenKindValue("FloatingPoint", () => TokenKindRegexp.FloatLiteral)
+  final val FloatingPointLiteral = TokenKindValue("FloatingPointLiteral", () => TokenKindRegexp.FloatingPointLiteral)
 
   final val True = TokenKindValue("True", () => TokenKindRegexp.True)
 
   final val False = TokenKindValue("False", () => TokenKindRegexp.False)
 
-  final val Character = TokenKindValue("Character", () => TokenKindRegexp.CharacterLiteral)
+  final val CharacterLiteral = TokenKindValue("CharacterLiteral", () => TokenKindRegexp.CharacterLiteral)
 
-  final val String = TokenKindValue("String", () => TokenKindRegexp.StringLiteral)
+  final val StringLiteral = TokenKindValue("StringLiteral", () => TokenKindRegexp.StringLiteral)
 
-  final val Null = TokenKindValue("Null", () => TokenKindRegexp.Null)
+  final val NullLiteral = TokenKindValue("NullLiteral", () => TokenKindRegexp.NullLiteral)
 
   // Separators
   final val LeftParen = TokenKindValue("LeftParen", () => TokenKindRegexp.LeftParen)

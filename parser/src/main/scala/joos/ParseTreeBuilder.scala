@@ -14,9 +14,7 @@ class ParseTreeBuilder(actionTable: LrOneActionTable) {
     val nodeStack = mutable.Stack(LeafNode(BEGIN)): mutable.Stack[ParseTreeNode]
     val stateStack = mutable.Stack(actionTable.shift(0, BEGIN))
 
-    // TODO: Terminals should be normalized into their token representations
-    // val terminals = tokens.map(TokenKindValue.KindToSymbol)
-    val terminals = tokens.map(token => TokenKind.kindToSymbol(token.kind))
+    val terminals = tokens.withFilter(_.kind != TokenKind.Whitespace).map(token => TokenKind.kindToSymbol(token.kind))
     (terminals ++ Seq(END)).foreach {
       terminal =>
       // Reduce tokens while you are able to, looking ahead by one terminal [LR(1)]

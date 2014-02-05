@@ -12,8 +12,8 @@ class RegularExpressionSpec extends FlatSpec with Matchers {
   val test_atom2 = Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), '2')
   val test_concat = test_atom1 + test_atom2
 
-  val test_atom3 = Atom(NonAcceptingNfaNode(), AcceptingNfaNode(TokenKind.DecimalInteger), '3')
-  val test_atom4 = Atom(NonAcceptingNfaNode(), AcceptingNfaNode(TokenKind.DecimalInteger), '4')
+  val test_atom3 = Atom(NonAcceptingNfaNode(), AcceptingNfaNode(TokenKind.DecimalIntLiteral), '3')
+  val test_atom4 = Atom(NonAcceptingNfaNode(), AcceptingNfaNode(TokenKind.DecimalIntLiteral), '4')
   val test_alter = test_atom3 | test_atom4
 
   val test_atom5 = Atom(NonAcceptingNfaNode(), NonAcceptingNfaNode(), '5')

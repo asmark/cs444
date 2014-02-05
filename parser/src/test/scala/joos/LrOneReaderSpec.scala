@@ -9,11 +9,11 @@ class LrOneReaderSpec extends FlatSpec with Matchers {
   final val parseTable = LrOneReader(new FileInputStream(getClass.getResource(sampleFileName).getPath))
 
   behavior of "Parse Table Reader"
-  it should "recognize the number of tokens" in {
+  it should "recognize the number of terminals" in {
     parseTable.numTerminals shouldEqual 6
   }
 
-  it should "recognize the number of non tokens" in {
+  it should "recognize the number of non terminals" in {
     parseTable.numNonTerminals shouldEqual 3
   }
 
@@ -31,5 +31,16 @@ class LrOneReaderSpec extends FlatSpec with Matchers {
 
   it should "recognize the number of parse actions" in {
     parseTable.numActions shouldEqual 28
+  }
+
+  behavior of "Joos Parse Table Reader"
+  it should "parse the Joos LrOne file" in {
+    val lrOneParseTable = LrOneReader(new FileInputStream(getClass.getResource("/joos-1w-grammar.lr1").getPath))
+    lrOneParseTable.numTerminals shouldEqual 104
+    lrOneParseTable.numNonTerminals shouldEqual 137
+    lrOneParseTable.startSymbol shouldEqual "Goal"
+    lrOneParseTable.numProductionRules shouldEqual 356
+    lrOneParseTable.numStates shouldEqual 628
+    lrOneParseTable.numActions shouldEqual 14832
   }
 }

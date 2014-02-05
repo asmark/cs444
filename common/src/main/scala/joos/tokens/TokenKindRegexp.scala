@@ -261,7 +261,7 @@ object TokenKindRegexp {
 
   // FloatingPointLiteral
   // Regular Expression: TOO LONG
-  def FloatLiteral = {
+  def FloatingPointLiteral = {
     val first_form =
       Alternation(DIGITS) + (Alternation(DIGITS) *) +
         Atom('.') +
@@ -311,7 +311,7 @@ object TokenKindRegexp {
   }
 
   // Null Literal
-  def Null = {
+  def NullLiteral = {
     Concatenation("null")
   }
 
