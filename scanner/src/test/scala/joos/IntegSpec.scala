@@ -19,7 +19,7 @@ class IntegSpec extends FlatSpec with Matchers {
 
   def getSource(dir: String, file: String) = Source.fromURL(getClass.getResource(dir + "/" + file))
 
-  val JoosRegexp = TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a, b) => a | b)
+  lazy val JoosRegexp = TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a, b) => a | b)
   val JavaDfa = Dfa(JoosRegexp)
 
   behavior of "Scanning java programs (checked)"
@@ -44,18 +44,6 @@ class IntegSpec extends FlatSpec with Matchers {
         val scanner = Scanner(JavaDfa)
 
         scanner.tokenize(getSource(uncheckedDirectory, file))
-      }
-  }
-
-  behavior of "Scanning illegal java programs"
-  getSource(illegalDirectory).getLines().foreach {
-    file =>
-      it should s"throw an exception when tokenizing ${file}" in {
-        val scanner = Scanner(JavaDfa)
-
-        intercept[ScanningException] {
-          scanner.tokenize(getSource(illegalDirectory, file))
-        }
       }
   }
 }

@@ -236,16 +236,16 @@ class ScannerSpec extends FlatSpec with Matchers {
   it should "recognize valid IntegerLiterals" in {
     val integers =
       Map[String, TokenKindValue](
-        "0" -> TokenKind.DecimalInteger,
-        "2" -> TokenKind.DecimalInteger,
-        "0372" -> TokenKind.OctalInteger,
-        "0xDadaCafe" -> TokenKind.HexInteger,
-        "1996" -> TokenKind.DecimalInteger,
-        "0x00FF00FF" -> TokenKind.HexInteger,
-        "0l" -> TokenKind.DecimalInteger,
-        "0x100000000L" -> TokenKind.HexInteger,
-        "2147483648L" -> TokenKind.DecimalInteger,
-        "0xC0B0L" -> TokenKind.HexInteger
+        "0" -> TokenKind.DecimalIntLiteral,
+        "2" -> TokenKind.DecimalIntLiteral,
+        "0372" -> TokenKind.OctalIntLiteral,
+        "0xDadaCafe" -> TokenKind.HexIntLiteral,
+        "1996" -> TokenKind.DecimalIntLiteral,
+        "0x00FF00FF" -> TokenKind.HexIntLiteral,
+        "0l" -> TokenKind.DecimalIntLiteral,
+        "0x100000000L" -> TokenKind.HexIntLiteral,
+        "2147483648L" -> TokenKind.DecimalIntLiteral,
+        "0xC0B0L" -> TokenKind.HexIntLiteral
       )
     val scanner = Scanner(joosDfa)
     var counter = 1
@@ -264,19 +264,19 @@ class ScannerSpec extends FlatSpec with Matchers {
   it should "recognize floating point values" in {
     val floating_points =
       Map[String, TokenKindValue](
-        "1e1f" -> TokenKind.FloatingPoint,
-        "2.f" -> TokenKind.FloatingPoint,
-        ".3f" -> TokenKind.FloatingPoint,
-        "0f" -> TokenKind.FloatingPoint,
-        "3.14f" -> TokenKind.FloatingPoint,
-        "6.022137e+23f" -> TokenKind.FloatingPoint,
-        "1e1" -> TokenKind.FloatingPoint,
-        "2." -> TokenKind.FloatingPoint,
-        ".3" -> TokenKind.FloatingPoint,
-        "0.0" -> TokenKind.FloatingPoint,
-        "3.14" -> TokenKind.FloatingPoint,
-        "1e-9d" -> TokenKind.FloatingPoint,
-        "1e137" -> TokenKind.FloatingPoint
+        "1e1f" -> TokenKind.FloatingPointLiteral,
+        "2.f" -> TokenKind.FloatingPointLiteral,
+        ".3f" -> TokenKind.FloatingPointLiteral,
+        "0f" -> TokenKind.FloatingPointLiteral,
+        "3.14f" -> TokenKind.FloatingPointLiteral,
+        "6.022137e+23f" -> TokenKind.FloatingPointLiteral,
+        "1e1" -> TokenKind.FloatingPointLiteral,
+        "2." -> TokenKind.FloatingPointLiteral,
+        ".3" -> TokenKind.FloatingPointLiteral,
+        "0.0" -> TokenKind.FloatingPointLiteral,
+        "3.14" -> TokenKind.FloatingPointLiteral,
+        "1e-9d" -> TokenKind.FloatingPointLiteral,
+        "1e137" -> TokenKind.FloatingPointLiteral
       )
     val scanner = Scanner(joosDfa)
     var counter = 1
@@ -315,14 +315,14 @@ class ScannerSpec extends FlatSpec with Matchers {
   it should "recognize character literals" in {
     val characters =
       Map[String, TokenKindValue](
-        "'a'" -> TokenKind.Character,
-        "'%'" -> TokenKind.Character,
-        "'\\t'" -> TokenKind.Character,
-        "'\\\\'" -> TokenKind.Character,
-        "'\\''" -> TokenKind.Character,
-        "'\\u03a9'" -> TokenKind.Character,
-        "'\\uFFFF'" -> TokenKind.Character,
-        "'\\177'" -> TokenKind.Character
+        "'a'" -> TokenKind.CharacterLiteral,
+        "'%'" -> TokenKind.CharacterLiteral,
+        "'\\t'" -> TokenKind.CharacterLiteral,
+        "'\\\\'" -> TokenKind.CharacterLiteral,
+        "'\\''" -> TokenKind.CharacterLiteral,
+        "'\\u03a9'" -> TokenKind.CharacterLiteral,
+        "'\\uFFFF'" -> TokenKind.CharacterLiteral,
+        "'\\177'" -> TokenKind.CharacterLiteral
       )
 
     val scanner = Scanner(joosDfa)

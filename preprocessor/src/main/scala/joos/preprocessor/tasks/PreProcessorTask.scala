@@ -1,21 +1,38 @@
 package joos.preprocessor.tasks
 
-import scala.io.Source
+import java.nio.file.{Paths, Files}
+import java.util.Properties
+import java.io.File
 
 trait PreProcessorTask {
 
-  final val ResourceDir = "/"
+  final val buildProperties = new Properties()
+  final val propertyResource = getClass.getResourceAsStream("/build.properties")
+  buildProperties.load(propertyResource)
+  propertyResource.close()
 
-  final def getResource(file: String): Source = {
-    Source.fromURL(getClass.getResource(file))
+  final def getProperty(property: String) = {
+    buildProperties.getProperty(property)
   }
 
-  final def isFileExist(file: String): Boolean = {
-    Source.fromURL(getClass.getResource(ResourceDir)).getLines().contains(file)
+  final lazy val managedResourceDir = getProperty("managed-resource-directory")
+  final val resourceDir = getClass.getResource("/").getPath
+
+  final def isFileExist(path: String): Boolean = {
+    val file = new File(path)
+    return file.isFile && file.exists
   }
 
   final def getResourceDirPath(): String = {
-    getClass.getResource(ResourceDir).getPath
+    managedResourceDir
+  }
+
+  final def getPathToManagedResource(file: String): String = {
+    getResourceDirPath() + "/" + file
+  }
+
+  final def getPathToResource(file: String): String = {
+    resourceDir + "/" + file
   }
 
   final def runTask() {

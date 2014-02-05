@@ -19,7 +19,7 @@ Id out
 Dot .
 Id println
 LeftParen (
-String "Hello World!"
+StringLiteral "Hello World!"
 RightParen )
 SemiColon ;
 RightBrace }

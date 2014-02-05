@@ -14,14 +14,12 @@ class ParseTreeBuilder(actionTable: LrOneActionTable) {
     val nodeStack = mutable.Stack(LeafNode(BEGIN)): mutable.Stack[ParseTreeNode]
     val stateStack = mutable.Stack(actionTable.shift(0, BEGIN))
 
-    // TODO: Terminals should be normalized into their token representations
-    // val terminals = tokens.map(TokenKindValue.KindToSymbol)
-    val terminals = tokens.map(_.kind.toString)
+    val terminals = tokens.withFilter(whitespaceCommentFilter).map(token => TokenKind.kindToSymbol(token.kind))
     (terminals ++ Seq(END)).foreach {
-      token =>
-      // Reduce tokens while you are able to, looking ahead by one token [LR(1)]
-        while (actionTable.isReduce(stateStack.top, token)) {
-          val productionRule = actionTable.reduce(stateStack.top, token)
+      terminal =>
+      // Reduce tokens while you are able to, looking ahead by one terminal [LR(1)]
+        while (actionTable.isReduce(stateStack.top, terminal)) {
+          val productionRule = actionTable.reduce(stateStack.top, terminal)
 
           val childNodes = Range(0, productionRule.derivation.length).map {
             i => stateStack.pop(); nodeStack.pop()
@@ -31,13 +29,18 @@ class ParseTreeBuilder(actionTable: LrOneActionTable) {
           stateStack.push(actionTable.shift(stateStack.top, productionRule.base))
         }
 
-        nodeStack.push(LeafNode(token))
-        stateStack.push(actionTable.shift(stateStack.top, token))
+        nodeStack.push(LeafNode(terminal))
+        stateStack.push(actionTable.shift(stateStack.top, terminal))
     }
 
     assert(nodeStack.length == 3)
     ParseTree(nodeStack(1))
   }
+
+  def whitespaceCommentFilter(token: Token) = {
+    token.kind != TokenKind.Whitespace && token.kind != TokenKind.EolComment && token.kind != TokenKind.TraditionalComment
+  }
+
 }
 
 object ParseTreeBuilder {

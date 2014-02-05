@@ -5,12 +5,16 @@ import AssemblyKeys._
 
 object Dependencies {
   val scalaTest = "org.scalatest" % "scalatest_2.10" % "2.0" % "test"
+  val guava = "com.google.guava" % "guava" % "r09"
 }
 
 object Joos1wCompilerBuild extends Build {
 
-  val grammar = "joos-1w-grammar.txt"
-  val machineGrammar = "joos-1w-machine-grammar.txt"
+  final val HumanGrammar = "joos-1w-grammar.txt"
+  final val MachineGrammar = "joos-1w-grammar.cfg"
+  final val Dfa = "joos-1w-dfa.dfa"
+  final val ActionTable = "joos-1w-action-table.txt"
+  final val LrOneGrammar = "joos-1w-grammar.lr1"
 
   val commonSettings = Defaults.defaultSettings ++ Seq(
     crossPaths := false,
@@ -26,7 +30,8 @@ object Joos1wCompilerBuild extends Build {
       "-encoding", "utf8"
     ),
     libraryDependencies ++= Seq(
-      Dependencies.scalaTest
+      Dependencies.scalaTest,
+      Dependencies.guava
     )
   ) ++ assemblySettings ++ Seq(
     assemblyOption in assembly ~= { _.copy(includeScala = false) }
@@ -49,8 +54,11 @@ object Joos1wCompilerBuild extends Build {
         val file = managedResourceDirectory / "build.properties"
         val properties = Map(
           "managed-resource-directory" -> managedResourceDirectory.getPath.replace('\\', '/'),
-          "grammar" -> grammar,
-          "machine-grammar" -> machineGrammar
+          "grammar" -> HumanGrammar,
+          "machine-grammar" -> MachineGrammar,
+          "dfa" -> Dfa,
+          "action-table" -> ActionTable,
+          "lr-one-grammar" -> LrOneGrammar
         )
 
         val builder = new StringBuilder()

@@ -16,6 +16,20 @@ Literal:
 
   NullLiteral
 
+IntegerLiteral:
+
+  DecimalIntLiteral
+
+  HexIntLiteral
+
+  OctalIntLiteral
+
+BooleanLiteral:
+
+  True
+
+  False
+
 Type:
 
   PrimitiveType

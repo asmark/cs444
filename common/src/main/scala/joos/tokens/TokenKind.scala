@@ -12,7 +12,15 @@ object TokenKind extends Enumeration {
   }
 
   def getHighestPriority(kinds: Set[TokenKind]): TokenKind = {
-    return values.find(kind => kinds.contains(kind)).get
+    return values.find(kinds.contains).get
+  }
+
+  def kindToSymbol(kind: TokenKind) = {
+    val tokenName = kind.asInstanceOf[TokenKindValue].getName()
+    kindToSymbolMap.get(tokenName) match {
+      case Some(symbol: String) => symbol
+      case None => tokenName
+    }
   }
 
   // In order of priority
@@ -115,23 +123,23 @@ object TokenKind extends Enumeration {
   final val Synchronized = TokenKindValue("Synchronized", () => TokenKindRegexp.Synchronized)
 
   // Literals
-  final val DecimalInteger = TokenKindValue("DecimalInteger", () => TokenKindRegexp.DecimalIntLiteral)
+  final val DecimalIntLiteral = TokenKindValue("DecimalIntLiteral", () => TokenKindRegexp.DecimalIntLiteral)
 
-  final val HexInteger = TokenKindValue("HexInteger", () => TokenKindRegexp.HexIntLiteral)
+  final val HexIntLiteral = TokenKindValue("HexIntLiteral", () => TokenKindRegexp.HexIntLiteral)
 
-  final val OctalInteger = TokenKindValue("OctalInteger", () => TokenKindRegexp.OctalIntLiteral)
+  final val OctalIntLiteral = TokenKindValue("OctalIntLiteral", () => TokenKindRegexp.OctalIntLiteral)
 
-  final val FloatingPoint = TokenKindValue("FloatingPoint", () => TokenKindRegexp.FloatLiteral)
+  final val FloatingPointLiteral = TokenKindValue("FloatingPointLiteral", () => TokenKindRegexp.FloatingPointLiteral)
 
   final val True = TokenKindValue("True", () => TokenKindRegexp.True)
 
   final val False = TokenKindValue("False", () => TokenKindRegexp.False)
 
-  final val Character = TokenKindValue("Character", () => TokenKindRegexp.CharacterLiteral)
+  final val CharacterLiteral = TokenKindValue("CharacterLiteral", () => TokenKindRegexp.CharacterLiteral)
 
-  final val String = TokenKindValue("String", () => TokenKindRegexp.StringLiteral)
+  final val StringLiteral = TokenKindValue("StringLiteral", () => TokenKindRegexp.StringLiteral)
 
-  final val Null = TokenKindValue("Null", () => TokenKindRegexp.Null)
+  final val NullLiteral = TokenKindValue("NullLiteral", () => TokenKindRegexp.NullLiteral)
 
   // Separators
   final val LeftParen = TokenKindValue("LeftParen", () => TokenKindRegexp.LeftParen)
@@ -231,18 +239,116 @@ object TokenKind extends Enumeration {
   )
 
   // Comments
-  final val TraditionalCommentPrefix =
-    TokenKindValue("TraditionalCommentPrefix", () => TokenKindRegexp.TraditionalCommentPrefix)
+  final val EolComment = TokenKindValue("EolComment", () => TokenKindRegexp.EolComment)
 
-  final val TraditionalCommentPostfix =
-    TokenKindValue("TraditionalCommentPostfix", () => TokenKindRegexp.TraditionalCommentPostfix)
-
-  final val EolCommentPrefix = TokenKindValue("EolCommentPrefix", () => TokenKindRegexp.EolCommentPrefix)
+  final val TraditionalComment = TokenKindValue("TraditionalComment", () => TokenKindRegexp.TraditionalComment)
 
   // Identifier
   final val Id = TokenKindValue("Id", () => TokenKindRegexp.Id)
 
   // Whitespace
   final val Whitespace = TokenKindValue("Whitespace", () => TokenKindRegexp.Whitespace)
+
+
+  final val kindToSymbolMap = Map(
+    "Id" -> "Identifier",
+
+    "Abstract" -> "abstract",
+    "Default" -> "default",
+    "If" -> "if",
+    "Private" -> "private",
+    "This" -> "this",
+    "Boolean" -> "boolean",
+    "Do" -> "do",
+    "Implements" -> "implements",
+    "Protected" -> "protected",
+    "Throw" -> "throw",
+    "Break" -> "break",
+    "Double" -> "double",
+    "Import" -> "import",
+    "Public" -> "public",
+    "Throws" -> "throws",
+    "Byte" -> "byte",
+    "Else" -> "else",
+    "InstanceOf" -> "instanceof",
+    "Return" -> "return",
+    "Transient" -> "transient",
+    "Case" -> "case",
+    "Extends" -> "extends",
+    "Int" -> "int",
+    "Short" -> "short",
+    "Try" -> "try",
+    "Catch" -> "catch",
+    "Final" -> "final",
+    "Interface" -> "interface",
+    "Static" -> "static",
+    "Void" -> "void",
+    "Char" -> "char",
+    "Finally" -> "finally",
+    "Long" -> "long",
+    "Strictfp" -> "strictfp",
+    "Volatile" -> "volatile",
+    "Class" -> "class",
+    "Float" -> "float",
+    "Native" -> "native",
+    "Super" -> "super",
+    "While" -> "while",
+    "Const" -> "const",
+    "For" -> "for",
+    "New" -> "new",
+    "Switch" -> "switch",
+    "Continue" -> "continue",
+    "Goto" -> "goto",
+    "Package" -> "package",
+    "Synchronized" -> "synchronized",
+
+    "LeftParen" -> "(",
+    "RightParen" -> ")",
+    "LeftBrace" -> "{",
+    "RightBrace" -> "}",
+    "LeftBracket" -> "[",
+    "RightBracket" -> "]",
+    "SemiColon" -> ";",
+    "Comma" -> ",",
+    "Dot" -> ".",
+
+    "Assign" -> "=",
+    "Greater" -> ">",
+    "Less" -> "<",
+    "Exclamation" -> "!",
+    "Tilde" -> "~",
+    "Question" -> "?",
+    "Colon" -> ":",
+    "Equal" -> "==",
+    "LessEqual" -> "<=",
+    "GreaterEqual" -> ">=",
+    "NotEqual" -> "!=",
+    "And" -> "&&",
+    "Or" -> "||",
+    "Increment" -> "++",
+    "Decrement" -> "--",
+    "Plus" -> "+",
+    "Minus" -> "-",
+    "Multiply" -> "*",
+    "Divide" -> "/",
+    "BitAnd" -> "&",
+    "BitOr" -> "|",
+    "Carrot" -> "^",
+    "Modulo" -> "%",
+    "LeftShift" -> "<<",
+    "RightShift" -> ">>",
+    "UnsignedShift" -> ">>>",
+    "PlusAssign" -> "+=",
+    "MinusAssign" -> "-=",
+    "MultiplyAssign" -> "*=",
+    "DivideAssign" -> "/=",
+    "BitAndAssign" -> "&=",
+    "BitOrAssign" -> "|=",
+    "CarrotAssign" -> "^=",
+    "ModuloAssign" -> "%=",
+    "LeftShiftAssign" -> "<<=",
+    "RightShiftAssign" -> ">>=",
+    "UnsignedRightShiftAssign" -> ">>>="
+  )
 
 }

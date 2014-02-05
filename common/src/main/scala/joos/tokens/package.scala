@@ -24,6 +24,10 @@ package object tokens {
     ALPHABETS + '_' + '$'
   }
 
+  final val NEWLINE_CHARS = {
+    Array('\n', '\r').mkString("")
+  }
+
   // helper functions for floating point
   def exponentPart(): RegularExpression = {
     (Atom('e') | Atom('E')) + ((~(Atom('+') | Atom('-'))) + Alternation(DIGITS) + (Alternation(DIGITS) *))
