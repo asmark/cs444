@@ -483,17 +483,14 @@ WhileStatementNoShortIf:
 DoStatement:
 
   do Statement while ( Expression ) ;
+
 ForStatement:
 
-  for ( ForInitopt ; Expressionopt ; ForUpdateopt )
-
-    Statement
+  for ( ForInitopt ; Expressionopt ; ForUpdateopt ) Statement
 
 ForStatementNoShortIf:
 
-  for ( ForInitopt ; Expressionopt ; ForUpdateopt )
-
-    StatementNoShortIf
+  for ( ForInitopt ; Expressionopt ; ForUpdateopt ) StatementNoShortIf
 
 ForInit:
 
