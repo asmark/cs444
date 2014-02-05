@@ -9,11 +9,11 @@ class LrOneReaderSpec extends FlatSpec with Matchers {
   final val parseTable = LrOneReader(new FileInputStream(getClass.getResource(sampleFileName).getPath))
 
   behavior of "Parse Table Reader"
-  it should "recognize the number of terminals" in {
+  it should "recognize the number of tokens" in {
     parseTable.numTerminals shouldEqual 6
   }
 
-  it should "recognize the number of non terminals" in {
+  it should "recognize the number of non tokens" in {
     parseTable.numNonTerminals shouldEqual 3
   }
 
