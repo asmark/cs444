@@ -1,8 +1,6 @@
-
 public class A {
   public A() {}
   public boolean m(int x) {
-    return (x&lt;87) &amp;&amp; (x&gt;42) &amp;&amp; (x&lt;=86) &amp;&amp; (x&gt;=43) &amp;&amp; (x==51) &amp;&amp; (x!=52) ;
+    return (x<87) && (x>42) && (x<=86) && (x>=43) && (x==51) && (x!=52) ;
   }
 }
-
