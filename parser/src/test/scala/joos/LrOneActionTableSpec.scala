@@ -47,7 +47,7 @@ class LrOneActionTableSpec extends FlatSpec with Matchers {
 
   behavior of "shift"
   it should "determine the correct state on a valid shift" in {
-    actionTable.shift(3, "id") shouldEqual 2
+    actionTable.shift(0, "bof") shouldEqual 6
   }
 
   it should "throw an exception on an invalid shift" in {

@@ -239,13 +239,9 @@ object TokenKind extends Enumeration {
   )
 
   // Comments
-  final val TraditionalCommentPrefix =
-    TokenKindValue("TraditionalCommentPrefix", () => TokenKindRegexp.TraditionalCommentPrefix)
+  final val EolComment = TokenKindValue("EolComment", () => TokenKindRegexp.EolComment)
 
-  final val TraditionalCommentPostfix =
-    TokenKindValue("TraditionalCommentPostfix", () => TokenKindRegexp.TraditionalCommentPostfix)
-
-  final val EolCommentPrefix = TokenKindValue("EolCommentPrefix", () => TokenKindRegexp.EolCommentPrefix)
+  final val TraditionalComment = TokenKindValue("TraditionalComment", () => TokenKindRegexp.TraditionalComment)
 
   // Identifier
   final val Id = TokenKindValue("Id", () => TokenKindRegexp.Id)

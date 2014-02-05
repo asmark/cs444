@@ -14,7 +14,7 @@ class ParseTreeBuilder(actionTable: LrOneActionTable) {
     val nodeStack = mutable.Stack(LeafNode(BEGIN)): mutable.Stack[ParseTreeNode]
     val stateStack = mutable.Stack(actionTable.shift(0, BEGIN))
 
-    val terminals = tokens.withFilter(_.kind != TokenKind.Whitespace).map(token => TokenKind.kindToSymbol(token.kind))
+    val terminals = tokens.withFilter(whitespaceCommentFilter).map(token => TokenKind.kindToSymbol(token.kind))
     (terminals ++ Seq(END)).foreach {
       terminal =>
       // Reduce tokens while you are able to, looking ahead by one terminal [LR(1)]
@@ -36,6 +36,11 @@ class ParseTreeBuilder(actionTable: LrOneActionTable) {
     assert(nodeStack.length == 3)
     ParseTree(nodeStack(1))
   }
+
+  def whitespaceCommentFilter(token: Token) = {
+    token.kind != TokenKind.Whitespace && token.kind != TokenKind.EolComment && token.kind != TokenKind.TraditionalComment
+  }
+
 }
 
 object ParseTreeBuilder {
