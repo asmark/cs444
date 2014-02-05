@@ -14,13 +14,20 @@ case class ContextFreeGrammar(
   rules: IndexedSeq[ProductionRule]
 ) {
 
+  def translate(symbol: String) = {
+    NameMapping.SymbolTokenMap.get(symbol) match {
+      case Some(value) => value + "Symbol"
+      case _ => symbol
+    }
+  }
+
   def toMachineReadableFormat(outputStream: OutputStream): this.type = {
     using(new PrintWriter(new OutputStreamWriter(outputStream))) {
       writer =>
         writer.println(terminals.size)
-        terminals.foreach(writer.println)
+        terminals.foreach(terminal => writer.println(translate(terminal)))
         writer.println(nonTerminals.size)
-        nonTerminals.foreach(writer.println)
+        nonTerminals.foreach(nonTerminal => writer.println(translate(nonTerminal)))
         writer.println(start)
         writer.println(rules.size)
         rules.foreach {
@@ -29,7 +36,7 @@ case class ContextFreeGrammar(
             rule.derivation.foreach {
               token =>
                 writer.print(' ')
-                writer.print(token)
+                writer.print(translate(token))
             }
             writer.println()
         }
