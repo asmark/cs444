@@ -1,120 +1,136 @@
-# Start symbol
-CompilationUnit
+Goal:
+
+  CompilationUnit
 
 Literal:
-  integerliteral
-  floatingpointliteral
-  booleanliteral
-  characterliteral
-  stringliteral
-  nullliteral
-IntegerLiteral:
-  decimalintegerliteral
-  hexintegerliteral
-  octalintegerliteral
 
-BooleanLiteral:
-  true
-  false
+  IntegerLiteral
+
+  FloatingPointLiteral
+
+  BooleanLiteral
+
+  CharacterLiteral
+
+  StringLiteral
+
+  NullLiteral
 
 Type:
+
   PrimitiveType
+
   ReferenceType
+
 PrimitiveType:
+
   NumericType
+
   boolean
+
 NumericType:
+
   IntegralType
+
   FloatingPointType
+
 IntegralType:
   byte
   short
   int
   long
   char
+
 FloatingPointType:
   float
   double
 
 ReferenceType:
-  ClassOrInterfaceType
-  ArrayType
-ClassOrInterfaceType:
-  ClassType
-  InterfaceType
-ClassType:
-  TypeName
-InterfaceType:
-  TypeName
-ArrayType:
-  Type [ ]
 
-PackageName:
+  ClassOrInterfaceType
+
+  ArrayType
+
+ClassOrInterfaceType:
+
+  Name
+
+ClassType:
+
+  ClassOrInterfaceType
+
+InterfaceType:
+
+  ClassOrInterfaceType
+
+ArrayType:
+
+  PrimitiveType [ ]
+
+  Name [ ]
+
+  ArrayType [ ]
+
+Name:
+
+  SimpleName
+
+  QualifiedName
+
+SimpleName:
+
   Identifier
-  PackageName . Identifier
-TypeName:
-  Identifier
-  PackageOrTypeName . Identifier
-ExpressionName:
-  Identifier
-  AmbiguousName . Identifier
-MethodName:
-  Identifier
-  AmbiguousName . Identifier
-PackageOrTypeName:
-  Identifier
-  PackageOrTypeName . Identifier
-AmbiguousName:
-  Identifier
-  AmbiguousName . Identifier
+
+QualifiedName:
+
+  Name . Identifier
 
 CompilationUnit:
-  ImportDeclarations
-  ImportDeclarations TypeDeclarations
-  TypeDeclarations
 
-  PackageDeclaration
-  PackageDeclaration ImportDeclarations
-  PackageDeclaration ImportDeclarations TypeDeclarations
-  PackageDeclaration TypeDeclarations
+  PackageDeclarationopt ImportDeclarationsopt TypeDeclarationsopt
 
 ImportDeclarations:
+
   ImportDeclaration
+
   ImportDeclarations ImportDeclaration
+
 TypeDeclarations:
+
   TypeDeclaration
+
   TypeDeclarations TypeDeclaration
 
 PackageDeclaration:
-  package PackageName ;
+
+  package Name ;
 
 ImportDeclaration:
+
   SingleTypeImportDeclaration
+
   TypeImportOnDemandDeclaration
 
 SingleTypeImportDeclaration:
-  import TypeName ;
+
+  import Name ;
 
 TypeImportOnDemandDeclaration:
-  import PackageOrTypeName . * ;
+
+  import Name . * ;
 
 TypeDeclaration:
+
   ClassDeclaration
+
   InterfaceDeclaration
+
   ;
 
-ClassDeclaration:
-  Modifiers class Identifier Super Interfaces ClassBody
-  Modifiers class Identifier Interfaces ClassBody
-  Modifiers class Identifier Super ClassBody
-  Modifiers class Identifier ClassBody
-  class Identifier Super Interfaces ClassBody
-  class Identifier Interfaces ClassBody
-  class Identifier Super ClassBody
-  class Identifier ClassBody
-
 Modifiers:
+
   Modifier
+
   Modifiers Modifier
 
 Modifier:
@@ -130,491 +146,642 @@ Modifier:
   volatile
   strictfp
 
+ClassDeclaration:
+
+  Modifiersopt class Identifier Superopt Interfacesopt ClassBody
+
 Super:
+
   extends ClassType
 
 Interfaces:
+
   implements InterfaceTypeList
 
 InterfaceTypeList:
+
   InterfaceType
+
   InterfaceTypeList , InterfaceType
 
 ClassBody:
-  { ClassBodyDeclarations }
-  { }
+
+  { ClassBodyDeclarationsopt }
+
 ClassBodyDeclarations:
+
   ClassBodyDeclaration
+
   ClassBodyDeclarations ClassBodyDeclaration
+
 ClassBodyDeclaration:
+
   ClassMemberDeclaration
-  InstanceInitializer
+
   StaticInitializer
+
   ConstructorDeclaration
+
 ClassMemberDeclaration:
+
   FieldDeclaration
+
   MethodDeclaration
-  ClassDeclaration
-  InterfaceDeclaration
-  ;
 
 FieldDeclaration:
-  Modifiers Type VariableDeclarators ;
-  Modifiers Type VariableDeclarators ;
+
+  Modifiersopt Type VariableDeclarators ;
+
 VariableDeclarators:
+
   VariableDeclarator
+
   VariableDeclarators , VariableDeclarator
+
 VariableDeclarator:
+
   VariableDeclaratorId
+
   VariableDeclaratorId = VariableInitializer
+
 VariableDeclaratorId:
+
   Identifier
+
   VariableDeclaratorId [ ]
+
 VariableInitializer:
+
   Expression
+
   ArrayInitializer
 
 MethodDeclaration:
+
   MethodHeader MethodBody
 
 MethodHeader:
-  Modifiers ResultType MethodDeclarator Throws
-  Modifiers ResultType MethodDeclarator
-  ResultType MethodDeclarator Throws
-  ResultType MethodDeclarator
 
-ResultType:
-  Type
-  void
+  Modifiersopt Type MethodDeclarator Throwsopt
+
+  Modifiersopt void MethodDeclarator Throwsopt
 
 MethodDeclarator:
-  Identifer ( FormalParameterList )
-  Identifer ( )
+
+  Identifier ( FormalParameterListopt )
+
+  MethodDeclarator [ ]
 
 FormalParameterList:
+
   FormalParameter
+
   FormalParameterList , FormalParameter
 
 FormalParameter:
-  final Type VariableDeclaratorId
+
   Type VariableDeclaratorId
 
-VariableDeclaratorId:
-  Identifier
-  VariableDeclaratorId [ ]
-
 Throws:
+
   throws ClassTypeList
+
 ClassTypeList:
+
   ClassType
+
   ClassTypeList , ClassType
 
 MethodBody:
+
   Block
+
   ;
 
-InstanceInitializer:
-  Block
 StaticInitializer:
+
   static Block
 
 ConstructorDeclaration:
-  Modifiers ConstructorDeclarator Throws ConstructorBody
-  Modifiers ConstructorDeclarator ConstructorBody
-  ConstructorDeclarator Throws ConstructorBody
-  ConstructorDeclarator ConstructorBody
+
+  Modifiersopt ConstructorDeclarator Throwsopt ConstructorBody
+
 ConstructorDeclarator:
-  SimpleTypeName ( FormalParameterList )
-  SimpleTypeName ( )
+
+  SimpleName ( FormalParameterListopt )
 
 ConstructorBody:
-  { ExplicitConstructorInvocation BlockStatements }
-  { BlockStatements }
-  { ExplicitConstructorInvocation }
-  { }
+
+  { ExplicitConstructorInvocationopt BlockStatementsopt }
 
 ExplicitConstructorInvocation:
-  this ( ArgumentList ) ;
-  this ( ) ;
-  super ( ArgumentList ) ; InterfaceDeclaration
-  super ( ) ;
-  Primary . super ( ArgumentList ) ;
-  Primary . super ( ) ;
+
+  this ( ArgumentListopt ) ;
+
+  super ( ArgumentListopt ) ;
 
 InterfaceDeclaration:
-  Modifiers interface Identifier ExtendsInterfaces InterfaceBody
-  interface Identifier ExtendsInterfaces InterfaceBody
-  Modifiers interface Identifier InterfaceBody
-  interface Identifier InterfaceBody
+
+  Modifiersopt interface Identifier ExtendsInterfacesopt InterfaceBody
 
 ExtendsInterfaces:
+
   extends InterfaceType
+
   ExtendsInterfaces , InterfaceType
 
 InterfaceBody:
-  { InterfaceMemberDeclarations }
-  { }
+
+  { InterfaceMemberDeclarationsopt }
 
 InterfaceMemberDeclarations:
+
   InterfaceMemberDeclaration
+
   InterfaceMemberDeclarations InterfaceMemberDeclaration
 
 InterfaceMemberDeclaration:
+
   ConstantDeclaration
+
   AbstractMethodDeclaration
-  ClassDeclaration
-  InterfaceDeclaration
-  ;
 
 ConstantDeclaration:
-  Modifiers Type VariableDeclarators
-  Type VariableDeclarators
+
+  FieldDeclaration
 
 AbstractMethodDeclaration:
-  Modifiers ResultType MethodDeclarator Throws ;
-  ResultType MethodDeclarator Throws ;
-  Modifiers ResultType MethodDeclarator ;
-  ResultType MethodDeclarator ;
+
+  MethodHeader ;
 
 ArrayInitializer:
-  { VariableInitializers , }
-  { VariableInitializers }
-  { , }
-  { }
+
+  { VariableInitializersopt ,opt }
 
 VariableInitializers:
+
   VariableInitializer
+
   VariableInitializers , VariableInitializer
 
-VariableInitializer:
-  Expression
-  ArrayInitializer
-
 Block:
-  { BlockStatements }
-  { }
+
+  { BlockStatementsopt }
+
 BlockStatements:
+
   BlockStatement
+
   BlockStatements BlockStatement
+
 BlockStatement:
+
   LocalVariableDeclarationStatement
-  ClassDeclaration
+
   Statement
 
 LocalVariableDeclarationStatement:
+
   LocalVariableDeclaration ;
+
 LocalVariableDeclaration:
-  final Type VariableDeclarators
+
   Type VariableDeclarators
 
-VariableDeclarators:
-  VariableDeclarator
-  VariableDeclarators , VariableDeclarator
-VariableDeclarator:
-  VariableDeclaratorId
-  VariableDeclaratorId = VariableInitializer
-VariableDeclaratorId:
-  Identifier
-  VariableDeclaratorId [ ]
-VariableInitializer:
-  Expression
-  ArrayInitializer
-
 Statement:
+
   StatementWithoutTrailingSubstatement
+
   LabeledStatement
+
   IfThenStatement
+
   IfThenElseStatement
+
   WhileStatement
+
   ForStatement
 
-StatementWithoutTrailingSubstatement:
-  Block
-  EmptyStatement
-  ExpressionStatement
-  SwitchStatement
-  DoStatement
-  BreakStatement
-  ContinueStatement
-  ReturnStatement
-  SynchronizedStatement
-  ThrowStatement
-  TryStatement
-
 StatementNoShortIf:
+
   StatementWithoutTrailingSubstatement
+
   LabeledStatementNoShortIf
+
   IfThenElseStatementNoShortIf
+
   WhileStatementNoShortIf
+
   ForStatementNoShortIf
 
-IfThenStatement:
-  if ( Expression ) Statement
-IfThenElseStatement:
-  if ( Expression ) StatementNoShortIf else Statement
-IfThenElseStatementNoShortIf:
-  if ( Expression ) StatementNoShortIf else StatementNoShortIf
+StatementWithoutTrailingSubstatement:
+
+  Block
+
+  EmptyStatement
+
+  ExpressionStatement
+
+  SwitchStatement
+
+  DoStatement
+
+  BreakStatement
+
+  ContinueStatement
+
+  ReturnStatement
+
+  SynchronizedStatement
+
+  ThrowStatement
+
+  TryStatement
 
 EmptyStatement:
+
   ;
+
 LabeledStatement:
+
   Identifier : Statement
+
 LabeledStatementNoShortIf:
+
   Identifier : StatementNoShortIf
+
 ExpressionStatement:
+
   StatementExpression ;
+
 StatementExpression:
+
   Assignment
+
   PreIncrementExpression
+
   PreDecrementExpression
+
   PostIncrementExpression
+
   PostDecrementExpression
+
   MethodInvocation
+
   ClassInstanceCreationExpression
 
+IfThenStatement:
+
+  if ( Expression ) Statement
+
+IfThenElseStatement:
+
+  if ( Expression ) StatementNoShortIf else Statement
+
+IfThenElseStatementNoShortIf:
+
+  if ( Expression ) StatementNoShortIf else StatementNoShortIf
+
 SwitchStatement:
+
   switch ( Expression ) SwitchBlock
+
 SwitchBlock:
-  { SwitchBlockStatementGroups SwitchLabels }
-  { SwitchBlockStatementGroups }
-  { SwitchLabels }
-  { }
+
+  { SwitchBlockStatementGroupsopt SwitchLabelsopt }
+
 SwitchBlockStatementGroups:
+
   SwitchBlockStatementGroup
+
   SwitchBlockStatementGroups SwitchBlockStatementGroup
+
 SwitchBlockStatementGroup:
+
   SwitchLabels BlockStatements
+
 SwitchLabels:
+
   SwitchLabel
+
   SwitchLabels SwitchLabel
+
 SwitchLabel:
+
   case ConstantExpression :
+
   default :
 
 WhileStatement:
+
   while ( Expression ) Statement
+
 WhileStatementNoShortIf:
+
   while ( Expression ) StatementNoShortIf
 
 DoStatement:
+
   do Statement while ( Expression ) ;
 
 ForStatement:
-  for ( ForInit ; Expression ; ForUpdate ) Statement
-  for ( ForInit ; Expression ; ) Statement
-  for ( ForInit ; ; ForUpdate ) Statement
-  for ( ForInit ; ; ) Statement
-  for ( ; Expression ; ForUpdate ) Statement
-  for ( ; Expression ; ForUpdate ) Statement
-  for ( ; ; ForUpdate ) Statement
-  for ( ; ; ) Statement
+
+  for ( ForInitopt ; Expressionopt ; ForUpdateopt ) Statement
 
 ForStatementNoShortIf:
-  for ( ForInit ; Expression ; ForUpdate ) StatementNoShortIf
-  for ( ForInit ; Expression ; ) StatementNoShortIf
-  for ( ForInit ; ; ForUpdate ) StatementNoShortIf
-  for ( ForInit ; ; ) StatementNoShortIf
-  for ( ; Expression ; ForUpdate ) StatementNoShortIf
-  for ( ; Expression ; ForUpdate ) StatementNoShortIf
-  for ( ; ; ForUpdate ) StatementNoShortIf
-  for ( ; ; ) StatementNoShortIf
+
+  for ( ForInitopt ; Expressionopt ; ForUpdateopt ) StatementNoShortIf
 
 ForInit:
+
   StatementExpressionList
+
   LocalVariableDeclaration
 
 ForUpdate:
+
   StatementExpressionList
 
 StatementExpressionList:
+
   StatementExpression
+
   StatementExpressionList , StatementExpression
 
 BreakStatement:
-  break Identifier ;
-  break ;
+
+  break Identifieropt ;
 
 ContinueStatement:
-  continue Identifier ;
-  continue Identifier ;
+
+  continue Identifieropt ;
 
 ReturnStatement:
-  return Expression ;
-  return Expression ;
+
+  return Expressionopt ;
 
 ThrowStatement:
+
   throw Expression ;
 
 SynchronizedStatement:
+
   synchronized ( Expression ) Block
+
 TryStatement:
+
   try Block Catches
-  try Block Catches Finally
-  try Block Finally
+
+  try Block Catchesopt Finally
 
 Catches:
+
   CatchClause
+
   Catches CatchClause
 
 CatchClause:
+
   catch ( FormalParameter ) Block
 
 Finally:
+
   finally Block
 
 Primary:
+
   PrimaryNoNewArray
+
   ArrayCreationExpression
 
 PrimaryNoNewArray:
+
   Literal
-  Type . class
-  void . class
+
   this
-  ClassName . this
+
   ( Expression )
+
   ClassInstanceCreationExpression
+
   FieldAccess
+
   MethodInvocation
+
   ArrayAccess
 
 ClassInstanceCreationExpression:
-  new ClassOrInterfaceType ( ArgumentList ) ClassBody
-  new ClassOrInterfaceType ( ArgumentList )
-  new ClassOrInterfaceType ( ) ClassBody
-  new ClassOrInterfaceType ( )
-  Primary . new Identifier ( ArgumentList ) ClassBody
-  Primary . new Identifier ( ArgumentList )
-  Primary . new Identifier ( ) ClassBody
-  Primary . new Identifier ( )
+
+  new ClassType ( ArgumentListopt )
 
 ArgumentList:
+
   Expression
+
   ArgumentList , Expression
 
 ArrayCreationExpression:
-  new PrimitiveType DimExprs Dims
-  new PrimitiveType DimExprs
-  new TypeName DimExprs Dims
-  new TypeName DimExprs
-  new PrimitiveType Dims ArrayInitializer
-  new TypeName Dims ArrayInitializer
+
+  new PrimitiveType DimExprs Dimsopt
+
+  new ClassOrInterfaceType DimExprs Dimsopt
+
 DimExprs:
+
   DimExpr
+
   DimExprs DimExpr
+
 DimExpr:
+
   [ Expression ]
+
 Dims:
+
   [ ]
+
   Dims [ ]
 
 FieldAccess:
+
   Primary . Identifier
+
   super . Identifier
-  ClassName . super . Identifier
 
 MethodInvocation:
-  MethodName ( ArgumentList )
-  MethodName ( )
-  Primary . Identifier ( ArgumentList )
-  Primary . Identifier ( )
-  super . Identifier ( ArgumentList )
-  super . Identifier ( )
-  ClassName . super . Identifier ( ArgumentList )
-  ClassName . super . Identifier ( )
+
+  Name ( ArgumentListopt )
+
+  Primary . Identifier ( ArgumentListopt )
+
+  super . Identifier ( ArgumentListopt )
 
 ArrayAccess:
-  ExpressionName [ Expression ]
+
+  Name [ Expression ]
+
   PrimaryNoNewArray [ Expression ]
 
 PostfixExpression:
+
   Primary
-  ExpressionName
+
+  Name
+
   PostIncrementExpression
+
   PostDecrementExpression
 
 PostIncrementExpression:
+
   PostfixExpression ++
 
 PostDecrementExpression:
+
   PostfixExpression --
 
 UnaryExpression:
+
   PreIncrementExpression
+
   PreDecrementExpression
+
   + UnaryExpression
+
   - UnaryExpression
+
   UnaryExpressionNotPlusMinus
+
 PreIncrementExpression:
+
   ++ UnaryExpression
+
 PreDecrementExpression:
+
   -- UnaryExpression
+
 UnaryExpressionNotPlusMinus:
+
   PostfixExpression
+
   ~ UnaryExpression
+
   ! UnaryExpression
+
   CastExpression
 
 CastExpression:
-  ( PrimitiveType Dims ) UnaryExpression
-  ( PrimitiveType ) UnaryExpression
-  ( ReferenceType ) UnaryExpressionNotPlusMinus
+
+  ( PrimitiveType Dimsopt ) UnaryExpression
+
+  ( Expression ) UnaryExpressionNotPlusMinus
+
+  ( Name Dims ) UnaryExpressionNotPlusMinus
 
 MultiplicativeExpression:
+
   UnaryExpression
+
   MultiplicativeExpression * UnaryExpression
+
   MultiplicativeExpression / UnaryExpression
+
   MultiplicativeExpression % UnaryExpression
+
 AdditiveExpression:
+
   MultiplicativeExpression
+
   AdditiveExpression + MultiplicativeExpression
+
   AdditiveExpression - MultiplicativeExpression
+
 ShiftExpression:
+
   AdditiveExpression
+
   ShiftExpression << AdditiveExpression
+
   ShiftExpression >> AdditiveExpression
+
   ShiftExpression >>> AdditiveExpression
+
 RelationalExpression:
+
   ShiftExpression
+
   RelationalExpression < ShiftExpression
+
   RelationalExpression > ShiftExpression
+
   RelationalExpression <= ShiftExpression
+
   RelationalExpression >= ShiftExpression
+
   RelationalExpression instanceof ReferenceType
 
 EqualityExpression:
+
   RelationalExpression
+
   EqualityExpression == RelationalExpression
+
   EqualityExpression != RelationalExpression
+
 AndExpression:
+
   EqualityExpression
+
   AndExpression & EqualityExpression
+
 ExclusiveOrExpression:
+
   AndExpression
+
   ExclusiveOrExpression ^ AndExpression
+
 InclusiveOrExpression:
+
   ExclusiveOrExpression
+
   InclusiveOrExpression | ExclusiveOrExpression
 
 ConditionalAndExpression:
+
   InclusiveOrExpression
+
   ConditionalAndExpression && InclusiveOrExpression
+
 ConditionalOrExpression:
+
   ConditionalAndExpression
+
   ConditionalOrExpression || ConditionalAndExpression
+
 ConditionalExpression:
+
   ConditionalOrExpression
+
   ConditionalOrExpression ? Expression : ConditionalExpression
 
 AssignmentExpression:
+
   ConditionalExpression
+
   Assignment
+
 Assignment:
+
   LeftHandSide AssignmentOperator AssignmentExpression
+
 LeftHandSide:
-  ExpressionName
+
+  Name
+
   FieldAccess
+
   ArrayAccess
+
 AssignmentOperator:
   =
   *=
@@ -630,7 +797,9 @@ AssignmentOperator:
   |=
 
 Expression:
+
   AssignmentExpression
 
 ConstantExpression:
+
   Expression
