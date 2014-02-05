@@ -95,15 +95,15 @@ object ContextFreeGrammar {
         val tokenizer = new StringTokenizer(line)
         val derivation = new ArrayBuffer[String]
         while (tokenizer.hasMoreTokens) {
-          var token = tokenizer.nextToken()
-          if (token.endsWith(OptionalSuffix)) {
-            token = token.substring(0, token.length - OptionalSuffix.length)
-          }
+          val symbol = tokenizer.nextToken()
+          val symbolWithoutSuffix =
+            if (symbol.endsWith(OptionalSuffix)) symbol.substring(0, symbol.length - OptionalSuffix.length)
+            else symbol
           // If the token is not a non-terminal, add it to terminals
-          if (!nonTerminals.contains(token)) {
-            terminals += token
+          if (!nonTerminals.contains(symbolWithoutSuffix)) {
+            terminals += symbolWithoutSuffix
           }
-          derivation += token
+          derivation += symbol
         }
 
         if (derivation.size > 0) {
