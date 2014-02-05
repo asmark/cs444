@@ -1,15 +1,22 @@
 package joos.tokens
 
 import joos.regexp.RegularExpression
+import joos.language.NameMapping
 
 object TokenKind extends Enumeration {
   type TokenKind = Value
+
+  var itemToTokenMap: Map[String, TokenKindValue] = Map()
 
   case class TokenKindValue(val name: String, regexp: Function0[RegularExpression]) extends Val(name) {
     def getRegexp() = regexp() := this
 
     def getName() = name
+
+    itemToTokenMap += ((if (NameMapping.getSymbols.contains(name)) (name + "Symbol") else name) -> this)
   }
+
+  def getTokenKindByName(name: String) = itemToTokenMap.get(name)
 
   def getHighestPriority(kinds: Set[TokenKind]): TokenKind = {
     return values.find(kind => kinds.contains(kind)).get

@@ -1,7 +1,12 @@
-package joos.tokens
+package joos.language
 
-class SymbolToNameMap {
-  val map = Map(
+object NameMapping {
+  var symbols : Set[String] = Set()
+  SymbolTokenMap map {case (key, value) => symbols += value}
+
+  def getSymbols = symbols
+
+  final val SymbolTokenMap = Map(
     "abstract" -> "Abstract",
     "default" -> "Default",
     "if" -> "If",
