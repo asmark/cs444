@@ -1,0 +1,3 @@
+
+  public strictfp class A {}
+
