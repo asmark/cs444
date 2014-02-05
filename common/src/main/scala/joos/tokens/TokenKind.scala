@@ -12,7 +12,11 @@ object TokenKind extends Enumeration {
   }
 
   def getHighestPriority(kinds: Set[TokenKind]): TokenKind = {
-    return values.find(kind => kinds.contains(kind)).get
+    return values.find(kinds.contains).get
+  }
+
+  def kindToSymbol(kind: TokenKind) = {
+    kindToSymbolMap(kind.asInstanceOf[TokenKindValue].getName())
   }
 
   // In order of priority
@@ -244,5 +248,107 @@ object TokenKind extends Enumeration {
 
   // Whitespace
   final val Whitespace = TokenKindValue("Whitespace", () => TokenKindRegexp.Whitespace)
+
+
+  final val kindToSymbolMap = Map(
+    "Id" -> "Identifier",
+
+    "Abstract" -> "abstract",
+    "Default" -> "default",
+    "If" -> "if",
+    "Private" -> "private",
+    "This" -> "this",
+    "Boolean" -> "boolean",
+    "Do" -> "do",
+    "Implements" -> "implements",
+    "Protected" -> "protected",
+    "Throw" -> "throw",
+    "Break" -> "break",
+    "Double" -> "double",
+    "Import" -> "import",
+    "Public" -> "public",
+    "Throws" -> "throws",
+    "Byte" -> "byte",
+    "Else" -> "else",
+    "InstanceOf" -> "instanceof",
+    "Return" -> "return",
+    "Transient" -> "transient",
+    "Case" -> "case",
+    "Extends" -> "extends",
+    "Int" -> "int",
+    "Short" -> "short",
+    "Try" -> "try",
+    "Catch" -> "catch",
+    "Final" -> "final",
+    "Interface" -> "interface",
+    "Static" -> "static",
+    "Void" -> "void",
+    "Char" -> "char",
+    "Finally" -> "finally",
+    "Long" -> "long",
+    "Strictfp" -> "strictfp",
+    "Volatile" -> "volatile",
+    "Class" -> "class",
+    "Float" -> "float",
+    "Native" -> "native",
+    "Super" -> "super",
+    "While" -> "while",
+    "Const" -> "const",
+    "For" -> "for",
+    "New" -> "new",
+    "Switch" -> "switch",
+    "Continue" -> "continue",
+    "Goto" -> "goto",
+    "Package" -> "package",
+    "Synchronized" -> "synchronized",
+
+    "LeftParen" -> "(",
+    "RightParen" -> ")",
+    "LeftBrace" -> "{",
+    "RightBrace" -> "}",
+    "LeftBracket" -> "[",
+    "RightBracket" -> "]",
+    "SemiColon" -> ";",
+    "Comma" -> ",",
+    "Dot" -> ".",
+
+    "Assign" -> "=",
+    "Greater" -> ">",
+    "Less" -> "<",
+    "Exclamation" -> "!",
+    "Tilde" -> "~",
+    "Question" -> "?",
+    "Colon" -> ":",
+    "Equal" -> "==",
+    "LessEqual" -> "<=",
+    "GreaterEqual" -> ">=",
+    "NotEqual" -> "!=",
+    "And" -> "&&",
+    "Or" -> "||",
+    "Increment" -> "++",
+    "Decrement" -> "--",
+    "Plus" -> "+",
+    "Minus" -> "-",
+    "Multiply" -> "*",
+    "Divide" -> "/",
+    "BitAnd" -> "&",
+    "BitOr" -> "|",
+    "Carrot" -> "^",
+    "Modulo" -> "%",
+    "LeftShift" -> "<<",
+    "RightShift" -> ">>",
+    "UnsignedShift" -> ">>>",
+    "PlusAssign" -> "+=",
+    "MinusAssign" -> "-=",
+    "MultiplyAssign" -> "*=",
+    "DivideAssign" -> "/=",
+    "BitAndAssign" -> "&=",
+    "BitOrAssign" -> "|=",
+    "CarrotAssign" -> "^=",
+    "ModuloAssign" -> "%=",
+    "LeftShiftAssign" -> "<<=",
+    "RightShiftAssign" -> ">>=",
+    "UnsignedRightShiftAssign" -> ">>>="
+  )
 
 }

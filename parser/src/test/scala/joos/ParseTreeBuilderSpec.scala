@@ -1,11 +1,9 @@
 package joos
 
-import java.io.FileInputStream
 import joos.exceptions.JoosParseException
-import joos.tokens.Token
 import joos.tokens.TokenKind.TokenKindValue
-import org.scalatest.{Matchers, FlatSpec}
 import joos.tokens.{TokenKind, Token}
+import org.scalatest.{Matchers, FlatSpec}
 
 class ParseTreeBuilderSpec extends FlatSpec with Matchers {
 
@@ -20,9 +18,9 @@ class ParseTreeBuilderSpec extends FlatSpec with Matchers {
 
     val tree = parseTreeBuilder.build(
       Seq(
-        newToken("("), newToken("id"), newToken("-"),
-        newToken("("), newToken("id"), newToken("-"),
-        newToken("id"), newToken(")"), newToken(")")
+        newToken("LeftParen"), newToken("Id"), newToken("Minus"),
+        newToken("LeftParen"), newToken("Id"), newToken("Minus"),
+        newToken("Id"), newToken("RightParen"), newToken("RightParen")
       )
     ).levelOrder
 
@@ -32,9 +30,9 @@ class ParseTreeBuilderSpec extends FlatSpec with Matchers {
     tree(2) shouldEqual Seq("(", "expr", ")")
     tree(3) shouldEqual Seq("expr", "-", "term")
     tree(4) shouldEqual Seq("term", "(", "expr", ")")
-    tree(5) shouldEqual Seq("id", "expr", "-", "term")
-    tree(6) shouldEqual Seq("term", "id")
-    tree(7) shouldEqual Seq("id")
+    tree(5) shouldEqual Seq("Identifier", "expr", "-", "term")
+    tree(6) shouldEqual Seq("term", "Identifier")
+    tree(7) shouldEqual Seq("Identifier")
   }
 
   "An invalid sequence of tokens" should "result in an exception" in {
@@ -43,26 +41,10 @@ class ParseTreeBuilderSpec extends FlatSpec with Matchers {
     intercept[JoosParseException] {
       parseTreeBuilder.build(
         Seq(
-          newToken("("), newToken("id"), newToken("-"),
-          newToken("id"), newToken(")"), newToken(")")
+          newToken("LeftParen"), newToken("Id"), newToken("Minus"),
+          newToken("Id"), newToken("RightParen"), newToken("RightParen")
         )
       )
     }
   }
-
-
-  "test Build parse tree" should "work when we have token name to symbol mappings" ignore {
-    val joosFile = "/grammar.lr1"
-    val grammar = LrOneReader(getClass.getResourceAsStream(joosFile))
-    val aTable = grammar.actionTable
-    val parseTreeBuilder = ParseTreeBuilder(aTable)
-
-    parseTreeBuilder.build(Seq(
-      Token(TokenKind.Package, "package"), Token(TokenKind.Id, "test.pkg"), Token(TokenKind.SemiColon, ";"),
-      Token(TokenKind.Public, "public"), Token(TokenKind.Class, "class"), Token(TokenKind.Id, "main"), Token(TokenKind.LeftBrace, "{"), Token(TokenKind.RightBrace, "}")))
-
-    println(aTable.startSymbol)
-  }
-
-
 }
