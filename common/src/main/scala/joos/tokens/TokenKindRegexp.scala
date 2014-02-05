@@ -396,7 +396,7 @@ object TokenKindRegexp {
   }
 
   def GreaterEqual = {
-    Concatenation("<=")
+    Concatenation(">=")
   }
 
   def NotEqual = {
@@ -416,7 +416,7 @@ object TokenKindRegexp {
   }
 
   def Decrement = {
-    Concatenation("++")
+    Concatenation("--")
   }
 
   def Plus = {
