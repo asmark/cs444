@@ -5,11 +5,12 @@ import joos.exceptions.JoosParseException
 import joos.tokens.Token
 import joos.tokens.TokenKind.TokenKindValue
 import org.scalatest.{Matchers, FlatSpec}
+import joos.tokens.{TokenKind, Token}
 
 class ParseTreeBuilderSpec extends FlatSpec with Matchers {
 
   final val sampleFileName = "/sample.lr1"
-  final val actionTable = LrOneReader(new FileInputStream(getClass.getResource(sampleFileName).getPath)).actionTable
+  final val actionTable = LrOneReader(getClass.getResourceAsStream(sampleFileName)).actionTable
 
   def newToken(lexeme: String): Token = Token(new TokenKindValue(lexeme, () => null), lexeme)
 
@@ -48,4 +49,20 @@ class ParseTreeBuilderSpec extends FlatSpec with Matchers {
       )
     }
   }
+
+  final val joosFile = "/grammar.lr1"
+  final val grammar = LrOneReader(getClass.getResourceAsStream(joosFile))
+  final val aTable = grammar.actionTable
+
+  "Build parse tree" should "B p t" in {
+    val parseTreeBuilder = ParseTreeBuilder(aTable)
+
+    parseTreeBuilder.build(Seq(
+      Token(TokenKind.Package, "package"), Token(TokenKind.Id, "test.pkg"), Token(TokenKind.SemiColon, ";"),
+      Token(TokenKind.Public, "public"), Token(TokenKind.Class, "class"), Token(TokenKind.Id, "main"), Token(TokenKind.LeftBrace, "{"), Token(TokenKind.RightBrace, "}")))
+
+    println(aTable.startSymbol)
+  }
+
+
 }

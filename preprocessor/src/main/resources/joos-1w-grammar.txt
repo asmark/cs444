@@ -1,5 +1,6 @@
-# Start symbol
-CompilationUnit
+Goal:
+
+  bof CompilationUnit eof
 
 Literal:
   integerliteral

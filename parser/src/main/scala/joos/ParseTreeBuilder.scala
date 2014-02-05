@@ -6,14 +6,16 @@ import joos.tokens.{TokenKind, Token}
 
 class ParseTreeBuilder(actionTable: LrOneActionTable) {
 
-  private final val BEGIN = "BOF"
-  private final val END = "EOF"
+  private final val BEGIN = "bof"
+  private final val END = "eof"
 
   def build(tokens: Seq[Token]): ParseTree = {
 
     val nodeStack = mutable.Stack(LeafNode(BEGIN)): mutable.Stack[ParseTreeNode]
     val stateStack = mutable.Stack(actionTable.shift(0, BEGIN))
 
+    // TODO: Terminals should be normalized into their token representations
+    // val terminals = tokens.map(TokenKindValue.KindToSymbol)
     val terminals = tokens.map(_.kind.toString)
     (terminals ++ Seq(END)).foreach {
       token =>
