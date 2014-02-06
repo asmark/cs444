@@ -1,3 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
-java -jar compiler/target/joosc.jar $1
+java -jar compiler/target/compiler.jar $1
+exit $?

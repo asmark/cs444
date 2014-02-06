@@ -9,9 +9,6 @@ object Dependencies {
 }
 
 object Joos1wCompilerBuild extends Build {
-
-  val commitSha = taskKey[String]("Current commit SHA")
-
   val commonSettings = Defaults.defaultSettings ++ Seq(
     crossPaths := false,
     fork in run := true,
@@ -28,10 +25,8 @@ object Joos1wCompilerBuild extends Build {
     libraryDependencies ++= Seq(
       Dependencies.scalaTest,
       Dependencies.guava
-    ),
-    commitSha := Process("git rev-parse HEAD").lines.head
+    )
   ) ++ assemblySettings ++ Seq(
-    assemblyOption in assembly ~= { _.copy(includeScala = false) },
     test in assembly := {}
   )
 
@@ -87,7 +82,7 @@ object Joos1wCompilerBuild extends Build {
     base = file("compiler"),
     settings = commonSettings ++ Seq(
       description := "Joos 1W Compiler",
-      jarName in assembly := "joosc.jar",
+      jarName in assembly := "compiler.jar",
       mainClass in assembly := Some("joos.Compiler")
     )
   ) dependsOn(common, preprocessor, scanner, parser)
