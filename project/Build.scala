@@ -12,12 +12,6 @@ object Joos1wCompilerBuild extends Build {
 
   val commitSha = taskKey[String]("Current commit SHA")
 
-  final val HumanGrammar = "joos-1w-grammar.txt"
-  final val MachineGrammar = "joos-1w-grammar.cfg"
-  final val Dfa = "joos-1w-dfa.dfa"
-  final val ActionTable = "joos-1w-action-table.txt"
-  final val LrOneGrammar = "joos-1w-grammar.lr1"
-
   val commonSettings = Defaults.defaultSettings ++ Seq(
     crossPaths := false,
     fork in run := true,
@@ -57,11 +51,6 @@ object Joos1wCompilerBuild extends Build {
         val file = managedResourceDirectory / "build.properties"
         val properties = Map(
           "managed-resource-directory" -> managedResourceDirectory.getPath.replace('\\', '/'),
-          "grammar" -> HumanGrammar,
-          "machine-grammar" -> MachineGrammar,
-          "dfa" -> Dfa,
-          "action-table" -> ActionTable,
-          "lr-one-grammar" -> LrOneGrammar,
           "commit-sha" -> commitSha.value
         )
 

@@ -1,8 +1,10 @@
 package joos.a1
 
+import java.io.FileInputStream
 import joos.automata.Dfa
 import joos.exceptions.JoosParseException
 import joos.parsetree.ParseTree
+import joos.resources
 import joos.scanner.Scanner
 import joos.tokens.Token
 import joos.{ParseTreeBuilder, LrOneReader}
@@ -10,12 +12,8 @@ import scala.io.Source
 
 object ScanParseWeed {
 
-  // TODO: Get this from properties
-  final val DfaFile = "/joos-1w-dfa.dfa"
-  final val LrOneFile = "/joos-1w-grammar.lr1"
-
   private def tokenize(path: String): Seq[Token] = {
-    val joosDfa = Dfa.deserialize(getClass.getResourceAsStream(DfaFile))
+    val joosDfa = Dfa.deserialize(new FileInputStream(resources.lexerDfa))
     val scanner = Scanner(joosDfa)
 
     val source = Source.fromFile(path)
@@ -25,7 +23,10 @@ object ScanParseWeed {
   }
 
   private def parse(tokens: Seq[Token]): ParseTree = {
-    val actionTable = LrOneReader(getClass.getResourceAsStream(LrOneFile)).actionTable
+    val actionTable = LrOneReader(
+      new FileInputStream(resources.lalr1Table),
+      new FileInputStream(resources.serializedGrammar)
+    )
     ParseTreeBuilder(actionTable).build(tokens)
   }
 
@@ -34,7 +35,9 @@ object ScanParseWeed {
       val tokens = tokenize(path)
       parse(tokens)
     } catch {
-      case jpe: JoosParseException => { jpe.printStackTrace(); return 42 }
+      case jpe: JoosParseException => {
+        jpe.printStackTrace(); return 42
+      }
     }
     return 0
   }
