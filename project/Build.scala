@@ -10,11 +10,7 @@ object Dependencies {
 
 object Joos1wCompilerBuild extends Build {
 
-  final val HumanGrammar = "joos-1w-grammar.txt"
-  final val MachineGrammar = "joos-1w-grammar.cfg"
-  final val Dfa = "joos-1w-dfa.dfa"
-  final val ActionTable = "joos-1w-action-table.txt"
-  final val LrOneGrammar = "joos-1w-grammar.lr1"
+  val commitSha = taskKey[String]("Current commit SHA")
 
   val commonSettings = Defaults.defaultSettings ++ Seq(
     crossPaths := false,
@@ -32,7 +28,8 @@ object Joos1wCompilerBuild extends Build {
     libraryDependencies ++= Seq(
       Dependencies.scalaTest,
       Dependencies.guava
-    )
+    ),
+    commitSha := Process("git rev-parse HEAD").lines.head
   ) ++ assemblySettings ++ Seq(
     assemblyOption in assembly ~= { _.copy(includeScala = false) }
   )
@@ -54,11 +51,7 @@ object Joos1wCompilerBuild extends Build {
         val file = managedResourceDirectory / "build.properties"
         val properties = Map(
           "managed-resource-directory" -> managedResourceDirectory.getPath.replace('\\', '/'),
-          "grammar" -> HumanGrammar,
-          "machine-grammar" -> MachineGrammar,
-          "dfa" -> Dfa,
-          "action-table" -> ActionTable,
-          "lr-one-grammar" -> LrOneGrammar
+          "commit-sha" -> commitSha.value
         )
 
         val builder = new StringBuilder()

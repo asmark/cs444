@@ -1,24 +1,27 @@
 package joos.preprocessor.tasks.scanner
 
-import java.io.{File, FileOutputStream}
+import java.io.FileOutputStream
 import joos.automata.Dfa
 import joos.preprocessor.tasks.PreProcessorTask
 import joos.tokens.TokenKind
 import joos.tokens.TokenKind.TokenKindValue
+import joos.resources
 
 object DfaGeneratorTask extends PreProcessorTask {
 
-  private final val DfaFile = getProperty("dfa")
-  private final lazy val JoosDfa = Dfa(TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a, b) => a | b))
+  private final lazy val JoosDfa = Dfa(
+    TokenKind
+      .values
+      .map(_.asInstanceOf[TokenKindValue].getRegexp())
+      .reduceRight((a, b) => a | b)
+  )
 
   def dependsOn: List[PreProcessorTask] = List.empty
 
-  def isTaskCached(): Boolean = {
-    isFileExist(getPathToManagedResource(DfaFile))
-  }
+  def isTaskCached() = isFileExist(resources.lexerDfa)
 
   def executeTask() {
-    val writer = new FileOutputStream(new File(getPathToManagedResource(DfaFile)))
+    val writer = new FileOutputStream(resources.lexerDfa)
     JoosDfa.serialize(writer)
     writer.close()
   }

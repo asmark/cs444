@@ -229,8 +229,6 @@ class Pair<A, B> {
  * The main LALR/SLR generator class.
  */
 class Generator {
-  private PrintWriter writer;
-
   /**
    * The context-free grammar.
    */
@@ -249,12 +247,13 @@ class Generator {
   Map<Pair<State, String>, Action> table =
       new HashMap<Pair<State, String>, Action>();
   State initialState;
+  private PrintWriter writer;
   private Map<List<String>, Set<String>> generalFirstCache = new HashMap<List<String>, Set<String>>();
   private Map<Set<Item>, Set<Item>> closureCache = new HashMap<Set<Item>, Set<Item>>();
   private Map<Pair<State, String>, State> gotoCache = new HashMap<Pair<State, String>, State>();
 
-  public Generator(Grammar grammar, OutputStream outputStream) {
-    this.writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(outputStream)));
+  public Generator(Grammar grammar, PrintWriter writer) {
+    this.writer = writer;
     this.grammar = grammar;
     for (String nonterm : grammar.nonterminals) {
       lhsToRules.put(nonterm, new ArrayList<Production>());
@@ -566,7 +565,6 @@ class Generator {
         String x = item.nextSym();
         State j = lr1_goto_(i, x);
         if (t.add(j)) {
-          System.err.print(".");
           q.add(j);
         }
         addAction(i, x, new ShiftAction(j));
@@ -613,7 +611,6 @@ class Generator {
         String x = item.nextSym();
         State j = lr1_goto_(i, x);
         if (t.add(j)) {
-          System.err.print(".");
           q.add(j);
         }
       }
@@ -625,7 +622,6 @@ class Generator {
       Set<Item> core = core(items);
       Set<Item> accum = coreToState.get(core);
       if (accum == null) {
-        System.err.print(".");
         accum = new HashSet<Item>(items);
         coreToState.put(core, accum);
       } else accum.addAll(items);
@@ -649,7 +645,6 @@ class Generator {
         State j = lr1_goto_(i, x);
         j = coreToStateState.get(core(j.items));
         if (t.add(j)) {
-          System.err.print(".");
           q.add(j);
         }
         addAction(i, x, new ShiftAction(j));
@@ -714,21 +709,24 @@ public class ActionTableGenerator {
 
   public ActionTableGenerator createActionTable(InputStream inputStream, OutputStream outputStream) {
     Grammar grammar = null;
+    PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(outputStream)));
     try {
       grammar = Util.readGrammar(new Scanner(inputStream));
-      Util.writeGrammar(grammar);
+      Util.writeGrammar(grammar, writer);
     } catch (Error e) {
       System.err.println("Error reading grammar: " + e);
     }
 
     try {
-      Generator jlalr = new Generator(grammar, outputStream);
+      Generator jlalr = new Generator(grammar, writer);
       jlalr.computeFirstFollowNullable();
       jlalr.generateLALR1Table();
       jlalr.generateOutput();
     } catch (Error e) {
       System.err.println("Error performing LALR(1) construction: " + e);
     }
+    writer.flush();
+    writer.close();
     return this;
   }
 }
@@ -904,19 +902,19 @@ class Util {
     }
   }
 
-  static void writeGrammar(Grammar grammar) {
-    System.out.println(grammar.terminals.size());
+  static void writeGrammar(Grammar grammar, PrintWriter writer) {
+    writer.println(grammar.terminals.size());
     for (String s : grammar.terminals) {
-      System.out.println(s);
+      writer.println(s);
     }
-    System.out.println(grammar.nonterminals.size());
+    writer.println(grammar.nonterminals.size());
     for (String s : grammar.nonterminals) {
-      System.out.println(s);
+      writer.println(s);
     }
-    System.out.println(grammar.start);
-    System.out.println(grammar.productions.size());
+    writer.println(grammar.start);
+    writer.println(grammar.productions.size());
     for (Production s : grammar.productions) {
-      System.out.println(s);
+      writer.println(s);
     }
   }
 }

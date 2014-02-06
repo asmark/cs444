@@ -14,7 +14,7 @@ case class ContextFreeGrammar(
   rules: IndexedSeq[ProductionRule]
 ) {
 
-  def toMachineReadableFormat(outputStream: OutputStream): this.type = {
+  def serialize(outputStream: OutputStream): this.type = {
     using(new PrintWriter(new OutputStreamWriter(outputStream))) {
       writer =>
         writer.println(terminals.size)
@@ -72,7 +72,7 @@ object ContextFreeGrammar {
     }
   }
 
-  def fromHumanReadableFormat(inputStream: InputStream): ContextFreeGrammar = {
+  def fromReadableFormat(inputStream: InputStream): ContextFreeGrammar = {
     val terminals = mutable.LinkedHashSet.empty[String]
     val nonTerminals = mutable.LinkedHashSet.empty[String]
     val rulesBuilder = ArrayBuffer.empty[ProductionRule]

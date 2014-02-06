@@ -1,6 +1,6 @@
 package joos.preprocessor
 
-import joos.preprocessor.tasks.parser.LrOneGeneratorTask
+import joos.preprocessor.tasks.parser.ActionTableGeneratorTask
 import joos.preprocessor.tasks.scanner.DfaGeneratorTask
 
 object Runner {
@@ -8,7 +8,6 @@ object Runner {
     arguments.foreach(println)
     println("Hello World")
 
-    val tasks = Seq(DfaGeneratorTask, LrOneGeneratorTask)
-    tasks.foreach(_.runTask())
+    Seq(DfaGeneratorTask, ActionTableGeneratorTask).foreach(_.runTask())
   }
 }
