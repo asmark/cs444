@@ -262,19 +262,9 @@ InterfaceBody:
 
 InterfaceMemberDeclarations:
 
-  InterfaceMemberDeclaration
-
-  InterfaceMemberDeclarations InterfaceMemberDeclaration
-
-InterfaceMemberDeclaration:
-
-  ConstantDeclaration
-
   AbstractMethodDeclaration
 
-ConstantDeclaration:
-
-  FieldDeclaration
+  InterfaceMemberDeclarations AbstractMethodDeclaration
 
 AbstractMethodDeclaration:
 

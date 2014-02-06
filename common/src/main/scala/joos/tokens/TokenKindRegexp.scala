@@ -12,11 +12,11 @@ object TokenKindRegexp {
 
   // Comments
   def EolComment = {
-    Concatenation("//") + (unitcodeInputCharacter()*) + Alternation(NEWLINE_CHARS)
+    Concatenation("//") + (inputCharacter()*) + Alternation(NEWLINE_CHARS)
   }
 
   def TraditionalComment = {
-    Concatenation("/*") + (unitcodeInputCharacter()*) + Concatenation("*/")
+    Concatenation("/*") + (inputCharacter()*) + Concatenation("*/")
   }
 
   // Identifier
