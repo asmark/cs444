@@ -1,14 +1,14 @@
 package joos
 
+import java.io.FileInputStream
 import joos.exceptions.{ShiftException, ReduceException}
 import org.scalatest.{Matchers, FlatSpec}
 
 class LrOneActionTableSpec extends FlatSpec with Matchers {
 
-  final val actionTable = LrOneReader(
-    getClass.getResourceAsStream("/sample.lr1"),
-    getClass.getResourceAsStream("/sample.cfg")
-  )
+  final val sampleFileName = "/sample.lr1"
+
+  final val actionTable = LrOneReader(getClass.getResourceAsStream(sampleFileName)).actionTable
 
   behavior of "Action Table"
   it should "determine valid reduce states" in {
@@ -55,4 +55,6 @@ class LrOneActionTableSpec extends FlatSpec with Matchers {
       actionTable.shift(13, "bof")
     }
   }
+
+
 }

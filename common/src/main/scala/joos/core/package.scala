@@ -5,7 +5,7 @@ import scala.io.BufferedSource
 
 package object core {
   /**
-   * Make sure the underlying {@code resources} is disposed when the {@code block} ends
+   * Make sure the underlying {@code resource} is disposed when the {@code block} ends
    */
   def using[R](resource: BufferedSource)(block: BufferedSource => R): R = {
     try {

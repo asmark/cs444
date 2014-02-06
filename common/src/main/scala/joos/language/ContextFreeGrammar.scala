@@ -72,43 +72,6 @@ object ContextFreeGrammar {
     }
   }
 
-  def deserialize(inputStream: InputStream): ContextFreeGrammar = {
-    using (new BufferedReader(new InputStreamReader(inputStream))) {
-      reader =>
-        val terminalsCount = reader.readLine().toInt
-        val terminals = mutable.LinkedHashSet.empty[String]
-        for (i <- 0 until terminalsCount) {
-          terminals += reader.readLine()
-        }
-        assert(terminals.size == terminalsCount)
-
-        val nonTerminalsCount = reader.readLine().toInt
-        val nonTerminals = mutable.LinkedHashSet.empty[String]
-        for (i <- 0 until nonTerminalsCount) {
-          nonTerminals += reader.readLine()
-        }
-        assert(nonTerminals.size == nonTerminalsCount)
-
-        val start = reader.readLine()
-        assert(nonTerminals.contains(start))
-
-        val rulesCount = reader.readLine().toInt
-        val rules = new Array[ProductionRule](rulesCount)
-        for (i <- 0 until rulesCount) {
-          val tokenizer = new StringTokenizer(reader.readLine())
-          val left = tokenizer.nextToken
-          val derivation = ArrayBuffer.empty[String]
-          while (tokenizer.hasMoreTokens) {
-            derivation += tokenizer.nextToken
-          }
-          rules(i) = ProductionRule(left, derivation)
-        }
-        assert(rules.size == rulesCount)
-
-        new ContextFreeGrammar(start, terminals, nonTerminals, rules)
-    }
-  }
-
   def fromReadableFormat(inputStream: InputStream): ContextFreeGrammar = {
     val terminals = mutable.LinkedHashSet.empty[String]
     val nonTerminals = mutable.LinkedHashSet.empty[String]
