@@ -10,6 +10,8 @@ object Dependencies {
 
 object Joos1wCompilerBuild extends Build {
 
+  val commitSha = taskKey[String]("Current commit SHA")
+
   final val HumanGrammar = "joos-1w-grammar.txt"
   final val MachineGrammar = "joos-1w-grammar.cfg"
   final val Dfa = "joos-1w-dfa.dfa"
@@ -32,7 +34,8 @@ object Joos1wCompilerBuild extends Build {
     libraryDependencies ++= Seq(
       Dependencies.scalaTest,
       Dependencies.guava
-    )
+    ),
+    commitSha := Process("git rev-parse HEAD").lines.head
   ) ++ assemblySettings ++ Seq(
     assemblyOption in assembly ~= { _.copy(includeScala = false) }
   )
@@ -58,7 +61,8 @@ object Joos1wCompilerBuild extends Build {
           "machine-grammar" -> MachineGrammar,
           "dfa" -> Dfa,
           "action-table" -> ActionTable,
-          "lr-one-grammar" -> LrOneGrammar
+          "lr-one-grammar" -> LrOneGrammar,
+          "commit-sha" -> commitSha.value
         )
 
         val builder = new StringBuilder()
