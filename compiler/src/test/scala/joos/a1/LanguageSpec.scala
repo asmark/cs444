@@ -5,8 +5,8 @@ import scala.io.Source
 
 class LanguageSpec extends FlatSpec with Matchers {
 
-  final val joosLang = "/language/joos"
-  final val javaLang = "/language/java"
+  final val joosLang = "/a1/language/joos"
+  final val javaLang = "/a1/language/java"
 
   def getSource(dir: String) = Source.fromURL(getClass.getResource(dir))
 
