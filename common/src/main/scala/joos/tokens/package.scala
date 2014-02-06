@@ -6,31 +6,40 @@ import scala.language.postfixOps
 
 package object tokens {
 
-  final val DIGITS = Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9').mkString("")
-  final val NON_ZERO_DIGITS = DIGITS.slice(1, DIGITS.length).mkString("")
-  final val HEX_DIGITS = (DIGITS ++ Array(
+  final val Digits = Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9').mkString("")
+  final val NonZeroDigits = Digits.slice(1, Digits.length).mkString("")
+  final val HexDigits = (Digits ++ Array(
     'a', 'b', 'c', 'd', 'e', 'f',
     'A', 'B', 'C', 'D', 'E', 'F'
   )).mkString("")
-  final val OCTAL_DIGITS = DIGITS.slice(0, 8).mkString("")
+  final val OctalDigits = Digits.slice(0, 8).mkString("")
 
-  final val ALPHABETS = {
+  final val Alphabets = {
     val lower = "abcdefghijklmnopqrstuvwxyz"
     val upper = lower.toUpperCase
     lower + upper
   }
 
-  final val JAVA_LETTERS = {
-    ALPHABETS + '_' + '$'
+  final val ClassLetters = {
+    Alphabets + '_' + '$'
   }
 
-  final val NEWLINE_CHARS = {
-    Array('\n', '\r').mkString("")
+  final val NewlineChars = {
+    Array('\n', '\r')
+  }
+
+  def allCharactersBut(exclude: Seq[Char]) = {
+    val validChars = allUnicode.filter(!exclude.contains(_))
+    Alternation(validChars.mkString(""))
+  }
+
+  def newlineChar() = {
+    Alternation(NewlineChars.mkString(""))
   }
 
   // helper functions for floating point
   def exponentPart(): RegularExpression = {
-    (Atom('e') | Atom('E')) + ((~(Atom('+') | Atom('-'))) + Alternation(DIGITS) + (Alternation(DIGITS) *))
+    (Atom('e') | Atom('E')) + ((~(Atom('+') | Atom('-'))) + Alternation(Digits) + (Alternation(Digits) *))
   }
 
   def floatTypeSuffix(): RegularExpression = {
@@ -47,10 +56,10 @@ package object tokens {
       Seq(
         Atom('\\'),
         unicodeMarker(),
-        Alternation(HEX_DIGITS),
-        Alternation(HEX_DIGITS),
-        Alternation(HEX_DIGITS),
-        Alternation(HEX_DIGITS)
+        Alternation(HexDigits),
+        Alternation(HexDigits),
+        Alternation(HexDigits),
+        Alternation(HexDigits)
       )
     )
   }
@@ -93,9 +102,9 @@ package object tokens {
   }
 
   def octalEscape(): RegularExpression = {
-    (Atom('\\') + Alternation(OCTAL_DIGITS)) |
-      (Atom('\\') + Alternation(OCTAL_DIGITS) + Alternation(OCTAL_DIGITS)) |
-      (Atom('\\') + zeroToThree() + Alternation(OCTAL_DIGITS) + Alternation(OCTAL_DIGITS))
+    (Atom('\\') + Alternation(OctalDigits)) |
+      (Atom('\\') + Alternation(OctalDigits) + Alternation(OctalDigits)) |
+      (Atom('\\') + zeroToThree() + Alternation(OctalDigits) + Alternation(OctalDigits))
   }
 
   def escapeSequence(): RegularExpression = {

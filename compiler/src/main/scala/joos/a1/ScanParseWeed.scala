@@ -34,7 +34,7 @@ object ScanParseWeed {
       val tokens = tokenize(path)
       parse(tokens)
     } catch {
-      case jpe: JoosParseException => return 42
+      case jpe: JoosParseException => { jpe.printStackTrace(); return 42 }
     }
     return 0
   }

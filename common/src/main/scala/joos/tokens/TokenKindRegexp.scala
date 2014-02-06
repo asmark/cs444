@@ -12,17 +12,18 @@ object TokenKindRegexp {
 
   // Comments
   def EolComment = {
-    Concatenation("//") + (inputCharacter()*) + Alternation(NEWLINE_CHARS)
+    Concatenation("//") + (allCharactersBut(NewlineChars) *) + newlineChar()
   }
 
   def TraditionalComment = {
-    Concatenation("/*") + (inputCharacter()*) + Concatenation("*/")
+    Concatenation("/*") +
+      ((allCharactersBut(Seq('*')) | ((Atom('*')*) + allCharactersBut(Seq('*', '/')))) *) + (Atom('*')*) + Atom('/')
   }
 
   // Identifier
   // Regular Expression: [JavaLetter][JavaLetter or Digits]*
   def Id = {
-    Alternation(JAVA_LETTERS) + (Alternation(JAVA_LETTERS + DIGITS) *)
+    Alternation(ClassLetters) + (Alternation(ClassLetters + Digits) *)
   }
 
   // Keywords
@@ -225,7 +226,7 @@ object TokenKindRegexp {
   // DecimalIntegerLiteral
   // Regular Expression: (0 | 0(l|L) | [1-9][0-9]* | [1-9][0-9]*(l|L))
   def DecimalIntLiteral = {
-    (Atom('0') | (Alternation(NON_ZERO_DIGITS) + (Alternation(DIGITS) *))) + ~(Atom('l') | Atom('L'))
+    (Atom('0') | (Alternation(NonZeroDigits) + (Alternation(Digits) *))) + ~(Atom('l') | Atom('L'))
   }
 
   // HexNumeral
@@ -233,13 +234,13 @@ object TokenKindRegexp {
   def HexIntLiteral = {
     val prefix = Atom('0') + (Atom('x') | Atom('X'))
 
-    val non_postfix = prefix + Alternation(HEX_DIGITS) + (Alternation(HEX_DIGITS) *)
+    val non_postfix = prefix + Alternation(HexDigits) + (Alternation(HexDigits) *)
     val postfix =
       Concatenation(
         Seq(
           prefix,
-          Alternation(HEX_DIGITS),
-          Alternation(HEX_DIGITS) *,
+          Alternation(HexDigits),
+          Alternation(HexDigits) *,
           Atom('l') | Atom('L')
         )
       )
@@ -250,7 +251,7 @@ object TokenKindRegexp {
   // OctalIntegerLiteral
   // Regular Expression: 0[0-7][0-7]*
   def OctalIntLiteral = {
-    Concatenation(Seq(Atom('0'), Alternation(OCTAL_DIGITS), Alternation(OCTAL_DIGITS) *)) + ~(Atom('l') | Atom('L'))
+    Concatenation(Seq(Atom('0'), Alternation(OctalDigits), Alternation(OctalDigits) *)) + ~(Atom('l') | Atom('L'))
   }
 
 
@@ -258,25 +259,25 @@ object TokenKindRegexp {
   // Regular Expression: TOO LONG
   def FloatingPointLiteral = {
     val first_form =
-      Alternation(DIGITS) + (Alternation(DIGITS) *) +
+      Alternation(Digits) + (Alternation(Digits) *) +
         Atom('.') +
-        ~(Alternation(DIGITS) + (Alternation(DIGITS) *)) +
+        ~(Alternation(Digits) + (Alternation(Digits) *)) +
         ~exponentPart() +
         ~floatTypeSuffix()
 
     val second_form =
       Atom('.') +
-        Alternation(DIGITS) + (Alternation(DIGITS) *) +
+        Alternation(Digits) + (Alternation(Digits) *) +
         ~exponentPart() +
         ~floatTypeSuffix()
 
     val third_form =
-      Alternation(DIGITS) + (Alternation(DIGITS) *) +
+      Alternation(Digits) + (Alternation(Digits) *) +
         exponentPart() +
         ~floatTypeSuffix()
 
     val fourth_form =
-      Alternation(DIGITS) + (Alternation(DIGITS) *) +
+      Alternation(Digits) + (Alternation(Digits) *) +
         ~exponentPart() +
         floatTypeSuffix()
 
