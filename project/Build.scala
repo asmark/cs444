@@ -31,7 +31,8 @@ object Joos1wCompilerBuild extends Build {
     ),
     commitSha := Process("git rev-parse HEAD").lines.head
   ) ++ assemblySettings ++ Seq(
-    assemblyOption in assembly ~= { _.copy(includeScala = false) }
+    assemblyOption in assembly ~= { _.copy(includeScala = false) },
+    test in assembly := {}
   )
 
   // Codes shared across multiple components
@@ -85,7 +86,9 @@ object Joos1wCompilerBuild extends Build {
     id = "compiler",
     base = file("compiler"),
     settings = commonSettings ++ Seq(
-      description := "Joos 1W Compiler"
+      description := "Joos 1W Compiler",
+      jarName in assembly := "joosc.jar",
+      mainClass in assembly := Some("joos.Compiler")
     )
   ) dependsOn(common, preprocessor, scanner, parser)
 
@@ -94,5 +97,4 @@ object Joos1wCompilerBuild extends Build {
     base = file("."),
     settings = commonSettings
   ) aggregate(compiler, common, preprocessor, scanner, parser)
-
 }
