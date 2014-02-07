@@ -1,4 +1,4 @@
-package joos
+package joos.parser
 
 import java.io.{InputStreamReader, BufferedReader, InputStream}
 import joos.language.ProductionRule
@@ -8,11 +8,12 @@ class LrOneReader(source: InputStream) {
   private val reader = new BufferedReader(new InputStreamReader(source));
 
   val numTerminals = reader.readLine().toInt
-  val terminals = Range(0, numTerminals).foldRight(mutable.Set.empty[String])((idx,set) => set += reader.readLine())
+  val terminals = Range(0, numTerminals).foldRight(mutable.Set.empty[String])((idx, set) => set += reader.readLine())
   assert(terminals.size == numTerminals)
 
   val numNonTerminals = reader.readLine().toInt
-  val nonTerminals = Range(0, numNonTerminals).foldRight(mutable.Set.empty[String])((idx,set) => set += reader.readLine())
+  val nonTerminals = Range(0, numNonTerminals)
+    .foldRight(mutable.Set.empty[String])((idx, set) => set += reader.readLine())
   assert(nonTerminals.size == numNonTerminals)
 
   val startSymbol = reader.readLine()

@@ -31,7 +31,7 @@ class IntegSpec extends FlatSpec with Matchers {
         val expect = getSource(expectDirectory, file + ".expect")
 
         // Filter out whitespace tokens
-        tokens.withFilter(_.kind != TokenKind.Whitespace).map((t) => t.kind + " " + t.lexeme) should contain theSameElementsInOrderAs
+        tokens.withFilter(_.kind != TokenKind.Whitespace).map(t => t.kind + " " + t.lexeme) should contain theSameElementsInOrderAs
           expect.getLines().toList
       }
   }

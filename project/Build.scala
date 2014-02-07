@@ -46,8 +46,7 @@ object Joos1wCompilerBuild extends Build {
         val managedResourceDirectory = (resourceManaged in Compile).value
         val file = managedResourceDirectory / "build.properties"
         val properties = Map(
-          "managed-resource-directory" -> managedResourceDirectory.getPath.replace('\\', '/'),
-          "commit-sha" -> commitSha.value
+          "managed-resource-directory" -> managedResourceDirectory.getPath.replace('\\', '/')
         )
 
         val builder = new StringBuilder()

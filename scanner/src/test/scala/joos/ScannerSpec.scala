@@ -1,12 +1,12 @@
 package joos
 
+import joos.automata.{Dfa, AcceptingDfaNode, NonAcceptingDfaNode}
 import joos.exceptions.ScanningException
-import joos.regexp.{RegularExpression, Concatenation, Alternation}
-import joos.tokens.{TokenKind, TokenKindRegexp, Token}
-import org.scalatest.{FlatSpec, Matchers}
+import joos.regexp.{Concatenation, Alternation}
 import joos.scanner.Scanner
-import joos.automata.{Dfa, AcceptingDfaNode, NonAcceptingDfaNode, DfaNode}
 import joos.tokens.TokenKind.TokenKindValue
+import joos.tokens.{TerminalToken, TokenKind}
+import org.scalatest.{FlatSpec, Matchers}
 
 class ScannerSpec extends FlatSpec with Matchers {
 
@@ -19,26 +19,42 @@ class ScannerSpec extends FlatSpec with Matchers {
 
   private val testDfaNoLoops = NonAcceptingDfaNode().
     addTransition(CharacterA, AcceptingDfaNode(TokenKind1)).
-    addTransition(CharacterB,
-      AcceptingDfaNode(TokenKind2).addTransition(CharacterA, NonAcceptingDfaNode()))
+    addTransition(
+      CharacterB,
+      AcceptingDfaNode(TokenKind2).addTransition(CharacterA, NonAcceptingDfaNode())
+    )
 
   private val testDfaWithLoops = NonAcceptingDfaNode()
   testDfaWithLoops.addTransition(CharacterA, testDfaWithLoops).
-    addTransition(CharacterB,
-      AcceptingDfaNode(TokenKind2).addTransition(CharacterA, AcceptingDfaNode(TokenKind1)))
+    addTransition(
+      CharacterB,
+      AcceptingDfaNode(TokenKind2).addTransition(CharacterA, AcceptingDfaNode(TokenKind1))
+    )
 
   private val testDfaDeadEnds = NonAcceptingDfaNode().
-    addTransition(CharacterA,
-      NonAcceptingDfaNode().addTransition(CharacterC,
-        AcceptingDfaNode(TokenKind1))).
-    addTransition(CharacterB,
-      NonAcceptingDfaNode().addTransition(CharacterB,
-        AcceptingDfaNode(TokenKind2).addTransition(CharacterA,
-          NonAcceptingDfaNode().addTransition(CharacterC,
-            NonAcceptingDfaNode()))))
+    addTransition(
+      CharacterA,
+      NonAcceptingDfaNode().addTransition(
+        CharacterC,
+        AcceptingDfaNode(TokenKind1)
+      )
+    ).
+    addTransition(
+      CharacterB,
+      NonAcceptingDfaNode().addTransition(
+        CharacterB,
+        AcceptingDfaNode(TokenKind2).addTransition(
+          CharacterA,
+          NonAcceptingDfaNode().addTransition(
+            CharacterC,
+            NonAcceptingDfaNode()
+          )
+        )
+      )
+    )
 
   lazy val joosDfa =
-    Dfa(TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a,b) => a | b))
+    Dfa(TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a, b) => a | b))
 
   // Tests begin here
   "A state with no transition" should "backtrack once to accepting nodes" in {
@@ -89,7 +105,7 @@ class ScannerSpec extends FlatSpec with Matchers {
     "final".toCharArray.foreach(c => scanner.scan(c))
     val tokens = scanner.getTokens()
     tokens should have length 1
-    tokens should contain(Token(TokenKind.Final, "final"))
+    tokens should contain(TerminalToken("final", TokenKind.Final))
   }
 
   behavior of "A static word regular expression (final) to DFA conversion"
@@ -100,7 +116,7 @@ class ScannerSpec extends FlatSpec with Matchers {
     "final".toCharArray.foreach(c => scanner.scan(c))
     val tokens = scanner.getTokens()
     tokens should have length 1
-    tokens should contain(Token(TokenKind.Final, "final"))
+    tokens should contain(TerminalToken("final", TokenKind.Final))
   }
 
   it should "reject non-tokenizable (final3) inputs" in {
@@ -123,7 +139,7 @@ class ScannerSpec extends FlatSpec with Matchers {
 
     val tokens = scanner.getTokens()
     tokens should have length 1
-    tokens should contain(Token(TokenKind1, "test"))
+    tokens should contain(TerminalToken("test", TokenKind1))
   }
 
   it should "accept tokenizable (Test) inputs" in {
@@ -134,7 +150,7 @@ class ScannerSpec extends FlatSpec with Matchers {
 
     val tokens = scanner.getTokens()
     tokens should have length 1
-    tokens should contain(Token(TokenKind1, "Test"))
+    tokens should contain(TerminalToken("Test", TokenKind1))
   }
 
 
@@ -147,7 +163,7 @@ class ScannerSpec extends FlatSpec with Matchers {
 
     val tokens = scanner.getTokens()
     tokens should have length 1
-    tokens should contain(Token(TokenKind.Id, "t998"))
+    tokens should contain(TerminalToken("t998", TokenKind.Id))
   }
 
   it should "reject non-tokenizable (9112abc) inputs" in {
@@ -168,31 +184,34 @@ class ScannerSpec extends FlatSpec with Matchers {
   Operator
   comment ??
 */
-    //Identifiers
+  //Identifiers
   "Scanner" should "recognize valid IDs" ignore {
     val test_ids = Seq[String]("String", "i3", "MAX_VALUE", "isLetterOrDigit")
-    test_ids.map(id => {
-      val scanner = Scanner(joosDfa)
-      id.toCharArray.foreach(c => scanner.scan(c))
-      val tokens = scanner.getTokens()
-      tokens should have length 1
-      tokens should contain(new Token(TokenKind.Id, id))
-    })
+    test_ids.map(
+      id => {
+        val scanner = Scanner(joosDfa)
+        id.toCharArray.foreach(c => scanner.scan(c))
+        val tokens = scanner.getTokens()
+        tokens should have length 1
+        tokens should contain(TerminalToken(id, TokenKind.Id))
+      }
+    )
   }
 
   it should "recognize all valid keywords" ignore {
-    val test_keywords = Set[String]("abstract", "default", "if", "private", "this", "boolean", "do",
+    val test_keywords = Set[String](
+      "abstract", "default", "if", "private", "this", "boolean", "do",
       "implements", "protected", "throw", "break", "double", "import", "public", "throws", "byte", "else",
       "instanceof", "return", "transient", "case", "extends", "int", "short", "try", "catch", "final",
       "interface", "static", "void", "char", "finally", "long", "strictfp", "volatile", "class", "float",
-      "native", "super", "while", "const", "for", "new", "switch", "continue", "goto", "package", "synchronized")
+      "native", "super", "while", "const", "for", "new", "switch", "continue", "goto", "package", "synchronized"
+    )
 
     val scanner = Scanner(joosDfa)
     var counter = 1
 
     TokenKind.values.map(
-      value =>
-      {
+      value => {
         val token_kind_value = value.asInstanceOf[TokenKindValue]
         val keyword = token_kind_value.getName().toLowerCase()
         if (test_keywords.contains(keyword)) {
@@ -200,7 +219,7 @@ class ScannerSpec extends FlatSpec with Matchers {
           val tokens = scanner.getTokens()
           tokens should have length counter
           counter += 1
-          tokens should contain(new Token(value, keyword))
+          tokens should contain(TerminalToken(keyword, value))
         }
       }
     )
@@ -228,7 +247,7 @@ class ScannerSpec extends FlatSpec with Matchers {
         val tokens = scanner.getTokens()
         tokens should have length counter
         counter += 1
-        tokens should contain(new Token(separators(sep), sep))
+        tokens should contain(TerminalToken(sep, separators(sep)))
       }
     )
   }
@@ -256,7 +275,7 @@ class ScannerSpec extends FlatSpec with Matchers {
         val tokens = scanner.getTokens()
         tokens should have length counter
         counter += 1
-        tokens should contain(new Token(integers(sep), sep))
+        tokens should contain(TerminalToken(sep, integers(sep)))
       }
     )
   }
@@ -287,7 +306,7 @@ class ScannerSpec extends FlatSpec with Matchers {
         val tokens = scanner.getTokens()
         tokens should have length counter
         counter += 1
-        tokens should contain(new Token(floating_points(num), num))
+        tokens should contain(TerminalToken(num, floating_points(num)))
       }
     )
   }
@@ -307,7 +326,7 @@ class ScannerSpec extends FlatSpec with Matchers {
         val tokens = scanner.getTokens()
         tokens should have length counter
         counter += 1
-        tokens should contain(new Token(floating_points(num), num))
+        tokens should contain(TerminalToken(num, floating_points(num)))
       }
     )
   }
@@ -334,7 +353,7 @@ class ScannerSpec extends FlatSpec with Matchers {
         val tokens = scanner.getTokens()
         tokens should have length counter
         counter += 1
-        tokens should contain(new Token(characters(char), char))
+        tokens should contain(TerminalToken(char, characters(char)))
       }
     )
   }

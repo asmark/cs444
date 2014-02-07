@@ -1,4 +1,4 @@
-package joos
+package joos.parser
 
 import joos.language.ProductionRule
 

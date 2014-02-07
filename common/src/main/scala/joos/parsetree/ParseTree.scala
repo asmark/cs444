@@ -2,14 +2,23 @@ package joos.parsetree
 
 import scala.collection.mutable
 
-class ParseTree(val root: ParseTreeNode) {
+class ParseTree(val root: TreeNode) {
+
+  def prettyFormat: String = {
+    val buffer = new StringBuilder
+    levelOrder.foreach(item =>
+      buffer append (item.toString() + "\n")
+    )
+
+    buffer.toString
+  }
 
   def levelOrder: Vector[Seq[String]] = {
     var tree = mutable.MutableList.empty[Seq[String]]
     var levelDerivs = mutable.MutableList.empty[String]
     var currentLevel = 0
 
-    val queue = mutable.Queue((root, currentLevel))
+    val queue: mutable.Queue[(ParseTreeNode, Int)] = mutable.Queue((root, currentLevel))
     while (!queue.isEmpty) {
       val (node, level) = queue.dequeue()
 
@@ -18,11 +27,14 @@ class ParseTree(val root: ParseTreeNode) {
         levelDerivs = mutable.MutableList.empty[String]
         currentLevel = level
       }
-      levelDerivs += node.symbol
+      levelDerivs += node.token.symbol + "_" + currentLevel + "_" + (if (node.parent != null) node.parent.token.symbol else null)
 
       node match {
         case TreeNode(symbol, children) => {
-          children.foreach(child => queue.enqueue((child, level + 1)))
+          children.foreach(child => {
+            child.parent = node
+            queue.enqueue((child, level + 1))
+          })
         }
         case LeafNode(symbol) =>
       }
@@ -34,7 +46,7 @@ class ParseTree(val root: ParseTreeNode) {
 }
 
 object ParseTree {
-  def apply(root: ParseTreeNode) = {
+  def apply(root: TreeNode) = {
     new ParseTree(root)
   }
 }
