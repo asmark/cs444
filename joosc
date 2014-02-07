@@ -1,0 +1,4 @@
+#!/bin/sh
+
+java -jar compiler/target/compiler.jar $1
+exit $?
