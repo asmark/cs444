@@ -9,6 +9,9 @@ object Dependencies {
 }
 
 object Joos1wCompilerBuild extends Build {
+
+  val generatedResourceDirectory = "generated-resources";
+
   val commonSettings = Defaults.defaultSettings ++ Seq(
     crossPaths := false,
     fork in run := true,
@@ -41,12 +44,14 @@ object Joos1wCompilerBuild extends Build {
     id = "preprocessor",
     base = file("preprocessor"),
     settings = commonSettings ++ Seq(
+      unmanagedResourceDirectories in Compile += baseDirectory.value / generatedResourceDirectory,
       resourceGenerators in Compile <+= Def.task {
         // Generate a build.properties that the preprocessor can use
         val managedResourceDirectory = (resourceManaged in Compile).value
         val file = managedResourceDirectory / "build.properties"
         val properties = Map(
-          "managed-resource-directory" -> managedResourceDirectory.getPath.replace('\\', '/')
+          "generated-resource-directory"
+            -> (baseDirectory.value / generatedResourceDirectory).getPath.replace('\\', '/')
         )
 
         val builder = new StringBuilder()
