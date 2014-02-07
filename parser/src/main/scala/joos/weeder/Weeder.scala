@@ -86,20 +86,24 @@ abstract class Weeder {
 }
 
 object Weeder {
-  val weeders = Seq(
-    ClassModifierWeeder(),
-    MethodWeeder(),
-    InterfaceMethodWeeder(),
-    ExplicitClassConstructorWeeder(),
-    FieldWeeder(),
-    DecimalIntegerRangeWeeder(),
-    CastExpressionWeeder(),
-    FileNameWeeder()
-  )
+  def getWeeders = {
+    Seq(
+      ClassModifierWeeder(),
+      MethodWeeder(),
+      InterfaceMethodWeeder(),
+      ExplicitClassConstructorWeeder(),
+      FieldWeeder(),
+      DecimalIntegerRangeWeeder(),
+      CastExpressionWeeder(),
+      FileNameWeeder(),
+      UnicodeCharacterWeeder()
+    )
+  }
 
   def weed(tree: ParseTree, metaData: ParseMetaData) {
     var levelDerivs = mutable.MutableList.empty[String]
     var currentLevel = 0
+    val weeders = getWeeders
 
     val queue: mutable.Queue[(ParseTreeNode, Int)] = mutable.Queue((tree.root, currentLevel))
     while (!queue.isEmpty) {
