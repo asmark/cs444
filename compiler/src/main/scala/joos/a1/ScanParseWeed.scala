@@ -4,7 +4,7 @@ import java.io.FileInputStream
 import joos.automata.Dfa
 import joos.exceptions.ScanningException
 import joos.parser.exceptions.JoosParseException
-import joos.parser.{ParseTreeBuilder, LrOneReader}
+import joos.parser.{ParseMetaData, ParseTreeBuilder, LrOneReader}
 import joos.parsetree.ParseTree
 import joos.resources
 import joos.scanner.Scanner
@@ -30,15 +30,16 @@ object ScanParseWeed {
     ParseTreeBuilder(actionTable).build(tokens)
   }
 
-  private def weed(parseTree: ParseTree) {
-    Weeder(parseTree)
+  private def weed(parseTree: ParseTree, metaData: ParseMetaData) {
+    Weeder.weed(parseTree, metaData)
   }
 
   def apply(path: String): Int = {
     try {
+      val metaData = ParseMetaData(path)
       val tokens = tokenize(path)
       val parseTree = parse(tokens)
-      weed(parseTree)
+      weed(parseTree, metaData)
     } catch {
       case jpe: JoosParseException => {
         jpe.printStackTrace()

@@ -3,13 +3,14 @@ package joos.weeder
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.tokens.NonTerminalToken
 import joos.weeder.exceptions.WeederException
+import joos.parser.ParseMetaData
 
 // An interface cannot contain fields or constructors.
 case class InterfaceMethodWeeder() extends Weeder {
 
   private final val ErrorMessage = "An interface cannot contain fields or constructors"
 
-  override def check(ptn: ParseTreeNode) {
+  override def check(ptn: ParseTreeNode, md: ParseMetaData) {
 
     ptn match {
       case TreeNode(NonTerminalToken(AbstractMethodDeclaration, AbstractMethodDeclaration), children) => {

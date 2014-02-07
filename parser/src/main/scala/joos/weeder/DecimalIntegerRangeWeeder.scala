@@ -3,12 +3,13 @@ package joos.weeder
 import joos.parsetree.{LeafNode, ParseTreeNode}
 import joos.tokens.{TokenKind, TerminalToken}
 import joos.weeder.exceptions.WeederException
+import joos.parser.ParseMetaData
 
 case class DecimalIntegerRangeWeeder() extends Weeder {
 
   private final def ErrorMessage(i: BigInt) = s"${i} cannot exceed the bounds of [${Int.MinValue}, ${Int.MaxValue}]"
 
-  def check(ptn: ParseTreeNode) {
+  def check(ptn: ParseTreeNode, md: ParseMetaData) {
     ptn match {
       case LeafNode(TerminalToken(lexeme, TokenKind.DecimalIntLiteral)) => {
         val value = BigInt(lexeme)

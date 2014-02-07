@@ -1,7 +1,17 @@
 package joos.weeder
 
-import joos.parsetree.{ParseTree, LeafNode, ParseTreeNode, TreeNode}
+import joos.parsetree._
 import scala.collection.mutable
+import joos.weeder.ExplicitClassConstructorWeeder
+import joos.weeder.MethodWeeder
+import joos.weeder.CastExpressionWeeder
+import joos.parsetree.LeafNode
+import joos.weeder.DecimalIntegerRangeWeeder
+import joos.weeder.FieldWeeder
+import joos.parsetree.TreeNode
+import joos.weeder.ClassModifierWeeder
+import joos.weeder.InterfaceMethodWeeder
+import joos.parser.ParseMetaData
 
 abstract class Weeder {
   // TODO: Get the name from tokenkind?
@@ -24,8 +34,9 @@ abstract class Weeder {
   final val ReferenceType = "ReferenceType"
   final val Primary = "Primary"
   final val Expression = "Expression"
+  final val InterfaceDeclaration = "InterfaceDeclaration"
 
-  def check(ptn: ParseTreeNode)
+  def check(ptn: ParseTreeNode, md: ParseMetaData)
 
   def getAllModifiers(modifiersNode: ParseTreeNode): Set[String] = {
     var curNode: ParseTreeNode = modifiersNode
@@ -72,21 +83,18 @@ abstract class Weeder {
 }
 
 object Weeder {
-  def getWeeders = List(
+  val weeders = Seq(
     ClassModifierWeeder(),
     MethodWeeder(),
     InterfaceMethodWeeder(),
     ExplicitClassConstructorWeeder(),
     FieldWeeder(),
     DecimalIntegerRangeWeeder(),
-    CastExpressionWeeder()
+    CastExpressionWeeder(),
+    FileNameWeeder()
   )
 
-  def apply(tree: ParseTree) {
-    apply(tree, getWeeders)
-  }
-
-  def apply(tree: ParseTree, weeders: List[Weeder]) {
+  def weed(tree: ParseTree, metaData: ParseMetaData) {
     var levelDerivs = mutable.MutableList.empty[String]
     var currentLevel = 0
 
@@ -99,7 +107,7 @@ object Weeder {
         currentLevel = level
       }
 
-      weeders.foreach(_.check(node))
+      weeders.foreach(_.check(node, metaData))
 
       node match {
         case TreeNode(symbol, children) => {

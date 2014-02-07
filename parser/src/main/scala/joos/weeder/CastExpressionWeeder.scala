@@ -3,9 +3,10 @@ package joos.weeder
 import joos.parsetree.{LeafNode, TreeNode, ParseTreeNode}
 import scala.collection.mutable
 import joos.weeder.exceptions.WeederException
+import joos.parser.ParseMetaData
 
 case class CastExpressionWeeder() extends Weeder {
-  override def check(ptn: ParseTreeNode): Unit = {
+  override def check(ptn: ParseTreeNode, md: ParseMetaData): Unit = {
     if (!ptn.token.symbol.equals(CastExpression))
       return
 
