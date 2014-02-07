@@ -8,7 +8,7 @@ package object resources {
 
   /** Update the version number if you change the grammar file or DFA */
   private [this] val GrammarVersion = 1
-  private [this] val LexerVersion = 0
+  private [this] val LexerVersion = 1
 
   private [this] val SerializedGrammarName = "joos-1w-grammar.cfg"
   private [this] val Lalr1ActionTableName = "joos-1w-grammar.lr1"
