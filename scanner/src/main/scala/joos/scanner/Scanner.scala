@@ -2,10 +2,10 @@ package joos.scanner
 
 import joos.automata._
 import joos.exceptions.ScanningException
-import joos.tokens.Token
 import scala.Some
 import scala.collection.mutable
 import scala.io.Source
+import joos.tokens.{TerminalToken, Token}
 
 class Scanner(dfa: Dfa) {
 
@@ -13,9 +13,9 @@ class Scanner(dfa: Dfa) {
 
   private var dfaPath = mutable.Stack[DfaNode](root)
   private var charPath = mutable.Stack[Char]()
-  private val tokens = mutable.MutableList[Token]()
+  private val tokens = mutable.MutableList[TerminalToken]()
 
-  def tokenize(file: Source): List[Token] = {
+  def tokenize(file: Source): List[TerminalToken] = {
     file.foreach(scan(_))
     return getTokens()
   }
@@ -31,7 +31,7 @@ class Scanner(dfa: Dfa) {
     }
   }
 
-  def getTokens(): List[Token] = {
+  def getTokens(): List[TerminalToken] = {
     while (!charPath.isEmpty) {
       reducePath()
     }
@@ -56,7 +56,7 @@ class Scanner(dfa: Dfa) {
 
     val tokenKind = dfaPath.top.isAccepting().get
     val lexeme = charPath.foldRight(mutable.StringBuilder.newBuilder)((char, builder) => builder.append(char))
-    tokens += new Token(tokenKind, lexeme.result())
+    tokens += TerminalToken(lexeme.result(), tokenKind)
 
     dfaPath = mutable.Stack[DfaNode](root)
     charPath = mutable.Stack[Char]()

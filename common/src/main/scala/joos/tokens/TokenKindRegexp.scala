@@ -17,7 +17,7 @@ object TokenKindRegexp {
 
   def TraditionalComment = {
     Concatenation("/*") +
-      ((allCharactersBut(Seq('*')) | ((Atom('*')*) + allCharactersBut(Seq('*', '/')))) *) + (Atom('*')*) + Atom('/')
+      ((allCharactersBut(Seq('*')) | ((Atom('*') *) + allCharactersBut(Seq('*', '/')))) *) + (Atom('*') *) + Atom('/')
   }
 
   // Identifier
@@ -224,9 +224,12 @@ object TokenKindRegexp {
   // IntegerLiteral
 
   // DecimalIntegerLiteral
-  // Regular Expression: (0 | 0(l|L) | [1-9][0-9]* | [1-9][0-9]*(l|L))
   def DecimalIntLiteral = {
-    (Atom('0') | (Alternation(NonZeroDigits) + (Alternation(Digits) *))) + ~(Atom('l') | Atom('L'))
+    (Atom('0') | (Alternation(NonZeroDigits) + (Alternation(Digits) *)))
+  }
+
+  def DecimalLongLiteral = {
+    (Atom('0') | (Alternation(NonZeroDigits) + (Alternation(Digits) *))) + (Atom('l') | Atom('L'))
   }
 
   // HexNumeral

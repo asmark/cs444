@@ -125,6 +125,8 @@ object TokenKind extends Enumeration {
   // Literals
   final val DecimalIntLiteral = TokenKindValue("DecimalIntLiteral", () => TokenKindRegexp.DecimalIntLiteral)
 
+  final val DecimalLongLiteral = TokenKindValue("DecimalLongLiteral", () => TokenKindRegexp.DecimalLongLiteral)
+
   final val HexIntLiteral = TokenKindValue("HexIntLiteral", () => TokenKindRegexp.HexIntLiteral)
 
   final val OctalIntLiteral = TokenKindValue("OctalIntLiteral", () => TokenKindRegexp.OctalIntLiteral)

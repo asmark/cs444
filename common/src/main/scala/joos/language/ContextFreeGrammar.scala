@@ -39,12 +39,12 @@ case class ContextFreeGrammar(
 }
 
 object ContextFreeGrammar {
-  private [this] val OptionalSuffix = "opt"
+  private[this] val OptionalSuffix = "opt"
 
   /**
    * Expands the derivation that might or might not have optional symbols
    */
-  private [this] def expand(derivation: mutable.Buffer[String]): Traversable[IndexedSeq[String]] = {
+  private[this] def expand(derivation: mutable.Buffer[String]): Traversable[IndexedSeq[String]] = {
     val queue = new mutable.Queue[ArrayBuffer[String]]
     queue.enqueue(ArrayBuffer.empty[String])
 
@@ -53,7 +53,8 @@ object ContextFreeGrammar {
         val derivationBuilder = queue.dequeue()
         if (symbol.endsWith(OptionalSuffix)) {
           queue.enqueue(derivationBuilder)
-          queue.enqueue(ArrayBuffer(derivationBuilder: _*) += symbol.substring(0, symbol.length - OptionalSuffix.length))
+          queue
+            .enqueue(ArrayBuffer(derivationBuilder: _*) += symbol.substring(0, symbol.length - OptionalSuffix.length))
         } else {
           queue.enqueue(ArrayBuffer(derivationBuilder: _*) += symbol)
         }
@@ -66,8 +67,8 @@ object ContextFreeGrammar {
   /**
    * Filter out comments and empty lines
    */
-  private [this] def toLines(inputStream: InputStream): Iterator[String] = {
-    using (new BufferedSource(inputStream)) {
+  private[this] def toLines(inputStream: InputStream): Iterator[String] = {
+    using(new BufferedSource(inputStream)) {
       source => source.getLines().filter(line => !line.isEmpty && line(0) != '#')
     }
   }

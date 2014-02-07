@@ -1,8 +1,8 @@
 package joos
 
-import java.io.FileInputStream
-import joos.exceptions.{ShiftException, ReduceException}
+import joos.parser.LrOneReader
 import org.scalatest.{Matchers, FlatSpec}
+import joos.parser.exceptions.{ShiftException, ReduceException}
 
 class LrOneActionTableSpec extends FlatSpec with Matchers {
 
