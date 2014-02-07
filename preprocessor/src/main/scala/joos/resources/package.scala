@@ -7,7 +7,7 @@ import java.io.File
 package object resources {
 
   /** Update the version number if you change the grammar file or DFA */
-  private [this] val GrammarVersion = 0
+  private [this] val GrammarVersion = 1
   private [this] val LexerVersion = 0
 
   private [this] val SerializedGrammarName = "joos-1w-grammar.cfg"
