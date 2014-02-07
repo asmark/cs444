@@ -35,6 +35,9 @@ abstract class Weeder {
   final val Primary = "Primary"
   final val Expression = "Expression"
   final val InterfaceDeclaration = "InterfaceDeclaration"
+  final val UnaryExpression = "UnaryExpression"
+  final val Public = "public"
+  final val Protected = "protected"
 
   def check(ptn: ParseTreeNode, md: ParseMetaData)
 
