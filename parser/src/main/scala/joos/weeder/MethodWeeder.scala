@@ -43,6 +43,10 @@ case class MethodWeeder() extends Weeder {
               throw new WeederException("A native method must be static.")
             }
 
+            if (!modifiers.contains(Public) && !modifiers.contains(Protected)) {
+              throw new WeederException("A method must have either public or protected modifier.")
+            }
+
           case None =>
             // A method has a body if and only if it is neither abstract nor native.
             if (!body.children.head.token.symbol.equals(Block)) {
