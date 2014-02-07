@@ -3,10 +3,11 @@ package joos.weeder
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.tokens.NonTerminalToken
 import joos.weeder.exceptions.WeederException
+import joos.parser.ParseMetaData
 
 case class MethodWeeder() extends Weeder {
 
-  def check(ptn: ParseTreeNode) {
+  def check(ptn: ParseTreeNode, md: ParseMetaData) {
     ptn match {
       case TreeNode(NonTerminalToken(MethodDeclaration, MethodDeclaration), children) => {
         val header = children.head

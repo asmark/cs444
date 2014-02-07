@@ -1,13 +1,15 @@
 package joos.parser
 
 import joos.parser.exceptions.JoosParseException
-import joos.parsetree.LeafNode
-import joos.parsetree.TreeNode
-import joos.parsetree.{ParseTree, ParseTreeNode}
+import joos.parsetree._
 import joos.tokens.NonTerminalToken
 import joos.tokens.TerminalToken
 import joos.tokens._
 import scala.collection.mutable
+import joos.tokens.NonTerminalToken
+import joos.tokens.TerminalToken
+import joos.parsetree.LeafNode
+import joos.parsetree.TreeNode
 
 class ParseTreeBuilder(actionTable: LrOneActionTable) {
 
@@ -50,7 +52,7 @@ class ParseTreeBuilder(actionTable: LrOneActionTable) {
     }
 
     assert(nodeStack.length == 3)
-    ParseTree(nodeStack(1).asInstanceOf[TreeNode])
+    ParseTree(nodeStack(1))
   }
 
   def whitespaceCommentFilter(token: Token) = {

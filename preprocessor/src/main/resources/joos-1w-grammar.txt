@@ -86,19 +86,13 @@ QualifiedName:
 
 CompilationUnit:
 
-  PackageDeclarationopt ImportDeclarationsopt TypeDeclarationsopt
+  PackageDeclarationopt ImportDeclarationsopt TypeDeclarationopt
 
 ImportDeclarations:
 
   ImportDeclaration
 
   ImportDeclarations ImportDeclaration
-
-TypeDeclarations:
-
-  TypeDeclaration
-
-  TypeDeclarations TypeDeclaration
 
 PackageDeclaration:
 

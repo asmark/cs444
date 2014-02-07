@@ -3,12 +3,13 @@ package joos.weeder
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.tokens.NonTerminalToken
 import joos.weeder.exceptions.WeederException
+import joos.parser.ParseMetaData
 
 case class ClassModifierWeeder() extends Weeder {
 
   private final val ErrorMessage = "A class cannot be both abstract and final"
 
-  def check(ptn: ParseTreeNode) {
+  def check(ptn: ParseTreeNode, md: ParseMetaData) {
     ptn match {
       case TreeNode(NonTerminalToken(ClassDeclaration, ClassDeclaration), children) => {
         assert(children.length > 0)
