@@ -2,15 +2,8 @@ package joos.weeder
 
 import joos.parsetree._
 import scala.collection.mutable
-import joos.weeder.ExplicitClassConstructorWeeder
-import joos.weeder.MethodWeeder
-import joos.weeder.CastExpressionWeeder
 import joos.parsetree.LeafNode
-import joos.weeder.DecimalIntegerRangeWeeder
-import joos.weeder.FieldWeeder
 import joos.parsetree.TreeNode
-import joos.weeder.ClassModifierWeeder
-import joos.weeder.InterfaceMethodWeeder
 import joos.parser.ParseMetaData
 
 abstract class Weeder {
