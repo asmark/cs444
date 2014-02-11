@@ -1,9 +1,8 @@
 package joos.weeder
 
-import joos.parsetree.{TreeNode, LeafNode, ParseTreeNode}
-import joos.tokens.{NonTerminalToken, TokenKind, TerminalToken}
-import joos.weeder.exceptions.WeederException
 import joos.parser.ParseMetaData
+import joos.parsetree.ParseTreeNode
+import joos.weeder.exceptions.WeederException
 
 // TODO: Refactor
 case class DecimalIntegerRangeWeeder() extends Weeder {

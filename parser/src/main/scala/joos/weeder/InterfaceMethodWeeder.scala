@@ -13,7 +13,7 @@ case class InterfaceMethodWeeder() extends Weeder {
   override def check(ptn: ParseTreeNode, md: ParseMetaData) {
 
     ptn match {
-      case TreeNode(NonTerminalToken(AbstractMethodDeclaration, AbstractMethodDeclaration), children) => {
+      case TreeNode(_,NonTerminalToken(AbstractMethodDeclaration, AbstractMethodDeclaration), children) => {
         val methodHeader = children.head
         val modifiersNode = methodHeader.children.find(_.token.symbol equals Modifiers)
         if (modifiersNode.isDefined) {

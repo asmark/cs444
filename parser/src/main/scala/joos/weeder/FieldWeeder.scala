@@ -12,7 +12,7 @@ case class FieldWeeder() extends Weeder {
 
   override def check(ptn: ParseTreeNode, md: ParseMetaData) {
     ptn match {
-      case TreeNode(NonTerminalToken(FieldDeclaration, FieldDeclaration), children) => {
+      case TreeNode(_,NonTerminalToken(FieldDeclaration, FieldDeclaration), children) => {
         if (children.head.token.symbol equals Modifiers) {
           val allModifiers = getAllModifiers(children.head)
           if (allModifiers.contains(Final)) throw new WeederException(ErrorMessage)

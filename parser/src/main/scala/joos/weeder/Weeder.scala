@@ -110,7 +110,7 @@ object Weeder {
       weeders.foreach(_.check(node, metaData))
 
       node match {
-        case TreeNode(symbol, children) => {
+        case TreeNode(_,symbol, children) => {
           children.foreach(child => queue.enqueue((child, level + 1)))
         }
         case LeafNode(symbol) =>
