@@ -1,5 +1,5 @@
 package joos.ast
 
-trait Modifier extends AstNode {
+import joos.tokens.TerminalToken
 
-}
+case class Modifier(modifier: TerminalToken) extends AstNode
