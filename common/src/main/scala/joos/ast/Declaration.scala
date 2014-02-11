@@ -7,7 +7,11 @@ case class ImportDeclaration(name: NameExpression, isOnDemand: Boolean) extends 
 
 case class PackageDeclaration(name: NameExpression) extends Declaration
 
-trait VariableDeclaration extends Declaration
+trait VariableDeclaration extends Declaration {
+  def identifier: SimpleNameExpression
+  def dimensions: Int
+  def initializer: Option[Expression]
+}
 
 case class VariableDeclarationFragment(
   identifier: SimpleNameExpression,
@@ -20,7 +24,7 @@ case class SingleVariableDeclaration(
   varType: Type,
   identifier: SimpleNameExpression,
   dimensions: Int,
-  assignment: Option[Expression]
+  initializer: Option[Expression]
 ) extends VariableDeclaration
 
 trait BodyDeclaration extends AstNode {

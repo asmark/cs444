@@ -1,8 +1,6 @@
 package joos.ast
 
-trait Statement extends AstNode {
-
-}
+trait Statement extends AstNode
 
 case class WhileStatement(cond: Expression, body: Statement) extends Statement
 

@@ -2,8 +2,7 @@ package joos.ast
 
 import joos.tokens.TerminalToken
 
-trait Expression extends AstNode {
-}
+trait Expression extends AstNode
 
 case class ArrayAccessExpression(reference: Expression, index: Expression) extends Expression
 
