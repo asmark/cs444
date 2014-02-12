@@ -9,13 +9,11 @@ case class PackageDeclaration(name: NameExpression) extends Declaration
 
 trait VariableDeclaration extends Declaration {
   def identifier: SimpleNameExpression
-  def dimensions: Int
   def initializer: Option[Expression]
 }
 
 case class VariableDeclarationFragment(
   identifier: SimpleNameExpression,
-  dimensions: Int,
   initializer: Option[Expression]
 )
 
@@ -23,7 +21,6 @@ case class SingleVariableDeclaration(
   modifiers: Seq[Modifier],
   varType: Type,
   identifier: SimpleNameExpression,
-  dimensions: Int,
   initializer: Option[Expression]
 ) extends VariableDeclaration
 

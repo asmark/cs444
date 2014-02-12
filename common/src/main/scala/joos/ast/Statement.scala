@@ -14,7 +14,7 @@ case class ReturnStatement(exp: Expression) extends Statement
 
 case class TypeDeclarationStatement(decl: BodyDeclaration) extends Statement
 
-case class Block(inner: Statement) extends Statement
+case class Block(inner: Seq[Statement]) extends Statement
 
 case class EmptyStatement() extends Statement
 
