@@ -338,14 +338,6 @@ StatementExpression:
 
   Assignment
 
-  PreIncrementExpression
-
-  PreDecrementExpression
-
-  PostIncrementExpression
-
-  PostDecrementExpression
-
   MethodInvocation
 
   ClassInstanceCreationExpression
@@ -579,7 +571,3 @@ LeftHandSide:
 Expression:
 
   AssignmentExpression
-
-ConstantExpression:
-
-  Expression
