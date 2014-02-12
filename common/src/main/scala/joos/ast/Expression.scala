@@ -30,7 +30,11 @@ case class ParenthesizedExpression(expr: Expression) extends Expression
 
 case class PrefixExpression(operator: TerminalToken, operand: Expression) extends Expression
 
-case class VariableDeclarationExpression(modifiers: Seq[Modifier], varType: Type, decl: VariableDeclarationFragment) extends Expression
+case class VariableDeclarationExpression(
+  modifiers: Seq[Modifier],
+  varType: Type,
+  decl: VariableDeclarationFragment
+) extends Expression
 
 trait NameExpression extends Expression
 
@@ -47,4 +51,3 @@ case class BooleanLiteral(token: TerminalToken) extends Expression
 case class StringLiteral(token: TerminalToken) extends Expression
 
 case class TypeLiteral(staticType: Type) extends Expression
-
