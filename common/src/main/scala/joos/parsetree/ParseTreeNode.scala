@@ -1,6 +1,7 @@
 package joos.parsetree
 
 import joos.tokens.Token
+import joos.language.ProductionRule
 
 abstract class ParseTreeNode {
   def token: Token
@@ -8,7 +9,7 @@ abstract class ParseTreeNode {
   var parent: ParseTreeNode
 }
 
-case class TreeNode(val token: Token, val children: IndexedSeq[ParseTreeNode]) extends ParseTreeNode{
+case class TreeNode(val productionRule: ProductionRule, token: Token, val children: IndexedSeq[ParseTreeNode]) extends ParseTreeNode{
   override var parent: ParseTreeNode = null
 }
 

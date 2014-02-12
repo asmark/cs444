@@ -27,7 +27,7 @@ case class CastExpressionWeeder() extends Weeder {
             throw new WeederException("Invalid CastExpression")
 
           node match {
-            case TreeNode(symbol, children) => {
+            case TreeNode(_,symbol, children) => {
               children.foreach(child => {
                 child.parent = node
                 queue.enqueue(child)

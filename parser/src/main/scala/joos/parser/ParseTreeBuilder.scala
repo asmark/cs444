@@ -40,7 +40,7 @@ class ParseTreeBuilder(actionTable: LrOneActionTable) {
           }.reverse
 
 
-          nodeStack.push(TreeNode(NonTerminalToken(productionRule.base, productionRule.base), childNodes))
+          nodeStack.push(TreeNode(productionRule, NonTerminalToken(productionRule.base, productionRule.base), childNodes))
           stateStack.push(actionTable.shift(stateStack.top, productionRule.base))
         }
 
