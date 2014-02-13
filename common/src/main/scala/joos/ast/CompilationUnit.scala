@@ -8,7 +8,7 @@ import joos.parsetree.{TreeNode, ParseTreeNode}
 case class CompilationUnit(
   pkg: Option[PackageDeclaration],
   imports: Seq[ImportDeclaration],
-  typeDecl: Option[TypeDeclaration]
+  typeDeclaration: Option[TypeDeclaration]
 ) extends AstNode
 
 object CompilationUnit {

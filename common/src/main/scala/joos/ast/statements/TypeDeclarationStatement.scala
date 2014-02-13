@@ -1,12 +1,9 @@
 package joos.ast
 
 import joos.parsetree.ParseTreeNode
+import joos.ast.declarations.TypeDeclaration
 
-class TypeDeclarationStatement {
-  def apply(ptn: ParseTreeNode): TypeDeclarationStatement = {
-    null
-  }
-}
+case class TypeDeclarationStatement(declaration: TypeDeclaration)
 
 object TypeDeclarationStatement {
   def apply(ptn: ParseTreeNode): TypeDeclarationStatement = {

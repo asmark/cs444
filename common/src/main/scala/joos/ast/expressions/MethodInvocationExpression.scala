@@ -3,7 +3,7 @@ package joos.ast.expressions
 import joos.parsetree.ParseTreeNode
 
 case class MethodInvocationExpression(
-   expr: Option[Expression],
+   expression: Option[Expression],
    methodName: SimpleNameExpression,
    args: Seq[Expression]
  ) extends Expression
