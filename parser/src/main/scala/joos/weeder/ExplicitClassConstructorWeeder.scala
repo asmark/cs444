@@ -12,7 +12,7 @@ case class ExplicitClassConstructorWeeder() extends Weeder {
 
   override def check(ptn: ParseTreeNode, md: ParseMetaData) {
     ptn match {
-      case TreeNode(NonTerminalToken(ClassBody, ClassBody), children) => {
+      case TreeNode(_,NonTerminalToken(ClassBody, ClassBody), children) => {
         if (children.length < 3) throw new WeederException(ErrorMessage)
         if (!getAllClassBodyDeclaration(children(1)).contains(ConstructorDeclaration)) throw new WeederException(
           ErrorMessage

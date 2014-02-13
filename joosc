@@ -1,4 +1,4 @@
 #!/bin/sh
 
-java -jar compiler.jar "$@"
+java -jar compiler.jar $1
 exit $?

@@ -35,7 +35,7 @@ class ParseTree(val root: ParseTreeNode) {
       else null)
 
       node match {
-        case TreeNode(symbol, children) => {
+        case TreeNode(_,symbol, children) => {
           children.foreach(
             child => {
               child.parent = node

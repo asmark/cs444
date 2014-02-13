@@ -12,8 +12,8 @@ case class FileNameWeeder() extends Weeder {
 
   def check(ptn: ParseTreeNode, md: ParseMetaData) {
     ptn match {
-      case TreeNode(NonTerminalToken(InterfaceDeclaration, InterfaceDeclaration), children) => checkFileName(children(ClassNameIndex), md)
-      case TreeNode(NonTerminalToken(ClassDeclaration, ClassDeclaration), children) => checkFileName(children(ClassNameIndex), md)
+      case TreeNode(_,NonTerminalToken(InterfaceDeclaration, InterfaceDeclaration), children) => checkFileName(children(ClassNameIndex), md)
+      case TreeNode(_,NonTerminalToken(ClassDeclaration, ClassDeclaration), children) => checkFileName(children(ClassNameIndex), md)
       case _ =>
     }
   }
