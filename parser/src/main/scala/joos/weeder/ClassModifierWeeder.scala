@@ -11,7 +11,7 @@ case class ClassModifierWeeder() extends Weeder {
 
   def check(ptn: ParseTreeNode, md: ParseMetaData) {
     ptn match {
-      case TreeNode(NonTerminalToken(ClassDeclaration, ClassDeclaration), children) => {
+      case TreeNode(_,NonTerminalToken(ClassDeclaration, ClassDeclaration), children) => {
         assert(children.length > 0)
         // A class cannot be both abstract and final.
         children.head match {

@@ -9,7 +9,7 @@ case class MethodWeeder() extends Weeder {
 
   def check(ptn: ParseTreeNode, md: ParseMetaData) {
     ptn match {
-      case TreeNode(NonTerminalToken(MethodDeclaration, MethodDeclaration), children) => {
+      case TreeNode(_,NonTerminalToken(MethodDeclaration, MethodDeclaration), children) => {
         val header = children.head
         val body = children.last
 

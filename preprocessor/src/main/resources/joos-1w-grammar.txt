@@ -4,7 +4,7 @@ Goal:
 
 Literal:
 
-  IntegerLiteral
+  DecimalIntLiteral
 
   BooleanLiteral
 
@@ -13,10 +13,6 @@ Literal:
   StringLiteral
 
   NullLiteral
-
-IntegerLiteral:
-
-  DecimalIntLiteral
 
 BooleanLiteral:
 
@@ -418,15 +414,9 @@ ArgumentList:
 
 ArrayCreationExpression:
 
-  new PrimitiveType DimExpr
+  new PrimitiveType [ Expression ]
 
-  new ClassOrInterfaceType DimExpr
-
-DimExpr:
-
-  Dims
-
-  [ Expression ]
+  new ClassOrInterfaceType [ Expression ]
 
 Dims:
 
@@ -448,12 +438,6 @@ ArrayAccess:
 
   PrimaryNoNewArray [ Expression ]
 
-PostfixExpression:
-
-  Primary
-
-  Name
-
 UnaryExpression:
 
   - UnaryExpression
@@ -462,7 +446,9 @@ UnaryExpression:
 
 UnaryExpressionNotPlusMinus:
 
-  PostfixExpression
+  Primary
+
+  Name
 
   ! UnaryExpression
 
