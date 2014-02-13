@@ -3,5 +3,8 @@ all:
 	mv compiler/target/compiler.jar compiler.jar
 zip:
 	sbt clean
-	rm cs-444.zip
+	rm *.zip
 	zip -r -q cs-444 common scanner preprocessor parser project compiler Makefile joosc
+clean:
+	sbt clean
+	rm joosc *.jar *.zip
