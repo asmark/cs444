@@ -6,6 +6,6 @@ case class EmptyStatement() extends Statement
 
 object EmptyStatement {
   def apply(ptn: ParseTreeNode): EmptyStatement = {
-    null
+    new EmptyStatement()
   }
 }
