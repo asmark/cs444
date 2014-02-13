@@ -13,8 +13,8 @@ import joos.parsetree.TreeNode
 
 class ParseTreeBuilder(actionTable: LrOneActionTable) {
 
-  private final val Begin = NonTerminalToken("bof", "bof")
-  private final val End = NonTerminalToken("eof", "eof")
+  private final val Begin = TerminalToken("bof", null)
+  private final val End = TerminalToken("eof", null)
   private final val WindowSize = 10
 
   def build(tokens: Seq[TerminalToken]): ParseTree = {
@@ -40,7 +40,7 @@ class ParseTreeBuilder(actionTable: LrOneActionTable) {
           }.reverse
 
 
-          nodeStack.push(TreeNode(NonTerminalToken(productionRule.base, productionRule.base), childNodes))
+          nodeStack.push(TreeNode(productionRule, NonTerminalToken(productionRule.base, productionRule.base), childNodes))
           stateStack.push(actionTable.shift(stateStack.top, productionRule.base))
         }
 

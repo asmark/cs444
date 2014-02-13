@@ -1,9 +1,8 @@
 package joos.weeder
 
-import joos.parsetree.{TreeNode, LeafNode, ParseTreeNode}
-import joos.tokens.{NonTerminalToken, TokenKind, TerminalToken}
-import joos.weeder.exceptions.WeederException
 import joos.parser.ParseMetaData
+import joos.parsetree.ParseTreeNode
+import joos.weeder.exceptions.WeederException
 
 // TODO: Refactor
 case class DecimalIntegerRangeWeeder() extends Weeder {
@@ -17,11 +16,7 @@ case class DecimalIntegerRangeWeeder() extends Weeder {
     if (!unaryExpressionNotPlusMinus.token.symbol.equals("UnaryExpressionNotPlusMinus"))
       return
 
-    val postfixExpression = unaryExpressionNotPlusMinus.children.head
-    if (!postfixExpression.token.symbol.equals("PostfixExpression"))
-      return
-
-    val primary = postfixExpression.children.head
+    val primary = unaryExpressionNotPlusMinus.children.head
     if (!primary.token.symbol.equals("Primary"))
       return
 
@@ -34,13 +29,12 @@ case class DecimalIntegerRangeWeeder() extends Weeder {
       return
 
     val integerLiteral = literal.children.head
-    if (!integerLiteral.token.symbol.equals("IntegerLiteral"))
+    if (!integerLiteral.token.symbol.equals("DecimalIntLiteral"))
       return
 
-    val concreteIntegerLiteral = integerLiteral.children.head
-    if (!checkedIntegerLiteralNode.contains(concreteIntegerLiteral)) {
-      checkedIntegerLiteralNode += concreteIntegerLiteral
-      val intVal = BigInt(concreteIntegerLiteral.token.lexeme) * sign
+    if (!checkedIntegerLiteralNode.contains(integerLiteral)) {
+      checkedIntegerLiteralNode += integerLiteral
+      val intVal = BigInt(integerLiteral.token.lexeme) * sign
       if ((intVal < Int.MinValue) || (intVal > Int.MaxValue)) {
         throw new WeederException(ErrorMessage(intVal))
       }

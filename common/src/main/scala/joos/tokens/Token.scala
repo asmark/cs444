@@ -9,7 +9,7 @@ abstract class Token {
 }
 
 case class TerminalToken(val lexeme: String, val kind: TokenKind) extends Token {
-  override def symbol = TokenKind.kindToSymbol(kind)
+  override def symbol = if (kind != null) TokenKind.kindToSymbol(kind) else lexeme
 }
 
 case class NonTerminalToken(val lexeme: String, val symbol: String) extends Token
