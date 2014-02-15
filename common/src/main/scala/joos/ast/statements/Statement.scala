@@ -7,7 +7,7 @@ import joos.ast.exceptions.AstConstructionException
 trait Statement extends AstNode
 
 object Statement {
-  def handleStatementWithoutTrailingSubstatement(ptn: ParseTreeNode): Statement = {
+  private def handleStatementWithoutTrailingSubstatement(ptn: ParseTreeNode): Statement = {
     ptn match {
       case TreeNode(ProductionRule("StatementWithoutTrailingSubstatement", Seq("Block")), _, children) =>
         return Block(children(0))
@@ -23,7 +23,7 @@ object Statement {
     }
   }
 
-  def handleLocalVariableDeclaration(node: ParseTreeNode): Statement = {
+  private def handleLocalVariableDeclaration(node: ParseTreeNode): Statement = {
     node match {
       case TreeNode(ProductionRule("LocalVariableDeclaration", Seq("Type", "VariableDeclarator")), _, children) =>
         return ExpressionStatement(node)

@@ -13,7 +13,7 @@ object ArrayType {
       case TreeNode(ProductionRule("ArrayType", Seq("PrimitiveType", "[", "]")), _,  children) =>
         return new ArrayType(PrimitiveType(children(0)))
       case TreeNode(ProductionRule("ArrayType", Seq("Name", "[", "]")), _,  children) =>
-        return new ArrayType(SimpleType(NameExpression(children(0))))
+        return new ArrayType(SimpleType(children(0)))
       case _ => throw new AstConstructionException(
         "Invalid tree node to create ArrayType"
       )

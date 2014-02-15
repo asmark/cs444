@@ -8,8 +8,13 @@ import joos.ast.exceptions.AstConstructionException
 case class PrimitiveType(primType: TerminalToken) extends Type
 
 object PrimitiveType {
-  def extractNumericToken(numericType: ParseTreeNode): TerminalToken = {
-    numericType.children(0).children(0).token.asInstanceOf[TerminalToken]
+  private def extractNumericToken(numericType: ParseTreeNode): TerminalToken = {
+    numericType.children(0).children(0).token match {
+      case terminalToken: TerminalToken => return terminalToken
+      case _ => throw new AstConstructionException(
+        "Invalid tree node to create NumericType"
+      )
+    }
   }
 
   def apply(ptn: ParseTreeNode): PrimitiveType = {
@@ -17,7 +22,12 @@ object PrimitiveType {
       case TreeNode(ProductionRule("PrimitiveType", Seq("NumericType")), _, children) =>
         return new PrimitiveType(extractNumericToken(children(0)))
       case TreeNode(ProductionRule("PrimitiveType", Seq("boolean")), _, children) =>
-        return new PrimitiveType(children(0).token.asInstanceOf[TerminalToken])
+        children(0).token match {
+          case terminalToken: TerminalToken => return PrimitiveType(terminalToken)
+          case _ => throw new AstConstructionException(
+            "Invalid tree node to create boolean"
+          )
+        }
       case _ => throw new AstConstructionException(
         "Invalid tree node to create PrimitiveType"
       )

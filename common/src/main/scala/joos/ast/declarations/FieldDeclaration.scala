@@ -5,7 +5,7 @@ import joos.parsetree.ParseTreeNode
 
 case class FieldDeclaration(
    modifiers: Seq[Modifier],
-   retType: Type,
+   variableType: Type,
    fragment: VariableDeclarationFragment
  ) extends BodyDeclaration
 

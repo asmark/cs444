@@ -15,16 +15,16 @@ object ForStatement {
   def apply(ptn: ParseTreeNode): ForStatement = {
     ptn match {
       case TreeNode(
-          ProductionRule("ForStatement", production),
+          ProductionRule("ForStatement", derivation),
           _,
           children
         ) => {
-        val init = production.indexOf("ForInit")
-        val cond = production.indexOf("Expression")
-        val update = production.indexOf("ForUpdate")
-        var body = production.indexOf("Statement")
+        val init = derivation.indexOf("ForInit")
+        val cond = derivation.indexOf("Expression")
+        val update = derivation.indexOf("ForUpdate")
+        var body = derivation.indexOf("Statement")
         if (body < 0)
-          body = production.indexOf("StatementNoShortIf")
+          body = derivation.indexOf("StatementNoShortIf")
 
         return new ForStatement(
           if (init >= 0) Some(Expression(children(init))) else None,

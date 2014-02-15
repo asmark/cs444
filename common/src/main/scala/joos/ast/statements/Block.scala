@@ -7,7 +7,7 @@ import joos.ast.exceptions.AstConstructionException
 case class Block(inner: Option[Seq[Statement]]) extends Statement
 
 object Block {
-  def unfoldStatements(statementsNode: ParseTreeNode): Seq[Statement] = {
+  private def unfoldStatements(statementsNode: ParseTreeNode): Seq[Statement] = {
     for(node <- statementsNode.children)
       yield Statement(node.children(0)) // LocalVariableDeclarationStatement | Statement
   }

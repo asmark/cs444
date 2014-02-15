@@ -6,8 +6,8 @@ import joos.parsetree.ParseTreeNode
 
 case class MethodDeclaration(
   modifiers: Seq[Modifier],
-  retType: Option[Type],
-  retDims: Int,
+  returnType: Option[Type],
+  returnDims: Int,
   name: SimpleNameExpression,
   params: Seq[SingleVariableDeclaration],
   body: Block,

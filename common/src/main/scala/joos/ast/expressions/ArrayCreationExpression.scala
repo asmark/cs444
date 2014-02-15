@@ -5,7 +5,7 @@ import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.ast.Type
 
-case class ArrayCreationExpression(arrType: Type, size: Expression) extends Expression
+case class ArrayCreationExpression(arrayType: Type, size: Expression) extends Expression
 
 object ArrayCreationExpression {
    def apply(ptn: ParseTreeNode): ArrayCreationExpression = {

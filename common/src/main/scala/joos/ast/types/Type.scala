@@ -8,10 +8,10 @@ import joos.ast.expressions.NameExpression
 trait Type extends AstNode
 
 object Type {
-  def handleReferenceType(referenceType: ParseTreeNode): Type = {
+  private def handleReferenceType(referenceType: ParseTreeNode): Type = {
     referenceType match {
       case TreeNode(ProductionRule("ReferenceType", Seq("ClassOrInterfaceType")), _, children) =>
-        return SimpleType(NameExpression(children(0).children(0)))
+        return SimpleType(children(0).children(0))
       case TreeNode(ProductionRule("ReferenceType", Seq("ArrayType")), _, children) =>
         return ArrayType(children(0))
       case _ => throw new AstConstructionException(

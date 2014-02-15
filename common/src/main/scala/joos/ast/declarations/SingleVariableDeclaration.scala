@@ -6,7 +6,7 @@ import joos.parsetree.ParseTreeNode
 
 case class SingleVariableDeclaration(
    modifiers: Seq[Modifier],
-   varType: Type,
+   variableType: Type,
    identifier: SimpleNameExpression,
    initializer: Option[Expression]
  ) extends VariableDeclaration
