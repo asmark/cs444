@@ -8,23 +8,22 @@ import joos.tokens.TokenKind.TokenKindValue
 import org.scalatest.{FlatSpec, Matchers}
 import scala.io.Source
 import scala.language.postfixOps
+import java.io.FileInputStream
 
-class IntegSpec extends FlatSpec with Matchers {
+class ScannerIntegrationSpec extends FlatSpec with Matchers {
   final val casesDirectory = "/cases"
   final val expectDirectory = "/expect"
-  final val uncheckedDirectory = "/unchecked"
-  final val illegalDirectory = "/illegal"
 
   def getSource(dir: String) = Source.fromURL(getClass.getResource(dir))
 
   def getSource(dir: String, file: String) = Source.fromURL(getClass.getResource(dir + "/" + file))
 
-  lazy val JavaDfa = Dfa(TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a, b) => a | b))
+  lazy val JavaDfa = Dfa.deserialize(new FileInputStream(resources.lexerDfa))
 
   behavior of "Scanning java programs (checked)"
   getSource(casesDirectory).getLines().foreach {
     file =>
-      it should s"tokenize ${file} and check" ignore {
+      it should s"tokenize ${file} and check" in {
         val scanner = Scanner(JavaDfa)
         val tokens = scanner.tokenize(getSource(casesDirectory, file))
 
@@ -36,13 +35,4 @@ class IntegSpec extends FlatSpec with Matchers {
       }
   }
 
-  behavior of "Scanning java programs (unchecked)"
-  getSource(uncheckedDirectory).getLines().foreach {
-    file =>
-      it should s"tokenize ${file}" ignore {
-        val scanner = Scanner(JavaDfa)
-
-        scanner.tokenize(getSource(uncheckedDirectory, file))
-      }
-  }
 }

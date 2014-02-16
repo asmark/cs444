@@ -7,6 +7,7 @@ import joos.scanner.Scanner
 import joos.tokens.TokenKind.TokenKindValue
 import joos.tokens.{TerminalToken, TokenKind}
 import org.scalatest.{FlatSpec, Matchers}
+import java.io.FileInputStream
 
 class ScannerSpec extends FlatSpec with Matchers {
 
@@ -53,8 +54,7 @@ class ScannerSpec extends FlatSpec with Matchers {
       )
     )
 
-  lazy val joosDfa =
-    Dfa(TokenKind.values.map(_.asInstanceOf[TokenKindValue].getRegexp()).reduceRight((a, b) => a | b))
+  lazy val joosDfa = Dfa.deserialize(new FileInputStream(resources.lexerDfa))
 
   // Tests begin here
   "A state with no transition" should "backtrack once to accepting nodes" in {
@@ -185,7 +185,7 @@ class ScannerSpec extends FlatSpec with Matchers {
   comment ??
 */
   //Identifiers
-  "Scanner" should "recognize valid IDs" ignore {
+  "Scanner" should "recognize valid IDs" in {
     val test_ids = Seq[String]("String", "i3", "MAX_VALUE", "isLetterOrDigit")
     test_ids.map(
       id => {
@@ -198,7 +198,7 @@ class ScannerSpec extends FlatSpec with Matchers {
     )
   }
 
-  it should "recognize all valid keywords" ignore {
+  it should "recognize all valid keywords" in {
     val test_keywords = Set[String](
       "abstract", "default", "if", "private", "this", "boolean", "do",
       "implements", "protected", "throw", "break", "double", "import", "public", "throws", "byte", "else",
@@ -225,7 +225,7 @@ class ScannerSpec extends FlatSpec with Matchers {
     )
   }
 
-  it should "recognize all separators" ignore {
+  it should "recognize all separators" in {
     val separators =
       Map[String, TokenKindValue](
         "(" -> TokenKind.LeftParen,
@@ -252,7 +252,7 @@ class ScannerSpec extends FlatSpec with Matchers {
     )
   }
 
-  it should "recognize valid IntegerLiterals" ignore {
+  it should "recognize valid IntegerLiterals" in {
     val integers =
       Map[String, TokenKindValue](
         "0" -> TokenKind.DecimalIntLiteral,
@@ -261,9 +261,9 @@ class ScannerSpec extends FlatSpec with Matchers {
         "0xDadaCafe" -> TokenKind.HexIntLiteral,
         "1996" -> TokenKind.DecimalIntLiteral,
         "0x00FF00FF" -> TokenKind.HexIntLiteral,
-        "0l" -> TokenKind.DecimalIntLiteral,
+        "0l" -> TokenKind.DecimalLongLiteral,
         "0x100000000L" -> TokenKind.HexIntLiteral,
-        "2147483648L" -> TokenKind.DecimalIntLiteral,
+        "2147483648L" -> TokenKind.DecimalLongLiteral,
         "0xC0B0L" -> TokenKind.HexIntLiteral
       )
     val scanner = Scanner(joosDfa)
@@ -280,7 +280,7 @@ class ScannerSpec extends FlatSpec with Matchers {
     )
   }
 
-  it should "recognize floating point values" ignore {
+  it should "recognize floating point values" in {
     val floating_points =
       Map[String, TokenKindValue](
         "1e1f" -> TokenKind.FloatingPointLiteral,
@@ -311,7 +311,7 @@ class ScannerSpec extends FlatSpec with Matchers {
     )
   }
 
-  it should "recognize boolean literals" ignore {
+  it should "recognize boolean literals" in {
     val floating_points =
       Map[String, TokenKindValue](
         "true" -> TokenKind.True,
@@ -331,7 +331,7 @@ class ScannerSpec extends FlatSpec with Matchers {
     )
   }
 
-  it should "recognize character literals" ignore {
+  it should "recognize character literals" in {
     val characters =
       Map[String, TokenKindValue](
         "'a'" -> TokenKind.CharacterLiteral,

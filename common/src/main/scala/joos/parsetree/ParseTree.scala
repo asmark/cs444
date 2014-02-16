@@ -4,16 +4,6 @@ import scala.collection.mutable
 
 class ParseTree(val root: ParseTreeNode) {
 
-  def prettyFormat: String = {
-    val buffer = new StringBuilder
-    levelOrder.foreach(
-      item =>
-        buffer append (item.toString() + "\n")
-    )
-
-    buffer.toString
-  }
-
   def levelOrder: Vector[Seq[String]] = {
     var tree = mutable.MutableList.empty[Seq[String]]
     var levelDerivs = mutable.MutableList.empty[String]
@@ -28,17 +18,12 @@ class ParseTree(val root: ParseTreeNode) {
         levelDerivs = mutable.MutableList.empty[String]
         currentLevel = level
       }
-      levelDerivs += node.token.symbol + "_" + currentLevel + "_" + (if (node.parent != null) node
-        .parent
-        .token
-        .symbol
-      else null)
+      levelDerivs += node.token.symbol
 
       node match {
         case TreeNode(_,symbol, children) => {
           children.foreach(
             child => {
-              child.parent = node
               queue.enqueue((child, level + 1))
             }
           )
