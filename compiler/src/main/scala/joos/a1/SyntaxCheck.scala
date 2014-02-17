@@ -13,7 +13,7 @@ import joos.weeder.Weeder
 import joos.weeder.exceptions.WeederException
 import scala.io.Source
 
-object ScanParseWeed {
+object SyntaxCheck {
 
   private[this] def tokenize(path: String): Seq[TerminalToken] = {
     val joosDfa = Dfa.deserialize(new FileInputStream(resources.lexerDfa))
@@ -34,26 +34,17 @@ object ScanParseWeed {
     Weeder.weed(parseTree, metaData)
   }
 
-  def apply(path: String): Int = {
+  def apply(path: String): Option[ParseTree] = {
     try {
       val metaData = ParseMetaData(path)
       val tokens = tokenize(path)
       val parseTree = parse(tokens)
       weed(parseTree, metaData)
+      return Some(parseTree)
     } catch {
-      case jpe: JoosParseException => {
-        jpe.printStackTrace()
-        return 42
-      }
-      case wde: WeederException => {
-        wde.printStackTrace()
-        return 42
-      }
-      case sce: ScanningException => {
-        sce.printStackTrace()
-        return 42
+      case e @ (_:ScanningException | _:WeederException | _:JoosParseException) => {
+        return None
       }
     }
-    return 0
   }
 }
