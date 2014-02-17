@@ -3,6 +3,7 @@ package joos.ast.expressions
 import joos.ast.AstNode
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.ast.exceptions.AstConstructionException
 
 trait Expression extends AstNode
 
@@ -39,7 +40,6 @@ object Expression {
         return Expression(children(0))
       case TreeNode(ProductionRule("Primary", Seq("PrimaryNoNewArray")), _, children) =>
         return Expression(children(0))
-
       // Concrete Expressions
       case TreeNode(ProductionRule(_, Seq("Name")), _, children) =>
         return NameExpression(children(0))
@@ -58,6 +58,28 @@ object Expression {
         return InfixExpression(ptn)
       case TreeNode(ProductionRule(_, Seq(_, "UnaryExpression")), _, children) =>
         return PrefixExpression(ptn)
+      case TreeNode(ProductionRule("PrimaryNoNewArray", Seq("Literal")), _, children) =>
+        return LiteralExpression(children(0))
+      case TreeNode(ProductionRule("PrimaryNoNewArray", Seq("ClassInstanceCreationExpression")), _, children) =>
+        return ClassCreationExpression(children(0))
+      case TreeNode(ProductionRule("PrimaryNoNewArray", Seq("(", "Expression", ")")), _, children) =>
+        return ParenthesizedExpression(ptn)
+      case TreeNode(ProductionRule("PrimaryNoNewArray", Seq("FieldAccess")), _, children) =>
+        return FieldAccessExpression(children(0))
+      case TreeNode(ProductionRule("PrimaryNoNewArray", Seq("MethodInvocation")), _, children) =>
+        return MethodInvocationExpression(children(0))
+      case TreeNode(ProductionRule("PrimaryNoNewArray", Seq("ArrayAccess")), _, children) =>
+        return ArrayAccessExpression(children(0))
+    }
+  }
+
+  def argList(ptn: ParseTreeNode): Seq[Expression] = {
+    ptn match {
+      case TreeNode(ProductionRule("ArgumentList", Seq("Expression")), _, children) =>
+        return Seq(Expression(children(0)))
+      case TreeNode(ProductionRule("ArgumentList", _), _, children) =>
+        return argList(children(0)) :+ Expression(children(2))
+      case _ => throw new AstConstructionException("No valid production rule to make an ArgumentList")
     }
   }
 }

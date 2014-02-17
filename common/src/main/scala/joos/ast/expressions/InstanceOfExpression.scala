@@ -2,7 +2,7 @@ package joos.ast.expressions
 
 import joos.ast.Type
 import joos.parsetree.ParseTreeNode
-
+// TODO: Probably delete this. it is captured by InfixExpression
 case class InstanceOfExpression(expression: Expression, classType: Type) extends Expression
 
 object InstanceOfExpression {
