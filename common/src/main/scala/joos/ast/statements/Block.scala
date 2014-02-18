@@ -14,9 +14,9 @@ object Block {
 
   def apply(ptn: ParseTreeNode): Block = {
     ptn match {
-      case TreeNode(ProductionRule("Block", Seq("{", "BlockStatements", "}")), _, children) =>
+      case TreeNode(ProductionRule("Block" | "ConstructorBody", Seq("{", "BlockStatements", "}")), _, children) =>
         return new Block(Some(unfoldStatements(children(1))))
-      case TreeNode(ProductionRule("Block", Seq("{", "}")), _, children) =>
+      case TreeNode(ProductionRule("Block" | "ConstructorBody", Seq("{", "}")), _, children) =>
         return new Block(None)
       case _ => throw new AstConstructionException(
         "Invalid tree node to create Block"

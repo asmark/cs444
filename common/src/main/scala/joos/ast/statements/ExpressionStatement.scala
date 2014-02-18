@@ -1,10 +1,12 @@
 package joos.ast
 
-import joos.ast.expressions.{ClassCreationExpression, MethodInvocationExpression, AssignmentExpression, Expression}
+import joos.ast.expressions._
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
-import joos.ast.declarations.VariableDeclaration
+import joos.ast.declarations.{VariableDeclarationFragment, VariableDeclaration}
+import joos.language.ProductionRule
+import joos.parsetree.TreeNode
 
 case class ExpressionStatement(expr: Expression) extends Statement
 
@@ -18,7 +20,7 @@ object ExpressionStatement {
       case TreeNode(ProductionRule("StatementExpression", Seq("ClassInstanceCreationExpression")), _, children) =>
         return ClassCreationExpression(children(0))
       case TreeNode(ProductionRule("LocalVariableDeclaration", Seq("Type", "VariableDeclarator")), _, children) =>
-        return VariableDeclaration(children(0))
+        return VariableDeclarationExpression(statementExpression)
       case _ => throw new AstConstructionException(
         "Invalid tree node to create StatementExpression"
       )
