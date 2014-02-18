@@ -1,9 +1,12 @@
 package joos
 
-import joos.a1.ScanParseWeed
+import joos.a1.SyntaxCheck
 
 object Compiler {
   def main(args: Array[String]) {
-    sys.exit(ScanParseWeed(args(0)))
+    SyntaxCheck(args(0)) match {
+      case Some(parseTree) => sys.exit(0)
+      case None => sys.exit(42)
+    }
   }
 }
