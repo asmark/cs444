@@ -4,10 +4,13 @@ import org.scalatest.{Matchers, FlatSpec}
 
 class TemporarySpec extends FlatSpec with Matchers {
 
-  private final val file = "/a1/marmoset/valid/J1_01.java.test"
+  private final val file = getClass.getResource("/a1/marmoset/valid/J1_01.java.test").getPath
 
-  s"${file}" should "be converted to a AST" ignore {
-    CompilationUnit(SyntaxCheck(file).get.root)
-  }
+  s"${file}" should "be converted to a AST" in {
+    val ast = CompilationUnit(SyntaxCheck(file).get.root)
+    ast.imports should have length 0
+    ast.pkg shouldBe (None)
+    ast.typeDeclaration shouldBe Some(null)
+   }
 
 }
