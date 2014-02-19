@@ -2,16 +2,14 @@ package joos.a1
 
 import org.scalatest.{Matchers, FlatSpec}
 import scala.io.Source
-import joos.ast.CompilationUnit
+import joos.ast.{AstNode, AbstractSyntaxTree, CompilationUnit}
 
-class MarmosetSpec extends FlatSpec with Matchers {
+class MarmosetA1Spec extends FlatSpec with Matchers {
 
   final val validJoos = "/a1/marmoset/valid"
   final val invalidJoos = "/a1/marmoset/invalid"
 
   def getSource(dir: String) = Source.fromURL(getClass.getResource(dir))
-
-  def getSource(dir: String, file: String) = Source.fromURL(getClass.getResource(dir + "/" + file))
 
   behavior of "Parsing valid joos"
   getSource(validJoos).getLines().foreach {
@@ -20,7 +18,8 @@ class MarmosetSpec extends FlatSpec with Matchers {
         val filePath = getClass.getResource(validJoos + "/" + file).getPath
         val result = SyntaxCheck(filePath)
         result shouldNot be(None)
-        CompilationUnit(result.get.root)
+        val ast = AbstractSyntaxTree(result.get)
+        ast.root shouldBe a [CompilationUnit]
       }
   }
 
