@@ -35,7 +35,7 @@ object TypeDeclaration {
     ptn match {
       case TreeNode(ProductionRule("ClassBodyDeclarations", Seq("ClassBodyDeclaration")), _, children) =>
         return handleClassBodyDeclaration(children(0))
-//        children(0) match {
+
       case TreeNode(ProductionRule("ClassBodyDeclaration", Seq("ClassMemberDeclaration")), _, children) =>
         children(0) match {
           case TreeNode(ProductionRule("ClassMemberDeclaration", Seq("FieldDeclaration")), _, children) => {
@@ -56,6 +56,7 @@ object TypeDeclaration {
           }
           case _ => throw new AstConstructionException("No valid production rule to create ClassMemberDeclaration")
         }
+
       case TreeNode(ProductionRule("ClassBodyDeclaration", Seq("ConstructorDeclaration")), _, children) => {
         if (methods.equals(None)) {
           methods = Seq(MethodDeclaration(children(0)))
@@ -64,8 +65,6 @@ object TypeDeclaration {
         }
         return (fields, methods)
       }
-//      case _ => throw new AstConstructionException("No valid production rule to create ClassBodyDeclaration")
-//        }
 
       case TreeNode(
         ProductionRule("ClassBodyDeclarations", Seq("ClassBodyDeclarations", "ClassBodyDeclaration")),
