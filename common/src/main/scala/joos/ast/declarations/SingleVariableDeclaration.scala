@@ -34,7 +34,7 @@ object SingleVariableDeclaration {
   def apply(ptn: ParseTreeNode): SingleVariableDeclaration = {
     ptn match {
       case TreeNode(ProductionRule("FormalParameter", Seq("Type", "VariableDeclaratorId")), _, children) =>
-        return SingleVariableDeclaration(null, Type(children(0)), SimpleNameExpression(children(0).children(0)), None)
+        return SingleVariableDeclaration(null, Type(children(0)), SimpleNameExpression(children(1).children(0)), None)
       case _ => throw new AstConstructionException("Invalid tree node to create FormalParameter")
     }
   }

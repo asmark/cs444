@@ -1,6 +1,6 @@
 package joos.ast
 
-import joos.ast.expressions.Expression
+import joos.ast.expressions.{VariableDeclarationExpression, Expression}
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
@@ -15,7 +15,7 @@ object ForStatement {
   def apply(ptn: ParseTreeNode): ForStatement = {
     ptn match {
       case TreeNode(
-          ProductionRule("ForStatement", derivation),
+          ProductionRule("ForStatement" | "ForStatementNoShortIf", derivation),
           _,
           children
         ) => {
@@ -27,15 +27,20 @@ object ForStatement {
           body = derivation.indexOf("StatementNoShortIf")
 
         return new ForStatement(
-          if (init >= 0) Some(Expression(children(init))) else None,
+          if (init >= 0) Some(
+            children(init) match {
+              case TreeNode(ProductionRule("ForInit", Seq("StatementExpression")), _, children) =>
+                ExpressionStatement.constructStatementExpression(children(0))
+              case TreeNode(ProductionRule("ForInit", Seq("LocalVariableDeclaration")), _, children) =>
+                VariableDeclarationExpression(children(0))
+            }
+          ) else None,
           if (cond >= 0) Some(Expression(children(cond))) else None,
-          if (update >= 0) Some(Expression(children(update))) else None,
+          if (update >= 0) Some(ExpressionStatement.constructStatementExpression(children(update).children(0))) else None,
           Statement(children(body))
         )
       }
-      case _ => throw new AstConstructionException(
-        "Invalid tree node to create ForStatement"
-      )
+      case _ => throw new AstConstructionException("Invalid tree node to create ForStatement")
     }
   }
 }

@@ -56,7 +56,7 @@ object Statement {
         return WhileStatement(children(0))
       case TreeNode(ProductionRule("StatementNoShortIf", Seq("ForStatementNoShortIf")), _, children) =>
         return ForStatement(children(0))
-      case TreeNode(ProductionRule("LocalVariableDeclarationStatement", Seq("LocalVariableDeclaration", ";  ")), _, children) =>
+      case TreeNode(ProductionRule("LocalVariableDeclarationStatement", Seq("LocalVariableDeclaration", ";")), _, children) =>
         return handleLocalVariableDeclaration(children(0))
       case _ => throw new AstConstructionException(
         "Invalid tree node to create Statement"

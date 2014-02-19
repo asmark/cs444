@@ -10,8 +10,8 @@ case class TypeDeclaration(
    modifiers: Seq[Modifier],
    isInterface: Boolean,
    name: SimpleNameExpression,
-   superType: Option[NameExpression],
-   superInterfaces: Option[Seq[NameExpression]],
+   superType: Option[NameExpression], // TODO: Change to Option[SimpleType]??
+   superInterfaces: Option[Seq[NameExpression]], // TODO: Change to Option[Seq[SimpleType]]??
    fields: Seq[FieldDeclaration],
    methods: Seq[MethodDeclaration]
  ) extends BodyDeclaration
@@ -20,42 +20,33 @@ object TypeDeclaration {
   private def createInterfaceNodes(ptn: ParseTreeNode): Seq[NameExpression] = {
     ptn match {
       case TreeNode(ProductionRule("InterfaceTypeList", Seq("InterfaceType")), _,  children) =>
-        return Seq(NameExpression(children(0).children(0)))
+        return Seq(NameExpression(children(0).children(0).children(0)))
       case TreeNode(ProductionRule("InterfaceTypeList", Seq("InterfaceTypeList", ",", "InterfaceType")), _, children) =>
-        return createInterfaceNodes(children(0)) ++ Seq(NameExpression(children(2)))
+        return createInterfaceNodes(children(0)) ++ Seq(NameExpression(children(2).children(0).children(0)))
       case _ => throw new AstConstructionException("No valid production rule to create InterfaceTypeList")
     }
   }
 
-  private def handleClassBodyDeclarations(
+  private def handleClassBodyDeclaration(
     ptn: ParseTreeNode
   ): (Seq[FieldDeclaration], Seq[MethodDeclaration]) = {
     var fields: Seq[FieldDeclaration] = Seq()
     var methods: Seq[MethodDeclaration] = Seq()
     ptn match {
       case TreeNode(ProductionRule("ClassBodyDeclarations", Seq("ClassBodyDeclaration")), _, children) =>
+        return handleClassBodyDeclaration(children(0))
+//        children(0) match {
+      case TreeNode(ProductionRule("ClassBodyDeclaration", Seq("ClassMemberDeclaration")), _, children) =>
         children(0) match {
-          case TreeNode(ProductionRule("ClassBodyDeclaration", Seq("ClassMemberDeclaration")), _, children) =>
-            children(0) match {
-              case TreeNode(ProductionRule("ClassMemberDeclaration", Seq("FieldDeclaration")), _, children) => {
-                if (fields.equals(None)) {
-                  fields = Seq(FieldDeclaration(children(0)))
-                } else {
-                  fields ++= Seq(FieldDeclaration(children(0)))
-                }
-                return (fields, methods)
-              }
-              case TreeNode(ProductionRule("ClassMemberDeclaration", Seq("MethodDeclaration")), _, children) => {
-                if (methods.equals(None)) {
-                  methods = Seq(MethodDeclaration(children(0)))
-                } else {
-                  methods ++= Seq(MethodDeclaration(children(0)))
-                }
-                return (fields, methods)
-              }
-              case _ => throw new AstConstructionException("No valid production rule to create ClassMemberDeclaration")
+          case TreeNode(ProductionRule("ClassMemberDeclaration", Seq("FieldDeclaration")), _, children) => {
+            if (fields.equals(None)) {
+              fields = Seq(FieldDeclaration(children(0)))
+            } else {
+              fields ++= Seq(FieldDeclaration(children(0)))
             }
-          case TreeNode(ProductionRule("ClassBodyDeclaration", Seq("ConstructorDeclaration")), _, children) => {
+            return (fields, methods)
+          }
+          case TreeNode(ProductionRule("ClassMemberDeclaration", Seq("MethodDeclaration")), _, children) => {
             if (methods.equals(None)) {
               methods = Seq(MethodDeclaration(children(0)))
             } else {
@@ -63,17 +54,29 @@ object TypeDeclaration {
             }
             return (fields, methods)
           }
-          case _ => throw new AstConstructionException("No valid production rule to create ClassBodyDeclaration")
+          case _ => throw new AstConstructionException("No valid production rule to create ClassMemberDeclaration")
         }
+      case TreeNode(ProductionRule("ClassBodyDeclaration", Seq("ConstructorDeclaration")), _, children) => {
+        if (methods.equals(None)) {
+          methods = Seq(MethodDeclaration(children(0)))
+        } else {
+          methods ++= Seq(MethodDeclaration(children(0)))
+        }
+        return (fields, methods)
+      }
+//      case _ => throw new AstConstructionException("No valid production rule to create ClassBodyDeclaration")
+//        }
+
       case TreeNode(
         ProductionRule("ClassBodyDeclarations", Seq("ClassBodyDeclarations", "ClassBodyDeclaration")),
         _,
         children
       ) => {
-        val more = handleClassBodyDeclarations(children(0))
-        val rightMost = handleClassBodyDeclarations(children(1))
+        val more = handleClassBodyDeclaration(children(0))
+        val rightMost = handleClassBodyDeclaration(children(1))
         return (more._1 ++ rightMost._1, more._2 ++ rightMost._2)
       }
+
       case _ => throw new AstConstructionException("No valid production rule to create ClassBodyDeclarations")
     }
   }
@@ -90,7 +93,7 @@ object TypeDeclaration {
 
         classBody match {
           case TreeNode(ProductionRule("ClassBody", Seq("{", "ClassBodyDeclarations", "}")), _, children) => {
-            declarations = handleClassBodyDeclarations(children(1))
+            declarations = handleClassBodyDeclaration(children(1))
           }
           case TreeNode(ProductionRule("ClassBody", Seq("{", "}")), _, children) => {}
           case _ => throw new AstConstructionException("No valid production rule to create ClassBody")
@@ -117,7 +120,7 @@ object TypeDeclaration {
 
         classBody match {
           case TreeNode(ProductionRule("ClassBody", Seq("{", "ClassBodyDeclarations", "}")), _, children) => {
-            declarations = handleClassBodyDeclarations(children(1))
+            declarations = handleClassBodyDeclaration(children(1))
           }
           case TreeNode(ProductionRule("ClassBody", Seq("{", "}")), _, children) => {}
           case _ => throw new AstConstructionException("No valid production rule to create ClassBody")
@@ -144,7 +147,7 @@ object TypeDeclaration {
 
         classBody match {
           case TreeNode(ProductionRule("ClassBody", Seq("{", "ClassBodyDeclarations", "}")), _, children) => {
-            declarations = handleClassBodyDeclarations(children(1))
+            declarations = handleClassBodyDeclaration(children(1))
           }
           case TreeNode(ProductionRule("ClassBody", Seq("{", "}")), _, children) => {}
           case _ => throw new AstConstructionException("No valid production rule to create ClassBody")
@@ -155,7 +158,7 @@ object TypeDeclaration {
           false,
           SimpleNameExpression(children(2)),
           None,
-          Some(createInterfaceNodes(children(4).children(1))),
+          Some(createInterfaceNodes(children(3).children(1))),
           declarations._1,
           declarations._2
         )
@@ -171,7 +174,7 @@ object TypeDeclaration {
 
         classBody match {
           case TreeNode(ProductionRule("ClassBody", Seq("{", "ClassBodyDeclarations", "}")), _, children) => {
-            declarations = handleClassBodyDeclarations(children(1))
+            declarations = handleClassBodyDeclaration(children(1))
           }
           case TreeNode(ProductionRule("ClassBody", Seq("{", "}")), _, children) => {}
           case _ => throw new AstConstructionException("No valid production rule to create ClassBody")

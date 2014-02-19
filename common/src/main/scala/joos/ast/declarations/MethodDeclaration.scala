@@ -128,9 +128,9 @@ object MethodDeclaration {
 
             methodDeclaratorNode match {
               case TreeNode(
-              ProductionRule("MethodDeclarator", Seq("Identifier", "(", "FormalParameterList", ")")),
-              _,
-              children
+                ProductionRule("MethodDeclarator", Seq("Identifier", "(", "FormalParameterList", ")")),
+                _,
+                children
               ) => {
                 val name = SimpleNameExpression(children(0))
                 val params = Some(SingleVariableDeclaration.createFormalParameterNodes(children(2)))
@@ -138,9 +138,9 @@ object MethodDeclaration {
               }
 
               case TreeNode(
-              ProductionRule("MethodDeclarator", Seq("Identifier", "(", ")")),
-              _,
-              children
+                ProductionRule("MethodDeclarator", Seq("Identifier", "(", ")")),
+                _,
+                children
               ) => {
                 val name = SimpleNameExpression(children(0))
                 return new MethodDeclaration(modifiers, returnType, -1, name, None, body, false)

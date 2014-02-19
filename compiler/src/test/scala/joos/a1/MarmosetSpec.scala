@@ -2,6 +2,7 @@ package joos.a1
 
 import org.scalatest.{Matchers, FlatSpec}
 import scala.io.Source
+import joos.ast.CompilationUnit
 
 class MarmosetSpec extends FlatSpec with Matchers {
 
@@ -19,6 +20,7 @@ class MarmosetSpec extends FlatSpec with Matchers {
         val filePath = getClass.getResource(validJoos + "/" + file).getPath
         val result = SyntaxCheck(filePath)
         result shouldNot be(None)
+        CompilationUnit(result.get.root)
       }
   }
 
