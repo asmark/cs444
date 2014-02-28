@@ -9,6 +9,6 @@ trait BodyDeclaration extends AstNode {
 
 object BodyDeclaration {
   def apply(ptn: ParseTreeNode) = {
-    null
+    null // TODO: factor out
   }
 }

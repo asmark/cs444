@@ -1,15 +1,22 @@
 package joos.ast
 
-import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
+import joos.language.ProductionRule
+import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.semantic.{BlockEnvironment, TypeEnvironment, ModuleEnvironment}
 
-case class Block(inner: Option[Seq[Statement]]) extends Statement
+case class Block(inner: Option[Seq[Statement]])(
+    implicit moduleEnvironment: ModuleEnvironment,
+    typeEnvironment: TypeEnvironment,
+    environment: BlockEnvironment) extends Statement
 
 object Block {
-  private def unfoldStatements(blockStatements: ParseTreeNode): Seq[Statement] = {
-//    for(node <- statementsNode.children)
-//      yield Statement(node.children(0)) // LocalVariableDeclarationStatement | Statement
+  private def unfoldStatements(blockStatements: ParseTreeNode)(
+      implicit moduleEnvironment: ModuleEnvironment,
+      typeEnvironment: TypeEnvironment,
+      blockEnvironment: BlockEnvironment): Seq[Statement] = {
+    //    for(node <- statementsNode.children)
+    //      yield Statement(node.children(0)) // LocalVariableDeclarationStatement | Statement
     blockStatements match {
       case TreeNode(ProductionRule("BlockStatements", Seq("BlockStatement")), _, children) =>
         return Seq(Statement(children(0).children(0)))
@@ -19,7 +26,10 @@ object Block {
     }
   }
 
-  def apply(ptn: ParseTreeNode): Block = {
+  def apply(ptn: ParseTreeNode)(
+      implicit moduleEnvironment: ModuleEnvironment,
+      typeEnvironment: TypeEnvironment,
+      environment: BlockEnvironment): Block = {
     ptn match {
       case TreeNode(ProductionRule("Block" | "ConstructorBody", Seq("{", "BlockStatements", "}")), _, children) =>
         return new Block(Some(unfoldStatements(children(1))))

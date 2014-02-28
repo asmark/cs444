@@ -4,11 +4,15 @@ import joos.ast.{SimpleType, Type}
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
+import joos.semantic.{BlockEnvironment, TypeEnvironment, ModuleEnvironment}
 
 case class ClassCreationExpression(classType: Type, args: Seq[Expression]) extends Expression
 
 object ClassCreationExpression {
-  def apply(ptn: ParseTreeNode): ClassCreationExpression = {
+  def apply(ptn: ParseTreeNode)(
+      implicit moduleEnvironment: ModuleEnvironment,
+      typeEnvironment: TypeEnvironment,
+      blockEnvironment: BlockEnvironment): ClassCreationExpression = {
     ptn match {
       case TreeNode(ProductionRule("ClassInstanceCreationExpression", Seq("new", "ClassType", "(", ")")), _, children) =>
         return ClassCreationExpression(SimpleType(children(1).children(0).children(0)), Seq.empty)

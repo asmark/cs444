@@ -1,13 +1,17 @@
 package joos.ast
 
-import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
+import joos.language.ProductionRule
+import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.semantic.{BlockEnvironment, TypeEnvironment, ModuleEnvironment}
 
 trait Statement extends AstNode
 
 object Statement {
-  private def handleStatementWithoutTrailingSubstatement(ptn: ParseTreeNode): Statement = {
+  private def handleStatementWithoutTrailingSubstatement(ptn: ParseTreeNode)(
+      implicit moduleEnvironment: ModuleEnvironment,
+      typeEnvironment: TypeEnvironment,
+      blockEnvironment: BlockEnvironment): Statement = {
     ptn match {
       case TreeNode(ProductionRule("StatementWithoutTrailingSubstatement", Seq("Block")), _, children) =>
         return Block(children(0))
@@ -23,7 +27,10 @@ object Statement {
     }
   }
 
-  private def handleLocalVariableDeclaration(node: ParseTreeNode): Statement = {
+  private def handleLocalVariableDeclaration(node: ParseTreeNode)(
+      implicit moduleEnvironment: ModuleEnvironment,
+      typeEnvironment: TypeEnvironment,
+      blockEnvironment: BlockEnvironment): Statement = {
     node match {
       case TreeNode(ProductionRule("LocalVariableDeclaration", Seq("Type", "VariableDeclarator")), _, children) =>
         return ExpressionStatement(node)
@@ -36,7 +43,10 @@ object Statement {
   // Extra cases to dispatch
   // StatementNoShortIf
   // LocalVariableDeclarationStatement
-  def apply(ptn: ParseTreeNode): Statement = {
+  def apply(ptn: ParseTreeNode)(
+      implicit moduleEnvironment: ModuleEnvironment,
+      typeEnvironment: TypeEnvironment,
+      blockEnvironment: BlockEnvironment): Statement = {
     ptn match {
       case TreeNode(ProductionRule("Statement", Seq("StatementWithoutTrailingSubstatement")), _, children) =>
         return handleStatementWithoutTrailingSubstatement(children(0))
@@ -56,7 +66,10 @@ object Statement {
         return WhileStatement(children(0))
       case TreeNode(ProductionRule("StatementNoShortIf", Seq("ForStatementNoShortIf")), _, children) =>
         return ForStatement(children(0))
-      case TreeNode(ProductionRule("LocalVariableDeclarationStatement", Seq("LocalVariableDeclaration", ";")), _, children) =>
+      case TreeNode(
+      ProductionRule("LocalVariableDeclarationStatement", Seq("LocalVariableDeclaration", ";")),
+      _,
+      children) =>
         return handleLocalVariableDeclaration(children(0))
       case _ => throw new AstConstructionException(
         "Invalid tree node to create Statement"

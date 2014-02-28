@@ -15,7 +15,7 @@ object Joos1wCompilerBuild extends Build {
   val commonSettings = Defaults.defaultSettings ++ Seq(
     crossPaths := false,
     fork in run := true,
-    version := "1.0.0",
+    version := "2.0.0",
     scalaVersion := "2.10.3",
     scalacOptions := Seq(
       // Turn on all warnings
@@ -81,6 +81,12 @@ object Joos1wCompilerBuild extends Build {
     settings = commonSettings
   ) dependsOn(common, scanner, preprocessor)
 
+  lazy val semanticAnalyzer = Project(
+    id = "semantic-analyzer",
+    base = file("semantic-analyzer"),
+    settings = commonSettings
+  ) dependsOn(common, parser)
+
   lazy val compiler = Project(
     id = "compiler",
     base = file("compiler"),
@@ -95,5 +101,5 @@ object Joos1wCompilerBuild extends Build {
     id = "cs-444",
     base = file("."),
     settings = commonSettings
-  ) aggregate(compiler, common, preprocessor, scanner, parser)
+  ) aggregate(compiler, common, preprocessor, scanner, parser, semanticAnalyzer)
 }

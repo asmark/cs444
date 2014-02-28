@@ -7,11 +7,16 @@ import joos.ast.exceptions.AstConstructionException
 import joos.ast.declarations.{VariableDeclarationFragment, VariableDeclaration}
 import joos.language.ProductionRule
 import joos.parsetree.TreeNode
+import joos.semantic.{BlockEnvironment, TypeEnvironment, ModuleEnvironment}
 
 case class ExpressionStatement(expr: Expression) extends Statement
 
 object ExpressionStatement {
-  def constructStatementExpression(statementExpression: ParseTreeNode): Expression = {
+  def constructStatementExpression(statementExpression: ParseTreeNode)(
+      implicit moduleEnvironment: ModuleEnvironment,
+      typeEnvironment: TypeEnvironment,
+      blockEnvironment: BlockEnvironment
+    ): Expression = {
     statementExpression match {
       case TreeNode(ProductionRule("StatementExpression", Seq("Assignment")), _, children) =>
         return AssignmentExpression(children(0))
@@ -25,7 +30,10 @@ object ExpressionStatement {
     }
   }
 
-  def apply(ptn: ParseTreeNode): ExpressionStatement = {
+  def apply(ptn: ParseTreeNode)(
+      implicit moduleEnvironment: ModuleEnvironment,
+      typeEnvironment: TypeEnvironment,
+      blockEnvironment: BlockEnvironment): ExpressionStatement = {
     ptn match {
       case TreeNode(ProductionRule("ExpressionStatement", Seq("StatementExpression", ";")), _, children) =>
         return ExpressionStatement(constructStatementExpression(children(0)))

@@ -4,11 +4,15 @@ import joos.ast.AstNode
 import joos.language.ProductionRule
 import joos.parsetree.{LeafNode, TreeNode, ParseTreeNode}
 import joos.ast.exceptions.AstConstructionException
+import joos.semantic.{BlockEnvironment, TypeEnvironment, ModuleEnvironment}
 
 trait Expression extends AstNode
 
 object Expression {
-  def apply(ptn: ParseTreeNode): Expression = {
+  def apply(ptn: ParseTreeNode)(
+      implicit moduleEnvironment: ModuleEnvironment,
+      typeEnvironment: TypeEnvironment,
+      blockEnvironment: BlockEnvironment): Expression = {
     ptn match {
       // Recursive call to Expression
       // TODO: Trim these down by pattern matching ProductionRule(_,Seq(_)) in lowest precedence
@@ -94,7 +98,10 @@ object Expression {
     }
   }
 
-  def argList(ptn: ParseTreeNode): Seq[Expression] = {
+  def argList(ptn: ParseTreeNode)(
+      implicit moduleEnvironment: ModuleEnvironment,
+      typeEnvironment: TypeEnvironment,
+      blockEnvironment: BlockEnvironment): Seq[Expression] = {
     ptn match {
       case TreeNode(ProductionRule("ArgumentList", Seq("Expression")), _, children) =>
         return Seq(Expression(children(0)))

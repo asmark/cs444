@@ -4,11 +4,15 @@ import joos.ast.{SimpleType, PrimitiveType, ArrayType, Type}
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.ast.exceptions.AstConstructionException
+import joos.semantic.{BlockEnvironment, TypeEnvironment, ModuleEnvironment}
 
 case class CastExpression(castType: Type, expr: Expression) extends Expression
 
 object CastExpression {
-  def apply(ptn: ParseTreeNode): CastExpression = {
+  def apply(ptn: ParseTreeNode)(
+      implicit moduleEnvironment: ModuleEnvironment,
+      typeEnvironment: TypeEnvironment,
+      blockEnvironment: BlockEnvironment): CastExpression = {
     ptn match {
       case TreeNode(ProductionRule("CastExpression", Seq("(", "PrimitiveType", ")", "UnaryExpression")), _, children) =>
         return CastExpression(PrimitiveType(children(1)), Expression(children(3)))
