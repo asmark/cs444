@@ -1,17 +1,14 @@
 package joos.a1
 
-import org.scalatest.{Matchers, FlatSpec}
-import scala.io.Source
-<<<<<<< HEAD:compiler/src/test/scala/joos/a1/MarmosetA1Spec.scala
-import joos.ast.{AstNode, AbstractSyntaxTree, CompilationUnit}
-=======
+import joos.ast.AbstractSyntaxTree
 import joos.ast.CompilationUnit
 import joos.semantic.ModuleEnvironment
->>>>>>> Add environments:compiler/src/test/scala/joos/a1/MarmosetSpec.scala
+import org.scalatest.{Matchers, FlatSpec}
+import scala.io.Source
 
 class MarmosetA1Spec extends FlatSpec with Matchers {
 
-  final val validJoos = "/a1/marmoset/valid"
+  final val validJoos   = "/a1/marmoset/valid"
   final val invalidJoos = "/a1/marmoset/invalid"
 
   def getSource(dir: String) = Source.fromURL(getClass.getResource(dir))
@@ -25,7 +22,7 @@ class MarmosetA1Spec extends FlatSpec with Matchers {
         result shouldNot be(None)
         implicit val module = new ModuleEnvironment
         val ast = AbstractSyntaxTree(result.get)
-        ast.root shouldBe a [CompilationUnit]
+        ast.root shouldBe a[CompilationUnit]
       }
   }
 
