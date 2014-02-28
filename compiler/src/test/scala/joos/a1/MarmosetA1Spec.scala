@@ -2,7 +2,12 @@ package joos.a1
 
 import org.scalatest.{Matchers, FlatSpec}
 import scala.io.Source
+<<<<<<< HEAD:compiler/src/test/scala/joos/a1/MarmosetA1Spec.scala
 import joos.ast.{AstNode, AbstractSyntaxTree, CompilationUnit}
+=======
+import joos.ast.CompilationUnit
+import joos.semantic.ModuleEnvironment
+>>>>>>> Add environments:compiler/src/test/scala/joos/a1/MarmosetSpec.scala
 
 class MarmosetA1Spec extends FlatSpec with Matchers {
 
@@ -18,6 +23,7 @@ class MarmosetA1Spec extends FlatSpec with Matchers {
         val filePath = getClass.getResource(validJoos + "/" + file).getPath
         val result = SyntaxCheck(filePath)
         result shouldNot be(None)
+        implicit val module = new ModuleEnvironment
         val ast = AbstractSyntaxTree(result.get)
         ast.root shouldBe a [CompilationUnit]
       }

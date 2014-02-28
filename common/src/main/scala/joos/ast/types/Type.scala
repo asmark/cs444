@@ -1,9 +1,8 @@
 package joos.ast
 
-import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
-import joos.ast.expressions.NameExpression
+import joos.language.ProductionRule
+import joos.parsetree.{TreeNode, ParseTreeNode}
 
 trait Type extends AstNode
 
@@ -22,9 +21,9 @@ object Type {
 
   def apply(ptn: ParseTreeNode): Type = {
     ptn match {
-      case TreeNode(ProductionRule("Type",  Seq("PrimitiveType")), _, children) =>
+      case TreeNode(ProductionRule("Type", Seq("PrimitiveType")), _, children) =>
         return PrimitiveType(children(0))
-      case TreeNode(ProductionRule("Type",  Seq("ReferenceType")), _, children) =>
+      case TreeNode(ProductionRule("Type", Seq("ReferenceType")), _, children) =>
         return handleReferenceType(children(0))
       case _ => throw new AstConstructionException("Invalid tree node to create Type")
     }

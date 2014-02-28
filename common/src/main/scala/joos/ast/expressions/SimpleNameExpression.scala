@@ -5,7 +5,9 @@ import joos.parsetree.{TreeNode, LeafNode, ParseTreeNode}
 import joos.tokens.{TokenKind, TerminalToken}
 import joos.language.ProductionRule
 
-case class SimpleNameExpression(identifier: TerminalToken) extends NameExpression
+case class SimpleNameExpression(identifier: TerminalToken) extends NameExpression {
+  def standardName = identifier.lexeme
+}
 
 object SimpleNameExpression {
   def apply(ptn: ParseTreeNode): SimpleNameExpression = {
@@ -16,5 +18,9 @@ object SimpleNameExpression {
         return SimpleNameExpression(children(0))
       case _ => throw new AstConstructionException("No valid production rule to make SimpleNameExpression")
     }
+  }
+
+  def apply(name: String): SimpleNameExpression = {
+    SimpleNameExpression(TerminalToken(name, TokenKind.Id))
   }
 }
