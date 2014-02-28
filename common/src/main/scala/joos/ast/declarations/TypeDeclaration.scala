@@ -14,16 +14,12 @@ case class TypeDeclaration(
     superType: Option[NameExpression], // TODO: Change to Option[SimpleType]??
     superInterfaces: Option[Seq[NameExpression]], // TODO: Change to Option[Seq[SimpleType]]??
     fields: Seq[FieldDeclaration],
-    methods: Seq[MethodDeclaration]
-    )(implicit moduleEnvironment: ModuleEnvironment) extends BodyDeclaration {
-  val environment = new TypeEnvironment
-  fields.foreach(environment.add)
-  methods.foreach(environment.add)
-}
+    methods: Seq[MethodDeclaration])
+    (implicit moduleEnvironment: ModuleEnvironment, environment: TypeEnvironment) extends BodyDeclaration
 
 object TypeDeclaration {
   private def createInterfaceNodes(ptn: ParseTreeNode)
-      (implicit moduleEnvironment: ModuleEnvironment): Seq[NameExpression] = {
+      (implicit moduleEnvironment: ModuleEnvironment, environment: TypeEnvironment): Seq[NameExpression] = {
     ptn match {
       case TreeNode(ProductionRule("InterfaceTypeList", Seq("InterfaceType")), _, children) =>
         return Seq(NameExpression(children(0).children(0).children(0)))
@@ -34,7 +30,9 @@ object TypeDeclaration {
   }
 
   private def handleClassBodyDeclaration(ptn: ParseTreeNode)
-      (implicit moduleEnvironment: ModuleEnvironment): (Seq[FieldDeclaration], Seq[MethodDeclaration]) = {
+      (
+          implicit moduleEnvironment: ModuleEnvironment,
+          environment: TypeEnvironment): (Seq[FieldDeclaration], Seq[MethodDeclaration]) = {
     var fields: Seq[FieldDeclaration] = Seq()
     var methods: Seq[MethodDeclaration] = Seq()
     ptn match {
@@ -86,7 +84,7 @@ object TypeDeclaration {
   }
 
   private def handleClassDeclaration(ptn: ParseTreeNode)
-      (implicit moduleEnvironment: ModuleEnvironment): TypeDeclaration = {
+      (implicit moduleEnvironment: ModuleEnvironment, environment: TypeEnvironment): TypeDeclaration = {
     ptn match {
       case TreeNode(
       ProductionRule("ClassDeclaration", Seq("Modifiers", _, "Identifier", "SuperClause", "Interfaces", "ClassBody")),
@@ -201,7 +199,7 @@ object TypeDeclaration {
   }
 
   private def createExtendedInterfaceNodes(ptn: ParseTreeNode)
-      (implicit moduleEnvironment: ModuleEnvironment): Seq[NameExpression] = {
+      (implicit moduleEnvironment: ModuleEnvironment, environment: TypeEnvironment): Seq[NameExpression] = {
     ptn match {
       case TreeNode(ProductionRule("ExtendsInterfaces", Seq("extends", "InterfaceType")), _, children) => {
         return Seq(NameExpression(children(1).children(0).children(0)))
@@ -220,7 +218,7 @@ object TypeDeclaration {
   }
 
   private def createInterfaceMethodNodes(ptn: ParseTreeNode)
-      (implicit moduleEnvironment: ModuleEnvironment): Seq[MethodDeclaration] = {
+      (implicit moduleEnvironment: ModuleEnvironment, environment: TypeEnvironment): Seq[MethodDeclaration] = {
     ptn match {
       case TreeNode(ProductionRule("InterfaceMemberDeclarations", Seq("AbstractMethodDeclaration")), _, children) => {
         return Seq(MethodDeclaration(children(0)))
@@ -236,7 +234,7 @@ object TypeDeclaration {
   }
 
   private def handleInterfaceBody(ptn: ParseTreeNode)
-      (implicit moduleEnvironment: ModuleEnvironment): Seq[MethodDeclaration] = {
+      (implicit moduleEnvironment: ModuleEnvironment, environment: TypeEnvironment): Seq[MethodDeclaration] = {
     ptn match {
       case TreeNode(ProductionRule("InterfaceBody", Seq("{", "InterfaceMemberDeclarations", "}")), _, children) => {
         return createInterfaceMethodNodes(children(1))
@@ -251,7 +249,7 @@ object TypeDeclaration {
   }
 
   private def handleInterfaceDeclaration(ptn: ParseTreeNode)
-      (implicit moduleEnvironment: ModuleEnvironment): TypeDeclaration = {
+      (implicit moduleEnvironment: ModuleEnvironment, environment: TypeEnvironment): TypeDeclaration = {
     ptn match {
       case TreeNode(
       ProductionRule(
@@ -292,14 +290,19 @@ object TypeDeclaration {
   }
 
   def apply(ptn: ParseTreeNode)(implicit moduleEnvironment: ModuleEnvironment): TypeDeclaration = {
-    ptn match {
+    implicit val typeEnvironment = new TypeEnvironment
+    val typeDeclaration = ptn match {
       case TreeNode(ProductionRule("TypeDeclaration", Seq("ClassDeclaration")), _, children) =>
-        return handleClassDeclaration(children(0))
+        handleClassDeclaration(children(0))
       case TreeNode(ProductionRule("TypeDeclaration", Seq("InterfaceDeclaration")), _, children) =>
-        return handleInterfaceDeclaration(children(0))
+        handleInterfaceDeclaration(children(0))
       case TreeNode(ProductionRule("TypeDeclaration", Seq(";")), _, children) =>
-        return null
+        null
       case _ => throw new AstConstructionException("No valid production rule to create TypeDeclaration")
     }
+
+    typeDeclaration.fields.foreach(typeEnvironment.add)
+    typeDeclaration.methods.foreach(typeEnvironment.add)
+    typeDeclaration
   }
 }

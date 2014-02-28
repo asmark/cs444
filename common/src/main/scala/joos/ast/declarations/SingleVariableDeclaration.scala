@@ -1,28 +1,31 @@
 package joos.ast.declarations
 
-import joos.ast.expressions.{Expression, SimpleNameExpression}
-import joos.ast.{Type, Modifier}
-import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
+import joos.ast.expressions.{Expression, SimpleNameExpression}
+import joos.ast.{TypedDeclaration, Type, Modifier}
+import joos.language.ProductionRule
+import joos.parsetree.{TreeNode, ParseTreeNode}
 
 case class SingleVariableDeclaration(
-   modifiers: Seq[Modifier],
-   variableType: Type,
-   identifier: SimpleNameExpression,
-   initializer: Option[Expression]
- ) extends VariableDeclaration
+    modifiers: Seq[Modifier],
+    variableType: Type,
+    identifier: SimpleNameExpression,
+    initializer: Option[Expression]) extends VariableDeclaration with TypedDeclaration {
+  def declarationType = variableType
+
+  def declarationName = identifier
+}
 
 object SingleVariableDeclaration {
   def createFormalParameterNodes(ptn: ParseTreeNode): Seq[SingleVariableDeclaration] = {
     ptn match {
-      case TreeNode(ProductionRule("FormalParameterList",  Seq("FormalParameter")), _, children) => {
+      case TreeNode(ProductionRule("FormalParameterList", Seq("FormalParameter")), _, children) => {
         return Seq(SingleVariableDeclaration(children(0)))
       }
       case TreeNode(
-        ProductionRule("FormalParameterList",  Seq("FormalParameterList", ",", "FormalParameter")),
-        _,
-        children
+      ProductionRule("FormalParameterList", Seq("FormalParameterList", ",", "FormalParameter")),
+      _,
+      children
       ) => {
         return createFormalParameterNodes(children(0)) ++ Seq(SingleVariableDeclaration(children(2)))
       }

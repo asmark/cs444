@@ -5,20 +5,28 @@ import joos.ast.expressions.NameExpression
 import scala.collection
 import scala.collection.mutable
 
-class TypeEnvironment extends Environment {
-  private[this] val methods = mutable.HashMap.empty[NameExpression, List[MethodDeclaration]]
-  private[this] val fields  = mutable.HashMap.empty[NameExpression, FieldDeclaration]
+class TypeEnvironment extends EnvironmentWithVariable {
+  private[this] var constructors = List[MethodDeclaration]()
+  private[this] val methods      = mutable.HashMap.empty[NameExpression, List[MethodDeclaration]]
+  private[this] val fields       = mutable.HashMap.empty[NameExpression, FieldDeclaration]
+
+  def parentEnvironment = None
+
+  def variables = fields
 
   def add(method: MethodDeclaration): this.type = {
-    val list = methods.getOrElse(method.name, List.empty[MethodDeclaration])
-    for (existingMethod <- list) {
-      // TODO: check for valid method overloading
-      // TODO: constructor
-      if (existingMethod.name == method.name) {
-        throw new DuplicatedDeclarationException(method.name)
+    // TODO: check for valid method overloading
+    if (method.isConstructor) {
+      constructors = method :: constructors
+    } else {
+      val list = methods.getOrElse(method.name, List[MethodDeclaration]())
+      for (existingMethod <- list) {
+        if (existingMethod.name == method.name) {
+          throw new DuplicatedDeclarationException(method.name)
+        }
       }
+      methods.put(method.name, method :: list)
     }
-    methods.put(method.name, method :: list)
     this
   }
 

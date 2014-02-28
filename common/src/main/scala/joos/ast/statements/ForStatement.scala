@@ -4,6 +4,7 @@ import joos.ast.expressions.{VariableDeclarationExpression, Expression}
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
+import joos.semantic.{BlockEnvironment, TypeEnvironment, ModuleEnvironment}
 
 case class ForStatement(
   forInit: Option[Expression],
@@ -12,7 +13,10 @@ case class ForStatement(
   body: Statement) extends Statement
 
 object ForStatement {
-  def apply(ptn: ParseTreeNode): ForStatement = {
+  def apply(ptn: ParseTreeNode)(
+      implicit moduleEnvironment: ModuleEnvironment,
+      typeEnvironment: TypeEnvironment,
+      blockEnvironment: BlockEnvironment): ForStatement = {
     ptn match {
       case TreeNode(
           ProductionRule("ForStatement" | "ForStatementNoShortIf", derivation),
