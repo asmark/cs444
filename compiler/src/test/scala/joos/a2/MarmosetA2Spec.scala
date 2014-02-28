@@ -30,9 +30,9 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
       }
   }
 
-  behavior of "Name resultion of invalid joos"
+  behavior of "Name resolution of invalid joos"
   getTestCases(invalidJoos).foreach {
-    testCase => it should s"accept ${testCase.getName}" in {
+    testCase => it should s"reject ${testCase.getName}" in {
       val files = getJavaFiles(testCase) map (_.getAbsolutePath)
       val asts = files flatMap SyntaxCheck.apply map AbstractSyntaxTree.apply
       // Do something with asts
