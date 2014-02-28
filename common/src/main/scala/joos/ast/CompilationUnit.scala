@@ -4,7 +4,7 @@ import joos.ast.declarations.{TypeDeclaration, PackageDeclaration, ImportDeclara
 import joos.ast.exceptions.AstConstructionException
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.semantic.ModuleEnvironment
+import joos.semantic.{BlockEnvironment, TypeEnvironment, ModuleEnvironment}
 
 case class CompilationUnit(
     pkg: Option[PackageDeclaration],
@@ -14,6 +14,8 @@ case class CompilationUnit(
 
 object CompilationUnit {
   def apply(ptn: ParseTreeNode)(implicit moduleEnvironment: ModuleEnvironment): CompilationUnit = {
+    implicit val typeEnvironment = new TypeEnvironment
+    implicit val blockEnvironment = BlockEnvironment(None) // implicit for ImportDeclaration
     val compilationUnit = ptn match {
       case TreeNode(ProductionRule("CompilationUnit", Seq()), _, children) =>
         CompilationUnit(None, Seq.empty, None)

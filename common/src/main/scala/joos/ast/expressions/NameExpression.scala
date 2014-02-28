@@ -3,6 +3,7 @@ package joos.ast.expressions
 import joos.ast.exceptions.AstConstructionException
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.semantic.{BlockEnvironment, TypeEnvironment, ModuleEnvironment}
 
 trait NameExpression extends Expression {
   /**
@@ -21,7 +22,10 @@ trait NameExpression extends Expression {
 }
 
 object NameExpression {
-  def apply(ptn: ParseTreeNode): NameExpression = {
+  def apply(ptn: ParseTreeNode)(
+      implicit moduleEnvironment: ModuleEnvironment,
+      typeEnvironment: TypeEnvironment,
+      blockEnvironment: BlockEnvironment): NameExpression = {
     ptn match {
       case TreeNode(ProductionRule("Name", Seq("SimpleName")), _, children) =>
         return SimpleNameExpression(children(0))
@@ -34,7 +38,10 @@ object NameExpression {
   /**
    * Convenient method for creating {{NameExpression}} from a {{String}}
    */
-  def apply(name: String): NameExpression = {
+  def apply(name: String)(
+      implicit moduleEnvironment: ModuleEnvironment,
+      typeEnvironment: TypeEnvironment,
+      blockEnvironment: BlockEnvironment): NameExpression = {
     val names = name.split('.')
     if (names.length == 1) {
       SimpleNameExpression(name)

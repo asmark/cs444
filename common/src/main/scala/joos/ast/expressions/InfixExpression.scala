@@ -4,11 +4,15 @@ import joos.tokens.TerminalToken
 import joos.parsetree.{LeafNode, TreeNode, ParseTreeNode}
 import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
+import joos.semantic.{BlockEnvironment, TypeEnvironment, ModuleEnvironment}
 
 case class InfixExpression(left: Expression, operator: TerminalToken, right: Expression) extends Expression
 
 object InfixExpression {
-  def apply(ptn: ParseTreeNode): InfixExpression = {
+  def apply(ptn: ParseTreeNode)(
+      implicit moduleEnvironment: ModuleEnvironment,
+      typeEnvironment: TypeEnvironment,
+      blockEnvironment: BlockEnvironment): InfixExpression = {
     ptn match {
       case TreeNode(ProductionRule(
       "ConditionalOrExpression" | "ConditionalAndExpression" | "InclusiveOrExpression" |

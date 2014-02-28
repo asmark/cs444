@@ -4,6 +4,7 @@ import joos.ast.exceptions.AstConstructionException
 import joos.ast.{TypedDeclaration, Type, Modifier}
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.semantic.{BlockEnvironment, TypeEnvironment, ModuleEnvironment}
 
 case class FieldDeclaration(
     modifiers: Seq[Modifier],
@@ -16,13 +17,16 @@ case class FieldDeclaration(
 }
 
 object FieldDeclaration {
-  def apply(ptn: ParseTreeNode): FieldDeclaration = {
+  def apply(ptn: ParseTreeNode)(
+      implicit moduleEnvironment: ModuleEnvironment,
+      typeEnvironment: TypeEnvironment): FieldDeclaration = {
     ptn match {
       case TreeNode(
       ProductionRule("FieldDeclaration", Seq("Modifiers", "Type", "VariableDeclarator", ";")),
       _,
       children)
-      => return new FieldDeclaration(
+      => implicit val blockEnvironment = BlockEnvironment(None)
+        return new FieldDeclaration(
         Modifier(children(0)),
         Type(children(1)),
         VariableDeclarationFragment(children(2))

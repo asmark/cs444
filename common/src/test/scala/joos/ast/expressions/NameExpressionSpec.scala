@@ -2,9 +2,13 @@ package joos.ast.expressions
 
 import org.scalatest.{Matchers, FlatSpec}
 import scala.collection.mutable
+import joos.semantic.{BlockEnvironment, TypeEnvironment, ModuleEnvironment}
 
 class NameExpressionSpec extends FlatSpec with Matchers {
   it should "have structure equality" in {
+    implicit val moduleEnvironment: ModuleEnvironment = new ModuleEnvironment
+    implicit val typeEnvironment: TypeEnvironment = new TypeEnvironment
+    implicit val blockEnvironment: BlockEnvironment = BlockEnvironment(None)
     val name1 = NameExpression("abc")
     val name2 = NameExpression("abc.def")
     val name3 = NameExpression("abc.def.ghi")

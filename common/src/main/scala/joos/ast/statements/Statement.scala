@@ -27,7 +27,10 @@ object Statement {
     }
   }
 
-  private def handleLocalVariableDeclaration(node: ParseTreeNode): Statement = {
+  private def handleLocalVariableDeclaration(node: ParseTreeNode)(
+      implicit moduleEnvironment: ModuleEnvironment,
+      typeEnvironment: TypeEnvironment,
+      blockEnvironment: BlockEnvironment): Statement = {
     node match {
       case TreeNode(ProductionRule("LocalVariableDeclaration", Seq("Type", "VariableDeclarator")), _, children) =>
         return ExpressionStatement(node)

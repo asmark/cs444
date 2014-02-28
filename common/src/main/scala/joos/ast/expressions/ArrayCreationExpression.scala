@@ -4,11 +4,15 @@ import joos.ast.exceptions.AstConstructionException
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.ast.{PrimitiveType, SimpleType, Type}
+import joos.semantic.{BlockEnvironment, TypeEnvironment, ModuleEnvironment}
 
 case class ArrayCreationExpression(arrayType: Type, size: Expression) extends Expression
 
 object ArrayCreationExpression {
-   def apply(ptn: ParseTreeNode): ArrayCreationExpression = {
+   def apply(ptn: ParseTreeNode)(
+       implicit moduleEnvironment: ModuleEnvironment,
+       typeEnvironment: TypeEnvironment,
+       blockEnvironment: BlockEnvironment): ArrayCreationExpression = {
      ptn match {
        case TreeNode(ProductionRule("ArrayCreationExpression", derivation), _, children) =>
          return ArrayCreationExpression(

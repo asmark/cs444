@@ -4,11 +4,14 @@ import joos.ast.exceptions.AstConstructionException
 import joos.ast.expressions.NameExpression
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.semantic.{BlockEnvironment, ModuleEnvironment, TypeEnvironment}
 
 case class ImportDeclaration(name: NameExpression, isOnDemand: Boolean) extends Declaration
 
 object ImportDeclaration {
-   def apply(ptn: ParseTreeNode): Seq[ImportDeclaration] = {
+   def apply(ptn: ParseTreeNode)(implicit moduleEnvironment: ModuleEnvironment): Seq[ImportDeclaration] = {
+     implicit val typeEnvironment = new TypeEnvironment
+     implicit val blockEnvironment = BlockEnvironment(None) // implicit for NameExpression
      ptn match {
        case TreeNode(ProductionRule("ImportDeclarations", Seq("ImportDeclaration")), _, children) =>
          return ImportDeclaration(children(0))

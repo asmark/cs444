@@ -4,7 +4,7 @@ import joos.ast.expressions.NameExpression
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import scala.collection.mutable
-import joos.semantic.{ModuleEnvironment, PackageEnvironment}
+import joos.semantic.{TypeEnvironment, BlockEnvironment, ModuleEnvironment, PackageEnvironment}
 
 case class PackageDeclaration(name: NameExpression)
     (implicit val moduleEnvironment: ModuleEnvironment) extends Declaration {
@@ -18,6 +18,8 @@ object PackageDeclaration {
   private[this] val packages = mutable.HashMap.empty[NameExpression, PackageDeclaration]
 
   def apply(ptn: ParseTreeNode)(implicit moduleEnvironment: ModuleEnvironment): PackageDeclaration = {
+    implicit val typeEnvironment = new TypeEnvironment
+    implicit val blockEnvironment = BlockEnvironment(None) // implicit for NameExpression
     ptn match {
       case TreeNode(ProductionRule("PackageDeclaration", _), _, children) => {
         val name = NameExpression(children(1))
@@ -27,6 +29,8 @@ object PackageDeclaration {
   }
 
   def apply(name: String)(implicit  moduleEnvironment: ModuleEnvironment): PackageDeclaration = {
+    implicit val typeEnvironment = new TypeEnvironment
+    implicit val blockEnvironment = BlockEnvironment(None) // implicit for NameExpression
     PackageDeclaration(NameExpression(name))
   }
 }

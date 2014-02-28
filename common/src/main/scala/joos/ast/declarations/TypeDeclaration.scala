@@ -5,7 +5,7 @@ import joos.ast.exceptions.AstConstructionException
 import joos.ast.expressions.{SimpleNameExpression, NameExpression}
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.semantic.{TypeEnvironment, ModuleEnvironment}
+import joos.semantic.{BlockEnvironment, TypeEnvironment, ModuleEnvironment}
 
 case class TypeDeclaration(
     modifiers: Seq[Modifier],
@@ -20,6 +20,7 @@ case class TypeDeclaration(
 object TypeDeclaration {
   private def createInterfaceNodes(ptn: ParseTreeNode)
       (implicit moduleEnvironment: ModuleEnvironment, environment: TypeEnvironment): Seq[NameExpression] = {
+    implicit val blockEnvironment = BlockEnvironment(None) // implicit for SimpleNameExpression
     ptn match {
       case TreeNode(ProductionRule("InterfaceTypeList", Seq("InterfaceType")), _, children) =>
         return Seq(NameExpression(children(0).children(0).children(0)))
@@ -102,6 +103,7 @@ object TypeDeclaration {
           case _ => throw new AstConstructionException("No valid production rule to create ClassBody")
         }
 
+        implicit val blockEnvironment = BlockEnvironment(None) // implicit for SimpleNameExpression
         return new TypeDeclaration(
           Modifier(children(0)),
           false,
@@ -129,6 +131,7 @@ object TypeDeclaration {
           case _ => throw new AstConstructionException("No valid production rule to create ClassBody")
         }
 
+        implicit val blockEnvironment = BlockEnvironment(None) // implicit for SimpleNameExpression
         return new TypeDeclaration(
           Modifier(children(0)),
           false,
@@ -156,6 +159,7 @@ object TypeDeclaration {
           case _ => throw new AstConstructionException("No valid production rule to create ClassBody")
         }
 
+        implicit val blockEnvironment = BlockEnvironment(None) // implicit for SimpleNameExpression
         return new TypeDeclaration(
           Modifier(children(0)),
           false,
@@ -183,6 +187,7 @@ object TypeDeclaration {
           case _ => throw new AstConstructionException("No valid production rule to create ClassBody")
         }
 
+        implicit val blockEnvironment = BlockEnvironment(None) // implicit for SimpleNameExpression
         return new TypeDeclaration(
           Modifier(children(0)),
           false,
@@ -200,6 +205,7 @@ object TypeDeclaration {
 
   private def createExtendedInterfaceNodes(ptn: ParseTreeNode)
       (implicit moduleEnvironment: ModuleEnvironment, environment: TypeEnvironment): Seq[NameExpression] = {
+    implicit val blockEnvironment = BlockEnvironment(None) // implicit for NameExpression
     ptn match {
       case TreeNode(ProductionRule("ExtendsInterfaces", Seq("extends", "InterfaceType")), _, children) => {
         return Seq(NameExpression(children(1).children(0).children(0)))
@@ -258,6 +264,7 @@ object TypeDeclaration {
       _,
       children
       ) => {
+        implicit val blockEnvironment = BlockEnvironment(None) // implicit for SimpleNameExpression
         return TypeDeclaration(
           Modifier(children(0)),
           true,
@@ -274,6 +281,7 @@ object TypeDeclaration {
       _,
       children
       ) => {
+        implicit val blockEnvironment = BlockEnvironment(None) // implicit for SimpleNameExpression
         return TypeDeclaration(
           Modifier(children(0)),
           true,

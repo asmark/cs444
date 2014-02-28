@@ -3,6 +3,7 @@ package joos.ast.expressions
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
+import joos.semantic.{BlockEnvironment, TypeEnvironment, ModuleEnvironment}
 
 case class MethodInvocationExpression(
    expression: Option[Expression],
@@ -11,7 +12,10 @@ case class MethodInvocationExpression(
  ) extends Expression
 
 object MethodInvocationExpression {
-  def apply(ptn: ParseTreeNode): MethodInvocationExpression = {
+  def apply(ptn: ParseTreeNode)(
+      implicit moduleEnvironment: ModuleEnvironment,
+      typeEnvironment: TypeEnvironment,
+      blockEnvironment: BlockEnvironment): MethodInvocationExpression = {
     ptn match {
       case TreeNode(ProductionRule("MethodInvocation", Seq("Name", "(", ")")), _, children) =>
         return MethodInvocationExpression(None, NameExpression(children(0)), Seq.empty)

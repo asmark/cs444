@@ -4,6 +4,7 @@ import joos.ast.expressions.{Expression, SimpleNameExpression}
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
+import joos.semantic.{BlockEnvironment, TypeEnvironment, ModuleEnvironment}
 
 case class VariableDeclarationFragment(
   identifier: SimpleNameExpression,
@@ -11,7 +12,10 @@ case class VariableDeclarationFragment(
 )
 
 object VariableDeclarationFragment {
-  def apply(ptn: ParseTreeNode): VariableDeclarationFragment = {
+  def apply(ptn: ParseTreeNode)(
+      implicit moduleEnvironment: ModuleEnvironment,
+      typeEnvironment: TypeEnvironment,
+      blockEnvironment: BlockEnvironment): VariableDeclarationFragment = {
     ptn match {
       case TreeNode(ProductionRule("VariableDeclarator", Seq("VariableDeclaratorId")), _, children) =>
         return new VariableDeclarationFragment(SimpleNameExpression(children(0).children(0)), None)
