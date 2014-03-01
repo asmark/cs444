@@ -3,34 +3,32 @@ package joos.ast.declarations
 import joos.ast.expressions.NameExpression
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.semantic.{PackageEnvironment, ModuleEnvironment}
 import scala.collection.mutable
-import joos.semantic.{TypeEnvironment, BlockEnvironment, ModuleEnvironment, PackageEnvironment}
 
-case class PackageDeclaration(name: NameExpression)
-    (implicit val moduleEnvironment: ModuleEnvironment) extends Declaration {
-  val environment = new PackageEnvironment
-}
+/**
+ * @param name fully qualified name of the package
+ */
+case class PackageDeclaration private(name: String)(
+    implicit moduleEnvironment: ModuleEnvironment,
+    environment: PackageEnvironment) extends Declaration
 
 object PackageDeclaration {
   /**
-   * Make sure we return the same instance for the same package name
+   * Make sure we return the same {PackageDeclaration} instance for the same package name
    */
-  private[this] val packages = mutable.HashMap.empty[NameExpression, PackageDeclaration]
+  private[this] val packages = mutable.HashMap.empty[String, PackageDeclaration]
 
   def apply(ptn: ParseTreeNode)(implicit moduleEnvironment: ModuleEnvironment): PackageDeclaration = {
-    implicit val typeEnvironment = new TypeEnvironment
-    implicit val blockEnvironment = BlockEnvironment(None) // implicit for NameExpression
     ptn match {
       case TreeNode(ProductionRule("PackageDeclaration", _), _, children) => {
-        val name = NameExpression(children(1))
-        packages.getOrElseUpdate(name, PackageDeclaration(name))
+        val name = NameExpression(children(1)).standardName
+        packages.getOrElseUpdate(name, new PackageDeclaration(name)(moduleEnvironment, new PackageEnvironment))
       }
     }
   }
 
-  def apply(name: String)(implicit  moduleEnvironment: ModuleEnvironment): PackageDeclaration = {
-    implicit val typeEnvironment = new TypeEnvironment
-    implicit val blockEnvironment = BlockEnvironment(None) // implicit for NameExpression
-    PackageDeclaration(NameExpression(name))
+  def apply(name: String)(implicit moduleEnvironment: ModuleEnvironment): PackageDeclaration = {
+    new PackageDeclaration(NameExpression(name).standardName)(moduleEnvironment, new PackageEnvironment)
   }
 }

@@ -1,20 +1,16 @@
 package joos.ast.expressions
 
 import joos.ast.exceptions.AstConstructionException
+import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, LeafNode, ParseTreeNode}
 import joos.tokens.{TokenKind, TerminalToken}
-import joos.language.ProductionRule
-import joos.semantic.{BlockEnvironment, TypeEnvironment, ModuleEnvironment}
 
 case class SimpleNameExpression(identifier: TerminalToken) extends NameExpression {
   def standardName = identifier.lexeme
 }
 
 object SimpleNameExpression {
-  def apply(ptn: ParseTreeNode)(
-      implicit moduleEnvironment: ModuleEnvironment,
-      typeEnvironment: TypeEnvironment,
-      blockEnvironment: BlockEnvironment): SimpleNameExpression = {
+  def apply(ptn: ParseTreeNode): SimpleNameExpression = {
     ptn match {
       case LeafNode(token) if token.kind == TokenKind.Id =>
         return SimpleNameExpression(token)
@@ -24,10 +20,7 @@ object SimpleNameExpression {
     }
   }
 
-  def apply(name: String)(
-      implicit moduleEnvironment: ModuleEnvironment,
-      typeEnvironment: TypeEnvironment,
-      blockEnvironment: BlockEnvironment): SimpleNameExpression = {
+  def apply(name: String): SimpleNameExpression = {
     SimpleNameExpression(TerminalToken(name, TokenKind.Id))
   }
 }

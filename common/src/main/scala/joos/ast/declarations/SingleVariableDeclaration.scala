@@ -5,13 +5,13 @@ import joos.ast.expressions.{Expression, SimpleNameExpression}
 import joos.ast.{TypedDeclaration, Type, Modifier}
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.semantic.{BlockEnvironment, TypeEnvironment, ModuleEnvironment}
+import joos.semantic.{CompilationUnitEnvironment, BlockEnvironment, TypeEnvironment}
 
 case class SingleVariableDeclaration(
-    modifiers: Seq[Modifier],
-    variableType: Type,
-    identifier: SimpleNameExpression,
-    initializer: Option[Expression]) extends VariableDeclaration with TypedDeclaration {
+  modifiers: Seq[Modifier],
+  variableType: Type,
+  identifier: SimpleNameExpression,
+  initializer: Option[Expression]) extends VariableDeclaration with TypedDeclaration {
   def declarationType = variableType
 
   def declarationName = identifier
@@ -19,9 +19,9 @@ case class SingleVariableDeclaration(
 
 object SingleVariableDeclaration {
   def createFormalParameterNodes(ptn: ParseTreeNode)(
-      implicit moduleEnvironment: ModuleEnvironment,
-      typeEnvironment: TypeEnvironment,
-      blockEnvironment: BlockEnvironment): Seq[SingleVariableDeclaration] = {
+    implicit compilationUnitEnvironment: CompilationUnitEnvironment,
+    typeEnvironment: TypeEnvironment,
+    blockEnvironment: BlockEnvironment): Seq[SingleVariableDeclaration] = {
     ptn match {
       case TreeNode(ProductionRule("FormalParameterList", Seq("FormalParameter")), _, children) => {
         return Seq(SingleVariableDeclaration(children(0)))
@@ -39,9 +39,9 @@ object SingleVariableDeclaration {
 
   // TODO: consolidate this class with FormalParameter
   def apply(ptn: ParseTreeNode)(
-      implicit moduleEnvironment: ModuleEnvironment,
-      typeEnvironment: TypeEnvironment,
-      blockEnvironment: BlockEnvironment): SingleVariableDeclaration = {
+    implicit compilationUnitEnvironment: CompilationUnitEnvironment,
+    typeEnvironment: TypeEnvironment,
+    blockEnvironment: BlockEnvironment): SingleVariableDeclaration = {
     ptn match {
       case TreeNode(ProductionRule("FormalParameter", Seq("Type", "VariableDeclaratorId")), _, children) =>
         return SingleVariableDeclaration(null, Type(children(0)), SimpleNameExpression(children(1).children(0)), None)

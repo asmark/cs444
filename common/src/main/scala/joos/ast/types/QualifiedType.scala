@@ -7,6 +7,7 @@ case class QualifiedType(qualifier: Type, name: NameExpression) extends Type
 
 object QualifiedType {
   def apply(ptn: ParseTreeNode): QualifiedType = {
+    // TODO
     null
   }
 }

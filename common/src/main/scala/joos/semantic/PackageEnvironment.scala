@@ -1,23 +1,30 @@
 package joos.semantic
 
 import joos.ast.declarations.TypeDeclaration
-import joos.ast.expressions.NameExpression
 import scala.collection.mutable
 
-class PackageEnvironment extends Environment {
+class PackageEnvironment {
 
   /**
    * All types declared within this package
    */
-  private[this] val types = mutable.HashMap.empty[NameExpression, TypeDeclaration]
+  private[this] val types = mutable.HashMap.empty[String, TypeDeclaration]
 
+  /**
+   * Adds {typeDeclaration} to this package
+   */
   def add(typeDeclaration: TypeDeclaration): this.type = {
-    if (types.contains(typeDeclaration.name)) {
+    if (types.contains(typeDeclaration.name.standardName)) {
       throw new DuplicatedDeclarationException(typeDeclaration.name)
     }
-    types.put(typeDeclaration.name, typeDeclaration)
+    types.put(typeDeclaration.name.standardName, typeDeclaration)
     this
   }
 
-  def nameToType: collection.Map[NameExpression, TypeDeclaration] = types
+  /**
+   * Gets the type with the {{name}} within this package if it exists
+   */
+  def getType(name: String): Option[TypeDeclaration] = {
+    types.get(name)
+  }
 }
