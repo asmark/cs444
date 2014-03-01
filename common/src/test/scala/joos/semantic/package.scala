@@ -5,21 +5,21 @@ import joos.ast.expressions.{NameExpression, SimpleNameExpression}
 import joos.ast.{Modifier, CompilationUnit}
 
 package object semantic {
-  val MockPackage1 = PackageDeclaration("mock.pkg")
-  val MockPackage2 = PackageDeclaration("mock")
-  val MockDefaultPackage = PackageDeclaration.DefaultPackage
+  def MockPackage1 = PackageDeclaration("mock.pkg")
+  def MockPackage2 = PackageDeclaration("mock")
+  def MockDefaultPackage = PackageDeclaration.DefaultPackage
 
-  val MockTypeName1 = "MockType1"
-  val MockTypeName2 = "MockType2"
-  val MockDefaultTypeName1 = "MockDefault1"
-  val MockDefaultTypeName2 = "MockDefault2"
+  def MockTypeName1 = "MockType1"
+  def MockTypeName2 = "MockType2"
+  def MockDefaultTypeName1 = "MockDefault1"
+  def MockDefaultTypeName2 = "MockDefault2"
 
-  val MockTypeDeclaration1 = TypeDeclaration(Seq(Modifier.Public), false, SimpleNameExpression(MockTypeName1), None, Seq.empty, Seq.empty, Seq.empty)
-  val MockTypeDeclaration2 = TypeDeclaration(Seq(Modifier.Public), false, SimpleNameExpression(MockTypeName2), None, Seq.empty, Seq.empty, Seq.empty)
-  val MockDefaultDeclaration1 = TypeDeclaration(
+  def MockTypeDeclaration1 = TypeDeclaration(Seq(Modifier.Public), false, SimpleNameExpression(MockTypeName1), None, Seq.empty, Seq.empty, Seq.empty)
+  def MockTypeDeclaration2 = TypeDeclaration(Seq(Modifier.Public), false, SimpleNameExpression(MockTypeName2), None, Seq.empty, Seq.empty, Seq.empty)
+  def MockDefaultDeclaration1 = TypeDeclaration(
     Seq(Modifier.Public), false, SimpleNameExpression(MockDefaultTypeName1),
     None, Seq.empty, Seq.empty, Seq.empty)
-  val MockDefaultDeclaration2 = TypeDeclaration(
+  def MockDefaultDeclaration2 = TypeDeclaration(
     Seq(Modifier.Public), false, SimpleNameExpression(MockDefaultTypeName2),
     None, Seq.empty, Seq.empty, Seq.empty)
 

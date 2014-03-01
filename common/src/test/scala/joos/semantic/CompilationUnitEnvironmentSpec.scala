@@ -33,8 +33,18 @@ class CompilationUnitEnvironmentSpec extends FlatSpec with Matchers with BeforeA
 
   "Zero imports" should "not resolve outside packages" in {
     val unit1 = CompilationUnit(MockPackage1, Seq.empty, Some(MockTypeDeclaration1))
-    val unit2 = CompilationUnit(MockPackage2, Seq.empty, Some(MockTypeDeclaration1))
+    val unit2 = CompilationUnit(MockPackage2, Seq.empty, Some(MockTypeDeclaration2))
+    val defaultUnit = CompilationUnit(MockDefaultPackage, Seq.empty, Some(MockDefaultDeclaration1))
 
+    mockModule(Seq(unit1, unit2, defaultUnit))
+
+    unit1.getVisibleType(NameExpression(MockDefaultTypeName1)) shouldBe Some(MockDefaultDeclaration1)
+    unit1.getVisibleType(NameExpression(MockTypeName1)) shouldBe Some(MockTypeDeclaration1)
+    unit1.getVisibleType(NameExpression(MockTypeName2)) shouldBe None
+
+    unit2.getVisibleType(NameExpression(MockDefaultTypeName1)) shouldBe Some(MockDefaultDeclaration1)
+    unit2.getVisibleType(NameExpression(MockTypeName1)) shouldBe None
+    unit2.getVisibleType(NameExpression(MockTypeName2)) shouldBe Some(MockTypeDeclaration2)
   }
 
 
