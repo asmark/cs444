@@ -3,7 +3,7 @@ package joos.semantic
 import joos.ast.TypedDeclaration
 import joos.ast.declarations.{FieldDeclaration, MethodDeclaration}
 import scala.collection.mutable
-import joos.ast.expressions.NameExpression
+import joos.ast.expressions.{SimpleNameExpression, NameExpression}
 
 trait TypeEnvironment extends EnvironmentWithVariable {
   private[this] var constructors = List[MethodDeclaration]()
@@ -41,12 +41,12 @@ trait TypeEnvironment extends EnvironmentWithVariable {
   /**
    * Gets a list of methods by its {{name}}
    */
-  def getMethods(name: String): List[MethodDeclaration] = {
+  def getMethods(name: SimpleNameExpression): List[MethodDeclaration] = {
     // TODO
     List()
   }
 
-  def getField(name: String): Option[FieldDeclaration] = {
+  def getField(name: SimpleNameExpression): Option[FieldDeclaration] = {
     // TODO
     None
   }

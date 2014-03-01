@@ -1,10 +1,10 @@
 package joos.ast
 
-import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
+import joos.language.ProductionRule
+import joos.parsetree.{TreeNode, ParseTreeNode}
 
-trait Statement extends AstNode
+trait Statement extends AstNode with MethodBodyLinker with MethodBodyElement
 
 object Statement {
   private def handleStatementWithoutTrailingSubstatement(ptn: ParseTreeNode): Statement = {
@@ -12,7 +12,7 @@ object Statement {
       case TreeNode(ProductionRule("StatementWithoutTrailingSubstatement", Seq("Block")), _, children) =>
         Block(children(0))
       case TreeNode(ProductionRule("StatementWithoutTrailingSubstatement", Seq("EmptyStatement")), _, children) =>
-        EmptyStatement(children(0))
+        EmptyStatement
       case TreeNode(ProductionRule("StatementWithoutTrailingSubstatement", Seq("ExpressionStatement")), _, children) =>
         ExpressionStatement(children(0))
       case TreeNode(ProductionRule("StatementWithoutTrailingSubstatement", Seq("ReturnStatement")), _, children) =>

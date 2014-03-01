@@ -7,7 +7,7 @@ import joos.ast.exceptions.AstConstructionException
 case class MethodInvocationExpression(
    expression: Option[Expression],
    methodName: NameExpression,
-   args: Seq[Expression]
+   arguments: Seq[Expression]
  ) extends Expression
 
 object MethodInvocationExpression {

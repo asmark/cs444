@@ -1,7 +1,7 @@
 package joos.semantic
 
 import joos.ast.TypedDeclaration
-import joos.ast.expressions.NameExpression
+import joos.ast.expressions.{SimpleNameExpression, NameExpression}
 
 /**
  * This class is immutable since it needs to take a snapshot of the environment
@@ -9,19 +9,26 @@ import joos.ast.expressions.NameExpression
  * early inner scope
  */
 class BlockEnvironment private(
-    val parentEnvironment: Option[EnvironmentWithVariable],
-    val variables: Map[NameExpression, TypedDeclaration]) extends EnvironmentWithVariable {
+    val typeEnvironment: TypeEnvironment,
+    val variables: Map[NameExpression, TypedDeclaration]) {
 
   def add(variable: TypedDeclaration): BlockEnvironment = {
     if (variables.contains(variable.declarationName)) {
       throw new DuplicatedDeclarationException(variable.declarationName)
     }
-    new BlockEnvironment(parentEnvironment, variables + ((variable.declarationName, variable)))
+    new BlockEnvironment(typeEnvironment, variables + ((variable.declarationName, variable)))
+  }
+
+  def getVariable(name: SimpleNameExpression): Option[TypedDeclaration] = {
+    variables.get(name) match {
+      case None => typeEnvironment.getField(name)
+      case x => x
+    }
   }
 }
 
 object BlockEnvironment {
-  def apply(parentEnvironment: Option[EnvironmentWithVariable] = None): BlockEnvironment = {
-    new BlockEnvironment(parentEnvironment, Map())
+  def apply()(implicit typeEnvironment: TypeEnvironment): BlockEnvironment = {
+    new BlockEnvironment(typeEnvironment, Map())
   }
 }

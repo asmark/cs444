@@ -2,9 +2,10 @@ package joos.ast.declarations
 
 import joos.ast.exceptions.AstConstructionException
 import joos.ast.expressions.{NameExpression, SimpleNameExpression}
-import joos.ast.{Block, Type, Modifier}
+import joos.ast.{CompilationUnit, Block, Type, Modifier}
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.semantic.BlockEnvironment
 
 case class MethodDeclaration(
     modifiers: Seq[Modifier],
@@ -12,7 +13,14 @@ case class MethodDeclaration(
     name: NameExpression,
     parameters: Seq[SingleVariableDeclaration],
     body: Option[Block],
-    isConstructor: Boolean) extends BodyDeclaration
+    isConstructor: Boolean)
+    extends BodyDeclaration
+    with MethodDeclarationLinker {
+
+  var typeDeclaration: TypeDeclaration = null
+  var compilationUnit: CompilationUnit = null
+  var environment: BlockEnvironment = null
+}
 
 object MethodDeclaration {
   private def handleMethodBody(ptn: ParseTreeNode): Option[Block] = {

@@ -5,7 +5,7 @@ import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
 
-case class ClassCreationExpression(classType: Type, args: Seq[Expression]) extends Expression
+case class ClassCreationExpression(classType: Type, arguments: Seq[Expression]) extends Expression
 
 object ClassCreationExpression {
   def apply(ptn: ParseTreeNode): ClassCreationExpression = {

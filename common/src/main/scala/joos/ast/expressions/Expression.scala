@@ -1,11 +1,11 @@
 package joos.ast.expressions
 
-import joos.ast.AstNode
+import joos.ast.{MethodBodyElement, MethodBodyLinker, AstNode}
 import joos.language.ProductionRule
 import joos.parsetree.{LeafNode, TreeNode, ParseTreeNode}
 import joos.ast.exceptions.AstConstructionException
 
-trait Expression extends AstNode
+trait Expression extends AstNode with MethodBodyLinker with MethodBodyElement
 
 object Expression {
   def apply(ptn: ParseTreeNode): Expression = {

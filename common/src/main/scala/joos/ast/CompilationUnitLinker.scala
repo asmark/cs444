@@ -10,7 +10,7 @@ trait CompilationUnitLinker {
     implicit val that = this
     implicit val packageDeclaration = this.packageDeclaration
     this.moduleDeclaration = moduleDeclaration.add(this)
-    typeDeclaration.map(_.link)
+    this.typeDeclaration.map(_.link)
     this
   }
 }

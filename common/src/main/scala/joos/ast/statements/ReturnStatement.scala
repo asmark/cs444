@@ -4,8 +4,9 @@ import joos.ast.expressions.Expression
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
+import joos.ast.statements.ReturnStatementLinker
 
-case class ReturnStatement(exp: Option[Expression]) extends Statement
+case class ReturnStatement(expression: Option[Expression]) extends Statement with ReturnStatementLinker
 
 object ReturnStatement {
   def apply(ptn: ParseTreeNode): ReturnStatement = {
