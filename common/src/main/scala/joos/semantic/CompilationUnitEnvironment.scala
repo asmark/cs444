@@ -3,7 +3,7 @@ package joos.semantic
 import joos.ast.declarations.{ImportDeclaration, TypeDeclaration}
 import joos.ast.expressions.NameExpression
 
-class CompilationUnitEnvironment(implicit moduleEnvironment: ModuleEnvironment) extends Environment {
+trait CompilationUnitEnvironment extends Environment {
 
   /**
    * Gets the type with the {{name}} if it's visible within this compilation unit

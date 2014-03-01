@@ -2,29 +2,9 @@ package joos.semantic
 
 import joos.ast.CompilationUnit
 import joos.ast.declarations.{TypeDeclaration, PackageDeclaration}
-import joos.ast.expressions.NameExpression
 import scala.collection.mutable
 
-class ModuleEnvironment extends Environment {
-  /**
-   * All packages declared within this module
-   */
-  private[this] val packages = mutable.LinkedHashMap.empty[NameExpression, PackageDeclaration]
-
-//  def add(compilationUnit: CompilationUnit) = {
-//    // TODO: a package is only visible if it contains a visible declaration?
-//    val packageDeclaration = compilationUnit.packageDeclaration match {
-//      case None => ModuleEnvironment.DefaultPackage
-//      case Some(pkg) => pkg
-//    }
-//    packages.put(packageDeclaration.name, packageDeclaration)
-//    compilationUnit.typeDeclaration match {
-//      case None =>
-//      case Some(t) => packageDeclaration.environment.add(t)
-//    }
-//    this
-//  }
-
+trait ModuleEnvironment extends Environment {
   /**
    * Adds the {{compilationUnit}} to the module
    */

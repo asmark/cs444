@@ -37,4 +37,17 @@ trait TypeEnvironment extends EnvironmentWithVariable {
     fields.put(field.fragment.identifier, field)
     this
   }
+
+  /**
+   * Gets a list of methods by its {{name}}
+   */
+  def getMethods(name: String): List[MethodDeclaration] = {
+    // TODO
+    List()
+  }
+
+  def getField(name: String): Option[FieldDeclaration] = {
+    // TODO
+    None
+  }
 }

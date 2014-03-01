@@ -4,11 +4,12 @@ import joos.ast.expressions.NameExpression
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import scala.collection.mutable
+import joos.semantic.PackageEnvironment
 
 /**
  * @param name fully qualified name of the package
  */
-class PackageDeclaration private(name: String) extends Declaration
+class PackageDeclaration private(name: String) extends Declaration with PackageEnvironment
 
 object PackageDeclaration {
   /**

@@ -3,7 +3,7 @@ package joos.semantic
 import joos.ast.declarations.TypeDeclaration
 import scala.collection.mutable
 
-class PackageEnvironment {
+trait PackageEnvironment {
 
   /**
    * All types declared within this package
