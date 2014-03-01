@@ -14,8 +14,7 @@ case class MethodDeclaration(
     parameters: Seq[SingleVariableDeclaration],
     body: Option[Block],
     isConstructor: Boolean)
-    extends BodyDeclaration
-    with MethodDeclarationLinker {
+    extends BodyDeclaration {
 
   var typeDeclaration: TypeDeclaration = null
   var compilationUnit: CompilationUnit = null

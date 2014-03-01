@@ -4,7 +4,7 @@ import joos.ast.exceptions.AstConstructionException
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 
-trait Statement extends AstNode with MethodBodyLinker with MethodBodyElement
+trait Statement extends AstNode
 
 object Statement {
   private def handleStatementWithoutTrailingSubstatement(ptn: ParseTreeNode): Statement = {

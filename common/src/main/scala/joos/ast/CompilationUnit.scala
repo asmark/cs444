@@ -11,8 +11,7 @@ case class CompilationUnit(
     importDeclarations: Seq[ImportDeclaration],
     typeDeclaration: Option[TypeDeclaration])
     extends AstNode
-    with CompilationUnitEnvironment
-    with CompilationUnitLinker {
+    with CompilationUnitEnvironment {
   var moduleDeclaration: ModuleDeclaration = null
 }
 

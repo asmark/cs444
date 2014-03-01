@@ -1,11 +1,10 @@
 package joos.ast
 
 import joos.ast.exceptions.AstConstructionException
-import joos.ast.statements.BlockLinker
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 
-case class Block(statements: Seq[Statement]) extends Statement with BlockLinker
+case class Block(statements: Seq[Statement]) extends Statement
 
 object Block {
   private def unfoldStatements(blockStatements: ParseTreeNode): Seq[Statement] = {

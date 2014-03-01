@@ -16,8 +16,7 @@ case class TypeDeclaration(
     fields: Seq[FieldDeclaration],
     methods: Seq[MethodDeclaration])
     extends BodyDeclaration
-    with TypeEnvironment
-    with TypeDeclarationLinker {
+    with TypeEnvironment {
   var compilationUnit: CompilationUnit = null
   var packageDeclaration: PackageDeclaration = null
 }

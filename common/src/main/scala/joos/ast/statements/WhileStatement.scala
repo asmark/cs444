@@ -2,11 +2,10 @@ package joos.ast
 
 import joos.ast.exceptions.AstConstructionException
 import joos.ast.expressions.Expression
-import joos.ast.statements.WhileStatementLinker
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 
-case class WhileStatement(condition: Expression, body: Statement) extends Statement with WhileStatementLinker
+case class WhileStatement(condition: Expression, body: Statement) extends Statement
 
 object WhileStatement {
   def apply(ptn: ParseTreeNode): WhileStatement = {
