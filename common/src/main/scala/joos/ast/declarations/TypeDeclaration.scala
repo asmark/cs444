@@ -14,7 +14,10 @@ case class TypeDeclaration(
     superType: Option[NameExpression], // TODO: Change to Option[SimpleType]??
     superInterfaces: Seq[NameExpression], // TODO: Change to Option[Seq[SimpleType]]??
     fields: Seq[FieldDeclaration],
-    methods: Seq[MethodDeclaration]) extends BodyDeclaration with TypeEnvironment {
+    methods: Seq[MethodDeclaration])
+    extends BodyDeclaration
+    with TypeEnvironment
+    with TypeDeclarationLinker {
   var compilationUnit: CompilationUnit = null
   var packageDeclaration: PackageDeclaration = null
 }

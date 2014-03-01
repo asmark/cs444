@@ -1,9 +1,9 @@
 package joos.semantic
 
 import joos.ast.TypedDeclaration
-import joos.ast.declarations.{TypeDeclaration, FieldDeclaration, MethodDeclaration}
-import joos.ast.expressions.NameExpression
+import joos.ast.declarations.{FieldDeclaration, MethodDeclaration}
 import scala.collection.mutable
+import joos.ast.expressions.NameExpression
 
 trait TypeEnvironment extends EnvironmentWithVariable {
   private[this] var constructors = List[MethodDeclaration]()

@@ -5,6 +5,7 @@
       <value>
         <option name="RIGHT_MARGIN" value="150" />
         <ScalaCodeStyleSettings>
+          <option name="WRAP_BEFORE_WITH_KEYWORD" value="true" />
           <option name="KEEP_ONE_LINE_LAMBDAS_IN_ARG_LIST" value="true" />
         </ScalaCodeStyleSettings>
         <XML>
