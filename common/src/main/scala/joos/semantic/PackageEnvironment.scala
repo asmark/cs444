@@ -1,9 +1,11 @@
 package joos.semantic
 
-import joos.ast.declarations.TypeDeclaration
+import joos.ast.declarations.{PackageDeclaration, TypeDeclaration}
 import scala.collection.mutable
 
 trait PackageEnvironment {
+
+  self: PackageDeclaration =>
 
   /**
    * All types declared within this package

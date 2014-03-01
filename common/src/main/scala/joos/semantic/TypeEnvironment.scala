@@ -1,7 +1,7 @@
 package joos.semantic
 
 import joos.ast.TypedDeclaration
-import joos.ast.declarations.{FieldDeclaration, MethodDeclaration}
+import joos.ast.declarations.{TypeDeclaration, FieldDeclaration, MethodDeclaration}
 import joos.ast.expressions.NameExpression
 import scala.collection.mutable
 

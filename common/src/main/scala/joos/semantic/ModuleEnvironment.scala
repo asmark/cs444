@@ -1,10 +1,12 @@
 package joos.semantic
 
 import joos.ast.CompilationUnit
-import joos.ast.declarations.{TypeDeclaration, PackageDeclaration}
+import joos.ast.declarations.{ModuleDeclaration, TypeDeclaration, PackageDeclaration}
 import scala.collection.mutable
 
 trait ModuleEnvironment extends Environment {
+  self: ModuleDeclaration =>
+
   /**
    * Adds the {{compilationUnit}} to the module
    */
