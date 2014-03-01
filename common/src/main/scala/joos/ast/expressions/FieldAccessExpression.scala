@@ -10,7 +10,7 @@ object FieldAccessExpression {
   def apply(ptn: ParseTreeNode): FieldAccessExpression = {
     ptn match {
       case TreeNode(ProductionRule("FieldAccess", Seq("Primary", ".", "Identifier")), _, children) =>
-        return FieldAccessExpression(Expression(children(0)), SimpleNameExpression(children(2)))
+        FieldAccessExpression(Expression(children(0)), SimpleNameExpression(children(2)))
       case _ => throw new AstConstructionException("No valid production rule to create FieldAccessExpression")
     }
   }

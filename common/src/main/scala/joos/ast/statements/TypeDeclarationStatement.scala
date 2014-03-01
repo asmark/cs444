@@ -7,6 +7,6 @@ case class TypeDeclarationStatement(typeDeclaration: TypeDeclaration) extends St
 
 object TypeDeclarationStatement {
   def apply(ptn: ParseTreeNode): TypeDeclarationStatement = {
-    return TypeDeclarationStatement(TypeDeclaration(ptn))
+    TypeDeclarationStatement(TypeDeclaration(ptn))
   }
 }

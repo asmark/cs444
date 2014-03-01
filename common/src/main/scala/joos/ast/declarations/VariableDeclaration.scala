@@ -7,10 +7,3 @@ trait VariableDeclaration extends Declaration {
    def identifier: SimpleNameExpression
    def initializer: Option[Expression]
  }
-
-object VariableDeclaration {
-  def apply(ptn: ParseTreeNode) = {
-    null
-  }
-}
-

@@ -11,7 +11,7 @@ object BooleanLiteral {
   def apply(ptn: ParseTreeNode): BooleanLiteral = {
     ptn match {
       case LeafNode(token) if token.kind == TokenKind.True || token.kind == TokenKind.False =>
-        return BooleanLiteral(token)
+        BooleanLiteral(token)
       case _ => throw new AstConstructionException("No valid production rule to make BooleanLiteral")
     }
   }

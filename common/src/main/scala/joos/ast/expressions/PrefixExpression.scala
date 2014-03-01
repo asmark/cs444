@@ -11,7 +11,7 @@ object PrefixExpression {
   def apply(ptn: ParseTreeNode): PrefixExpression = {
     ptn match {
       case TreeNode(ProductionRule(_, Seq(_, "UnaryExpression")), _, Seq(LeafNode(operator), operand)) =>
-        return PrefixExpression(operator, Expression(operand))
+        PrefixExpression(operator, Expression(operand))
       case _ => throw new AstConstructionException("No valid production rule to create PrefixExpression")
     }
   }

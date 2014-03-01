@@ -17,24 +17,24 @@ object CompilationUnit {
   def apply(ptn: ParseTreeNode): CompilationUnit = {
     ptn match {
       case TreeNode(ProductionRule("CompilationUnit", Seq()), _, children) =>
-        return CompilationUnit(None, Seq.empty, None)
+        CompilationUnit(None, Seq.empty, None)
       case TreeNode(ProductionRule("CompilationUnit", Seq("TypeDeclaration")), _, children) =>
-        return CompilationUnit(None, Seq.empty, Some(TypeDeclaration(children(0))))
+        CompilationUnit(None, Seq.empty, Some(TypeDeclaration(children(0))))
       case TreeNode(ProductionRule("CompilationUnit", Seq("ImportDeclarations")), _, children) =>
-        return CompilationUnit(None, ImportDeclaration(children(0)), None)
+        CompilationUnit(None, ImportDeclaration(children(0)), None)
       case TreeNode(ProductionRule("CompilationUnit", Seq("ImportDeclarations", "TypeDeclaration")), _, children) =>
-        return CompilationUnit(None, ImportDeclaration(children(0)), Some(TypeDeclaration(children(1))))
+        CompilationUnit(None, ImportDeclaration(children(0)), Some(TypeDeclaration(children(1))))
       case TreeNode(ProductionRule("CompilationUnit", Seq("PackageDeclaration")), _, children) =>
-        return CompilationUnit(Some(PackageDeclaration(children(0))), Seq.empty, None)
+        CompilationUnit(Some(PackageDeclaration(children(0))), Seq.empty, None)
       case TreeNode(ProductionRule("CompilationUnit", Seq("PackageDeclaration", "TypeDeclaration")), _, children) =>
-        return CompilationUnit(Some(PackageDeclaration(children(0))), Seq.empty, Some(TypeDeclaration(children(1))))
+        CompilationUnit(Some(PackageDeclaration(children(0))), Seq.empty, Some(TypeDeclaration(children(1))))
       case TreeNode(ProductionRule("CompilationUnit", Seq("PackageDeclaration", "ImportDeclarations")), _, children) =>
-        return CompilationUnit(Some(PackageDeclaration(children(0))), ImportDeclaration(children(1)), None)
+        CompilationUnit(Some(PackageDeclaration(children(0))), ImportDeclaration(children(1)), None)
       case TreeNode(
       ProductionRule(
       "CompilationUnit",
       Seq("PackageDeclaration", "ImportDeclarations", "TypeDeclaration")), _, children) =>
-        return CompilationUnit(
+        CompilationUnit(
           Some(PackageDeclaration(children(0))),
           ImportDeclaration(children(1)),
           Some(TypeDeclaration(children(2))))

@@ -14,17 +14,17 @@ object LiteralExpression {
   def apply(ptn: ParseTreeNode): LiteralExpression = {
     ptn match {
       case TreeNode(ProductionRule("Literal", Seq("DecimalIntLiteral")), _, children) =>
-        return IntegerLiteral(children(0))
+        IntegerLiteral(children(0))
       case TreeNode(ProductionRule("Literal", Seq("CharacterLiteral")), _, children) =>
-        return CharacterLiteral(children(0))
+        CharacterLiteral(children(0))
       case TreeNode(ProductionRule("Literal", Seq("StringLiteral")), _, children) =>
-        return StringLiteral(children(0))
+        StringLiteral(children(0))
       case TreeNode(ProductionRule("Literal", Seq("NullLiteral")), _, children) =>
-        return NullLiteral(children(0))
+        NullLiteral(children(0))
       case TreeNode(ProductionRule("BooleanLiteral", _), _, children) =>
-        return BooleanLiteral(children(0))
+        BooleanLiteral(children(0))
       case TreeNode(ProductionRule("Literal", Seq("BooleanLiteral")), _, children) =>
-        return LiteralExpression(children(0))
+        LiteralExpression(children(0))
       case _ => throw new AstConstructionException("No valid production rule to make LiteralExpression")
     }
   }

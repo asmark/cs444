@@ -5,7 +5,7 @@ import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 
 case class QualifiedNameExpression(qualifier: NameExpression, name: SimpleNameExpression) extends NameExpression {
-  lazy val standardName = qualifier.standardName + '.' + name.standardName
+  override lazy val standardName = qualifier.standardName + '.' + name.standardName
 }
 
 object QualifiedNameExpression {
