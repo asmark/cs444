@@ -16,7 +16,7 @@ object VariableDeclarationExpression {
   def apply(ptn: ParseTreeNode): VariableDeclarationExpression = {
     ptn match {
       case TreeNode(ProductionRule("LocalVariableDeclaration", Seq("Type", "VariableDeclarator")), _, children) =>
-        return VariableDeclarationExpression(Seq.empty, Type(children(0)), VariableDeclarationFragment(children(1)))
+        VariableDeclarationExpression(Seq.empty, Type(children(0)), VariableDeclarationFragment(children(1)))
       case _ => throw new AstConstructionException("No production rule to create VariableDeclarationExpression")
     }
   }

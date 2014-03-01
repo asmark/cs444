@@ -14,7 +14,7 @@ object InfixExpression {
       "ConditionalOrExpression" | "ConditionalAndExpression" | "InclusiveOrExpression" |
       "ExclusiveOrExpression" | "AndExpression" | "EqualityExpression" | "RelationalExpression" |
       "AdditiveExpression" | "MultiplicativeExpression", _), _, Seq(left, LeafNode(operator), right)) =>
-        return InfixExpression(Expression(left), operator, Expression(right))
+        InfixExpression(Expression(left), operator, Expression(right))
       case _ => throw new AstConstructionException("No valid production rule to create InfixExpression")
     }
   }

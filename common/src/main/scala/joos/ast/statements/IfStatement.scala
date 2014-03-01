@@ -11,9 +11,9 @@ object IfStatement {
   def apply(ptn: ParseTreeNode): IfStatement = {
     ptn match {
       case TreeNode(ProductionRule("IfThenStatement", _), _, children) =>
-        return new IfStatement(Expression(children(2)), Statement(children(4)), None)
+        IfStatement(Expression(children(2)), Statement(children(4)), None)
       case TreeNode(ProductionRule("IfThenElseStatement" | "IfThenElseStatementNoShortIf", _), _,children) =>
-        return new IfStatement(Expression(children(2)), Statement(children(4)), Some(Statement(children(6))))
+        IfStatement(Expression(children(2)), Statement(children(4)), Some(Statement(children(6))))
       case _ => throw new AstConstructionException(
         "Invalid tree node to create IfStatement"
       )

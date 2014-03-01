@@ -23,9 +23,9 @@ object TypeDeclaration {
   private def createInterfaceNodes(ptn: ParseTreeNode): Seq[NameExpression] = {
     ptn match {
       case TreeNode(ProductionRule("InterfaceTypeList", Seq("InterfaceType")), _, children) =>
-        return Seq(NameExpression(children(0).children(0).children(0)))
+        Seq(NameExpression(children(0).children(0).children(0)))
       case TreeNode(ProductionRule("InterfaceTypeList", Seq("InterfaceTypeList", ",", "InterfaceType")), _, children) =>
-        return createInterfaceNodes(children(0)) ++ Seq(NameExpression(children(2).children(0).children(0)))
+        createInterfaceNodes(children(0)) ++ Seq(NameExpression(children(2).children(0).children(0)))
       case _ => throw new AstConstructionException("No valid production rule to create InterfaceTypeList")
     }
   }
@@ -37,7 +37,7 @@ object TypeDeclaration {
     var methods: Seq[MethodDeclaration] = Seq()
     ptn match {
       case TreeNode(ProductionRule("ClassBodyDeclarations", Seq("ClassBodyDeclaration")), _, children) =>
-        return handleClassBodyDeclaration(children(0))
+        handleClassBodyDeclaration(children(0))
 
       case TreeNode(ProductionRule("ClassBodyDeclaration", Seq("ClassMemberDeclaration")), _, children) =>
         children(0) match {

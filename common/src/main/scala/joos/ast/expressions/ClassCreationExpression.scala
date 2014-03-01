@@ -11,9 +11,9 @@ object ClassCreationExpression {
   def apply(ptn: ParseTreeNode): ClassCreationExpression = {
     ptn match {
       case TreeNode(ProductionRule("ClassInstanceCreationExpression", Seq("new", "ClassType", "(", ")")), _, children) =>
-        return ClassCreationExpression(SimpleType(children(1).children(0).children(0)), Seq.empty)
+        ClassCreationExpression(SimpleType(children(1).children(0).children(0)), Seq.empty)
       case TreeNode(ProductionRule("ClassInstanceCreationExpression", Seq("new", "ClassType", "(", "ArgumentList", ")")), _, children) =>
-        return ClassCreationExpression(SimpleType(children(1).children(0).children(0)), Expression.argList(children(3)))
+        ClassCreationExpression(SimpleType(children(1).children(0).children(0)), Expression.argList(children(3)))
       case _ => throw new AstConstructionException("No valid production rule to create ClassCreationExpression")
     }
   }

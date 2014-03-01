@@ -10,7 +10,7 @@ object ParenthesizedExpression {
   def apply(ptn: ParseTreeNode): ParenthesizedExpression = {
     ptn match {
       case TreeNode(ProductionRule("PrimaryNoNewArray", Seq("(", "Expression", ")")), _, children) =>
-        return ParenthesizedExpression(Expression(children(1)))
+        ParenthesizedExpression(Expression(children(1)))
       case _ => throw new AstConstructionException("No valid production rule to create ParenthesizedExpression")
     }
   }

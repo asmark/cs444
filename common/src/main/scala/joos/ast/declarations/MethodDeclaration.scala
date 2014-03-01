@@ -17,16 +17,12 @@ case class MethodDeclaration(
 ) extends BodyDeclaration
 
 object MethodDeclaration {
-  private def handleMethodHeader(ptn: ParseTreeNode) = {
-
-  }
-
   private def handleMethodBody(ptn: ParseTreeNode): Option[Block] = {
     ptn match {
       case TreeNode(ProductionRule("MethodBody", Seq("Block")), _, children) =>
-        return Some(Block(children(0)))
+        Some(Block(children(0)))
       case TreeNode(ProductionRule("MethodBody", Seq(";")), _, children) =>
-        return None
+        None
       case _ => throw new AstConstructionException("No valid production rule to create MethodBody")
     }
   }

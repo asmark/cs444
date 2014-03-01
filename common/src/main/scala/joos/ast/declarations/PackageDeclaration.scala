@@ -9,7 +9,7 @@ import joos.semantic.PackageEnvironment
 /**
  * @param name fully qualified name of the package
  */
-class PackageDeclaration private(name: String) extends Declaration with PackageEnvironment
+case class PackageDeclaration(name: String) extends Declaration with PackageEnvironment
 
 object PackageDeclaration {
   /**
@@ -24,9 +24,5 @@ object PackageDeclaration {
         packages.getOrElseUpdate(name, new PackageDeclaration(name))
       }
     }
-  }
-
-  def apply(name: String): PackageDeclaration = {
-    new PackageDeclaration(NameExpression(name).standardName)
   }
 }

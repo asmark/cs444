@@ -1,11 +1,9 @@
 package joos.ast
 
-import joos.ast.expressions._
-import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
-import joos.ast.declarations.{VariableDeclarationFragment, VariableDeclaration}
+import joos.ast.expressions._
 import joos.language.ProductionRule
+import joos.parsetree.ParseTreeNode
 import joos.parsetree.TreeNode
 
 case class ExpressionStatement(expr: Expression) extends Statement

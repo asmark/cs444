@@ -11,7 +11,7 @@ object WhileStatement {
   def apply(ptn: ParseTreeNode): WhileStatement = {
     ptn match {
       case TreeNode(ProductionRule(_, Seq("while", "(", "Expression", ")", _)), _,  children) =>
-        return new WhileStatement(Expression(children(2)), Statement(children(4)))
+        WhileStatement(Expression(children(2)), Statement(children(4)))
       case _ => throw new AstConstructionException(
         "Invalid tree node to create WhileStatement"
       )

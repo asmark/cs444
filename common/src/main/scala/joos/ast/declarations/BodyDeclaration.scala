@@ -6,9 +6,3 @@ import joos.parsetree.ParseTreeNode
 trait BodyDeclaration extends AstNode {
    val modifiers: Seq[Modifier]
 }
-
-object BodyDeclaration {
-  def apply(ptn: ParseTreeNode) = {
-    null
-  }
-}

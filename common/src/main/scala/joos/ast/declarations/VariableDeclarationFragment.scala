@@ -14,13 +14,13 @@ object VariableDeclarationFragment {
   def apply(ptn: ParseTreeNode): VariableDeclarationFragment = {
     ptn match {
       case TreeNode(ProductionRule("VariableDeclarator", Seq("VariableDeclaratorId")), _, children) =>
-        return new VariableDeclarationFragment(SimpleNameExpression(children(0).children(0)), None)
+        VariableDeclarationFragment(SimpleNameExpression(children(0).children(0)), None)
       case TreeNode(
         ProductionRule("VariableDeclarator", Seq("VariableDeclaratorId", "=", "VariableInitializer")),
         _,
         children
       ) =>
-        return new VariableDeclarationFragment(
+        VariableDeclarationFragment(
           SimpleNameExpression(children(0).children(0)),
           Some(Expression(children(2).children(0)))
         )

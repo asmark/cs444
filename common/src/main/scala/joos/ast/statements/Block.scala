@@ -12,9 +12,9 @@ object Block {
 //      yield Statement(node.children(0)) // LocalVariableDeclarationStatement | Statement
     blockStatements match {
       case TreeNode(ProductionRule("BlockStatements", Seq("BlockStatement")), _, children) =>
-        return Seq(Statement(children(0).children(0)))
+        Seq(Statement(children(0).children(0)))
       case TreeNode(ProductionRule("BlockStatements", Seq("BlockStatements", "BlockStatement")), _, children) =>
-        return unfoldStatements(children(0)) ++ Seq(Statement(children(1).children(0)))
+        unfoldStatements(children(0)) ++ Seq(Statement(children(1).children(0)))
       case _ => throw new AstConstructionException("Invalid tree node to create BlockStatements")
     }
   }
@@ -22,9 +22,9 @@ object Block {
   def apply(ptn: ParseTreeNode): Block = {
     ptn match {
       case TreeNode(ProductionRule("Block" | "ConstructorBody", Seq("{", "BlockStatements", "}")), _, children) =>
-        return new Block(unfoldStatements(children(1)))
+        Block(unfoldStatements(children(1)))
       case TreeNode(ProductionRule("Block" | "ConstructorBody", Seq("{", "}")), _, children) =>
-        return new Block(Seq())
+        Block(Seq())
       case _ => throw new AstConstructionException("Invalid tree node to create Block")
     }
   }

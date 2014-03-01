@@ -10,7 +10,7 @@ object IntegerLiteral {
   def apply(ptn: ParseTreeNode): IntegerLiteral = {
     ptn match {
       case LeafNode(token) if token.kind == TokenKind.DecimalIntLiteral =>
-        return IntegerLiteral(token)
+        IntegerLiteral(token)
       case _ => throw new AstConstructionException("No valid production rule to make IntegerLiteral")
     }
   }

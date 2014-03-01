@@ -10,7 +10,7 @@ object StringLiteral {
   def apply(ptn: ParseTreeNode): StringLiteral = {
     ptn match {
       case LeafNode(token) if token.kind == TokenKind.StringLiteral =>
-        return StringLiteral(token)
+        StringLiteral(token)
       case _ => throw new AstConstructionException("No valid production rule to make StringLiteral")
     }
   }

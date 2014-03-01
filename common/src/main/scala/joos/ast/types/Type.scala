@@ -11,9 +11,9 @@ object Type {
   def handleReferenceType(referenceType: ParseTreeNode): Type = {
     referenceType match {
       case TreeNode(ProductionRule("ReferenceType", Seq("ClassOrInterfaceType")), _, children) =>
-        return SimpleType(children(0).children(0))
+        SimpleType(children(0).children(0))
       case TreeNode(ProductionRule("ReferenceType", Seq("ArrayType")), _, children) =>
-        return ArrayType(children(0))
+        ArrayType(children(0))
       case _ => throw new AstConstructionException(
         "Invalid tree node to create ReferenceType"
       )
@@ -23,9 +23,17 @@ object Type {
   def apply(ptn: ParseTreeNode): Type = {
     ptn match {
       case TreeNode(ProductionRule("Type",  Seq("PrimitiveType")), _, children) =>
-        return PrimitiveType(children(0))
+        PrimitiveType(children(0))
       case TreeNode(ProductionRule("Type",  Seq("ReferenceType")), _, children) =>
-        return handleReferenceType(children(0))
+        Type(children(0))
+      case TreeNode(ProductionRule("ReferenceType", Seq("ClassOrInterfaceType")), _, children) =>
+        Type(children(0))
+      case TreeNode(ProductionRule("ReferenceType", Seq("ArrayType")), _, children) =>
+        ArrayType(children(0))
+      case TreeNode(ProductionRule("ClassOrInterfaceType", Seq("Name")), _, children) =>
+        SimpleType(children(0))
+      case TreeNode(ProductionRule("PrimitiveType", _), _, children) =>
+        PrimitiveType(ptn)
       case _ => throw new AstConstructionException("Invalid tree node to create Type")
     }
   }
