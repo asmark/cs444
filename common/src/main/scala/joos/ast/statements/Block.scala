@@ -4,7 +4,7 @@ import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
 
-case class Block(inner: Option[Seq[Statement]]) extends Statement
+case class Block(inner: Seq[Statement]) extends Statement
 
 object Block {
   private def unfoldStatements(blockStatements: ParseTreeNode): Seq[Statement] = {
@@ -22,9 +22,9 @@ object Block {
   def apply(ptn: ParseTreeNode): Block = {
     ptn match {
       case TreeNode(ProductionRule("Block" | "ConstructorBody", Seq("{", "BlockStatements", "}")), _, children) =>
-        return new Block(Some(unfoldStatements(children(1))))
+        return new Block(unfoldStatements(children(1)))
       case TreeNode(ProductionRule("Block" | "ConstructorBody", Seq("{", "}")), _, children) =>
-        return new Block(None)
+        return new Block(Seq())
       case _ => throw new AstConstructionException("Invalid tree node to create Block")
     }
   }

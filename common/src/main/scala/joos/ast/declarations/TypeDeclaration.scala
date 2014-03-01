@@ -1,25 +1,28 @@
 package joos.ast.declarations
 
-import joos.ast.Modifier
-import joos.ast.expressions.{SimpleNameExpression, NameExpression}
-import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
+import joos.ast.expressions.{SimpleNameExpression, NameExpression}
+import joos.ast.{CompilationUnit, Modifier}
+import joos.language.ProductionRule
+import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.semantic.TypeEnvironment
 
 case class TypeDeclaration(
-   modifiers: Seq[Modifier],
-   isInterface: Boolean,
-   name: SimpleNameExpression,
-   superType: Option[NameExpression], // TODO: Change to Option[SimpleType]??
-   superInterfaces: Option[Seq[NameExpression]], // TODO: Change to Option[Seq[SimpleType]]??
-   fields: Seq[FieldDeclaration],
-   methods: Seq[MethodDeclaration]
- ) extends BodyDeclaration
+    modifiers: Seq[Modifier],
+    isInterface: Boolean,
+    name: SimpleNameExpression,
+    superType: Option[NameExpression], // TODO: Change to Option[SimpleType]??
+    superInterfaces: Seq[NameExpression], // TODO: Change to Option[Seq[SimpleType]]??
+    fields: Seq[FieldDeclaration],
+    methods: Seq[MethodDeclaration]) extends BodyDeclaration with TypeEnvironment {
+  var compilationUnit: CompilationUnit = null
+  var packageDeclaration: PackageDeclaration = null
+}
 
 object TypeDeclaration {
   private def createInterfaceNodes(ptn: ParseTreeNode): Seq[NameExpression] = {
     ptn match {
-      case TreeNode(ProductionRule("InterfaceTypeList", Seq("InterfaceType")), _,  children) =>
+      case TreeNode(ProductionRule("InterfaceTypeList", Seq("InterfaceType")), _, children) =>
         return Seq(NameExpression(children(0).children(0).children(0)))
       case TreeNode(ProductionRule("InterfaceTypeList", Seq("InterfaceTypeList", ",", "InterfaceType")), _, children) =>
         return createInterfaceNodes(children(0)) ++ Seq(NameExpression(children(2).children(0).children(0)))
@@ -28,8 +31,8 @@ object TypeDeclaration {
   }
 
   private def handleClassBodyDeclaration(
-    ptn: ParseTreeNode
-  ): (Seq[FieldDeclaration], Seq[MethodDeclaration]) = {
+      ptn: ParseTreeNode
+      ): (Seq[FieldDeclaration], Seq[MethodDeclaration]) = {
     var fields: Seq[FieldDeclaration] = Seq()
     var methods: Seq[MethodDeclaration] = Seq()
     ptn match {
@@ -67,9 +70,9 @@ object TypeDeclaration {
       }
 
       case TreeNode(
-        ProductionRule("ClassBodyDeclarations", Seq("ClassBodyDeclarations", "ClassBodyDeclaration")),
-        _,
-        children
+      ProductionRule("ClassBodyDeclarations", Seq("ClassBodyDeclarations", "ClassBodyDeclaration")),
+      _,
+      children
       ) => {
         val more = handleClassBodyDeclaration(children(0))
         val rightMost = handleClassBodyDeclaration(children(1))
@@ -83,9 +86,9 @@ object TypeDeclaration {
   private def handleClassDeclaration(ptn: ParseTreeNode): TypeDeclaration = {
     ptn match {
       case TreeNode(
-        ProductionRule("ClassDeclaration", Seq("Modifiers", _, "Identifier", "SuperClause", "Interfaces", "ClassBody")),
-        _,
-        children
+      ProductionRule("ClassDeclaration", Seq("Modifiers", _, "Identifier", "SuperClause", "Interfaces", "ClassBody")),
+      _,
+      children
       ) => {
         val classBody = children(5)
         var declarations: (Seq[FieldDeclaration], Seq[MethodDeclaration]) = (Seq(), Seq())
@@ -103,16 +106,16 @@ object TypeDeclaration {
           false,
           SimpleNameExpression(children(2)),
           Some(NameExpression(children(3).children(1).children(0).children(0))),
-          Some(createInterfaceNodes(children(4).children(1))),
+          createInterfaceNodes(children(4).children(1)),
           declarations._1,
           declarations._2
         )
       }
 
       case TreeNode(
-        ProductionRule("ClassDeclaration", Seq("Modifiers", _, "Identifier", "SuperClause", "ClassBody")),
-        _,
-        children
+      ProductionRule("ClassDeclaration", Seq("Modifiers", _, "Identifier", "SuperClause", "ClassBody")),
+      _,
+      children
       ) => {
         val classBody = children(4)
         var declarations: (Seq[FieldDeclaration], Seq[MethodDeclaration]) = (Seq(), Seq())
@@ -130,16 +133,16 @@ object TypeDeclaration {
           false,
           SimpleNameExpression(children(2)),
           Some(NameExpression(children(3).children(1).children(0).children(0))),
-          None,
+          Seq(),
           declarations._1,
           declarations._2
         )
       }
 
       case TreeNode(
-        ProductionRule("ClassDeclaration", Seq("Modifiers", _, "Identifier", "Interfaces", "ClassBody")),
-        _,
-        children
+      ProductionRule("ClassDeclaration", Seq("Modifiers", _, "Identifier", "Interfaces", "ClassBody")),
+      _,
+      children
       ) => {
         val classBody = children(4)
         var declarations: (Seq[FieldDeclaration], Seq[MethodDeclaration]) = (Seq(), Seq())
@@ -157,16 +160,16 @@ object TypeDeclaration {
           false,
           SimpleNameExpression(children(2)),
           None,
-          Some(createInterfaceNodes(children(3).children(1))),
+          createInterfaceNodes(children(3).children(1)),
           declarations._1,
           declarations._2
         )
       }
 
       case TreeNode(
-        ProductionRule("ClassDeclaration", Seq("Modifiers", _, "Identifier", "ClassBody")),
-        _,
-        children
+      ProductionRule("ClassDeclaration", Seq("Modifiers", _, "Identifier", "ClassBody")),
+      _,
+      children
       ) => {
         val classBody = children(3)
         var declarations: (Seq[FieldDeclaration], Seq[MethodDeclaration]) = (Seq(), Seq())
@@ -184,7 +187,7 @@ object TypeDeclaration {
           false,
           SimpleNameExpression(children(2)),
           None,
-          Some(Seq()),
+          Seq(),
           declarations._1,
           declarations._2
         )
@@ -201,9 +204,9 @@ object TypeDeclaration {
       }
 
       case TreeNode(
-        ProductionRule("ExtendsInterfaces", Seq("ExtendsInterfaces", ",", "InterfaceType")),
-        _,
-        children)
+      ProductionRule("ExtendsInterfaces", Seq("ExtendsInterfaces", ",", "InterfaceType")),
+      _,
+      children)
       => {
         return createExtendedInterfaceNodes(children(0)) ++ Seq(NameExpression(children(2).children(0).children(0)))
       }
@@ -217,7 +220,10 @@ object TypeDeclaration {
       case TreeNode(ProductionRule("InterfaceMemberDeclarations", Seq("AbstractMethodDeclaration")), _, children) => {
         return Seq(MethodDeclaration(children(0)))
       }
-      case TreeNode(ProductionRule("InterfaceMemberDeclarations", Seq("InterfaceMemberDeclarations", "AbstractMethodDeclaration")), _, children) => {
+      case TreeNode(
+      ProductionRule(
+      "InterfaceMemberDeclarations",
+      Seq("InterfaceMemberDeclarations", "AbstractMethodDeclaration")), _, children) => {
         return createInterfaceMethodNodes(children(0)) ++ Seq(MethodDeclaration(children(1)))
       }
       case _ => throw new AstConstructionException("No valid production rule to create InterfaceMemberDeclarations")
@@ -241,32 +247,34 @@ object TypeDeclaration {
   private def handleInterfaceDeclaration(ptn: ParseTreeNode): TypeDeclaration = {
     ptn match {
       case TreeNode(
-        ProductionRule("InterfaceDeclaration", Seq("Modifiers", "interface", "Identifier", "ExtendsInterfaces", "InterfaceBody")),
-        _,
-        children
+      ProductionRule(
+      "InterfaceDeclaration",
+      Seq("Modifiers", "interface", "Identifier", "ExtendsInterfaces", "InterfaceBody")),
+      _,
+      children
       ) => {
         return TypeDeclaration(
           Modifier(children(0)),
           true,
           SimpleNameExpression(children(2)),
           None,
-          Some(createExtendedInterfaceNodes(children(3))),
+          createExtendedInterfaceNodes(children(3)),
           Seq(),
           handleInterfaceBody(children(4))
         )
       }
 
       case TreeNode(
-        ProductionRule("InterfaceDeclaration", Seq("Modifiers", "interface", "Identifier", "InterfaceBody")),
-        _,
-        children
+      ProductionRule("InterfaceDeclaration", Seq("Modifiers", "interface", "Identifier", "InterfaceBody")),
+      _,
+      children
       ) => {
         return TypeDeclaration(
           Modifier(children(0)),
           true,
           SimpleNameExpression(children(2)),
           None,
-          None,
+          Seq(),
           Seq(),
           handleInterfaceBody(children(3))
         )
