@@ -30,4 +30,11 @@ trait PackageEnvironment {
   def getType(name: SimpleNameExpression): Option[TypeDeclaration] = {
     types.get(name)
   }
+
+  def getTypeDeclarations = types.values
+
+  /**
+   * For unit tests only
+   */
+  def clearEnvironment() = types.clear()
 }
