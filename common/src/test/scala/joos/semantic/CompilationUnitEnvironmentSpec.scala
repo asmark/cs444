@@ -2,7 +2,7 @@ package joos.semantic
 
 import org.scalatest.{BeforeAndAfterEach, Matchers, FlatSpec}
 import joos.ast.CompilationUnit
-import joos.ast.expressions.{QualifiedNameExpression, SimpleNameExpression, NameExpression}
+import joos.ast.expressions.QualifiedNameExpression
 import joos.ast.declarations.PackageDeclaration
 
 class CompilationUnitEnvironmentSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
