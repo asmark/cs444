@@ -2,6 +2,7 @@ package joos.analyzers
 
 import joos.ast.declarations._
 import joos.ast.{CompilationUnit, AstVisitor}
+import joos.ast.expressions.NameExpression
 
 class TypeEnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor {
   private[this] implicit var typed: TypeDeclaration = null
@@ -9,8 +10,8 @@ class TypeEnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisi
   private[this] var packaged: PackageDeclaration = null
 
   override def apply(unit: CompilationUnit) {
-    this.unit = unit
     packaged = unit.packageDeclaration
+    this.unit = unit.add(ImportDeclaration(NameExpression("java.lang"), true))
     unit.typeDeclaration.map(_.accept(this))
   }
 

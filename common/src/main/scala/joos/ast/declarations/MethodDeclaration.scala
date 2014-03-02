@@ -27,15 +27,19 @@ case class MethodDeclaration(
    */
   def typedName = parameters.foldLeft(name.standardName) {
     (result, parameter) =>
-        if (compilationUnit.getVisibleType(parameter.variableType.asName) == None) {
-          val a = 0
-        }
-
-      val name = result + '-' + compilationUnit.getVisibleType(parameter.variableType.asName).map(_.id)
+      val name = result + '-' + getTypeName(parameter.variableType)
       parameter.variableType match {
         case _: ArrayType => name + "[]"
         case _ => name
       }
+  }
+
+  private[this] def getTypeName(t: Type) = {
+    t match {
+      case x: PrimitiveType => x.token.lexeme
+      case ArrayType(x: PrimitiveType, _) => x.token.lexeme
+      case x => compilationUnit.getVisibleType(x.asName).map(_.id)
+    }
   }
 }
 

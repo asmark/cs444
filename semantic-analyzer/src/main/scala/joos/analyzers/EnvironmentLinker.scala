@@ -15,6 +15,7 @@ class EnvironmentLinker(implicit module: ModuleDeclaration) extends AstVisitor {
   override def apply(unit: CompilationUnit) {
     this.unit = unit
     packaged = unit.packageDeclaration
+    unit.moduleDeclaration = module
     module.add(unit)
     unit.typeDeclaration.map(_.accept(this))
   }

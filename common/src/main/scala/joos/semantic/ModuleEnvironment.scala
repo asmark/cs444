@@ -19,7 +19,6 @@ trait ModuleEnvironment extends Environment {
     compilationUnit.typeDeclaration map (packageEnvironment.add(_))
     packages.put(packageDeclaration.name, packageEnvironment)
     this
-
   }
 
   /**
