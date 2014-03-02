@@ -142,10 +142,21 @@ class CompilationUnitEnvironmentSpec extends FlatSpec with Matchers with BeforeA
     }
   }
 
-  "A non-existing concrete import" should "throw and exception" in {
+  "A non-existing concrete import" should "throw an exception" in {
     val unit1 = CompilationUnit(
       MockDefaultPackage,
-      Seq(mockImport(MockPackage1, Some(MockSimpleTypeName1)), mockImport(MockPackage2, Some(MockSimpleTypeName1))),
+      Seq(mockImport(MockPackage1, Some(MockSimpleTypeName1))),
+      None)
+
+    intercept[MissingTypeException] {
+      mockLink(Seq(unit1))
+    }
+  }
+
+  "A non-existing on-demand import" should "throw an exception" in {
+    val unit1 = CompilationUnit(
+      MockDefaultPackage,
+      Seq(mockImport(MockPackage1, None)),
       None)
 
     intercept[MissingTypeException] {
@@ -167,9 +178,6 @@ class CompilationUnitEnvironmentSpec extends FlatSpec with Matchers with BeforeA
       unit1.getVisibleType(MockSimpleTypeName1)
     }
   }
-
-
-
 
   // Test Compilation Units
   // ... with no imports (Default package)

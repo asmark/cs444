@@ -12,6 +12,7 @@ class TypeEnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisi
   override def apply(unit: CompilationUnit) {
     packaged = unit.packageDeclaration
     this.unit = unit.add(ImportDeclaration(NameExpression("java.lang"), true))
+    unit.addDefaultAndSelf()
     unit.typeDeclaration.map(_.accept(this))
   }
 

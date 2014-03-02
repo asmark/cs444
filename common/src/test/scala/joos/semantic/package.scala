@@ -46,8 +46,7 @@ package object semantic {
     compilationUnits foreach {
       unit =>
         unit.importDeclarations foreach (unit.add(_))
-        unit.addDefaultPackage()
-        unit.addSelfPackage()
+        unit.addDefaultAndSelf()
     }
     mock
   }

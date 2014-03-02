@@ -1,6 +1,6 @@
 package joos.semantic
 
-import joos.ast.declarations.TypeDeclaration
+import joos.ast.declarations.{PackageDeclaration, TypeDeclaration}
 import joos.ast.expressions.{SimpleNameExpression, QualifiedNameExpression, NameExpression}
 import scala.collection.mutable
 
@@ -33,6 +33,7 @@ class NamespaceTrie {
           children.put(typeName, newNode)
           newNode
         }
+        case Some(e @ TypeNode(`typeDeclaration`)) => e
         case Some(otherNode) => throw new NamespaceCollisionException(typeDeclaration.name)
       }
     }
@@ -45,6 +46,7 @@ class NamespaceTrie {
   }
 
   val root = PackageNode(mutable.HashMap.empty)
+  add(PackageDeclaration.DefaultPackage.name, None)
 
   def add(packageName: NameExpression, typeDeclaration: Option[TypeDeclaration]) {
     var node = root
