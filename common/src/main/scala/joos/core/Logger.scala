@@ -10,21 +10,21 @@ object Logger {
 
   def logError(text: String): this.type = {
     if (LogLevel <= LogError) {
-      Console.err.println(Console.RED + "ERROR: " + text + Console.RESET)
+      Console.err.println(s"${Console.RED} ERROR: ${text} ${Console.RESET}")
     }
     this
   }
 
   def logWarning(text: String): this.type = {
     if (LogLevel <= LogWarning) {
-      Console.err.println(Console.YELLOW + "WARN: " + text + Console.RESET)
+      Console.err.println(s"${Console.YELLOW} WARN: ${text} ${Console.RESET}")
     }
     this
   }
 
   def logInformation(text: String): this.type = {
     if (LogLevel <= LogInformation) {
-      Console.err.println(Console.BLUE + "INFO: " + text + Console.RESET)
+      Console.err.println(s"${Console.BLUE} INFO: ${text} ${Console.RESET}")
     }
     this
   }
