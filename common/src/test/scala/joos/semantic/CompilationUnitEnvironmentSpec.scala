@@ -5,10 +5,10 @@ import org.scalatest.{BeforeAndAfterEach, Matchers, FlatSpec}
 
 class CompilationUnitEnvironmentSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
 
-  "Zero imports and no type declaration" should "only resolve SimpleNames within default package" in {
+  "Zero imports and no package declaration" should "only resolve SimpleNames within default package" in {
     val defaultUnit1 = CompilationUnit(MockDefaultPackage, Seq.empty, Some(MockDefaultDeclaration1))
     val defaultUnit2 = CompilationUnit(MockDefaultPackage, Seq.empty, Some(MockDefaultDeclaration2))
-    val unit = CompilationUnit(MockPackage1, Seq.empty, None)
+    val unit = CompilationUnit(MockDefaultPackage, Seq.empty, None)
     mockLink(Seq(unit, defaultUnit1, defaultUnit2))
 
     unit.getVisibleType(MockSimpleDefaultTypeName1) shouldBe Some(MockDefaultDeclaration1)
@@ -16,14 +16,14 @@ class CompilationUnitEnvironmentSpec extends FlatSpec with Matchers with BeforeA
     unit.getVisibleType(MockSimpleTypeName1) shouldBe None
   }
 
-  "Zero imports with a type declaration" should "only resolve SimpleNames within default package and self" in {
+  "Zero imports with a package declaration" should "only resolve SimpleNames in self package" in {
     val defaultUnit1 = CompilationUnit(MockDefaultPackage, Seq.empty, Some(MockDefaultDeclaration1))
     val defaultUnit2 = CompilationUnit(MockDefaultPackage, Seq.empty, Some(MockDefaultDeclaration2))
     val unit = CompilationUnit(MockPackage1, Seq.empty, Some(MockTypeDeclaration1))
     mockLink(Seq(unit, defaultUnit1, defaultUnit2))
 
-    unit.getVisibleType(MockSimpleDefaultTypeName1) shouldBe Some(MockDefaultDeclaration1)
-    unit.getVisibleType(MockSimpleDefaultTypeName2) shouldBe Some(MockDefaultDeclaration2)
+    unit.getVisibleType(MockSimpleDefaultTypeName1) shouldBe None
+    unit.getVisibleType(MockSimpleDefaultTypeName2) shouldBe None
     unit.getVisibleType(MockSimpleTypeName1) shouldBe Some(MockTypeDeclaration1)
   }
 
@@ -34,13 +34,17 @@ class CompilationUnitEnvironmentSpec extends FlatSpec with Matchers with BeforeA
 
     mockLink(Seq(unit1, unit2, defaultUnit))
 
-    unit1.getVisibleType(MockSimpleDefaultTypeName1) shouldBe Some(MockDefaultDeclaration1)
+    unit1.getVisibleType(MockSimpleDefaultTypeName1) shouldBe None
     unit1.getVisibleType(MockSimpleTypeName1) shouldBe Some(MockTypeDeclaration1)
     unit1.getVisibleType(MockSimpleTypeName2) shouldBe None
 
-    unit2.getVisibleType(MockSimpleDefaultTypeName1) shouldBe Some(MockDefaultDeclaration1)
+    unit2.getVisibleType(MockSimpleDefaultTypeName1) shouldBe None
     unit2.getVisibleType(MockSimpleTypeName1) shouldBe None
     unit2.getVisibleType(MockSimpleTypeName2) shouldBe Some(MockTypeDeclaration2)
+
+    defaultUnit.getVisibleType(MockSimpleDefaultTypeName1) shouldBe Some(MockDefaultDeclaration1)
+    defaultUnit.getVisibleType(MockSimpleTypeName1) shouldBe None
+    defaultUnit.getVisibleType(MockSimpleTypeName2) shouldBe None
   }
 
   "Zero imports" should "resolve QualifiedNames of outside packages" in {
@@ -50,13 +54,17 @@ class CompilationUnitEnvironmentSpec extends FlatSpec with Matchers with BeforeA
 
     mockLink(Seq(unit1, unit2, defaultUnit))
 
-    unit1.getVisibleType(MockSimpleDefaultTypeName1) shouldBe Some(MockDefaultDeclaration1)
+    unit1.getVisibleType(MockSimpleDefaultTypeName1) shouldBe None
     unit1.getVisibleType(MockSimpleTypeName1) shouldBe Some(MockTypeDeclaration1)
     unit1.getVisibleType(MockQualifiedTypeName2) shouldBe Some(MockTypeDeclaration2)
 
-    unit2.getVisibleType(MockSimpleDefaultTypeName1) shouldBe Some(MockDefaultDeclaration1)
+    unit2.getVisibleType(MockSimpleDefaultTypeName1) shouldBe None
     unit2.getVisibleType(MockQualifiedTypeName1) shouldBe Some(MockTypeDeclaration1)
     unit2.getVisibleType(MockSimpleTypeName2) shouldBe Some(MockTypeDeclaration2)
+
+    defaultUnit.getVisibleType(MockSimpleDefaultTypeName1) shouldBe Some(MockDefaultDeclaration1)
+    defaultUnit.getVisibleType(MockQualifiedTypeName1) shouldBe Some(MockTypeDeclaration1)
+    defaultUnit.getVisibleType(MockQualifiedTypeName2) shouldBe Some(MockTypeDeclaration2)
   }
 
   "An on-demand import" should "resolve as a SimpleName" in {

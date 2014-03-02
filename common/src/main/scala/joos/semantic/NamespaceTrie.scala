@@ -46,7 +46,6 @@ class NamespaceTrie {
   }
 
   val root = PackageNode(mutable.HashMap.empty)
-  add(PackageDeclaration.DefaultPackage.name, None)
 
   def add(packageName: NameExpression, typeDeclaration: Option[TypeDeclaration]) {
     var node = root

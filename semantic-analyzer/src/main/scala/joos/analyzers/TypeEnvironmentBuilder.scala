@@ -13,7 +13,7 @@ class TypeEnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisi
     packaged = unit.packageDeclaration
     this.unit = unit.add(ImportDeclaration(NameExpression("java.lang"), true))
     unit.importDeclarations foreach (unit.add(_))
-    unit.addDefaultAndSelf()
+    unit.addSelfPackage()
     unit.typeDeclaration.map(_.accept(this))
   }
 

@@ -1,7 +1,7 @@
 package joos.semantic
 
 import joos.ast.CompilationUnit
-import joos.ast.declarations.{PackageDeclaration, ImportDeclaration, TypeDeclaration}
+import joos.ast.declarations.{ImportDeclaration, TypeDeclaration}
 import joos.ast.expressions.{QualifiedNameExpression, SimpleNameExpression, NameExpression}
 import joos.core.Logger
 
@@ -41,7 +41,7 @@ trait CompilationUnitEnvironment extends Environment {
     if (onDemandType.isDefined && concreteType.isDefined) {
       if (!(onDemandType.get eq concreteType.get)) {
         val typeName = onDemandType.get.name
-        Logger.logError(s"On-demand import and concrete import conflicted for ${typeName}")
+        Logger.logError(s"On-demand import and concrete import conflicted for ${typeName }")
         throw new NamespaceCollisionException(typeName)
       }
     }
@@ -54,7 +54,7 @@ trait CompilationUnitEnvironment extends Environment {
   def getVisibleType(name: NameExpression): Option[TypeDeclaration] = {
     name match {
       case simpleName: SimpleNameExpression => {
-       checkDuplicates(getTypeFromOnDemandImports(simpleName), getTypeFromConcreteImports(simpleName))
+        checkDuplicates(getTypeFromOnDemandImports(simpleName), getTypeFromConcreteImports(simpleName))
       }
       case qualifiedName: QualifiedNameExpression => moduleDeclaration.namespace.getQualifiedType(qualifiedName)
     }
@@ -72,7 +72,7 @@ trait CompilationUnitEnvironment extends Environment {
           }
         }
         case _ => {
-          Logger.logError(s"ImportDeclaration was given a SimpleNameExpression ${importDeclaration.name}")
+          Logger.logError(s"ImportDeclaration was given a SimpleNameExpression ${importDeclaration.name }")
           throw new RuntimeException("This also shouldnt happen")
         }
       }
@@ -80,15 +80,13 @@ trait CompilationUnitEnvironment extends Environment {
     this
   }
 
-  def addDefaultAndSelf(): this.type = {
-    val defaultPackageName = PackageDeclaration.DefaultPackage.name
-
-    for (packageToImport <- Set(defaultPackageName, packageDeclaration.name)) {
-      moduleDeclaration.namespace.getAllTypesInPackage(packageToImport) foreach {
-        typeDeclaration =>
-          addConcreteImport(defaultPackageName, typeDeclaration)
-      }
+  def addSelfPackage(): this.type = {
+    val packageName = packageDeclaration.name
+    moduleDeclaration.namespace.getAllTypesInPackage(packageName) foreach {
+      typeDeclaration =>
+        addConcreteImport(packageName, typeDeclaration)
     }
     this
   }
+
 }
