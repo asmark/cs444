@@ -23,8 +23,7 @@ class MarmosetA1Spec extends FlatSpec with Matchers {
         val result = SyntaxCheck(filePath)
         result shouldNot be(None)
         val ast = AbstractSyntaxTree(result.get)
-        ast.root shouldBe a [CompilationUnit]
-        ast.root.accept(environmentLinker)
+        ast dispatch environmentLinker
       }
   }
 
