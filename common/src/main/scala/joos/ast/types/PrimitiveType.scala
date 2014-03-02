@@ -11,6 +11,18 @@ case class PrimitiveType(token: TerminalToken) extends Type {
 }
 
 object PrimitiveType {
+
+  final val Types = Set(
+    "int",
+    "long",
+    "byte",
+    "boolean",
+    "char",
+    "double",
+    "float",
+    "short"
+  )
+
   private def extractNumericToken(numericType: ParseTreeNode): TerminalToken = {
     numericType.children(0).children(0).token match {
       case terminalToken: TerminalToken => terminalToken

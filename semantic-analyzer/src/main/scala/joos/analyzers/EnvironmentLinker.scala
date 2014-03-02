@@ -24,7 +24,6 @@ class EnvironmentLinker(implicit module: ModuleDeclaration) extends AstVisitor {
     typed.compilationUnit = unit
     typed.packageDeclaration = packaged
     typed.methods.foreach(_.accept(this))
-    typed.fields.foreach(_.accept(this))
   }
 
   override def apply(method: MethodDeclaration) {
@@ -35,12 +34,7 @@ class EnvironmentLinker(implicit module: ModuleDeclaration) extends AstVisitor {
     }
     method.typeDeclaration = typed
     block = method.environment
-    typed.add(method)
     method.body.map(_.accept(this))
-  }
-
-  override def apply(field: FieldDeclaration) {
-    typed.add(field)
   }
 
   override def apply(block: Block) {

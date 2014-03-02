@@ -6,7 +6,7 @@ import joos.ast.declarations.ModuleDeclaration
 import joos.ast.AbstractSyntaxTree
 import joos.semantic.SemanticException
 import org.scalatest.{Matchers, FlatSpec}
-import joos.analyzers.EnvironmentLinker
+import joos.analyzers.{TypeEnvironmentBuilder, EnvironmentLinker}
 
 class MarmosetA2Spec extends FlatSpec with Matchers {
 
@@ -27,12 +27,14 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
     testCase => it should s"accept ${testCase.getName }" in {
       implicit val module = new ModuleDeclaration
       val environmentLinker = new EnvironmentLinker
+      val typeEnvironmentBuilder = new TypeEnvironmentBuilder
       val files = getJavaFiles(testCase) map (_.getAbsolutePath)
       val asts = files flatMap SyntaxCheck.apply map AbstractSyntaxTree.apply
       // Do something with asts
       asts foreach {
         ast =>
           ast dispatch environmentLinker
+          ast dispatch typeEnvironmentBuilder
       }
     }
   }
@@ -42,6 +44,7 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
     testCase => it should s"reject ${testCase.getName }" in {
       implicit val module = new ModuleDeclaration
       val environmentLinker = new EnvironmentLinker
+      val typeEnvironmentBuilder = new TypeEnvironmentBuilder
       val files = getJavaFiles(testCase) map (_.getAbsolutePath)
       val asts = files flatMap SyntaxCheck.apply map AbstractSyntaxTree.apply
       // Do something with asts
@@ -49,6 +52,7 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
         ast =>
           intercept[SemanticException] {
             ast dispatch environmentLinker
+            ast dispatch typeEnvironmentBuilder
           }
       }
     }

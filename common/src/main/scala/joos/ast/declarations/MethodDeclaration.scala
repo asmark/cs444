@@ -1,14 +1,13 @@
 package joos.ast.declarations
 
+import joos.ast._
 import joos.ast.exceptions.AstConstructionException
 import joos.ast.expressions.{NameExpression, SimpleNameExpression}
-import joos.ast._
 import joos.language.ProductionRule
-import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.semantic.BlockEnvironment
-import joos.language.ProductionRule
-import scala.Some
+import joos.parsetree.ParseTreeNode
 import joos.parsetree.TreeNode
+import joos.semantic.BlockEnvironment
+import scala.Some
 
 case class MethodDeclaration(
     modifiers: Seq[Modifier],
@@ -23,12 +22,15 @@ case class MethodDeclaration(
   var compilationUnit: CompilationUnit = null
   var environment: BlockEnvironment = null
 
-  // TODO: fix when environment is not ready
   /**
    * Method name with argument types added
    */
-  lazy val typedName = parameters.foldLeft(name.standardName) {
+  def typedName = parameters.foldLeft(name.standardName) {
     (result, parameter) =>
+        if (compilationUnit.getVisibleType(parameter.variableType.asName) == None) {
+          val a = 0
+        }
+
       val name = result + '-' + compilationUnit.getVisibleType(parameter.variableType.asName).map(_.id)
       parameter.variableType match {
         case _: ArrayType => name + "[]"
