@@ -124,7 +124,7 @@ class CompilationUnitEnvironmentSpec extends FlatSpec with Matchers with BeforeA
       Some(MockTypeDeclaration1))
     val unit2 = CompilationUnit(MockPackage2, Seq.empty, Some(MockTypeDeclaration1))
 
-    intercept[DuplicateImportException] {
+    intercept[NamespaceCollisionException] {
       mockLink(Seq(unit1, unit2))
     }
   }
@@ -137,7 +137,7 @@ class CompilationUnitEnvironmentSpec extends FlatSpec with Matchers with BeforeA
     val unit2 = CompilationUnit(MockPackage1, Seq.empty, Some(MockTypeDeclaration1))
     val unit3 = CompilationUnit(MockPackage2, Seq.empty, Some(MockTypeDeclaration1))
 
-    intercept[DuplicateImportException] {
+    intercept[NamespaceCollisionException] {
       mockLink(Seq(unit1, unit2, unit3))
     }
   }
@@ -148,7 +148,7 @@ class CompilationUnitEnvironmentSpec extends FlatSpec with Matchers with BeforeA
       Seq(mockImport(MockPackage1, Some(MockSimpleTypeName1)), mockImport(MockPackage2, Some(MockSimpleTypeName1))),
       None)
 
-    intercept[InvalidImportException] {
+    intercept[MissingTypeException] {
       mockLink(Seq(unit1))
     }
   }
@@ -163,7 +163,7 @@ class CompilationUnitEnvironmentSpec extends FlatSpec with Matchers with BeforeA
 
     mockLink(Seq(unit1,unit2,unit3))
 
-    intercept[DuplicateImportException] {
+    intercept[NamespaceCollisionException] {
       unit1.getVisibleType(MockSimpleTypeName1)
     }
   }

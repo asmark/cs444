@@ -44,7 +44,7 @@ trait CompilationUnitEnvironment extends Environment {
         case e@QualifiedNameExpression(qualifier, typeName) => {
           moduleDeclaration.namespace.getQualifiedType(e) match {
             case Some(typeDeclaration) => concreteImports.add(qualifier, Some(typeDeclaration))
-            case _ => throw new InvalidImportException(importDeclaration.name)
+            case _ => throw new MissingTypeException(importDeclaration.name)
           }
         }
         case _ => throw new RuntimeException("This also shouldnt happen")

@@ -68,7 +68,7 @@ class NamespaceTrie {
 
     node match {
       case Some(PackageNode(children)) => children.values.collect { case TypeNode(typeDeclaration) => typeDeclaration }.toSeq
-      case _ => throw new InvalidImportException(packageName)
+      case _ => throw new MissingTypeException(packageName)
     }
   }
 

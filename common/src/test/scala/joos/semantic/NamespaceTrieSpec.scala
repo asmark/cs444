@@ -69,7 +69,7 @@ class NamespaceTrieSpec extends FlatSpec with Matchers {
   val namespace = new NamespaceTrie
   namespace.add(MockPackage2.name, Some(MockTypeDeclaration2))
 
-    intercept[InvalidImportException] {
+    intercept[MissingTypeException] {
       namespace.getAllTypesInPackage(MockPackage1.name)
     }
 
