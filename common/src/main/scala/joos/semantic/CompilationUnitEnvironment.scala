@@ -3,28 +3,49 @@ package joos.semantic
 import joos.ast.CompilationUnit
 import joos.ast.declarations.{ImportDeclaration, TypeDeclaration}
 import joos.ast.expressions.{QualifiedNameExpression, SimpleNameExpression, NameExpression}
-import scala.collection.mutable
+import joos.core.Logger
 
 trait CompilationUnitEnvironment extends Environment {
   self: CompilationUnit =>
 
-  val onDemandImports = mutable.HashMap.empty[NameExpression, PackageEnvironment]
-  val concreteImports = mutable.HashMap.empty[NameExpression, TypeDeclaration]
+  val concreteImports = new NamespaceTrie
+  val onDemandImports = new NamespaceTrie
 
-  private def getTypeFromConcreteImports(name: SimpleNameExpression) = {
-    Seq(concreteImports.get(name))
+  private def getTypeFromOnDemandImports(typeName: SimpleNameExpression) = {
+    onDemandImports.getSimpleType(typeName)
   }
 
-  private def getTypeFromOnDemandImports(name: SimpleNameExpression) = {
-    onDemandImports.values.foldRight(Seq.empty[Option[TypeDeclaration]]) {
-      (declaration, list) => declaration.getType(name) +: list
+  private def addOnDemandImport(name: NameExpression) {
+    moduleDeclaration.namespace.getAllTypesInPackage(name) map {
+      typeDeclaration =>
+        onDemandImports.add(name, Some(typeDeclaration))
     }
   }
 
-  // TODO: Visibility for types is always public?
-  private def checkVisibilityAndDuplicates(typeDeclarations: Seq[Option[TypeDeclaration]]) = {
-    val matchingDeclarations = typeDeclarations flatMap identity[Option[TypeDeclaration]] // Get rid of options
-    if (matchingDeclarations.size > 1) throw new DuplicateImportException(matchingDeclarations.head.name) else matchingDeclarations.headOption
+  private def getTypeFromConcreteImports(name: SimpleNameExpression) = concreteImports.getSimpleType(name)
+
+  private def addConcreteImport(packageName: NameExpression, typeDeclaration: TypeDeclaration) {
+    val qualifiedName = QualifiedNameExpression(packageName, typeDeclaration.name)
+    concreteImports.getQualifiedType(qualifiedName) match {
+      case None => {
+        getTypeFromConcreteImports(typeDeclaration.name) match {
+          case None => concreteImports.add(packageName, Some(typeDeclaration))
+          case _ => throw new NamespaceCollisionException(qualifiedName)
+        }
+      }
+      case _ => Logger.logInformation(s"Attempting to add duplicate concrete import ${typeDeclaration.name }")
+    }
+  }
+
+  def checkDuplicates(onDemandType: Option[TypeDeclaration], concreteType: Option[TypeDeclaration]) = {
+    if (onDemandType.isDefined && concreteType.isDefined) {
+      if (!(onDemandType.get eq concreteType.get)) {
+        val typeName = onDemandType.get.name
+        Logger.logError(s"On-demand import and concrete import conflicted for ${typeName }")
+        throw new NamespaceCollisionException(typeName)
+      }
+    }
+    (onDemandType ++ concreteType).headOption
   }
 
   /**
@@ -32,46 +53,39 @@ trait CompilationUnitEnvironment extends Environment {
    */
   def getVisibleType(name: NameExpression): Option[TypeDeclaration] = {
     name match {
-      case simpleName: SimpleNameExpression => checkVisibilityAndDuplicates(
-        getTypeFromConcreteImports(simpleName) ++ getTypeFromOnDemandImports(
-          simpleName))
-      case qualifiedName: QualifiedNameExpression => checkVisibilityAndDuplicates(Seq(moduleDeclaration.getType(name)))
+      case simpleName: SimpleNameExpression => {
+        checkDuplicates(getTypeFromOnDemandImports(simpleName), getTypeFromConcreteImports(simpleName))
+      }
+      case qualifiedName: QualifiedNameExpression => moduleDeclaration.namespace.getQualifiedType(qualifiedName)
     }
   }
 
-  // TODO: Check if overwriting imports?
   def add(importDeclaration: ImportDeclaration): this.type = {
     if (importDeclaration.isOnDemand) {
-      val packageName = importDeclaration.name
-      moduleDeclaration.getPackageEnvironment(packageName) match {
-        case None => throw new InvalidImportException(packageName)
-        case Some(packageEnvironment) => onDemandImports.put(packageName, packageEnvironment)
-        // TODO: Self import?
-      }
+      addOnDemandImport(importDeclaration.name)
     } else {
-      val typeName = importDeclaration.name
-      moduleDeclaration.getType(typeName) match {
-        case None => throw new InvalidImportException(typeName)
-        case Some(`typeDeclaration`) => throw new InvalidImportException(typeName) // Importing self type
-        case Some(typeDeclaration) => {
-          concreteImports.put(typeName, typeDeclaration)
+      importDeclaration.name match {
+        case e@QualifiedNameExpression(qualifier, typeName) => {
+          moduleDeclaration.namespace.getQualifiedType(e) match {
+            case Some(typeDeclaration) => addConcreteImport(qualifier, typeDeclaration)
+            case _ => throw new MissingTypeException(importDeclaration.name)
+          }
+        }
+        case _ => {
+          Logger.logError(s"ImportDeclaration was given a SimpleNameExpression ${importDeclaration.name }")
+          throw new RuntimeException("This also shouldnt happen")
         }
       }
     }
     this
   }
 
-  // TODO: Check if overwriting classes?
-  def addDefaultPackage(): this.type = {
-    moduleDeclaration.getPackageEnvironment(NameExpression("")) map {
-      defaultPackageEnvironment: PackageEnvironment =>
-        defaultPackageEnvironment.getTypeDeclarations foreach (declaration => concreteImports.put(declaration.name, declaration))
-    }
-    this
-  }
-
   def addSelfPackage(): this.type = {
-    typeDeclaration.map(declaration => concreteImports.put(declaration.name, declaration))
+    val packageName = packageDeclaration.name
+    moduleDeclaration.namespace.getAllTypesInPackage(packageName) foreach {
+      typeDeclaration =>
+        addConcreteImport(packageName, typeDeclaration)
+    }
     this
   }
 

@@ -5,32 +5,26 @@ object Logger {
   private[this] val LogError = 3
   private[this] val LogWarning = 2
   private[this] val LogInformation = 1
-  private[this] val LogLevel = LogError
+  private[this] val LogLevel = LogInformation
 
 
   def logError(text: String): this.type = {
     if (LogLevel <= LogError) {
-      Console.err.print(Console.RED)
-      Console.err.println(text)
-      Console.err.print(Console.RESET)
+      Console.err.println(s"${Console.RED} ERROR: ${text} ${Console.RESET}")
     }
     this
   }
 
   def logWarning(text: String): this.type = {
     if (LogLevel <= LogWarning) {
-      Console.err.print(Console.YELLOW)
-      Console.err.println(text)
-      Console.err.print(Console.RESET)
+      Console.err.println(s"${Console.YELLOW} WARN: ${text} ${Console.RESET}")
     }
     this
   }
 
   def logInformation(text: String): this.type = {
     if (LogLevel <= LogInformation) {
-      Console.err.print(Console.BLUE)
-      Console.err.println(text)
-      Console.err.print(Console.RESET)
+      Console.err.println(s"${Console.BLUE} INFO: ${text} ${Console.RESET}")
     }
     this
   }

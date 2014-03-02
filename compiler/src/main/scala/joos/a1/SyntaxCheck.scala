@@ -12,6 +12,8 @@ import joos.tokens.TerminalToken
 import joos.weeder.Weeder
 import joos.weeder.exceptions.WeederException
 import scala.io.Source
+import joos.ast.AbstractSyntaxTree
+import joos.ast.exceptions.AstConstructionException
 
 object SyntaxCheck {
 
@@ -34,15 +36,15 @@ object SyntaxCheck {
     Weeder.weed(parseTree, metaData)
   }
 
-  def apply(path: String): Option[ParseTree] = {
+  def apply(path: String): Option[AbstractSyntaxTree] = {
     try {
       val metaData = ParseMetaData(path)
       val tokens = tokenize(path)
       val parseTree = parse(tokens)
       weed(parseTree, metaData)
-      return Some(parseTree)
+      return Some(AbstractSyntaxTree(parseTree))
     } catch {
-      case e @ (_:ScanningException | _:WeederException | _:JoosParseException) => {
+      case e @ (_:ScanningException | _:WeederException | _:JoosParseException | _:AstConstructionException) => {
         return None
       }
     }

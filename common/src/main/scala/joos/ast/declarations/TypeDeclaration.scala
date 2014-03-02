@@ -8,7 +8,7 @@ import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.semantic.TypeEnvironment
 
-case class TypeDeclaration private(
+case class TypeDeclaration (
     modifiers: Seq[Modifier],
     isInterface: Boolean,
     name: SimpleNameExpression,

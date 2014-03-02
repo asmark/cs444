@@ -25,44 +25,27 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
 
   behavior of "Name resolution of valid joos"
   getTestCases(validJoos).foreach {
-    testCase => it should s"accept ${testCase.getName }" in {
-      implicit val module = new ModuleDeclaration
-      val environmentLinker = new EnvironmentLinker
-      val typeEnvironmentBuilder = new TypeEnvironmentBuilder
+    testCase => it should s"accept ${testCase.getName}" in {
       val files = getJavaFiles(testCase) ++ standardLibrary map (_.getAbsolutePath)
-      val asts = files flatMap SyntaxCheck.apply map AbstractSyntaxTree.apply
-      // Do something with asts
-      asts foreach {
-        ast => ast dispatch environmentLinker
+      val asts = files map SyntaxCheck.apply collect {
+        case None => fail(s"Was not able to SyntaxCheck ${testCase.getName}")
+        case Some(ast) => ast
       }
-
-      asts foreach {
-        ast => ast dispatch typeEnvironmentBuilder
-      }
+      SemanticCheck(asts)
     }
   }
 
   behavior of "Name resolution of invalid joos"
   getTestCases(invalidJoos).foreach {
-    testCase => it should s"reject ${testCase.getName }" in {
-      implicit val module = new ModuleDeclaration
-      val environmentLinker = new EnvironmentLinker
-      val typeEnvironmentBuilder = new TypeEnvironmentBuilder
+    testCase => it should s"reject ${testCase.getName}" in {
       val files = getJavaFiles(testCase) ++ standardLibrary map (_.getAbsolutePath)
-      val asts = files flatMap SyntaxCheck.apply map AbstractSyntaxTree.apply
-      // Do something with asts
-      asts foreach {
-        ast =>
-          intercept[SemanticException] {
-            ast dispatch environmentLinker
-          }
-      }
 
-      asts foreach {
-        ast =>
-          intercept[SemanticException] {
-            ast dispatch typeEnvironmentBuilder
-          }
+      intercept[SemanticException] {
+        val asts = files map SyntaxCheck.apply collect {
+          case None => fail(s"Was not able to SyntaxCheck ${testCase.getName}")
+          case Some(ast) => ast
+        }
+        SemanticCheck(asts)
       }
     }
   }
