@@ -18,7 +18,7 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
   }
 
   def getTestCases(dir: String) = {
-    new File(getClass.getResource(dir).getPath).listFiles()
+    (new File(getClass.getResource(dir).getPath)).listFiles()
   }
 
   behavior of "Name resolution of valid joos"
@@ -31,8 +31,7 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
       // Do something with asts
       asts foreach {
         ast =>
-          ast.root shouldBe a[CompilationUnit]
-          ast.root.accept(environmentLinker)
+          ast dispatch environmentLinker
       }
     }
   }
@@ -47,9 +46,8 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
       // Do something with asts
       asts foreach {
         ast =>
-          ast.root shouldBe a[CompilationUnit]
           intercept[SemanticException] {
-            ast.root.accept(environmentLinker)
+            ast dispatch environmentLinker
           }
       }
     }

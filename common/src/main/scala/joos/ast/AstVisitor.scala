@@ -3,7 +3,7 @@ package joos.ast
 import joos.ast.declarations._
 import joos.ast.expressions._
 
-trait Visitor {
+trait AstVisitor {
   def apply(field: FieldDeclaration) {}
   def apply(importd: ImportDeclaration) {}
   def apply(method: MethodDeclaration) {}

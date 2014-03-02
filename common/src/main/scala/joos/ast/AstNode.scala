@@ -4,7 +4,7 @@ import joos.ast.declarations._
 import joos.ast.expressions._
 
 trait AstNode {
-  def accept(visitor: Visitor) {
+  def accept(visitor: AstVisitor) {
     this match {
       case node: FieldDeclaration => visitor(node)
       case node: ImportDeclaration => visitor(node)

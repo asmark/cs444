@@ -4,7 +4,7 @@ import joos.ast._
 import joos.ast.declarations._
 import joos.ast.expressions.VariableDeclarationExpression
 
-class EnvironmentLinker(implicit module: ModuleDeclaration) extends Visitor {
+class EnvironmentLinker(implicit module: ModuleDeclaration) extends AstVisitor {
   private[this] implicit var typed: TypeDeclaration = null
   private[this] var unit: CompilationUnit = null
   private[this] var packaged: PackageDeclaration = null
