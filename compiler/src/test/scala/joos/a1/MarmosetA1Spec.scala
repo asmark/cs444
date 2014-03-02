@@ -2,9 +2,9 @@ package joos.a1
 
 import org.scalatest.{Matchers, FlatSpec}
 import scala.io.Source
-import joos.ast.{AstNode, AbstractSyntaxTree, CompilationUnit}
+import joos.ast.AbstractSyntaxTree
 import joos.ast.declarations.ModuleDeclaration
-import joos.semantic.EnvironmentLinker
+import joos.analyzers.EnvironmentLinker
 
 class MarmosetA1Spec extends FlatSpec with Matchers {
 

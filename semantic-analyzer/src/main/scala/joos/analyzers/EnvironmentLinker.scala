@@ -1,8 +1,9 @@
-package joos.semantic
+package joos.analyzers
 
 import joos.ast._
 import joos.ast.declarations._
 import joos.ast.expressions.VariableDeclarationExpression
+import joos.semantic.BlockEnvironment
 
 class EnvironmentLinker(implicit module: ModuleDeclaration) extends AstVisitor {
   private[this] implicit var typed: TypeDeclaration = null
