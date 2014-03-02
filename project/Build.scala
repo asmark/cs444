@@ -95,7 +95,7 @@ object Joos1wCompilerBuild extends Build {
       jarName in assembly := "compiler.jar",
       mainClass in assembly := Some("joos.Compiler")
     )
-  ) dependsOn(common, preprocessor, scanner, parser)
+  ) dependsOn(common, preprocessor, scanner, parser, semanticAnalyzer)
 
   lazy val project = Project(
     id = "cs-444",
