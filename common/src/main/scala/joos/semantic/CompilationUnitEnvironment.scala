@@ -8,54 +8,46 @@ import scala.collection.mutable
 trait CompilationUnitEnvironment extends Environment {
   self: CompilationUnit =>
 
-  val onDemandImports = mutable.HashMap.empty[NameExpression, PackageEnvironment]
-  val concreteImports = mutable.HashMap.empty[NameExpression, TypeDeclaration]
-
-  private def getTypeFromConcreteImports(name: SimpleNameExpression) = {
-    Seq(concreteImports.get(name))
-  }
+  val concreteImports = new NamespaceTrie
+  val onDemandImports = mutable.Set.empty[NameExpression]
 
   private def getTypeFromOnDemandImports(name: SimpleNameExpression) = {
-    onDemandImports.values.foldRight(Seq.empty[Option[TypeDeclaration]]) {
-      (declaration, list) => declaration.getType(name) +: list
+    onDemandImports.map(t => (t -> moduleDeclaration.namespace.getQualifiedType(QualifiedNameExpression(t, name)))).foreach {
+      qualifiedName: (NameExpression, Option[TypeDeclaration]) =>
+        val packageName = qualifiedName._1
+        val typeName = qualifiedName._2
+        typeName map (t => concreteImports.add(packageName, Some(t)))
     }
   }
 
-  // TODO: Visibility for types is always public?
-  private def checkVisibilityAndDuplicates(typeDeclarations: Seq[Option[TypeDeclaration]]) = {
-    val matchingDeclarations = typeDeclarations flatMap identity[Option[TypeDeclaration]] // Get rid of options
-    if (matchingDeclarations.size > 1) throw new DuplicateImportException(matchingDeclarations.head.name) else matchingDeclarations.headOption
-  }
+  private def getTypeFromConcreteImports(name: SimpleNameExpression) = concreteImports.getSimpleType(name)
 
   /**
    * Gets the type with the {{name}} if it's visible within this compilation unit
    */
   def getVisibleType(name: NameExpression): Option[TypeDeclaration] = {
     name match {
-      case simpleName: SimpleNameExpression => checkVisibilityAndDuplicates(
-        getTypeFromConcreteImports(simpleName) ++ getTypeFromOnDemandImports(
-          simpleName))
-      case qualifiedName: QualifiedNameExpression => checkVisibilityAndDuplicates(Seq(moduleDeclaration.getType(name)))
+      case simpleName: SimpleNameExpression => {
+        getTypeFromOnDemandImports(simpleName)
+        getTypeFromConcreteImports(simpleName)
+      }
+      case qualifiedName: QualifiedNameExpression => moduleDeclaration.namespace.getQualifiedType(qualifiedName)
     }
   }
 
   // TODO: Check if overwriting imports?
   def add(importDeclaration: ImportDeclaration): this.type = {
     if (importDeclaration.isOnDemand) {
-      val packageName = importDeclaration.name
-      moduleDeclaration.getPackageEnvironment(packageName) match {
-        case None => throw new InvalidImportException(packageName)
-        case Some(packageEnvironment) => onDemandImports.put(packageName, packageEnvironment)
-        // TODO: Self import?
-      }
+      onDemandImports.add(importDeclaration.name)
     } else {
-      val typeName = importDeclaration.name
-      moduleDeclaration.getType(typeName) match {
-        case None => throw new InvalidImportException(typeName)
-        case Some(`typeDeclaration`) => throw new InvalidImportException(typeName) // Importing self type
-        case Some(typeDeclaration) => {
-          concreteImports.put(typeName, typeDeclaration)
+      importDeclaration.name match {
+        case e@QualifiedNameExpression(qualifier, typeName) => {
+          moduleDeclaration.namespace.getQualifiedType(e) match {
+            case Some(typeDeclaration) => concreteImports.add(qualifier, Some(typeDeclaration))
+            case _ => throw new InvalidImportException(importDeclaration.name)
+          }
         }
+        case _ => throw new RuntimeException("This also shouldnt happen")
       }
     }
     this
@@ -63,15 +55,16 @@ trait CompilationUnitEnvironment extends Environment {
 
   // TODO: Check if overwriting classes?
   def addDefaultPackage(): this.type = {
-    moduleDeclaration.getPackageEnvironment(NameExpression("")) map {
-      defaultPackageEnvironment: PackageEnvironment =>
-        defaultPackageEnvironment.getTypeDeclarations foreach (declaration => concreteImports.put(declaration.name, declaration))
+    val defaultPackageName = NameExpression("")
+    moduleDeclaration.namespace.getAllTypesInPackage(defaultPackageName) foreach {
+      typeDeclaration =>
+        concreteImports.add(defaultPackageName, Some(typeDeclaration))
     }
     this
   }
 
   def addSelfPackage(): this.type = {
-    typeDeclaration.map(declaration => concreteImports.put(declaration.name, declaration))
+    concreteImports.add(packageDeclaration.name, typeDeclaration)
     this
   }
 

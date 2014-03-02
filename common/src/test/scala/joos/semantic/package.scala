@@ -36,7 +36,7 @@ package object semantic {
   }
 
   // Links the compilation units
-  def mockModule(compilationUnits: Seq[CompilationUnit]) = {
+  def mockLink(compilationUnits: Seq[CompilationUnit]) = {
     val mock = new ModuleDeclaration
     compilationUnits foreach {
       unit =>
@@ -47,9 +47,8 @@ package object semantic {
       unit =>
         unit.importDeclarations foreach (unit.add(_))
         unit.addDefaultPackage()
-        unit.addSelfPackage()
+//        unit.addSelfPackage()
     }
-
     mock
   }
 }
