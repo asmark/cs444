@@ -2,8 +2,8 @@ package joos.semantic
 
 import joos.ast.CompilationUnit
 import joos.ast.declarations.{ModuleDeclaration, TypeDeclaration, PackageDeclaration}
+import joos.ast.expressions.{QualifiedNameExpression, NameExpression}
 import scala.collection.mutable
-import joos.ast.expressions.NameExpression
 
 trait ModuleEnvironment extends Environment {
   self: ModuleDeclaration =>
@@ -30,6 +30,9 @@ trait ModuleEnvironment extends Environment {
    * Gets the type by its fully qualified name if it exists
    */
   def getType(name: NameExpression): Option[TypeDeclaration] = {
-    None
+    name match {
+      case qualifiedName: QualifiedNameExpression => packages.get(qualifiedName.qualifier) flatMap (_.getType(qualifiedName.name))
+      case _ => None
+    }
   }
 }
