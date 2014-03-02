@@ -1,12 +1,23 @@
 package joos
 
 import joos.a1.SyntaxCheck
+import joos.a2.SemanticCheck
+import joos.semantic.SemanticException
 
 object Compiler {
   def main(args: Array[String]) {
-    SyntaxCheck(args(0)) match {
-      case Some(parseTree) => sys.exit(0)
-      case None => sys.exit(42)
+
+    try {
+      val asts = args map SyntaxCheck.apply collect {
+        case None => sys.exit(42)
+        case Some(ast) => ast
+      }
+
+      try {
+        SemanticCheck(asts)
+      } catch {
+        case e: SemanticException => sys.exit(42)
+      }
     }
   }
 }

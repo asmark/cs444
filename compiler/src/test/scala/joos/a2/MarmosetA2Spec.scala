@@ -27,8 +27,10 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
   getTestCases(validJoos).foreach {
     testCase => it should s"accept ${testCase.getName}" in {
       val files = getJavaFiles(testCase) ++ standardLibrary map (_.getAbsolutePath)
-      val asts = files flatMap SyntaxCheck.apply map AbstractSyntaxTree.apply
-
+      val asts = files map SyntaxCheck.apply collect {
+        case None => fail(s"Was not able to SyntaxCheck ${testCase.getName}")
+        case Some(ast) => ast
+      }
       SemanticCheck(asts)
     }
   }
@@ -37,9 +39,12 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
   getTestCases(invalidJoos).foreach {
     testCase => it should s"reject ${testCase.getName}" in {
       val files = getJavaFiles(testCase) ++ standardLibrary map (_.getAbsolutePath)
-      val asts = files flatMap SyntaxCheck.apply map AbstractSyntaxTree.apply
 
       intercept[SemanticException] {
+        val asts = files map SyntaxCheck.apply collect {
+          case None => fail(s"Was not able to SyntaxCheck ${testCase.getName}")
+          case Some(ast) => ast
+        }
         SemanticCheck(asts)
       }
     }

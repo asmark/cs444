@@ -17,13 +17,9 @@ class MarmosetA1Spec extends FlatSpec with Matchers {
   getSource(validJoos).getLines().foreach {
     file =>
       it should s"accept ${file}" in {
-        implicit val module = new ModuleDeclaration
-        val environmentLinker = new EnvironmentLinker
         val filePath = getClass.getResource(validJoos + "/" + file).getPath
         val result = SyntaxCheck(filePath)
         result shouldNot be(None)
-        val ast = AbstractSyntaxTree(result.get)
-        ast dispatch environmentLinker
       }
   }
 
