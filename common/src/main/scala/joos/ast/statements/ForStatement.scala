@@ -6,9 +6,9 @@ import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
 
 case class ForStatement(
-  forInit: Option[Expression],
-  cond: Option[Expression],
-  forUpdate: Option[Expression],
+  initialization: Option[Expression],
+  condition: Option[Expression],
+  update: Option[Expression],
   body: Statement) extends Statement
 
 object ForStatement {

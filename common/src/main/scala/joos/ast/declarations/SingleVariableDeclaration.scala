@@ -2,7 +2,7 @@ package joos.ast.declarations
 
 import joos.ast.exceptions.AstConstructionException
 import joos.ast.expressions.{Expression, SimpleNameExpression}
-import joos.ast.{Type, Modifier}
+import joos.ast.{TypedDeclaration, Type, Modifier}
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 
@@ -10,8 +10,12 @@ case class SingleVariableDeclaration(
     modifiers: Seq[Modifier],
     variableType: Type,
     identifier: SimpleNameExpression,
-    initializer: Option[Expression]
-    ) extends VariableDeclaration
+    initializer: Option[Expression]) extends VariableDeclaration with TypedDeclaration {
+
+  override def declarationName = identifier
+
+  override def declarationType = variableType
+}
 
 object SingleVariableDeclaration {
   def createFormalParameterNodes(ptn: ParseTreeNode): Seq[SingleVariableDeclaration] = {

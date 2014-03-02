@@ -1,10 +1,11 @@
 package joos.a2
 
 import java.io.File
-import org.scalatest.{Matchers, FlatSpec}
-import scala.io.Source
 import joos.a1.SyntaxCheck
+import joos.ast.declarations.ModuleDeclaration
 import joos.ast.{CompilationUnit, AbstractSyntaxTree}
+import joos.semantic.{SemanticException, EnvironmentLinker}
+import org.scalatest.{Matchers, FlatSpec}
 
 class MarmosetA2Spec extends FlatSpec with Matchers {
 
@@ -17,26 +18,38 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
   }
 
   def getTestCases(dir: String) = {
-    new File(getClass.getResource(dir).getPath).listFiles()
+    (new File(getClass.getResource(dir).getPath)).listFiles()
   }
 
   behavior of "Name resolution of valid joos"
   getTestCases(validJoos).foreach {
-    testCase => it should s"accept ${testCase.getName}" in {
-        val files = getJavaFiles(testCase) map (_.getAbsolutePath)
-        val asts = files flatMap SyntaxCheck.apply map AbstractSyntaxTree.apply
-        // Do something with asts
-        asts foreach (_.root shouldBe a[CompilationUnit])
+    testCase => it should s"accept ${testCase.getName }" in {
+      implicit val module = new ModuleDeclaration
+      val environmentLinker = new EnvironmentLinker
+      val files = getJavaFiles(testCase) map (_.getAbsolutePath)
+      val asts = files flatMap SyntaxCheck.apply map AbstractSyntaxTree.apply
+      // Do something with asts
+      asts foreach {
+        ast =>
+          ast dispatch environmentLinker
       }
+    }
   }
 
   behavior of "Name resolution of invalid joos"
   getTestCases(invalidJoos).foreach {
-    testCase => it should s"reject ${testCase.getName}" in {
+    testCase => it should s"reject ${testCase.getName }" in {
+      implicit val module = new ModuleDeclaration
+      val environmentLinker = new EnvironmentLinker
       val files = getJavaFiles(testCase) map (_.getAbsolutePath)
       val asts = files flatMap SyntaxCheck.apply map AbstractSyntaxTree.apply
       // Do something with asts
-      asts foreach (_.root shouldBe a[CompilationUnit])
+      asts foreach {
+        ast =>
+          intercept[SemanticException] {
+            ast dispatch environmentLinker
+          }
+      }
     }
   }
 

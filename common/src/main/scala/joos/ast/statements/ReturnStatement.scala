@@ -1,11 +1,11 @@
 package joos.ast
 
-import joos.ast.expressions.Expression
-import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
+import joos.ast.expressions.Expression
+import joos.language.ProductionRule
+import joos.parsetree.{TreeNode, ParseTreeNode}
 
-case class ReturnStatement(exp: Option[Expression]) extends Statement
+case class ReturnStatement(expression: Option[Expression]) extends Statement
 
 object ReturnStatement {
   def apply(ptn: ParseTreeNode): ReturnStatement = {

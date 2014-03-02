@@ -5,7 +5,7 @@ import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.ast.exceptions.AstConstructionException
 
-case class CastExpression(castType: Type, expr: Expression) extends Expression
+case class CastExpression(castType: Type, expression: Expression) extends Expression
 
 object CastExpression {
   def apply(ptn: ParseTreeNode): CastExpression = {
