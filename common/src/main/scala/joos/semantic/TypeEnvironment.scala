@@ -10,18 +10,20 @@ trait TypeEnvironment extends Environment {
   private[this] val constructors = mutable.LinkedHashMap.empty[String, MethodDeclaration]
   private[this] val methodMap = mutable.HashMap.empty[String, MethodDeclaration]
   private[this] val fieldMap = mutable.HashMap.empty[NameExpression, FieldDeclaration]
+  private[this] var extendedClass: Option[TypeDeclaration] = None
+  private[this] val implementsMap = mutable.HashMap.empty[NameExpression, TypeDeclaration]
 
   def add(method: MethodDeclaration): this.type = {
     if (method.isConstructor) {
-      if (constructors.contains(method.typedName)) {
+      if (constructors.contains(method.typedSignature)) {
         throw new DuplicatedDeclarationException(method.name)
       }
-      constructors.put(method.typedName, method)
+      constructors.put(method.typedSignature, method)
     } else {
-      if (methodMap.contains(method.typedName)) {
+      if (methodMap.contains(method.typedSignature)) {
         throw new DuplicatedDeclarationException(method.name)
       }
-      methodMap.put(method.typedName, method)
+      methodMap.put(method.typedSignature, method)
     }
     this
   }
@@ -34,6 +36,26 @@ trait TypeEnvironment extends Environment {
     this
   }
 
+  def add(ancestor: TypeDeclaration): this.type = {
+    ancestor.isInterface match {
+      case true => {
+        if (implementsMap.contains(ancestor.name)) {
+          throw new DuplicatedDeclarationException(ancestor.name)
+        }
+        implementsMap.put(ancestor.name, ancestor)
+      }
+      case false => {
+        extendedClass match {
+          case Some(superType) =>
+            throw new DuplicatedDeclarationException(ancestor.name)
+          case None =>
+            extendedClass = Some(ancestor)
+        }
+      }
+    }
+    this
+  }
+
   /**
    * Gets the field by its {{name}}
    */
@@ -41,18 +63,27 @@ trait TypeEnvironment extends Environment {
     fieldMap.get(name)
   }
 
-
   /**
    * Gets a method that matches the {{method}}'s name and parameter types passed in if it exists
    */
   def getMethod(method: MethodDeclaration): Option[MethodDeclaration] = {
-    methodMap.get(method.typedName)
+    methodMap.get(method.typedSignature)
   }
 
   /**
    * Gets a constructor that matches the {{constructor}}'s parameter types passed in if it exists
    */
   def getConstructor(constructor: MethodDeclaration): Option[MethodDeclaration] = {
-    constructors.get(constructor.typedName)
+    constructors.get(constructor.typedSignature)
   }
+
+  def getExtendedClass(): Option[TypeDeclaration] = {
+    extendedClass
+  }
+
+  def getImplementedInterface(name: NameExpression): Option[TypeDeclaration] = {
+    implementsMap.get(name)
+  }
+
+  def getAllImplementedInterfaces() = implementsMap.values
 }

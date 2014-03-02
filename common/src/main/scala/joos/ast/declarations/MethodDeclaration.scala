@@ -2,7 +2,7 @@ package joos.ast.declarations
 
 import joos.ast._
 import joos.ast.exceptions.AstConstructionException
-import joos.ast.expressions.{NameExpression, SimpleNameExpression}
+import joos.ast.expressions.{QualifiedNameExpression, NameExpression, SimpleNameExpression}
 import joos.language.ProductionRule
 import joos.parsetree.ParseTreeNode
 import joos.parsetree.TreeNode
@@ -23,15 +23,35 @@ case class MethodDeclaration(
   var environment: BlockEnvironment = null
 
   /**
-   * Method name with argument types added
+   * Method signature with argument types added
    */
-  lazy val typedName = parameters.foldLeft(name.standardName) {
+  lazy val typedSignature = parameters.foldLeft(name.standardName) {
     (result, parameter) =>
       val name = result + '-' + getTypeName(parameter.variableType)
       parameter.variableType match {
         case _: ArrayType => name + "[]"
         case _ => name
       }
+  }
+
+  lazy val localSignature = {
+    val localMethodName = name match {
+      case qualifiedNameExpression: QualifiedNameExpression => {
+        qualifiedNameExpression.name.standardName
+      }
+      case simpleNameExpression: SimpleNameExpression => {
+        simpleNameExpression.standardName
+      }
+    }
+
+    parameters.foldLeft(localMethodName) {
+      (result, parameter) =>
+        val name = result + '-' + getTypeName(parameter.variableType)
+        parameter.variableType match {
+          case _: ArrayType => name + "[]"
+          case _ => name
+        }
+    }
   }
 
   private[this] def getTypeName(t: Type) = {
