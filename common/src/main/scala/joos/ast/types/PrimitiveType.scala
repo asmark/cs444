@@ -4,8 +4,11 @@ import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.tokens.TerminalToken
 import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
+import joos.ast.expressions.SimpleNameExpression
 
-case class PrimitiveType(primType: TerminalToken) extends Type
+case class PrimitiveType(token: TerminalToken) extends Type {
+  override lazy val asName = SimpleNameExpression(token.lexeme)
+}
 
 object PrimitiveType {
   private def extractNumericToken(numericType: ParseTreeNode): TerminalToken = {

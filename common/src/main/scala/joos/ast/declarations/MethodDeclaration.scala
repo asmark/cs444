@@ -2,16 +2,19 @@ package joos.ast.declarations
 
 import joos.ast.exceptions.AstConstructionException
 import joos.ast.expressions.{NameExpression, SimpleNameExpression}
-import joos.ast.{CompilationUnit, Block, Type, Modifier}
+import joos.ast._
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.semantic.BlockEnvironment
+import joos.language.ProductionRule
+import scala.Some
+import joos.parsetree.TreeNode
 
 case class MethodDeclaration(
     modifiers: Seq[Modifier],
     returnType: Option[Type],
     name: NameExpression,
-    parameters: Seq[SingleVariableDeclaration],
+    parameters: IndexedSeq[SingleVariableDeclaration],
     body: Option[Block],
     isConstructor: Boolean)
     extends BodyDeclaration {
@@ -19,6 +22,19 @@ case class MethodDeclaration(
   var typeDeclaration: TypeDeclaration = null
   var compilationUnit: CompilationUnit = null
   var environment: BlockEnvironment = null
+
+  // TODO: fix when environment is not ready
+  /**
+   * Method name with argument types added
+   */
+  lazy val typedName = parameters.foldLeft(name.standardName) {
+    (result, parameter) =>
+      val name = result + '-' + compilationUnit.getVisibleType(parameter.variableType.asName).map(_.id)
+      parameter.variableType match {
+        case _: ArrayType => name + "[]"
+        case _ => name
+      }
+  }
 }
 
 object MethodDeclaration {
@@ -65,7 +81,7 @@ object MethodDeclaration {
               children
               ) => {
                 val name = SimpleNameExpression(children(0))
-                return new MethodDeclaration(modifiers, returnType, name, Seq(), body, false)
+                return new MethodDeclaration(modifiers, returnType, name, IndexedSeq(), body, false)
               }
 
               case _ => throw new AstConstructionException("No valid production rule to create MethodHeader")
@@ -101,7 +117,7 @@ object MethodDeclaration {
           children
           ) => {
             val name = SimpleNameExpression(children(0).children(0))
-            return new MethodDeclaration(modifiers, None, name, Seq(), body, true)
+            return new MethodDeclaration(modifiers, None, name, IndexedSeq(), body, true)
           }
 
           case _ => throw new AstConstructionException("No valid production rule to create ConstructorDeclarator")
@@ -144,7 +160,7 @@ object MethodDeclaration {
               children
               ) => {
                 val name = SimpleNameExpression(children(0))
-                return new MethodDeclaration(modifiers, returnType, name, Seq(), body, false)
+                return new MethodDeclaration(modifiers, returnType, name, IndexedSeq(), body, false)
               }
 
               case _ => throw new AstConstructionException("No valid production rule to create MethodHeader")

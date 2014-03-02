@@ -1,31 +1,27 @@
 package joos.semantic
 
-import joos.ast.TypedDeclaration
-import joos.ast.declarations.{FieldDeclaration, MethodDeclaration}
-import scala.collection.mutable
+import joos.ast.declarations.{TypeDeclaration, FieldDeclaration, MethodDeclaration}
 import joos.ast.expressions.{SimpleNameExpression, NameExpression}
+import scala.collection.mutable
 
-trait TypeEnvironment extends EnvironmentWithVariable {
-  private[this] var constructors = List[MethodDeclaration]()
-  private[this] val methods = mutable.HashMap.empty[NameExpression, List[MethodDeclaration]]
-  private[this] val fields = mutable.HashMap.empty[NameExpression, TypedDeclaration]
+trait TypeEnvironment extends Environment {
+  self: TypeDeclaration =>
 
-  def parentEnvironment = None
-
-  def variables = fields
+  private[this] val constructors = mutable.LinkedHashMap.empty[String, MethodDeclaration]
+  private[this] val methodMap = mutable.HashMap.empty[String, MethodDeclaration]
+  private[this] val fieldMap = mutable.HashMap.empty[NameExpression, FieldDeclaration]
 
   def add(method: MethodDeclaration): this.type = {
-    // TODO: check for valid method overloading
     if (method.isConstructor) {
-      constructors = method :: constructors
-    } else {
-      val list = methods.getOrElse(method.name, List[MethodDeclaration]())
-      for (existingMethod <- list) {
-        if (existingMethod.name == method.name) {
-          throw new DuplicatedDeclarationException(method.name)
-        }
+      if (constructors.contains(method.typedName)) {
+        throw new DuplicatedDeclarationException(method.name)
       }
-      methods.put(method.name, method :: list)
+      constructors.put(method.typedName, method)
+    } else {
+      if (methodMap.contains(method.typedName)) {
+        throw new DuplicatedDeclarationException(method.name)
+      }
+      methodMap.put(method.typedName, method)
     }
     this
   }
@@ -34,20 +30,29 @@ trait TypeEnvironment extends EnvironmentWithVariable {
     if (fields.contains(field.fragment.identifier)) {
       throw new DuplicatedDeclarationException(field.fragment.identifier)
     }
-    fields.put(field.fragment.identifier, field)
+    fieldMap.put(field.fragment.identifier, field)
     this
   }
 
   /**
-   * Gets a list of methods by its {{name}}
+   * Gets the field by its {{name}}
    */
-  def getMethods(name: SimpleNameExpression): List[MethodDeclaration] = {
-    // TODO
-    List()
+  def getField(name: SimpleNameExpression): Option[FieldDeclaration] = {
+    fieldMap.get(name)
   }
 
-  def getField(name: SimpleNameExpression): Option[FieldDeclaration] = {
-    // TODO
-    None
+
+  /**
+   * Gets a method that matches the {{method}}'s name and parameter types passed in if it exists
+   */
+  def getMethod(method: MethodDeclaration): Option[MethodDeclaration] = {
+    methodMap.get(method.typedName)
+  }
+
+  /**
+   * Gets a constructor that matches the {{constructor}}'s parameter types passed in if it exists
+   */
+  def getConstructor(constructor: MethodDeclaration): Option[MethodDeclaration] = {
+    constructors.get(constructor.typedName)
   }
 }
