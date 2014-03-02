@@ -15,20 +15,19 @@ object PackageDeclaration {
   /**
    * Make sure we return the same {PackageDeclaration} instance for the same package name
    */
-  private[this] val packages = mutable.HashMap.empty[NameExpression, PackageDeclaration]
+  private[this] val packages = mutable.HashMap(DefaultPackageName -> DefaultPackage)
 
   def apply(ptn: ParseTreeNode): PackageDeclaration = {
     ptn match {
       case TreeNode(ProductionRule("PackageDeclaration", _), _, children) => {
         val name = NameExpression(children(1))
-        packages.getOrElseUpdate(name, new PackageDeclaration(name))
+        packages.getOrElseUpdate(name, PackageDeclaration(name))
       }
     }
   }
 
-  def apply(name: String): PackageDeclaration = {
-    new PackageDeclaration(NameExpression(name))
-  }
+  def apply(name: String): PackageDeclaration = PackageDeclaration(NameExpression(name))
 
-  final val DefaultPackage = PackageDeclaration("")
+  final val DefaultPackageName = NameExpression("")
+  final val DefaultPackage = PackageDeclaration(DefaultPackageName)
 }

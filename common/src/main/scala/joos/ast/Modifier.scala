@@ -17,4 +17,10 @@ object Modifier {
         return Seq(Modifier(token))
     }
   }
+
+  val Protected = Modifier(TerminalToken("protected", TokenKind.Protected))
+  val Public = Modifier(TerminalToken("private", TokenKind.Public))
+  val Abstract = Modifier(TerminalToken("abstract", TokenKind.Abstract))
+  val Static = Modifier(TerminalToken("static", TokenKind.Static))
+
 }
