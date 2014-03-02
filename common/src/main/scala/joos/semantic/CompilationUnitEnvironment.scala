@@ -1,6 +1,6 @@
 package joos.semantic
 
-import joos.ast.CompilationUnit
+import joos.ast._
 import joos.ast.declarations.{ImportDeclaration, TypeDeclaration}
 import joos.ast.expressions.{QualifiedNameExpression, SimpleNameExpression, NameExpression}
 import joos.core.Logger
