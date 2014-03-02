@@ -1,7 +1,7 @@
 package joos.semantic
 
 import joos.ast.CompilationUnit
-import joos.ast.declarations.ModuleDeclaration
+import joos.ast.declarations.{PackageDeclaration, ModuleDeclaration}
 
 trait ModuleEnvironment extends Environment {
   self: ModuleDeclaration =>

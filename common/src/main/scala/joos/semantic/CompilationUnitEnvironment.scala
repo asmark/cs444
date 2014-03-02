@@ -1,7 +1,7 @@
 package joos.semantic
 
 import joos.ast.CompilationUnit
-import joos.ast.declarations.{ImportDeclaration, TypeDeclaration}
+import joos.ast.declarations.{PackageDeclaration, ImportDeclaration, TypeDeclaration}
 import joos.ast.expressions.{QualifiedNameExpression, SimpleNameExpression, NameExpression}
 import scala.collection.mutable
 
@@ -16,11 +16,23 @@ trait CompilationUnitEnvironment extends Environment {
       qualifiedName: (NameExpression, Option[TypeDeclaration]) =>
         val packageName = qualifiedName._1
         val typeName = qualifiedName._2
-        typeName map (t => concreteImports.add(packageName, Some(t)))
+        typeName map (t => addConcreteImport(packageName, t))
     }
   }
 
   private def getTypeFromConcreteImports(name: SimpleNameExpression) = concreteImports.getSimpleType(name)
+
+  private def addConcreteImport(packageName: NameExpression, typeDeclaration: TypeDeclaration) {
+    if (concreteImports.getSimpleType(typeDeclaration.name).isDefined) {
+      throw new NamespaceCollisionException(typeDeclaration.name)
+    } else {
+      concreteImports.add(packageName, Some(typeDeclaration))
+    }
+  }
+
+  private def addConcreteImport(packageName: NameExpression, typeDeclaration: Option[TypeDeclaration]) {
+    concreteImports.add(packageName, typeDeclaration)
+  }
 
   /**
    * Gets the type with the {{name}} if it's visible within this compilation unit
@@ -43,7 +55,7 @@ trait CompilationUnitEnvironment extends Environment {
       importDeclaration.name match {
         case e@QualifiedNameExpression(qualifier, typeName) => {
           moduleDeclaration.namespace.getQualifiedType(e) match {
-            case Some(typeDeclaration) => concreteImports.add(qualifier, Some(typeDeclaration))
+            case Some(typeDeclaration) => addConcreteImport(qualifier, typeDeclaration)
             case _ => throw new MissingTypeException(importDeclaration.name)
           }
         }
@@ -55,16 +67,16 @@ trait CompilationUnitEnvironment extends Environment {
 
   // TODO: Check if overwriting classes?
   def addDefaultPackage(): this.type = {
-    val defaultPackageName = NameExpression("")
+    val defaultPackageName = PackageDeclaration.DefaultPackage.name
     moduleDeclaration.namespace.getAllTypesInPackage(defaultPackageName) foreach {
       typeDeclaration =>
-        concreteImports.add(defaultPackageName, Some(typeDeclaration))
+          addConcreteImport(defaultPackageName, typeDeclaration)
     }
     this
   }
 
   def addSelfPackage(): this.type = {
-    concreteImports.add(packageDeclaration.name, typeDeclaration)
+    addConcreteImport(packageDeclaration.name, typeDeclaration)
     this
   }
 
