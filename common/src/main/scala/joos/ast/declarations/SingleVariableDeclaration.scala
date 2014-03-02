@@ -18,14 +18,14 @@ case class SingleVariableDeclaration(
 }
 
 object SingleVariableDeclaration {
-  def createFormalParameterNodes(ptn: ParseTreeNode): Seq[SingleVariableDeclaration] = {
+  def createFormalParameterNodes(ptn: ParseTreeNode): IndexedSeq[SingleVariableDeclaration] = {
     ptn match {
       case TreeNode(ProductionRule("FormalParameterList", Seq("FormalParameter")), _, children) => {
-        Seq(SingleVariableDeclaration(children(0)))
+        IndexedSeq(SingleVariableDeclaration(children(0)))
       }
       case TreeNode(
       ProductionRule("FormalParameterList", Seq("FormalParameterList", ",", "FormalParameter")), _, children) => {
-        createFormalParameterNodes(children(0)) ++ Seq(SingleVariableDeclaration(children(2)))
+        createFormalParameterNodes(children(0)) ++ IndexedSeq(SingleVariableDeclaration(children(2)))
       }
       case _ => throw new AstConstructionException("Invalid tree node to create FormalParameterList")
     }

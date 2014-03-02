@@ -6,12 +6,13 @@ import joos.ast.declarations.ModuleDeclaration
 import joos.ast.AbstractSyntaxTree
 import joos.semantic.SemanticException
 import org.scalatest.{Matchers, FlatSpec}
-import joos.analyzers.EnvironmentLinker
+import joos.analyzers.{TypeEnvironmentBuilder, EnvironmentLinker}
 
 class MarmosetA2Spec extends FlatSpec with Matchers {
 
   final val validJoos = "/a2/marmoset/valid"
   final val invalidJoos = "/a2/marmoset/invalid"
+  final val standardLibrary = getJavaFiles(new File(this.getClass.getResource("/a2/marmoset/stdlib").getPath))
 
   def getJavaFiles(dir: File): Array[File] = {
     val these = dir.listFiles()
@@ -27,12 +28,16 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
     testCase => it should s"accept ${testCase.getName }" in {
       implicit val module = new ModuleDeclaration
       val environmentLinker = new EnvironmentLinker
-      val files = getJavaFiles(testCase) map (_.getAbsolutePath)
+      val typeEnvironmentBuilder = new TypeEnvironmentBuilder
+      val files = getJavaFiles(testCase) ++ standardLibrary map (_.getAbsolutePath)
       val asts = files flatMap SyntaxCheck.apply map AbstractSyntaxTree.apply
       // Do something with asts
       asts foreach {
-        ast =>
-          ast dispatch environmentLinker
+        ast => ast dispatch environmentLinker
+      }
+
+      asts foreach {
+        ast => ast dispatch typeEnvironmentBuilder
       }
     }
   }
@@ -42,13 +47,21 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
     testCase => it should s"reject ${testCase.getName }" in {
       implicit val module = new ModuleDeclaration
       val environmentLinker = new EnvironmentLinker
-      val files = getJavaFiles(testCase) map (_.getAbsolutePath)
+      val typeEnvironmentBuilder = new TypeEnvironmentBuilder
+      val files = getJavaFiles(testCase) ++ standardLibrary map (_.getAbsolutePath)
       val asts = files flatMap SyntaxCheck.apply map AbstractSyntaxTree.apply
       // Do something with asts
       asts foreach {
         ast =>
           intercept[SemanticException] {
             ast dispatch environmentLinker
+          }
+      }
+
+      asts foreach {
+        ast =>
+          intercept[SemanticException] {
+            ast dispatch typeEnvironmentBuilder
           }
       }
     }

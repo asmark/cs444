@@ -1,11 +1,13 @@
 package joos.ast
 
-import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
+import joos.language.ProductionRule
+import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.ast.expressions.NameExpression
 
-trait Type extends AstNode
+trait Type extends AstNode {
+  def asName: NameExpression
+}
 
 object Type {
   def handleReferenceType(referenceType: ParseTreeNode): Type = {
@@ -22,9 +24,9 @@ object Type {
 
   def apply(ptn: ParseTreeNode): Type = {
     ptn match {
-      case TreeNode(ProductionRule("Type",  Seq("PrimitiveType")), _, children) =>
+      case TreeNode(ProductionRule("Type", Seq("PrimitiveType")), _, children) =>
         PrimitiveType(children(0))
-      case TreeNode(ProductionRule("Type",  Seq("ReferenceType")), _, children) =>
+      case TreeNode(ProductionRule("Type", Seq("ReferenceType")), _, children) =>
         Type(children(0))
       case TreeNode(ProductionRule("ReferenceType", Seq("ClassOrInterfaceType")), _, children) =>
         Type(children(0))

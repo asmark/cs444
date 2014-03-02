@@ -26,4 +26,14 @@ package object core {
       }
     }
   }
+
+  def foreach[A, B](listA: Seq[A], listB: Seq[B])(f: (A, B) => Unit) {
+    var as = listA
+    var bs = listB
+    while (!as.isEmpty && bs.isEmpty) {
+      f(as.head, bs.head)
+      as = as.tail
+      bs = bs.tail
+    }
+  }
 }
