@@ -1,13 +1,9 @@
 package joos.semantic
 
-import org.scalatest.{BeforeAndAfterEach, Matchers, FlatSpec}
 import joos.ast.CompilationUnit
-import joos.ast.expressions.QualifiedNameExpression
-import joos.ast.declarations.PackageDeclaration
+import org.scalatest.{BeforeAndAfterEach, Matchers, FlatSpec}
 
 class CompilationUnitEnvironmentSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
-
-  override def beforeEach() = PackageDeclaration.DefaultPackage.clearEnvironment()
 
   "Zero imports and no type declaration" should "only resolve SimpleNames within default package" in {
     val defaultUnit1 = CompilationUnit(MockDefaultPackage, Seq.empty, Some(MockDefaultDeclaration1))

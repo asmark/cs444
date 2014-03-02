@@ -1,14 +1,14 @@
 package joos.semantic
 
 import joos.ast.CompilationUnit
-import joos.ast.declarations.{PackageDeclaration, ImportDeclaration, TypeDeclaration}
+import joos.ast.declarations.{ImportDeclaration, TypeDeclaration}
 import joos.ast.expressions.{QualifiedNameExpression, SimpleNameExpression, NameExpression}
 import scala.collection.mutable
 
 trait CompilationUnitEnvironment extends Environment {
   self: CompilationUnit =>
 
-  val onDemandImports = mutable.HashMap.empty[NameExpression, PackageDeclaration]
+  val onDemandImports = mutable.HashMap.empty[NameExpression, PackageEnvironment]
   val concreteImports = mutable.HashMap.empty[NameExpression, TypeDeclaration]
 
   private def getTypeFromConcreteImports(name: SimpleNameExpression) = {
@@ -43,10 +43,10 @@ trait CompilationUnitEnvironment extends Environment {
   def add(importDeclaration: ImportDeclaration): this.type = {
     if (importDeclaration.isOnDemand) {
       val packageName = importDeclaration.name
-      moduleDeclaration.getPackage(packageName) match {
+      moduleDeclaration.getPackageEnvironment(packageName) match {
         case None => throw new InvalidImportException(packageName)
-        case Some(`packageDeclaration`) => throw new InvalidImportException(packageName) // Importing self package
-        case Some(packageDeclaration) => onDemandImports.put(packageName, packageDeclaration)
+        case Some(packageEnvironment) => onDemandImports.put(packageName, packageEnvironment)
+        // TODO: Self import?
       }
     } else {
       val typeName = importDeclaration.name
@@ -63,12 +63,15 @@ trait CompilationUnitEnvironment extends Environment {
 
   // TODO: Check if overwriting classes?
   def addDefaultPackage(): this.type = {
-    PackageDeclaration.DefaultPackage.getTypeDeclarations.foreach(declaration => concreteImports.put(declaration.name, declaration))
+    moduleDeclaration.getPackageEnvironment(NameExpression("")) map {
+      defaultPackageEnvironment: PackageEnvironment =>
+        defaultPackageEnvironment.getTypeDeclarations foreach (declaration => concreteImports.put(declaration.name, declaration))
+    }
     this
   }
 
   def addSelfPackage(): this.type = {
-    packageDeclaration.getTypeDeclarations.foreach(declaration => concreteImports.put(declaration.name, declaration))
+    typeDeclaration.map(declaration => concreteImports.put(declaration.name, declaration))
     this
   }
 

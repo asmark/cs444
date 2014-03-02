@@ -4,10 +4,7 @@ import joos.ast.declarations.{PackageDeclaration, TypeDeclaration}
 import joos.ast.expressions.SimpleNameExpression
 import scala.collection.mutable
 
-trait PackageEnvironment {
-
-  self: PackageDeclaration =>
-
+class PackageEnvironment {
   /**
    * All types declared within this package
    */
@@ -32,9 +29,4 @@ trait PackageEnvironment {
   }
 
   def getTypeDeclarations = types.values
-
-  /**
-   * For unit tests only
-   */
-  def clearEnvironment() = types.clear()
 }

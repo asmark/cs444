@@ -1,28 +1,31 @@
 package joos.semantic
 
 import joos.ast.CompilationUnit
-import joos.ast.declarations.{ModuleDeclaration, TypeDeclaration, PackageDeclaration}
+import joos.ast.declarations.{ModuleDeclaration, TypeDeclaration}
 import joos.ast.expressions.{QualifiedNameExpression, NameExpression}
 import scala.collection.mutable
 
 trait ModuleEnvironment extends Environment {
   self: ModuleDeclaration =>
 
-  private[this] val packages = mutable.HashMap.empty[NameExpression, PackageDeclaration]
+  private[this] val packages = mutable.HashMap.empty[NameExpression, PackageEnvironment]
 
   /**
    * Adds the {{compilationUnit}} to the module
    */
   def add(compilationUnit: CompilationUnit): this.type = {
     val packageDeclaration = compilationUnit.packageDeclaration
-    packages.put(packageDeclaration.name, packageDeclaration)
+    val packageEnvironment = packages.getOrElse(packageDeclaration.name, new PackageEnvironment)
+    compilationUnit.typeDeclaration map (packageEnvironment.add(_))
+    packages.put(packageDeclaration.name, packageEnvironment)
     this
+
   }
 
   /**
    * Gets the package with the {{name}} if it exists
    */
-  def getPackage(name: NameExpression): Option[PackageDeclaration] = {
+  def getPackageEnvironment(name: NameExpression): Option[PackageEnvironment] = {
     packages.get(name)
   }
 

@@ -42,7 +42,6 @@ package object semantic {
       unit =>
         mock.add(unit)
         unit.moduleDeclaration = mock
-        unit.typeDeclaration map (unit.packageDeclaration.add(_))
     }
     compilationUnits foreach {
       unit =>

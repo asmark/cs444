@@ -21,7 +21,7 @@ class EnvironmentLinker(implicit module: ModuleDeclaration) extends Visitor {
   override def apply(typed: TypeDeclaration) {
     this.typed = typed
     typed.compilationUnit = unit
-    typed.packageDeclaration = packaged.add(typed)
+    typed.packageDeclaration = packaged
     typed.methods.foreach(_.accept(this))
     typed.fields.foreach(_.accept(this))
   }
