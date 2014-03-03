@@ -36,4 +36,6 @@ trait AstVisitor {
   def apply(statement: WhileStatement) {}
   def apply(compilationUnit: CompilationUnit) {}
   def apply(node: Block) {}
+
+  protected implicit def typeToName(typeDeclaration: TypeDeclaration) = typeDeclaration.name.standardName
 }
