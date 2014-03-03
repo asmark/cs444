@@ -38,13 +38,6 @@ trait CompilationUnitEnvironment extends Environment {
   }
 
   private def checkDuplicates(onDemandType: Option[TypeDeclaration], concreteType: Option[TypeDeclaration]) = {
-    if (onDemandType.isDefined && concreteType.isDefined) {
-      if (!(EnvironmentComparisons.typeEquality(onDemandType.get, concreteType.get))) {
-        val typeName = onDemandType.get.name
-        Logger.logError(s"On-demand import and concrete import conflicted for ${typeName }")
-        throw new NamespaceCollisionException(typeName)
-      }
-    }
     (onDemandType ++ concreteType).headOption
   }
 
@@ -81,11 +74,8 @@ trait CompilationUnitEnvironment extends Environment {
   }
 
   def addSelfPackage(): this.type = {
-    val packageName = packageDeclaration.name
-    moduleDeclaration.namespace.getAllTypesInPackage(packageName) foreach {
-      typeDeclaration =>
-        addConcreteImport(packageName, typeDeclaration)
-    }
+    typeDeclaration map (addConcreteImport(packageDeclaration.name, _))
+    addOnDemandImport(packageDeclaration.name)
     this
   }
 
