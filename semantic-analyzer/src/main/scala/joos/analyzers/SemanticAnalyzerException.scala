@@ -13,13 +13,13 @@ class InvalidTypeReferenceException(name: NameExpression) extends SemanticAnalyz
 class CyclicHierarchyException(name: NameExpression) extends SemanticAnalyzerException(s"Cycle detected at ${name.standardName}")
 
 class OverrideStaticMethodException(childMethod: MethodDeclaration, parentMethod: MethodDeclaration)
-    extends SemanticAnalyzerException(s"${childMethod.typedSignature} attempts to override ${parentMethod.typedSignature}")
+    extends SemanticAnalyzerException(s"non-static ${childMethod.typedSignature} attempts to override static ${parentMethod.typedSignature}")
 
-class OverridePublicMethodException(childMethod: MethodDeclaration, parentMethod: MethodDeclaration)
-    extends SemanticAnalyzerException(s"${childMethod.typedSignature} attempts to override ${parentMethod.typedSignature}")
+class OverrideProtectedMethodException(childMethod: MethodDeclaration, parentMethod: MethodDeclaration)
+    extends SemanticAnalyzerException(s"${childMethod.typedSignature} attempts to expand visibility of ${parentMethod.typedSignature}")
 
 class OverrideFinalMethodException(childMethod: MethodDeclaration, parentMethod: MethodDeclaration)
-    extends SemanticAnalyzerException(s"${childMethod.typedSignature} attempts to override ${parentMethod.typedSignature}")
+    extends SemanticAnalyzerException(s"${childMethod.typedSignature} attempts to override final ${parentMethod.typedSignature}")
 
 class OverrideReturnTypeException(childMethod: MethodDeclaration, parentMethod: MethodDeclaration)
     extends SemanticAnalyzerException(

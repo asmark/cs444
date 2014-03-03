@@ -23,6 +23,6 @@ object EnvironmentComparisons {
     return true
   }
 
-  def containsModifier(modifiers: Seq[Modifier], contained: Modifier) = modifiers exists(_ equals contained)
+  def containsModifier(modifiers: Seq[Modifier], contained: Modifier) = modifiers contains contained
 
 }
