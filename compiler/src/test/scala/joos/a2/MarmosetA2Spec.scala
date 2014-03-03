@@ -6,7 +6,7 @@ import joos.ast.declarations.ModuleDeclaration
 import joos.ast.AbstractSyntaxTree
 import joos.semantic.SemanticException
 import org.scalatest.{Matchers, FlatSpec}
-import joos.analyzers.{TypeEnvironmentBuilder, EnvironmentLinker}
+import joos.analyzers.{SemanticAnalyzerException, TypeEnvironmentBuilder, SimpleHierarchyAnalyzer, EnvironmentLinker}
 
 class MarmosetA2Spec extends FlatSpec with Matchers {
 
@@ -49,6 +49,4 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
       }
     }
   }
-
-
 }

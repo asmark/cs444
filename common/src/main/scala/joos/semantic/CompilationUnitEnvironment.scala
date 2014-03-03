@@ -39,7 +39,7 @@ trait CompilationUnitEnvironment extends Environment {
 
   def checkDuplicates(onDemandType: Option[TypeDeclaration], concreteType: Option[TypeDeclaration]) = {
     if (onDemandType.isDefined && concreteType.isDefined) {
-      if (!(onDemandType.get eq concreteType.get)) {
+      if (!(EnvironmentComparisons.typeEquality(onDemandType.get, concreteType.get))) {
         val typeName = onDemandType.get.name
         Logger.logError(s"On-demand import and concrete import conflicted for ${typeName }")
         throw new NamespaceCollisionException(typeName)

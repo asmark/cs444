@@ -3,6 +3,7 @@ package joos.semantic
 import joos.ast.declarations.{PackageDeclaration, TypeDeclaration}
 import joos.ast.expressions.{SimpleNameExpression, QualifiedNameExpression, NameExpression}
 import scala.collection.mutable
+import joos.core.Logger
 
 class NamespaceTrie {
 
@@ -33,7 +34,14 @@ class NamespaceTrie {
           children.put(typeName, newNode)
           newNode
         }
-        case Some(e @ TypeNode(`typeDeclaration`)) => e
+        case Some(node @ TypeNode(otherType)) => {
+          if (EnvironmentComparisons.typeEquality(typeDeclaration, otherType)) {
+            node
+          } else {
+            Logger.logError(s"${typeName} had an existing declaration in this namespace")
+            throw new NamespaceCollisionException(typeDeclaration.name)
+          }
+        }
         case Some(otherNode) => throw new NamespaceCollisionException(typeDeclaration.name)
       }
     }
