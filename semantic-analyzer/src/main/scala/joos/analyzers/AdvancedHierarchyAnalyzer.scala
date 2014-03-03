@@ -1,9 +1,11 @@
 package joos.analyzers
 
 import joos.ast.declarations.{MethodDeclaration, TypeDeclaration, ModuleDeclaration}
-import joos.ast.{Type, CompilationUnit, AstVisitor}
+import joos.ast.{Modifier, Type, CompilationUnit, AstVisitor}
 import scala.collection.mutable
 import joos.tokens.TokenKind
+import joos.core.Logger
+import joos.semantic.EnvironmentComparisons
 
 /*
  Semantic Checks
@@ -25,8 +27,8 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
     val curTypeDeclaration = typeDeclarations.top
     var visited: Set[TypeDeclaration] = Set()
 
-    var ancestors = mutable.Queue[TypeDeclaration]()
-      ancestors enqueue curTypeDeclaration
+    val ancestors = mutable.Queue[TypeDeclaration]()
+    ancestors enqueue curTypeDeclaration
 
     while (!ancestors.isEmpty) {
       val front = ancestors.dequeue()
@@ -39,28 +41,30 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
             case Some(ancestor) => {
               // Check
               if (ancestor.equals(curTypeDeclaration))
-                throw new SemanticAnalyzerException("The hierarchy must be acyclic.") // TODO: Create different exception
+                throw new CyclicHierarchyException(ancestor.name)
               if (!visited.contains(ancestor))
-                ancestors += ancestor
+                ancestors enqueue ancestor
               // Augment parent class in the current type
-              front.add(ancestor)
+              if (EnvironmentComparisons.typeEquality(front, curTypeDeclaration))
+                front.add(ancestor)
             }
-            case _ => // TODO: Log this case?
+            case _ => Logger.logError(s"Parent type ${nameExpression.standardName} not visible to child type ${front.name.standardName}")
           }
-        case _ => // TODO: Log this case?
+        case _ =>
       }
-      front.superInterfaces.foreach(interface =>
-        curTypeDeclaration.compilationUnit.getVisibleType(interface) match {
+      front.superInterfaces.foreach(implmented =>
+        curTypeDeclaration.compilationUnit.getVisibleType(implmented) match {
           case Some(ancestor) => {
             // Check
             if (ancestor.equals(curTypeDeclaration))
-              throw new SemanticAnalyzerException("The hierarchy must be acyclic.") // TODO: Create different exception
+              throw new CyclicHierarchyException(ancestor.name)
             if (!visited.contains(ancestor))
-              ancestors += ancestor
+              ancestors enqueue ancestor
             // Augment interface in the current type
-            front.add(ancestor)
+            if (EnvironmentComparisons.typeEquality(front, curTypeDeclaration))
+              front.add(ancestor)
           }
-          case _ => // TODO: Log this case?
+          case _ => Logger.logError(s"Interface ${implmented.standardName} not visible to implementer ${front.name.standardName}")
         }
       )
     }
@@ -78,50 +82,29 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
   // A nonstatic method must not replace a static method.
   // A protected method must not replace a public method.
   // A method must not replace a final method.
-  // TODO: Use EnvironmentComparisons.containsModifier
   private def checkModifiers(childMethod: MethodDeclaration, parentMethod: MethodDeclaration) = {
-    val childModifiers = childMethod.modifiers.map(modifier =>
-      modifier.modifier.kind
-    )
-    val parentModifiers = parentMethod.modifiers.map(modifier =>
-      modifier.modifier.kind
-    )
-
-    if (!childModifiers.contains(TokenKind.Static) && parentModifiers.contains(TokenKind.Static)) {
-      // TODO: Create different exception
-      throw new SemanticAnalyzerException(
-        s"A nonstatic method must not replace a static method: ${childMethod.typedSignature} and ${parentMethod.typedSignature}"
-      )
+    if (!EnvironmentComparisons.containsModifier(childMethod.modifiers, Modifier.Static) &&
+        EnvironmentComparisons.containsModifier(parentMethod.modifiers, Modifier.Static)) {
+      throw new OverrideStaticMethodException(childMethod, parentMethod)
     }
-    if (childModifiers.contains(TokenKind.Protected) && parentModifiers.contains(TokenKind.Public)) {
-      // TODO: Create different exception
-      throw new SemanticAnalyzerException(
-        s"A protected method must not replace a public method: ${childMethod.typedSignature} and ${parentMethod.typedSignature}"
-      )
+    if (EnvironmentComparisons.containsModifier(childMethod.modifiers, Modifier.Protected) &&
+        EnvironmentComparisons.containsModifier(parentMethod.modifiers, Modifier.Public)) {
+      throw new OverrideStaticMethodException(childMethod, parentMethod)
     }
-    if (parentModifiers.contains(TokenKind.Final)) {
-      // TODO: Create different exception
-      throw new SemanticAnalyzerException(
-        s"A method must not replace a final method: ${childMethod.typedSignature} and ${parentMethod.typedSignature}"
-      )
+    if (EnvironmentComparisons.containsModifier(parentMethod.modifiers, Modifier.Final)) {
+      throw new OverrideFinalMethodException(childMethod, parentMethod)
     }
   }
 
   // A method must not replace a method with a different return type.
   private def checkReturnType(childMethod: MethodDeclaration, parentMethod: MethodDeclaration) = {
     (childMethod.returnType, parentMethod.returnType) match {
-      case (None, None) => {} // TODO: Log this case?
+      case (None, None) => {} // TODO: Set up special void return type?
       case (None, Some(_)) | (Some(_), None) =>
-        // TODO: Create different exception
-        throw new SemanticAnalyzerException(
-          s"A method must not replace a method with a different return type: ${childMethod.typedSignature} and ${parentMethod.typedSignature}"
-        )
+        throw new OverrideReturnTypeException(childMethod, parentMethod)
       case (Some(childRT), Some(parentRT)) => {
         if (!childRT.asName.standardName.equals(parentRT.asName.standardName))
-        // TODO: Create different exception
-          throw new SemanticAnalyzerException(
-            s"A method must not replace a method with a different return type: ${childMethod.typedSignature} and ${parentMethod.typedSignature}"
-          )
+          throw new OverrideReturnTypeException(childMethod, parentMethod)
       }
     }
   }
@@ -132,7 +115,7 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
 
     var visited: Set[TypeDeclaration] = Set()
 
-    var ancestors = mutable.Queue[TypeDeclaration]()
+    val ancestors = mutable.Queue[TypeDeclaration]()
     ancestors enqueue curTypeDeclaration
 
     while (!ancestors.isEmpty) {
@@ -156,15 +139,16 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
       }
       val interfaces = front.getAllImplementedInterfaces
       for (interface <- interfaces) {
-        interface.methods.foreach(method =>
+        val interfaceDeclaration = interface._2
+        interfaceDeclaration.methods.foreach(method =>
           if (method.localSignature.equals(curMethodDeclaration.localSignature)) {
             checkModifiers(curMethodDeclaration, method)
             checkReturnType(curMethodDeclaration, method)
           }
         )
 
-        if (!visited.contains(interface))
-          ancestors enqueue interface
+        if (!visited.contains(interfaceDeclaration))
+          ancestors enqueue interfaceDeclaration
       }
     }
   }

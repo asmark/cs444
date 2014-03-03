@@ -1,8 +1,9 @@
 package joos.semantic
 
-import joos.ast.declarations.{TypeDeclaration, FieldDeclaration, MethodDeclaration}
+import joos.ast.declarations.{PackageDeclaration, TypeDeclaration, FieldDeclaration, MethodDeclaration}
 import joos.ast.expressions.{SimpleNameExpression, NameExpression}
 import scala.collection.mutable
+import scala.language.implicitConversions
 
 trait TypeEnvironment extends Environment {
   self: TypeDeclaration =>
@@ -11,7 +12,11 @@ trait TypeEnvironment extends Environment {
   private[this] val methodMap = mutable.HashMap.empty[String, MethodDeclaration]
   private[this] val fieldMap = mutable.HashMap.empty[NameExpression, FieldDeclaration]
   private[this] var extendedClass: Option[TypeDeclaration] = None
-  private[this] val implementsMap = mutable.HashMap.empty[NameExpression, TypeDeclaration]
+  private[this] val implementedSet = mutable.HashSet.empty[(PackageDeclaration, TypeDeclaration)]
+
+  private implicit def typeWithPackage(typeDeclaration: TypeDeclaration) = {
+    (typeDeclaration.packageDeclaration, typeDeclaration)
+  }
 
   def add(method: MethodDeclaration): this.type = {
     if (method.isConstructor) {
@@ -39,10 +44,9 @@ trait TypeEnvironment extends Environment {
   def add(ancestor: TypeDeclaration): this.type = {
     ancestor.isInterface match {
       case true => {
-        if (implementsMap.contains(ancestor.name)) {
+        if (!implementedSet.add(ancestor)) {
           throw new DuplicatedDeclarationException(ancestor.name)
         }
-        implementsMap.put(ancestor.name, ancestor)
       }
       case false => {
         extendedClass match {
@@ -81,9 +85,5 @@ trait TypeEnvironment extends Environment {
     extendedClass
   }
 
-  def getImplementedInterface(name: NameExpression): Option[TypeDeclaration] = {
-    implementsMap.get(name)
-  }
-
-  def getAllImplementedInterfaces() = implementsMap.values
+  def getAllImplementedInterfaces() = implementedSet.toIterable
 }
