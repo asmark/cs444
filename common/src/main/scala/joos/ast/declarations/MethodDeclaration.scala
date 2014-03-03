@@ -25,7 +25,7 @@ case class MethodDeclaration(
   /**
    * Method name with argument types added
    */
-  def typedName = parameters.foldLeft(name.standardName) {
+  lazy val typedName = parameters.foldLeft(name.standardName) {
     (result, parameter) =>
       val name = result + '-' + getTypeName(parameter.variableType)
       parameter.variableType match {

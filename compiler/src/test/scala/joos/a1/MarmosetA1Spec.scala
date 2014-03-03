@@ -4,7 +4,7 @@ import org.scalatest.{Matchers, FlatSpec}
 import scala.io.Source
 import joos.ast.AbstractSyntaxTree
 import joos.ast.declarations.ModuleDeclaration
-import joos.analyzers.EnvironmentLinker
+import joos.analyzers.{SimpleHierarchyAnalyzer, EnvironmentLinker}
 
 class MarmosetA1Spec extends FlatSpec with Matchers {
 

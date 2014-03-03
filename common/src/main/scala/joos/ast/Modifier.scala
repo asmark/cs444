@@ -22,5 +22,6 @@ object Modifier {
   val Public = Modifier(TerminalToken("public", TokenKind.Public))
   val Abstract = Modifier(TerminalToken("abstract", TokenKind.Abstract))
   val Static = Modifier(TerminalToken("static", TokenKind.Static))
+  val Final = Modifier(TerminalToken("final", TokenKind.Static))
 
 }
