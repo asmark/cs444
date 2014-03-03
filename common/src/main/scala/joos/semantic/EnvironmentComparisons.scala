@@ -25,4 +25,13 @@ object EnvironmentComparisons {
 
   def containsModifier(modifiers: Seq[Modifier], contained: Modifier) = modifiers exists(_ equals contained)
 
+  def getQualifiedName(typeDeclaration:TypeDeclaration) = {
+    require(typeDeclaration.packageDeclaration != null)
+    typeDeclaration.packageDeclaration.name.standardName + "." + typeDeclaration.name.standardName
+  }
+
+  def isJavaLangObject(typeDeclaration: TypeDeclaration) = {
+    getQualifiedName(typeDeclaration) equals "java.lang.Object"
+  }
+
 }

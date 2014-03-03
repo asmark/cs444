@@ -6,6 +6,7 @@ import scala.collection.mutable
 import joos.tokens.TokenKind
 import joos.core.Logger
 import joos.semantic.EnvironmentComparisons
+import joos.ast.expressions.NameExpression
 
 /*
  Semantic Checks
@@ -25,6 +26,12 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
   // This function also stores the parent classes and interfaces of the hierarchy in the environment of each type declaration
   private def checkCyclic() = {
     val curTypeDeclaration = typeDeclarations.top
+
+    if (!EnvironmentComparisons.isJavaLangObject(curTypeDeclaration) &&
+        (curTypeDeclaration.superType equals None)) {
+      curTypeDeclaration.add(curTypeDeclaration.compilationUnit.getVisibleType(NameExpression("java.lang.Object")).get)
+    }
+
     var visited: Set[TypeDeclaration] = Set()
 
     val ancestors = mutable.Queue[TypeDeclaration]()
