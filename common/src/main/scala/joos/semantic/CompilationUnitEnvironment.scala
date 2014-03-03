@@ -37,7 +37,7 @@ trait CompilationUnitEnvironment extends Environment {
     }
   }
 
-  def checkDuplicates(onDemandType: Option[TypeDeclaration], concreteType: Option[TypeDeclaration]) = {
+  private def checkDuplicates(onDemandType: Option[TypeDeclaration], concreteType: Option[TypeDeclaration]) = {
     if (onDemandType.isDefined && concreteType.isDefined) {
       if (!(onDemandType.get eq concreteType.get)) {
         val typeName = onDemandType.get.name

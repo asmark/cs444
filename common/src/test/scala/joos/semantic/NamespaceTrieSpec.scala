@@ -39,6 +39,15 @@ class NamespaceTrieSpec extends FlatSpec with Matchers {
     namespace.getQualifiedType(MockQualifiedTypeName2) shouldBe Some(MockTypeDeclaration2)
   }
 
+  "Equivalent names in different packages" should "be visible" in {
+    val namespace = new NamespaceTrie
+    namespace.add(MockPackage1.name, Some(MockTypeDeclaration1))
+    namespace.add(MockPackage2.name, Some(MockTypeDeclaration1))
+
+    namespace.getQualifiedType(QualifiedNameExpression(MockPackage1.name, MockSimpleTypeName1)) shouldBe Some(MockTypeDeclaration1)
+    namespace.getQualifiedType(QualifiedNameExpression(MockPackage2.name, MockSimpleTypeName1)) shouldBe Some(MockTypeDeclaration1)
+  }
+
   "Multiple SimpleNames in a namespace" should "throw a collision exception" in {
     val namespace = new NamespaceTrie
     namespace.add(MockPackage1.name, Some(MockTypeDeclaration1))
