@@ -93,6 +93,18 @@ class CompilationUnitEnvironmentSpec extends FlatSpec with Matchers with BeforeA
     unit2.getVisibleType(MockSimpleTypeName1) shouldBe None
   }
 
+  "A concrete import and fully qualified type with same names" should "resolve correctly" in {
+    val unit1 = CompilationUnit(MockPackage1, Seq.empty, Some(MockTypeDeclaration1))
+    val unit2 = CompilationUnit(MockPackage2, Seq.empty, Some(MockTypeDeclaration1))
+    val unit3 = CompilationUnit(MockDefaultPackage, Seq(mockImport(MockPackage2, Some(MockSimpleTypeName1))), None)
+
+    mockLink(Seq(unit1,unit2,unit3))
+
+    unit3.getVisibleType(MockQualifiedTypeName1) shouldBe Some(MockTypeDeclaration1)
+    unit3.getVisibleType(MockSimpleTypeName1) shouldBe Some(MockTypeDeclaration1)
+
+  }
+
   "A concrete and on-demand import that overlap" should "resolve as a SimpleName" in {
     val unit1 = CompilationUnit(
       MockPackage1,
