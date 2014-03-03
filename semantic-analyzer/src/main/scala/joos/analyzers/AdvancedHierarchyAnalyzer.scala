@@ -1,7 +1,7 @@
 package joos.analyzers
 
 import joos.ast.declarations.{MethodDeclaration, TypeDeclaration, ModuleDeclaration}
-import joos.ast.{CompilationUnit, AstVisitor}
+import joos.ast.{Type, CompilationUnit, AstVisitor}
 import scala.collection.mutable
 import joos.tokens.TokenKind
 
@@ -17,8 +17,8 @@ import joos.tokens.TokenKind
  8. A method must not replace a final method.
 */
 class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstVisitor {
-  private[this] implicit var typeDeclarations = mutable.Stack[TypeDeclaration]()
-  private[this] var methodDeclarations = mutable.Stack[MethodDeclaration]()
+  private[this] implicit val typeDeclarations = mutable.Stack[TypeDeclaration]()
+  private[this] val methodDeclarations = mutable.Stack[MethodDeclaration]()
 
   // This function also stores the parent classes and interfaces of the hierarchy in the environment of each type declaration
   private def checkCyclic() = {
@@ -45,9 +45,9 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
               // Augment parent class in the current type
               front.add(ancestor)
             }
-            case _ =>
+            case _ => // TODO: Log this case?
           }
-        case _ =>
+        case _ => // TODO: Log this case?
       }
       front.superInterfaces.foreach(interface =>
         curTypeDeclaration.compilationUnit.getVisibleType(interface) match {
@@ -60,7 +60,7 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
             // Augment interface in the current type
             front.add(ancestor)
           }
-          case _ =>
+          case _ => // TODO: Log this case?
         }
       )
     }
@@ -78,6 +78,7 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
   // A nonstatic method must not replace a static method.
   // A protected method must not replace a public method.
   // A method must not replace a final method.
+  // TODO: Use EnvironmentComparisons.containsModifier
   private def checkModifiers(childMethod: MethodDeclaration, parentMethod: MethodDeclaration) = {
     val childModifiers = childMethod.modifiers.map(modifier =>
       modifier.modifier.kind
@@ -106,8 +107,8 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
   // A method must not replace a method with a different return type.
   private def checkReturnType(childMethod: MethodDeclaration, parentMethod: MethodDeclaration) = {
     (childMethod.returnType, parentMethod.returnType) match {
-      case (None, None) => {}
-      case (None, Some(parentRT)) | (Some(childRT), None) =>
+      case (None, None) => {} // TODO: Log this case?
+      case (None, Some(_)) | (Some(_), None) =>
         throw new SemanticAnalyzerException(
           s"A method must not replace a method with a different return type: ${childMethod.typedSignature} and ${parentMethod.typedSignature}"
         )

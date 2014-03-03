@@ -34,6 +34,6 @@ trait AstVisitor {
   def apply(statement: IfStatement) {}
   def apply(statement: ReturnStatement) {}
   def apply(statement: WhileStatement) {}
-  def apply(compilationUnit: CompilationUnit)
+  def apply(compilationUnit: CompilationUnit) {}
   def apply(node: Block) {}
 }

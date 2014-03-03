@@ -2,10 +2,10 @@ package joos.scanner
 
 import joos.automata._
 import joos.exceptions.ScanningException
+import joos.tokens.TerminalToken
 import scala.Some
 import scala.collection.mutable
 import scala.io.Source
-import joos.tokens.{TerminalToken, Token}
 
 class Scanner(dfa: Dfa) {
 
