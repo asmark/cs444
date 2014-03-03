@@ -1,8 +1,9 @@
 package joos.analyzers
-import joos.ast.declarations.{TypeDeclaration, ModuleDeclaration}
+import joos.ast.declarations.{PackageDeclaration, TypeDeclaration, ModuleDeclaration}
 import joos.ast._
 import joos.tokens.TokenKind
 import scala.Some
+import scala.collection.mutable
 
 class SimpleHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstVisitor {
 
@@ -55,25 +56,26 @@ class SimpleHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstVis
           case _ =>
         }
 
-        var qualifiedInterfaces: Set[TypeDeclaration] = Set()
+        val qualifiedInterfaces = mutable.HashSet.empty[(PackageDeclaration, TypeDeclaration)]
         // A class must not implement a class.
-        typeDeclaration.superInterfaces.foreach(interface =>
+        typeDeclaration.superInterfaces.foreach{interface =>
           typeDeclaration.compilationUnit.getVisibleType(interface) match {
             case Some(aType) => {
               aType.isInterface match {
                 case false => throw new SemanticAnalyzerException("A class must not implement a class.")
                 case true => {
-                  if (qualifiedInterfaces.contains(aType)) {
+                  val qualifiedInterface = (aType.packageDeclaration, aType)
+                  if (qualifiedInterfaces.contains(qualifiedInterface)) {
                     throw new SemanticAnalyzerException("An interface must not be repeated in an implements clause.")
                   } else {
-                    qualifiedInterfaces += aType
+                    qualifiedInterfaces += qualifiedInterface
                   }
                 }
               }
             }
-            case _ =>
+            case _ => // TODO: Log this or something.
           }
-        )
+        }
 
       }
     }
