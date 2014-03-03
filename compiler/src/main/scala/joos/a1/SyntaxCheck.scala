@@ -17,8 +17,10 @@ import joos.ast.exceptions.AstConstructionException
 
 object SyntaxCheck {
 
+  lazy val joosDfa = Dfa.deserialize(new FileInputStream(resources.lexerDfa))
+  lazy val actionTable = LrOneReader(new FileInputStream(resources.lalr1Table)).actionTable
+
   private[this] def tokenize(path: String): Seq[TerminalToken] = {
-    val joosDfa = Dfa.deserialize(new FileInputStream(resources.lexerDfa))
     val scanner = Scanner(joosDfa)
 
     val source = Source.fromFile(path)
@@ -26,9 +28,7 @@ object SyntaxCheck {
     source.close()
     tokens
   }
-
   private def parse(tokens: Seq[TerminalToken]): ParseTree = {
-    val actionTable = LrOneReader(new FileInputStream(resources.lalr1Table)).actionTable
     ParseTreeBuilder(actionTable).build(tokens)
   }
 
