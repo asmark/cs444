@@ -39,7 +39,7 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
             case Some(ancestor) => {
               // Check
               if (ancestor.equals(curTypeDeclaration))
-                throw new SemanticAnalyzerException("The hierarchy must be acyclic.")
+                throw new SemanticAnalyzerException("The hierarchy must be acyclic.") // TODO: Create different exception
               if (!visited.contains(ancestor))
                 ancestors += ancestor
               // Augment parent class in the current type
@@ -54,7 +54,7 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
           case Some(ancestor) => {
             // Check
             if (ancestor.equals(curTypeDeclaration))
-              throw new SemanticAnalyzerException("The hierarchy must be acyclic.")
+              throw new SemanticAnalyzerException("The hierarchy must be acyclic.") // TODO: Create different exception
             if (!visited.contains(ancestor))
               ancestors += ancestor
             // Augment interface in the current type
@@ -88,16 +88,19 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
     )
 
     if (!childModifiers.contains(TokenKind.Static) && parentModifiers.contains(TokenKind.Static)) {
+      // TODO: Create different exception
       throw new SemanticAnalyzerException(
         s"A nonstatic method must not replace a static method: ${childMethod.typedSignature} and ${parentMethod.typedSignature}"
       )
     }
     if (childModifiers.contains(TokenKind.Protected) && parentModifiers.contains(TokenKind.Public)) {
+      // TODO: Create different exception
       throw new SemanticAnalyzerException(
         s"A protected method must not replace a public method: ${childMethod.typedSignature} and ${parentMethod.typedSignature}"
       )
     }
     if (parentModifiers.contains(TokenKind.Final)) {
+      // TODO: Create different exception
       throw new SemanticAnalyzerException(
         s"A method must not replace a final method: ${childMethod.typedSignature} and ${parentMethod.typedSignature}"
       )
@@ -109,11 +112,13 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
     (childMethod.returnType, parentMethod.returnType) match {
       case (None, None) => {} // TODO: Log this case?
       case (None, Some(_)) | (Some(_), None) =>
+        // TODO: Create different exception
         throw new SemanticAnalyzerException(
           s"A method must not replace a method with a different return type: ${childMethod.typedSignature} and ${parentMethod.typedSignature}"
         )
       case (Some(childRT), Some(parentRT)) => {
         if (!childRT.asName.standardName.equals(parentRT.asName.standardName))
+        // TODO: Create different exception
           throw new SemanticAnalyzerException(
             s"A method must not replace a method with a different return type: ${childMethod.typedSignature} and ${parentMethod.typedSignature}"
           )
