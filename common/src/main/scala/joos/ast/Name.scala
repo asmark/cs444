@@ -6,7 +6,7 @@ trait Name {
    */
   def standardName: String
 
-  override def toString = standardName
+  override implicit def toString = standardName
 
   override def hashCode = standardName.hashCode
 
