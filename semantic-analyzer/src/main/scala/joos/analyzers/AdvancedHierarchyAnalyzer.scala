@@ -86,7 +86,7 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
     typeDeclarations.pop
   }
 
-  // A nonstatic method must not replace a static method.
+  // A non-static method must not replace a static method.
   // A protected method must not replace a public method.
   // A method must not replace a final method.
   private def checkModifiers(childMethod: MethodDeclaration, parentMethod: MethodDeclaration) = {
@@ -96,7 +96,7 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
     }
     if (EnvironmentComparisons.containsModifier(childMethod.modifiers, Modifier.Protected) &&
         EnvironmentComparisons.containsModifier(parentMethod.modifiers, Modifier.Public)) {
-      throw new OverrideStaticMethodException(childMethod, parentMethod)
+      throw new OverrideProtectedMethodException(childMethod, parentMethod)
     }
     if (EnvironmentComparisons.containsModifier(parentMethod.modifiers, Modifier.Final)) {
       throw new OverrideFinalMethodException(childMethod, parentMethod)
