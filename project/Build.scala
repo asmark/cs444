@@ -15,6 +15,7 @@ object Joos1wCompilerBuild extends Build {
     crossPaths := false,
     fork in run := true,
     fork in test := false,
+    testOptions in testQuick in Test += Tests.Argument("-l", "joos.test.tags.IntegrationTest"),
     version := "2.0.0",
     scalaVersion := "2.10.3",
     scalacOptions := Seq(
