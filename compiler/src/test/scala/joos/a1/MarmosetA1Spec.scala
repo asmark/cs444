@@ -1,10 +1,8 @@
 package joos.a1
 
+import joos.test.tags.IntegrationTest
 import org.scalatest.{Matchers, FlatSpec}
 import scala.io.Source
-import joos.ast.AbstractSyntaxTree
-import joos.ast.declarations.ModuleDeclaration
-import joos.analyzers.{SimpleHierarchyAnalyzer, EnvironmentLinker}
 
 class MarmosetA1Spec extends FlatSpec with Matchers {
 
@@ -16,7 +14,7 @@ class MarmosetA1Spec extends FlatSpec with Matchers {
   behavior of "Parsing valid joos"
   getSource(validJoos).getLines().foreach {
     file =>
-      it should s"accept ${file}" in {
+      it should s"accept ${file}" taggedAs (IntegrationTest) in {
         val filePath = getClass.getResource(validJoos + "/" + file).getPath
         val result = SyntaxCheck(filePath)
         result shouldNot be(None)
@@ -26,7 +24,7 @@ class MarmosetA1Spec extends FlatSpec with Matchers {
   behavior of "Parsing invalid joos"
   getSource(invalidJoos).getLines().foreach {
     file =>
-      it should s"reject ${file}" in {
+      it should s"reject ${file}" taggedAs (IntegrationTest) in {
         val filePath = getClass.getResource(invalidJoos + "/" + file).getPath
         val result = SyntaxCheck(filePath)
         result shouldBe (None)
