@@ -2,11 +2,10 @@ package joos.a2
 
 import java.io.File
 import joos.a1.SyntaxCheck
-import joos.ast.declarations.ModuleDeclaration
 import joos.ast.AbstractSyntaxTree
 import joos.semantic.SemanticException
 import org.scalatest.{Matchers, FlatSpec}
-import joos.analyzers.{TypeEnvironmentBuilder, EnvironmentLinker}
+import joos.analyzers.TypeEnvironmentBuilder
 
 class MarmosetA2Spec extends FlatSpec with Matchers {
 
@@ -49,6 +48,4 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
       }
     }
   }
-
-
 }

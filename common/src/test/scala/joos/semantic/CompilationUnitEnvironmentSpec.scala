@@ -3,7 +3,7 @@ package joos.semantic
 import joos.ast.CompilationUnit
 import org.scalatest.{BeforeAndAfterEach, Matchers, FlatSpec}
 
-class CompilationUnitEnvironmentSpec extends FlatSpec with Matchers with BeforeAndAfterEach {
+class CompilationUnitEnvironmentSpec extends FlatSpec with Matchers {
 
   "Zero imports and no package declaration" should "only resolve SimpleNames within default package" in {
     val defaultUnit1 = CompilationUnit(MockDefaultPackage, Seq.empty, Some(MockDefaultDeclaration1))
@@ -198,15 +198,4 @@ class CompilationUnitEnvironmentSpec extends FlatSpec with Matchers with BeforeA
       unit1.getVisibleType(MockSimpleTypeName1)
     }
   }
-
-  // Test Compilation Units
-  // ... with no imports (Default package)
-  // ... with no imports (Default package and self)
-  // ... with one concrete import
-  // ... with one on demand import with no ambiguities
-  // ... with one on demand import with ambiguities
-  // ... with multiple concrete imports with ambiguities
-  // ... with one concrete import and on demand with ambiguity
-
-
 }

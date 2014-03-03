@@ -5,7 +5,6 @@ import AssemblyKeys._
 
 object Dependencies {
   val scalaTest = "org.scalatest" % "scalatest_2.10" % "2.0" % "test"
-  val guava = "com.google.guava" % "guava" % "r09"
 }
 
 object Joos1wCompilerBuild extends Build {
@@ -15,6 +14,7 @@ object Joos1wCompilerBuild extends Build {
   val commonSettings = Defaults.defaultSettings ++ Seq(
     crossPaths := false,
     fork in run := true,
+    fork in test := false,
     version := "2.0.0",
     scalaVersion := "2.10.3",
     scalacOptions := Seq(
@@ -26,8 +26,7 @@ object Joos1wCompilerBuild extends Build {
       "-encoding", "utf8"
     ),
     libraryDependencies ++= Seq(
-      Dependencies.scalaTest,
-      Dependencies.guava
+      Dependencies.scalaTest
     )
   ) ++ assemblySettings ++ Seq(
     test in assembly := {}
