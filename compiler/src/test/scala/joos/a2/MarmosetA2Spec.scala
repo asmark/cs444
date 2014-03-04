@@ -5,6 +5,7 @@ import joos.a1.SyntaxCheck
 import joos.semantic.SemanticException
 import joos.test.tags.IntegrationTest
 import org.scalatest.{Matchers, FlatSpec}
+import joos.core.Logger
 
 class MarmosetA2Spec extends FlatSpec with Matchers {
 
@@ -29,7 +30,7 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
         case None => fail(s"Was not able to SyntaxCheck ${testCase.getName}")
         case Some(ast) => ast
       }
-      SemanticCheck(asts)
+      NameResolution(asts)
     }
   }
 
@@ -40,10 +41,10 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
 
       intercept[SemanticException] {
         val asts = files map SyntaxCheck.apply collect {
-          case None => fail(s"Was not able to SyntaxCheck ${testCase.getName}")
+          case None => throw new SemanticException(s"Was not able to SyntaxCheck ${testCase.getName}")
           case Some(ast) => ast
         }
-        SemanticCheck(asts)
+        NameResolution(asts)
       }
     }
   }

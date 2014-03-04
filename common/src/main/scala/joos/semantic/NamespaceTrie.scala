@@ -1,9 +1,9 @@
 package joos.semantic
 
-import joos.ast.declarations.{PackageDeclaration, TypeDeclaration}
+import joos.ast.declarations.TypeDeclaration
 import joos.ast.expressions.{SimpleNameExpression, QualifiedNameExpression, NameExpression}
-import scala.collection.mutable
 import joos.core.Logger
+import scala.collection.mutable
 
 class NamespaceTrie {
 
@@ -34,8 +34,8 @@ class NamespaceTrie {
           children.put(typeName, newNode)
           newNode
         }
-        case Some(node @ TypeNode(otherType)) => {
-          if (EnvironmentComparisons.typeEquality(typeDeclaration, otherType)) {
+        case Some(node@TypeNode(otherType)) => {
+          if (typeDeclaration eq otherType) {
             node
           } else {
             Logger.logError(s"${typeName} had an existing declaration in this namespace")
@@ -62,7 +62,7 @@ class NamespaceTrie {
         node = node.addPackage(segment)
     }
 
-    typeDeclaration map (node.addType(_))
+    typeDeclaration map node.addType
   }
 
   def getAllTypesInPackage(packageName: NameExpression): Seq[TypeDeclaration] = {
@@ -76,7 +76,7 @@ class NamespaceTrie {
     }
 
     node match {
-      case Some(PackageNode(children)) => children.values.collect { case TypeNode(typeDeclaration) => typeDeclaration }.toSeq
+      case Some(PackageNode(children)) => children.values.collect { case TypeNode(typeDeclaration) => typeDeclaration}.toSeq
       case _ => throw new MissingTypeException(packageName)
     }
   }
@@ -87,7 +87,7 @@ class NamespaceTrie {
     while (!bfs.isEmpty) {
       bfs.dequeue() match {
         case TypeNode(typeDeclaration) => if (typeDeclaration.name equals name) types = typeDeclaration +: types
-        case PackageNode(children) => children.values foreach(bfs.enqueue(_))
+        case PackageNode(children) => children.values foreach (bfs.enqueue(_))
       }
     }
     if (types.size > 1) throw new NamespaceCollisionException(name) else types.headOption

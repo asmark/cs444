@@ -2,7 +2,7 @@ package joos.ast.declarations
 
 import joos.ast._
 import joos.ast.exceptions.AstConstructionException
-import joos.ast.expressions.{NameExpression, SimpleNameExpression}
+import joos.ast.expressions.{QualifiedNameExpression, NameExpression, SimpleNameExpression}
 import joos.language.ProductionRule
 import joos.parsetree.ParseTreeNode
 import joos.parsetree.TreeNode
@@ -12,20 +12,19 @@ import scala.Some
 case class MethodDeclaration(
     modifiers: Seq[Modifier],
     returnType: Option[Type],
-    name: NameExpression,
+    name: SimpleNameExpression,
     parameters: IndexedSeq[SingleVariableDeclaration],
     body: Option[Block],
     isConstructor: Boolean)
     extends BodyDeclaration {
-
-  var typeDeclaration: TypeDeclaration = null
   var compilationUnit: CompilationUnit = null
+  var typeDeclaration: TypeDeclaration = null
   var environment: BlockEnvironment = null
 
   /**
-   * Method name with argument types added
+   * Method signature with argument types added
    */
-  lazy val typedName = parameters.foldLeft(name.standardName) {
+  lazy val typedSignature = parameters.foldLeft(name.standardName) {
     (result, parameter) =>
       val name = result + '-' + getTypeName(parameter.variableType)
       parameter.variableType match {
@@ -34,11 +33,31 @@ case class MethodDeclaration(
       }
   }
 
-  private[this] def getTypeName(t: Type) = {
+  lazy val localSignature = {
+    val localMethodName = name match {
+      case simpleNameExpression: SimpleNameExpression => {
+        simpleNameExpression.standardName
+      }
+    }
+
+    parameters.foldLeft(localMethodName) {
+      (result, parameter) =>
+        val name = result + '-' + getTypeName(parameter.variableType)
+        parameter.variableType match {
+          case _: ArrayType => name + "[]"
+          case _ => name
+        }
+    }
+  }
+
+  private[this] def getTypeName(t: Type):String = {
     t match {
-      case x: PrimitiveType => x.token.lexeme
-      case ArrayType(x: PrimitiveType, _) => x.token.lexeme
-      case x => compilationUnit.getVisibleType(x.asName).map(_.id)
+      case PrimitiveType(token) => token.lexeme
+      case ArrayType(x, _) => getTypeName(x)
+      case SimpleType(name) => {
+        val typeDeclaration = compilationUnit.getVisibleType(name).get
+        typeDeclaration.packageDeclaration.name.standardName + '.' + typeDeclaration.name.standardName
+      }
     }
   }
 }

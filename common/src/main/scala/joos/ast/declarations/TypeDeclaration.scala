@@ -3,7 +3,6 @@ package joos.ast.declarations
 import joos.ast.exceptions.AstConstructionException
 import joos.ast.expressions.{SimpleNameExpression, NameExpression}
 import joos.ast.{CompilationUnit, Modifier}
-import joos.core.UniqueIdGenerator
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.semantic.TypeEnvironment
@@ -18,15 +17,11 @@ case class TypeDeclaration (
     methods: Seq[MethodDeclaration])
     extends BodyDeclaration
     with TypeEnvironment {
-  val id = TypeDeclaration.nextId()
   var compilationUnit: CompilationUnit = null
   var packageDeclaration: PackageDeclaration = null
 }
 
-object TypeDeclaration extends UniqueIdGenerator {
-  def newPrimitiveType(name: String): TypeDeclaration = {
-    new TypeDeclaration(Seq(), false, SimpleNameExpression(name), None, Seq(), Seq(), Seq())
-  }
+object TypeDeclaration {
 
   private def createInterfaceNodes(ptn: ParseTreeNode): Seq[NameExpression] = {
     ptn match {

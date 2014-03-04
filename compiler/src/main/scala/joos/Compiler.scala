@@ -1,7 +1,7 @@
 package joos
 
 import joos.a1.SyntaxCheck
-import joos.a2.SemanticCheck
+import joos.a2.NameResolution
 import joos.semantic.SemanticException
 
 object Compiler {
@@ -14,7 +14,7 @@ object Compiler {
       }
 
       try {
-        SemanticCheck(asts)
+        NameResolution(asts)
       } catch {
         case e: SemanticException => sys.exit(42)
       }

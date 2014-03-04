@@ -1,22 +1,30 @@
-package joos.analyzers
+package joos.semantic.names.environment
 
 import joos.ast._
 import joos.ast.declarations._
 import joos.ast.expressions.VariableDeclarationExpression
 import joos.semantic.BlockEnvironment
 
-class EnvironmentLinker(implicit module: ModuleDeclaration) extends AstVisitor {
+/**
+ * Environment builder is responsible for the following name resolution checks:
+ *
+ * DONE: No two fields declared in the same class may have the same name.
+ * DONE: No two local variables with overlapping scope have the same name.
+ * DONE: No two classes or interfaces have the same canonical name.
+ */
+class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor {
   private[this] implicit var typed: TypeDeclaration = null
   private[this] var unit: CompilationUnit = null
   private[this] var packaged: PackageDeclaration = null
-  private[this] var method: MethodDeclaration = null
   private[this] var block: BlockEnvironment = null
 
   override def apply(unit: CompilationUnit) {
     this.unit = unit
-    packaged = unit.packageDeclaration
+    this.packaged = unit.packageDeclaration
+
     module.add(unit)
     unit.moduleDeclaration = module
+
     unit.typeDeclaration.map(_.accept(this))
   }
 
@@ -24,17 +32,29 @@ class EnvironmentLinker(implicit module: ModuleDeclaration) extends AstVisitor {
     this.typed = typed
     typed.compilationUnit = unit
     typed.packageDeclaration = packaged
+
+    typed.fields foreach {
+      field =>
+        if (typed.fieldMap.contains(field.declarationName)) {
+          throw new DuplicatedFieldException(field.declarationName)
+        }
+        typed.fieldMap.put(field.declarationName, field)
+    }
     typed.methods.foreach(_.accept(this))
   }
 
   override def apply(method: MethodDeclaration) {
-    this.method = method
-    method.compilationUnit = unit
     method.environment = method.parameters.foldRight(BlockEnvironment()) {
-      (variable, environment) => environment.add(variable)
+      (variable, environment) =>
+        environment.add(variable) match {
+          case Some(blockEnvironment) => blockEnvironment
+          case None => throw new DuplicatedVariableException(variable.declarationName)
+        }
     }
+    method.compilationUnit = unit
     method.typeDeclaration = typed
     block = method.environment
+
     method.body.map(_.accept(this))
   }
 
@@ -64,8 +84,12 @@ class EnvironmentLinker(implicit module: ModuleDeclaration) extends AstVisitor {
     block = oldBlock
   }
 
+
   override def apply(expression: VariableDeclarationExpression) {
-    block = block.add(expression)
+    block = block.add(expression) match {
+      case Some(blockEnvironment) => blockEnvironment
+      case None => throw new DuplicatedVariableException(expression.declarationName)
+    }
   }
 
   override def apply(statement: ForStatement) {
