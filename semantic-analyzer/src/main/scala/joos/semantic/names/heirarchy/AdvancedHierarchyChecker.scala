@@ -5,6 +5,8 @@ import joos.ast.{Modifier, CompilationUnit, AstVisitor}
 import joos.core.Logger
 import joos.semantic.EnvironmentComparisons
 import scala.collection.mutable
+import joos.semantic._
+import joos.ast.expressions.NameExpression
 
 /**
  * AdvancedHierarchyChecker is responsible for the following name resolution checks:
@@ -22,6 +24,39 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
   private[this] implicit val typeDeclarations = mutable.Stack[TypeDeclaration]()
   private[this] val methodDeclarations = mutable.Stack[MethodDeclaration]()
 
+  def getTypeDeclaration(name: NameExpression)(implicit unit: CompilationUnit): TypeDeclaration = {
+    unit.getVisibleType(name) match {
+      case None => {
+        val error = s"Cannot resolve ${name} to a type"
+        Logger.logError(error)
+        throw new SemanticException(error)
+      }
+      case Some(t) => t
+    }
+  }
+
+  def fullName(typeDeclaration: TypeDeclaration) = {
+    require(typeDeclaration.packageDeclaration != null)
+    val ret = s"${typeDeclaration.packageDeclaration.name.standardName}.${typeDeclaration.name.standardName}"
+    ret
+  }
+
+  // Refactor out the following function
+  private val javaLangObject = NameExpression("java.lang.Object")
+  def getSuperType(typeDeclaration: TypeDeclaration): Option[TypeDeclaration] = {
+    val compilationUnit = typeDeclaration.compilationUnit
+    val theFullName = fullName(typeDeclaration)
+    theFullName equals javaLangObject.standardName match {
+      case true => None
+      case false => {
+        Some(typeDeclaration.superType match {
+          case Some(superType) => getTypeDeclaration(superType)(compilationUnit)
+          case None => getTypeDeclaration(javaLangObject)(compilationUnit)
+        })
+      }
+    }
+  }
+
   // This function also stores the parent classes and interfaces of the hierarchy in the environment of each type declaration
   private def checkCyclic() = {
     val curTypeDeclaration = typeDeclarations.top
@@ -35,19 +70,15 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
 
       visited += front
 
-      front.superType match {
-        case Some(nameExpression) =>
-          curTypeDeclaration.compilationUnit.getVisibleType(nameExpression) match {
-            case Some(ancestor) => {
-              // Check
-              if (ancestor.equals(curTypeDeclaration))
-                throw new CyclicHierarchyException(ancestor.name)
-              if (!visited.contains(ancestor))
-                ancestors enqueue ancestor
-            }
-            case _ => Logger.logError(s"Parent type ${nameExpression.standardName} not visible to child type ${front.name.standardName}")
-          }
-        case _ =>
+      getSuperType(front) match {
+        case Some(ancestor) => {
+          // Check
+          if (ancestor.equals(curTypeDeclaration))
+            throw new CyclicHierarchyException(ancestor.name)
+          if (!visited.contains(ancestor))
+            ancestors enqueue ancestor
+        }
+        case None =>
       }
 
       front.superInterfaces.foreach {
@@ -125,9 +156,9 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
 
       visited += front
 
-      front.superType match {
-        case Some(superType) => {
-          superType.methods.foreach(
+      getSuperType(front) match {
+        case Some(ancestor) => {
+          ancestor.methods.foreach(
             method =>
               if (method.localSignature.equals(curMethodDeclaration.localSignature)) {
                 checkModifiers(curMethodDeclaration, method)
@@ -135,11 +166,12 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
               }
           )
 
-          if (!visited.contains(superType))
-            ancestors enqueue superType
+          if (!visited.contains(ancestor))
+            ancestors enqueue ancestor
         }
-        case _ =>
+        case None =>
       }
+
       val interfaces = front.superInterfaces
       for (interface <- interfaces) {
         interface.methods.foreach(
