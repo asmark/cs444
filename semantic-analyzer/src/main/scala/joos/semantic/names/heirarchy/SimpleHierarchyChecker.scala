@@ -4,7 +4,6 @@ import joos.ast._
 import joos.ast.declarations.{PackageDeclaration, TypeDeclaration, ModuleDeclaration}
 import joos.ast.expressions.NameExpression
 import joos.semantic.EnvironmentComparisons
-import joos.semantic.names.SimpleHierarchyException
 import scala.collection.mutable
 
 /**
@@ -59,9 +58,9 @@ class SimpleHierarchyChecker(implicit module: ModuleDeclaration) extends AstVisi
     interfaceNames foreach {
       interface =>
         if (!interface.isInterface) {
-          throw new SimpleHierarchyException(InvalidImplementedType(interface))
+          throw new InvalidImplementedTypeException(interface)
         } else if (!interfaceSet.add(interface.packageDeclaration, interface)) {
-          throw new SimpleHierarchyException(DuplicateImplementedInterface(interface))
+          throw new DuplicateImplementedInterfaceException(interface)
         }
     }
   }
@@ -71,9 +70,9 @@ class SimpleHierarchyChecker(implicit module: ModuleDeclaration) extends AstVisi
     superTypeName map {
       superType =>
         if (superType.isInterface) {
-          throw new SimpleHierarchyException(InvalidExtendedType(superType))
+          throw new InvalidExtendedTypeException(superType)
         } else if (EnvironmentComparisons.containsModifier(superType.modifiers, Modifier.Final)) {
-          throw new SimpleHierarchyException(InvalidExtendedClass(superType))
+          throw new InvalidExtendedClassException(superType)
         }
     }
   }

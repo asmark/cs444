@@ -1,11 +1,27 @@
 package joos.semantic.names.heirarchy
 
-import joos.semantic.SemanticException
+import joos.ast.declarations.{TypeDeclaration, MethodDeclaration}
 import joos.ast.expressions.NameExpression
-import joos.ast.declarations.MethodDeclaration
 import joos.semantic.names.NameResolutionException
 
 class HierarchyException(msg: String) extends NameResolutionException(msg)
+
+// Simple checks
+
+class InvalidExtendedClassException(extendedType: TypeDeclaration)(implicit typeDeclaration: TypeDeclaration)
+    extends NameResolutionException(s"${typeDeclaration} extends ${extendedType} which is final")
+
+class InvalidExtendedTypeException(extendedType: TypeDeclaration)(implicit typeDeclaration: TypeDeclaration)
+    extends NameResolutionException(s"${typeDeclaration} extends ${extendedType} which is not a class")
+
+
+class InvalidImplementedTypeException(implementedType: TypeDeclaration)(implicit typeDeclaration: TypeDeclaration)
+    extends NameResolutionException(s"${typeDeclaration} implements ${implementedType} which is not an interface")
+
+class DuplicateImplementedInterfaceException(implementedType: TypeDeclaration)(implicit typeDeclaration: TypeDeclaration)
+    extends NameResolutionException(s"${typeDeclaration} implements ${implementedType} twice")
+
+// Advanced checks
 
 class CyclicHierarchyException(name: NameExpression) extends HierarchyException(s"Cycle detected at ${name.standardName}")
 
