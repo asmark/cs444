@@ -1,9 +1,8 @@
 package joos.analyzers
 
 import joos.ast.declarations.{MethodDeclaration, TypeDeclaration, ModuleDeclaration}
-import joos.ast.{Modifier, Type, CompilationUnit, AstVisitor}
+import joos.ast.{Modifier, CompilationUnit, AstVisitor}
 import scala.collection.mutable
-import joos.tokens.TokenKind
 import joos.core.Logger
 import joos.semantic.EnvironmentComparisons
 import joos.ast.expressions.NameExpression
@@ -27,11 +26,6 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
   private def checkCyclic() = {
     val curTypeDeclaration = typeDeclarations.top
 
-    if (!EnvironmentComparisons.isJavaLangObject(curTypeDeclaration) &&
-        (curTypeDeclaration.superType equals None)) {
-      curTypeDeclaration.add(curTypeDeclaration.compilationUnit.getVisibleType(NameExpression("java.lang.Object")).get)
-    }
-
     var visited: Set[TypeDeclaration] = Set()
 
     val ancestors = mutable.Queue[TypeDeclaration]()
@@ -53,6 +47,7 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
                 ancestors enqueue ancestor
               // Augment parent class in the current type
               if (EnvironmentComparisons.typeEquality(front, curTypeDeclaration))
+                // TODO: Take this out. We should not be initializing half of the TypeEnvironment here and half elsewhere
                 front.add(ancestor)
             }
             case _ => Logger.logError(s"Parent type ${nameExpression.standardName} not visible to child type ${front.name.standardName}")
@@ -130,7 +125,7 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
 
       visited += front
 
-      front.getExtendedClass match {
+      front.superType match {
         case Some(superType) => {
           superType.methods.foreach(method =>
             if (method.localSignature.equals(curMethodDeclaration.localSignature)) {

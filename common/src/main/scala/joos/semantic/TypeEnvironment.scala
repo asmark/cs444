@@ -11,8 +11,6 @@ trait TypeEnvironment extends Environment {
   private[this] val constructors = mutable.LinkedHashMap.empty[String, MethodDeclaration]
   private[this] val methodMap = mutable.HashMap.empty[String, MethodDeclaration]
   private[this] val fieldMap = mutable.HashMap.empty[NameExpression, FieldDeclaration]
-  private[this] var extendedClass: Option[TypeDeclaration] = None
-  private[this] val implementedSet = mutable.HashSet.empty[(PackageDeclaration, TypeDeclaration)]
 
   private implicit def typeWithPackage(typeDeclaration: TypeDeclaration) = {
     (typeDeclaration.packageDeclaration, typeDeclaration)
@@ -41,25 +39,6 @@ trait TypeEnvironment extends Environment {
     this
   }
 
-  def add(ancestor: TypeDeclaration): this.type = {
-    ancestor.isInterface match {
-      case true => {
-        if (!implementedSet.add(ancestor)) {
-          throw new DuplicatedDeclarationException(ancestor.name)
-        }
-      }
-      case false => {
-        extendedClass match {
-          case Some(superType) =>
-            throw new DuplicatedDeclarationException(ancestor.name)
-          case None =>
-            extendedClass = Some(ancestor)
-        }
-      }
-    }
-    this
-  }
-
   /**
    * Gets the field by its {{name}}
    */
@@ -80,10 +59,4 @@ trait TypeEnvironment extends Environment {
   def getConstructor(constructor: MethodDeclaration): Option[MethodDeclaration] = {
     constructors.get(constructor.typedSignature)
   }
-
-  def getExtendedClass(): Option[TypeDeclaration] = {
-    extendedClass
-  }
-
-  def getAllImplementedInterfaces() = implementedSet.toIterable
 }

@@ -16,7 +16,7 @@ import scala.collection.mutable
  * (4) Class A extends B => B must not be final
  * (5) Class A has constructor X, Y => X, Y must have distinct parameter types {{{TODO}}}
  */
-class SimpleHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstVisitor {
+class SimpleHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstVisitor with TypeHierarchyAnalyzer {
 
   private def InvalidExtendedClass(extendedType: TypeDeclaration)(implicit typeDeclaration: TypeDeclaration) = {
     s"${typeDeclaration} extends ${extendedType} which is final"
@@ -33,11 +33,6 @@ class SimpleHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstVis
   private def DuplicateImplementedInterface(implementedType: TypeDeclaration)(implicit typeDeclaration: TypeDeclaration) = {
     s"${typeDeclaration} implements ${implementedType} twice"
   }
-
-  private def getType(typeName: NameExpression)(implicit typeDeclaration: TypeDeclaration) = {
-    typeDeclaration.compilationUnit.getVisibleType(typeName)
-  }
-
 
   override def apply(unit: CompilationUnit) {
     unit.typeDeclaration.map(_.accept(this))
@@ -62,7 +57,7 @@ class SimpleHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstVis
     val interfaceSet = mutable.HashSet.empty[(PackageDeclaration, TypeDeclaration)]
     interfaceNames foreach {
       interfaceName =>
-        getType(interfaceName) match {
+        interfaceName match {
           case None => throw new InvalidTypeReferenceException(interfaceName)
           case Some(interface) => {
             if (!interface.isInterface) {
