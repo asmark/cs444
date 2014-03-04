@@ -35,9 +35,13 @@ package object semantic {
     }
   }
 
+  def MockStdLib = CompilationUnit(PackageDeclaration("java.lang"), Seq.empty, None)
+
   // Links the compilation units
   def mockLink(compilationUnits: Seq[CompilationUnit]) = {
     val mock = new ModuleDeclaration
+    mock.add(MockStdLib)
+
     compilationUnits foreach {
       unit =>
         mock.add(unit)

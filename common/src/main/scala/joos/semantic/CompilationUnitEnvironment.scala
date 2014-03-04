@@ -74,6 +74,7 @@ trait CompilationUnitEnvironment extends Environment {
   }
 
   def addSelfPackage(): this.type = {
+    addOnDemandImport(NameExpression("java.lang"))
     typeDeclaration map (addConcreteImport(packageDeclaration.name, _))
     addOnDemandImport(packageDeclaration.name)
     this

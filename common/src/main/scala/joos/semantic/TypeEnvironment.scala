@@ -35,21 +35,21 @@ trait TypeEnvironment extends Environment {
   /**
    * Gets the field by its {{name}}
    */
-  def getField(name: SimpleNameExpression): Option[FieldDeclaration] = {
+  def getField(name: SimpleNameExpression) = {
     fieldMap.get(name)
   }
 
   /**
    * Gets a method that matches the {{method}}'s name and parameter types passed in if it exists
    */
-  def getMethod(method: MethodDeclaration): Option[MethodDeclaration] = {
+  def getMethod(method: MethodDeclaration) = {
     methodMap.get(method.typedSignature)
   }
 
   /**
    * Gets a constructor that matches the {{constructor}}'s parameter types passed in if it exists
    */
-  def getConstructor(constructor: MethodDeclaration): Option[MethodDeclaration] = {
+  def getConstructor(constructor: MethodDeclaration) = {
     constructors.get(constructor.typedSignature)
   }
 }

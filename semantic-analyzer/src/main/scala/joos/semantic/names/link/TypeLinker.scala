@@ -26,7 +26,6 @@ import joos.ast.expressions.NameExpression
  */
 class TypeLinker(implicit module: ModuleDeclaration) extends AstVisitor {
   override def apply(unit: CompilationUnit) {
-    unit.add(ImportDeclaration(NameExpression("java.lang"), true))
     unit.addSelfPackage()
     unit.importDeclarations foreach (unit.add(_))
   }
