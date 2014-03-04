@@ -2,8 +2,7 @@ package joos.a1
 
 import java.io.{PrintWriter, StringWriter, FileInputStream}
 import joos.automata.Dfa
-import joos.exceptions.ScanningException
-import joos.parser.exceptions.JoosParseException
+import joos.parser.exceptions.{ScanningException, JoosParseException}
 import joos.parser.{ParseMetaData, ParseTreeBuilder, LrOneReader}
 import joos.parsetree.ParseTree
 import joos.resources
