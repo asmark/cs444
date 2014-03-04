@@ -16,7 +16,7 @@ import scala.collection.mutable
  * An interface must not extend a class.
  * A class must not declare two constructors with the same parameter types TODO
  */
-class SimpleHierarchyChecker(implicit module: ModuleDeclaration) extends AstVisitor with TypeHierarchyAnalyzer {
+class SimpleHierarchyChecker(implicit module: ModuleDeclaration) extends AstVisitor with TypeHierarchyChecker {
 
   override def apply(unit: CompilationUnit) {
     unit.typeDeclaration.map(_.accept(this))

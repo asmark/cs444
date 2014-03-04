@@ -16,7 +16,7 @@ import scala.collection.mutable
  * A protected method must not replace a public method.
  * A method must not replace a final method.
  */
-class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVisitor with TypeHierarchyAnalyzer {
+class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVisitor with TypeHierarchyChecker {
   private[this] implicit val typeDeclarations = mutable.Stack[TypeDeclaration]()
   private[this] val methodDeclarations = mutable.Stack[MethodDeclaration]()
 

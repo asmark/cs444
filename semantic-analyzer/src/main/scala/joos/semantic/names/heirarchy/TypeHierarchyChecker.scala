@@ -4,8 +4,9 @@ import joos.ast.declarations.TypeDeclaration
 import joos.ast.expressions.NameExpression
 import joos.semantic.SemanticException
 import joos.core.Logger
+import scala.language.implicitConversions
 
-trait TypeHierarchyAnalyzer {
+trait TypeHierarchyChecker {
 
    protected implicit def resolveType(typeName: NameExpression)(implicit typeDeclaration: TypeDeclaration) = {
      typeDeclaration.compilationUnit.getVisibleType(typeName) match {
