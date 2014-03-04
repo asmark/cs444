@@ -14,15 +14,6 @@ object EnvironmentComparisons {
     (type1.packageDeclaration, type1) equals(type2.packageDeclaration, type2)
   }
 
-  def allDifferent(types: Seq[TypeDeclaration]): Boolean = {
-    val typeSet = mutable.HashSet.empty[(PackageDeclaration, TypeDeclaration)]
-    types foreach {
-      typeDeclaration =>
-        if (!typeSet.add((typeDeclaration.packageDeclaration, typeDeclaration))) return false
-    }
-    return true
-  }
-
   def containsModifier(modifiers: Seq[Modifier], contained: Modifier) = modifiers contains contained
 
   def getQualifiedName(typeDeclaration:TypeDeclaration) = {
