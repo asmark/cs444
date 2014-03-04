@@ -1,8 +1,10 @@
 package joos.semantic.names.heirarchy
 
-import joos.ast.AstVisitor
+import joos.ast.{CompilationUnit, Modifier, AstVisitor}
 import joos.ast.declarations.{MethodDeclaration, TypeDeclaration, ModuleDeclaration}
 import scala.collection.mutable
+import joos.semantic.EnvironmentComparisons
+import joos.core.Logger
 
 /**
  * AdvancedHierarchyChecker is responsible for the following name resolution checks:
@@ -22,60 +24,51 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
 
   // This function also stores the parent classes and interfaces of the hierarchy in the environment of each type declaration
   private def checkCyclic() = {
-    //    val curTypeDeclaration = typeDeclarations.top
-    //
-    //    var visited: Set[TypeDeclaration] = Set()
-    //
-    //    val ancestors = mutable.Queue[TypeDeclaration]()
-    //    ancestors enqueue curTypeDeclaration
-    //
-    //    while (!ancestors.isEmpty) {
-    //      val front = ancestors.dequeue()
-    //
-    //      visited += front
-    //
-    //      front.superType match {
-    //        case Some(nameExpression) =>
-    //          curTypeDeclaration.compilationUnit.getVisibleType(nameExpression) match {
-    //            case Some(ancestor) => {
-    //              // Check
-    //              if (ancestor.equals(curTypeDeclaration))
-    //                throw new CyclicHierarchyException(ancestor.name)
-    //              if (!visited.contains(ancestor))
-    //                ancestors enqueue ancestor
-    //              // Augment parent class in the current type
-    //              if (EnvironmentComparisons.typeEquality(front, curTypeDeclaration))
-    //                // TODO: Take this out. We should not be initializing half of the TypeEnvironment here and half elsewhere
-    //                front.add(ancestor)
-    //            }
-    //            case _ => Logger.logError(s"Parent type ${nameExpression.standardName} not visible to child type ${front.name.standardName}")
-    //          }
-    //        case _ =>
-    //      }
-    //      front.superInterfaces.foreach(implmented =>
-    //        curTypeDeclaration.compilationUnit.getVisibleType(implmented) match {
-    //          case Some(ancestor) => {
-    //            // Check
-    //            if (ancestor.equals(curTypeDeclaration))
-    //              throw new CyclicHierarchyException(ancestor.name)
-    //            if (!visited.contains(ancestor))
-    //              ancestors enqueue ancestor
-    //            // Augment interface in the current type
-    //            if (EnvironmentComparisons.typeEquality(front, curTypeDeclaration))
-    //              front.add(ancestor)
-    //          }
-    //          case _ => Logger.logError(s"Interface ${implmented.standardName} not visible to implementer ${front.name.standardName}")
-    //        }
-    //      )
-    //    }
+        val curTypeDeclaration = typeDeclarations.top
+
+        var visited: Set[TypeDeclaration] = Set()
+
+        val ancestors = mutable.Queue[TypeDeclaration]()
+        ancestors enqueue curTypeDeclaration
+
+        while (!ancestors.isEmpty) {
+          val front = ancestors.dequeue()
+
+          visited += front
+
+          front.superType match {
+            case Some(nameExpression) =>
+              curTypeDeclaration.compilationUnit.getVisibleType(nameExpression) match {
+                case Some(ancestor) => {
+                  // Check
+                  if (ancestor.equals(curTypeDeclaration))
+                    throw new CyclicHierarchyException(ancestor.name)
+                  if (!visited.contains(ancestor))
+                    ancestors enqueue ancestor
+                }
+                case _ => Logger.logError(s"Parent type ${nameExpression.standardName} not visible to child type ${front.name.standardName}")
+              }
+            case _ =>
+          }
+          front.superInterfaces.foreach(implmented =>
+            curTypeDeclaration.compilationUnit.getVisibleType(implmented) match {
+              case Some(ancestor) => {
+                // Check
+                if (ancestor.equals(curTypeDeclaration))
+                  throw new CyclicHierarchyException(ancestor.name)
+                if (!visited.contains(ancestor))
+                  ancestors enqueue ancestor
+              }
+              case _ => Logger.logError(s"Interface ${implmented.standardName} not visible to implementer ${front.name.standardName}")
+            }
+          )
+        }
   }
 
-  /*
     override def apply(typeDeclaration: TypeDeclaration) = {
       // 1. The hierarchy must be acyclic.
       typeDeclarations.push(typeDeclaration)
       checkCyclic()
-
       typeDeclaration.methods.foreach(_.accept(this))
       typeDeclarations.pop
     }
@@ -104,8 +97,9 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
         case (None, Some(_)) | (Some(_), None) =>
           throw new OverrideReturnTypeException(childMethod, parentMethod)
         case (Some(childRT), Some(parentRT)) => {
-          if (!childRT.asName.standardName.equals(parentRT.asName.standardName))
-            throw new OverrideReturnTypeException(childMethod, parentMethod)
+          // TODO: the following code doesn't work
+//          if (!childRT.asName.standardName.equals(parentRT.asName.standardName))
+//            throw new OverrideReturnTypeException(childMethod, parentMethod)
         }
       }
     }
@@ -162,5 +156,4 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
     override def apply(compilationUnit: CompilationUnit): Unit = {
       compilationUnit.typeDeclaration.map(_.accept(this))
     }
-    */
 }
