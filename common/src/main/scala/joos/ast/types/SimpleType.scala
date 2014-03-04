@@ -8,6 +8,5 @@ case class SimpleType(name: NameExpression) extends Type {
 }
 
 object SimpleType {
-  // TODO: Change it to ClassOrInterfaceType??
-  def apply(ptn: ParseTreeNode): SimpleType = SimpleType(NameExpression(ptn))
+  def apply(ptn: ParseTreeNode) = SimpleType(NameExpression(ptn))
 }

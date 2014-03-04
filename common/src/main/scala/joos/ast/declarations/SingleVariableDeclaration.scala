@@ -31,7 +31,6 @@ object SingleVariableDeclaration {
     }
   }
 
-  // TODO: consolidate this class with FormalParameter
   def apply(ptn: ParseTreeNode): SingleVariableDeclaration = {
     ptn match {
       case TreeNode(ProductionRule("FormalParameter", Seq("Type", "VariableDeclaratorId")), _, children) =>
