@@ -17,7 +17,7 @@ import joos.semantic._
  * A protected method must not replace a public method.
  * A method must not replace a final method.
  */
-class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: CompilationUnit) extends AstVisitor with TypeHierarchyChecker {
+class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVisitor with TypeHierarchyChecker {
   private[this] implicit val typeDeclarations = mutable.Stack[TypeDeclaration]()
   private[this] val methodDeclarations = mutable.Stack[MethodDeclaration]()
 
@@ -95,6 +95,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
 
   // A method must not replace a method with a different return type.
   private def checkReturnType(childMethod: MethodDeclaration, parentMethod: MethodDeclaration) = {
+    implicit val unit = childMethod.compilationUnit
     (childMethod.returnType, parentMethod.returnType) match {
       case (None, None) => {
       } // TODO: Set up special void return type?
@@ -117,6 +118,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
 
     while (!ancestors.isEmpty) {
       implicit val front = ancestors.dequeue()
+      implicit val unit = front.compilationUnit
 
       visited += front
 
@@ -138,7 +140,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
 
       val interfaces = front.superInterfaces
       for (interface <- interfaces) {
-        resolveType(interface)(front.compilationUnit).methods.foreach(
+        resolveType(interface).methods.foreach(
           method =>
             if (method.localSignature.equals(curMethodDeclaration.localSignature)) {
               checkModifiers(curMethodDeclaration, method)
@@ -146,8 +148,8 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
             }
         )
 
-        if (!visited.contains(interface))
-          ancestors enqueue interface
+        if (!visited.contains(resolveType(interface)))
+          ancestors enqueue resolveType(interface)
       }
     }
   }
