@@ -11,7 +11,6 @@ object Expression {
   def apply(ptn: ParseTreeNode): Expression = {
     ptn match {
       // Recursive call to Expression
-      // TODO: Trim these down by pattern matching ProductionRule(_,Seq(_)) in lowest precedence
       case TreeNode(ProductionRule("Expression", Seq("AssignmentExpression")), _, children) =>
         Expression(children(0))
       case TreeNode(ProductionRule("AssignmentExpression", Seq("ConditionalExpression")), _, children) =>
@@ -105,6 +104,3 @@ object Expression {
     }
   }
 }
-
-// TODO: Do we need this?
-//case class TypeLiteral(staticType: Type) extends Expression

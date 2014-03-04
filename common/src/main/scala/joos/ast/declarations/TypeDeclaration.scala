@@ -12,8 +12,8 @@ case class TypeDeclaration (
     modifiers: Seq[Modifier],
     isInterface: Boolean,
     name: SimpleNameExpression,
-    superType: Option[NameExpression], // TODO: Change to Option[SimpleType]??
-    superInterfaces: Seq[NameExpression], // TODO: Change to Option[Seq[SimpleType]]??
+    superType: Option[NameExpression],
+    superInterfaces: Seq[NameExpression],
     fields: Seq[FieldDeclaration],
     methods: Seq[MethodDeclaration])
     extends BodyDeclaration

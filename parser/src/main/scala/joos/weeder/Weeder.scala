@@ -7,7 +7,7 @@ import joos.parsetree.TreeNode
 import joos.parser.ParseMetaData
 
 abstract class Weeder {
-  // TODO: Get the name from tokenkind?
+  // TODO: Get the name from a consolidated place
   final val Modifier = "Modifier"
   final val Modifiers = "Modifiers"
   final val Abstract = "abstract"
@@ -15,7 +15,7 @@ abstract class Weeder {
   final val Native = "native"
   final val MethodDeclaration = "MethodDeclaration"
   final val Block = "Block"
-  final val Static = "static"
+  final val Static = "static"f
   final val AbstractMethodDeclaration = "AbstractMethodDeclaration"
   final val ClassBodyDeclarations = "ClassBodyDeclarations"
   final val ClassBodyDeclaration = "ClassBodyDeclaration"

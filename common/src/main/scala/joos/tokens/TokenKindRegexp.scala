@@ -288,7 +288,6 @@ object TokenKindRegexp {
   }
 
   // BooleanLiteral
-  // TODO
   def True = {
     Concatenation("true")
   }
@@ -362,7 +361,6 @@ object TokenKindRegexp {
   }
 
   // Operators
-  // TODO: 37 operators in total
   def Assign = {
     Atom('=')
   }
