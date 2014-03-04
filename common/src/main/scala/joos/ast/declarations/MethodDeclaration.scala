@@ -19,7 +19,6 @@ case class MethodDeclaration(
     extends BodyDeclaration {
 
   var typeDeclaration: TypeDeclaration = null
-  var compilationUnit: CompilationUnit = null
   var environment: BlockEnvironment = null
 
   /**
@@ -56,9 +55,9 @@ case class MethodDeclaration(
 
   private[this] def getTypeName(t: Type) = {
     t match {
-      case x: PrimitiveType => x.token.lexeme
+      case PrimitiveType(token) => token.lexeme
       case ArrayType(x: PrimitiveType, _) => x.token.lexeme
-      case x => compilationUnit.getVisibleType(x.asName).map(_.id)
+//      case SimpleType(name) => compilationUnit.getVisibleType(x.asName).map(_.id)
     }
   }
 }

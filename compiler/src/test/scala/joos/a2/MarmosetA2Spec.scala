@@ -29,7 +29,7 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
         case None => fail(s"Was not able to SyntaxCheck ${testCase.getName}")
         case Some(ast) => ast
       }
-      SemanticCheck(asts)
+      NameResolution(asts)
     }
   }
 
@@ -43,7 +43,7 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
           case None => fail(s"Was not able to SyntaxCheck ${testCase.getName}")
           case Some(ast) => ast
         }
-        SemanticCheck(asts)
+        NameResolution(asts)
       }
     }
   }

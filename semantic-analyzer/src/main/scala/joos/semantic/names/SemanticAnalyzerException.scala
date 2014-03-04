@@ -1,8 +1,8 @@
-package joos.analyzers
+package joos.semantic.names
 
-import joos.semantic.SemanticException
-import joos.ast.expressions.NameExpression
 import joos.ast.declarations.MethodDeclaration
+import joos.ast.expressions.NameExpression
+import joos.semantic.SemanticException
 
 class SemanticAnalyzerException(msg: String) extends SemanticException(msg)
 

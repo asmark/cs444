@@ -1,11 +1,10 @@
-package joos.analyzers
+package joos.semantic.names
 
 import joos.ast.declarations.{MethodDeclaration, TypeDeclaration, ModuleDeclaration}
 import joos.ast.{Modifier, CompilationUnit, AstVisitor}
-import scala.collection.mutable
-import joos.core.Logger
 import joos.semantic.EnvironmentComparisons
-import joos.ast.expressions.NameExpression
+import scala.Some
+import scala.collection.mutable
 
 /*
  Semantic Checks
@@ -18,60 +17,60 @@ import joos.ast.expressions.NameExpression
  7. A protected method must not replace a public method.
  8. A method must not replace a final method.
 */
-class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstVisitor {
+class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstVisitor with TypeHierarchyAnalyzer {
   private[this] implicit val typeDeclarations = mutable.Stack[TypeDeclaration]()
   private[this] val methodDeclarations = mutable.Stack[MethodDeclaration]()
 
   // This function also stores the parent classes and interfaces of the hierarchy in the environment of each type declaration
   private def checkCyclic() = {
-    val curTypeDeclaration = typeDeclarations.top
-
-    var visited: Set[TypeDeclaration] = Set()
-
-    val ancestors = mutable.Queue[TypeDeclaration]()
-    ancestors enqueue curTypeDeclaration
-
-    while (!ancestors.isEmpty) {
-      val front = ancestors.dequeue()
-
-      visited += front
-
-      front.superType match {
-        case Some(nameExpression) =>
-          curTypeDeclaration.compilationUnit.getVisibleType(nameExpression) match {
-            case Some(ancestor) => {
-              // Check
-              if (ancestor.equals(curTypeDeclaration))
-                throw new CyclicHierarchyException(ancestor.name)
-              if (!visited.contains(ancestor))
-                ancestors enqueue ancestor
-              // Augment parent class in the current type
-              if (EnvironmentComparisons.typeEquality(front, curTypeDeclaration))
-                // TODO: Take this out. We should not be initializing half of the TypeEnvironment here and half elsewhere
-                front.add(ancestor)
-            }
-            case _ => Logger.logError(s"Parent type ${nameExpression.standardName} not visible to child type ${front.name.standardName}")
-          }
-        case _ =>
-      }
-      front.superInterfaces.foreach(implmented =>
-        curTypeDeclaration.compilationUnit.getVisibleType(implmented) match {
-          case Some(ancestor) => {
-            // Check
-            if (ancestor.equals(curTypeDeclaration))
-              throw new CyclicHierarchyException(ancestor.name)
-            if (!visited.contains(ancestor))
-              ancestors enqueue ancestor
-            // Augment interface in the current type
-            if (EnvironmentComparisons.typeEquality(front, curTypeDeclaration))
-              front.add(ancestor)
-          }
-          case _ => Logger.logError(s"Interface ${implmented.standardName} not visible to implementer ${front.name.standardName}")
-        }
-      )
-    }
+//    val curTypeDeclaration = typeDeclarations.top
+//
+//    var visited: Set[TypeDeclaration] = Set()
+//
+//    val ancestors = mutable.Queue[TypeDeclaration]()
+//    ancestors enqueue curTypeDeclaration
+//
+//    while (!ancestors.isEmpty) {
+//      val front = ancestors.dequeue()
+//
+//      visited += front
+//
+//      front.superType match {
+//        case Some(nameExpression) =>
+//          curTypeDeclaration.compilationUnit.getVisibleType(nameExpression) match {
+//            case Some(ancestor) => {
+//              // Check
+//              if (ancestor.equals(curTypeDeclaration))
+//                throw new CyclicHierarchyException(ancestor.name)
+//              if (!visited.contains(ancestor))
+//                ancestors enqueue ancestor
+//              // Augment parent class in the current type
+//              if (EnvironmentComparisons.typeEquality(front, curTypeDeclaration))
+//                // TODO: Take this out. We should not be initializing half of the TypeEnvironment here and half elsewhere
+//                front.add(ancestor)
+//            }
+//            case _ => Logger.logError(s"Parent type ${nameExpression.standardName} not visible to child type ${front.name.standardName}")
+//          }
+//        case _ =>
+//      }
+//      front.superInterfaces.foreach(implmented =>
+//        curTypeDeclaration.compilationUnit.getVisibleType(implmented) match {
+//          case Some(ancestor) => {
+//            // Check
+//            if (ancestor.equals(curTypeDeclaration))
+//              throw new CyclicHierarchyException(ancestor.name)
+//            if (!visited.contains(ancestor))
+//              ancestors enqueue ancestor
+//            // Augment interface in the current type
+//            if (EnvironmentComparisons.typeEquality(front, curTypeDeclaration))
+//              front.add(ancestor)
+//          }
+//          case _ => Logger.logError(s"Interface ${implmented.standardName} not visible to implementer ${front.name.standardName}")
+//        }
+//      )
+//    }
   }
-
+/*
   override def apply(typeDeclaration: TypeDeclaration) = {
     // 1. The hierarchy must be acyclic.
     typeDeclarations.push(typeDeclaration)
@@ -121,7 +120,7 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
     ancestors enqueue curTypeDeclaration
 
     while (!ancestors.isEmpty) {
-      val front = ancestors.dequeue()
+      implicit val front = ancestors.dequeue()
 
       visited += front
 
@@ -139,18 +138,17 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
         }
         case _ =>
       }
-      val interfaces = front.getAllImplementedInterfaces
+      val interfaces = front.superInterfaces
       for (interface <- interfaces) {
-        val interfaceDeclaration = interface._2
-        interfaceDeclaration.methods.foreach(method =>
+        interface.methods.foreach(method =>
           if (method.localSignature.equals(curMethodDeclaration.localSignature)) {
             checkModifiers(curMethodDeclaration, method)
             checkReturnType(curMethodDeclaration, method)
           }
         )
 
-        if (!visited.contains(interfaceDeclaration))
-          ancestors enqueue interfaceDeclaration
+        if (!visited.contains(interface))
+          ancestors enqueue interface
       }
     }
   }
@@ -164,4 +162,5 @@ class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstV
   override def apply(compilationUnit: CompilationUnit): Unit = {
     compilationUnit.typeDeclaration.map(_.accept(this))
   }
+  */
 }

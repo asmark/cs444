@@ -1,6 +1,6 @@
 package joos.semantic
 
-import joos.ast.declarations.{PackageDeclaration, TypeDeclaration, FieldDeclaration, MethodDeclaration}
+import joos.ast.declarations.{TypeDeclaration, FieldDeclaration, MethodDeclaration}
 import joos.ast.expressions.{SimpleNameExpression, NameExpression}
 import scala.collection.mutable
 import scala.language.implicitConversions
@@ -12,31 +12,24 @@ trait TypeEnvironment extends Environment {
   private[this] val methodMap = mutable.HashMap.empty[String, MethodDeclaration]
   private[this] val fieldMap = mutable.HashMap.empty[NameExpression, FieldDeclaration]
 
-  private implicit def typeWithPackage(typeDeclaration: TypeDeclaration) = {
-    (typeDeclaration.packageDeclaration, typeDeclaration)
-  }
-
-  def add(method: MethodDeclaration): this.type = {
+  /**
+   * Adds the specified method declaration to the type environment
+   * @return true if method did not exist in type environment before, false if it did
+   */
+  def add(method: MethodDeclaration) = {
     if (method.isConstructor) {
-      if (constructors.contains(method.typedSignature)) {
-        throw new DuplicatedDeclarationException(method.name)
-      }
-      constructors.put(method.typedSignature, method)
+      constructors.put(method.typedSignature, method).isEmpty
     } else {
-      if (methodMap.contains(method.typedSignature)) {
-        throw new DuplicatedDeclarationException(method.name)
-      }
-      methodMap.put(method.typedSignature, method)
+      methodMap.put(method.typedSignature, method).isEmpty
     }
-    this
   }
 
-  def add(field: FieldDeclaration): this.type = {
-    if (fields.contains(field.fragment.identifier)) {
-      throw new DuplicatedDeclarationException(field.fragment.identifier)
-    }
-    fieldMap.put(field.fragment.identifier, field)
-    this
+  /**
+   * Adds the specified field to the type environment
+   * @return true if the field did not exist in the type environment before, false if it did
+   */
+  def add(field: FieldDeclaration) = {
+    fieldMap.put(field.fragment.identifier, field).isEmpty
   }
 
   /**

@@ -1,10 +1,9 @@
-package joos.analyzers
+package joos.semantic.names
 
 import joos.ast._
 import joos.ast.declarations.{PackageDeclaration, TypeDeclaration, ModuleDeclaration}
 import joos.ast.expressions.NameExpression
 import joos.semantic.EnvironmentComparisons
-import scala.Some
 import scala.collection.mutable
 
 /**
@@ -15,6 +14,7 @@ import scala.collection.mutable
  * (3) Class C implements E F => E cannot equal F
  * (4) Class A extends B => B must not be final
  * (5) Class A has constructor X, Y => X, Y must have distinct parameter types {{{TODO}}}
+ * (6)
  */
 class SimpleHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstVisitor with TypeHierarchyAnalyzer {
 
@@ -56,36 +56,27 @@ class SimpleHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstVis
   private def analyzeImplementedInterfaces(interfaceNames: Seq[NameExpression])(implicit typeDeclaration: TypeDeclaration) {
     val interfaceSet = mutable.HashSet.empty[(PackageDeclaration, TypeDeclaration)]
     interfaceNames foreach {
-      interfaceName =>
-        interfaceName match {
-          case None => throw new InvalidTypeReferenceException(interfaceName)
-          case Some(interface) => {
-            if (!interface.isInterface) {
-              throw new SimpleHierarchyException(InvalidImplementedType(interface))
-            } else if (!interfaceSet.add(interface.packageDeclaration, interface)) {
-              throw new SimpleHierarchyException(DuplicateImplementedInterface(interface))
-            }
-          }
+      interface =>
+        if (!interface.isInterface) {
+          throw new SimpleHierarchyException(InvalidImplementedType(interface))
+        } else if (!interfaceSet.add(interface.packageDeclaration, interface)) {
+          throw new SimpleHierarchyException(DuplicateImplementedInterface(interface))
         }
     }
   }
 
   // TODO: If None, it should extend java.lang.Object?
   private def analyzeExtendedClass(superTypeName: Option[NameExpression])(implicit typeDeclaration: TypeDeclaration) {
-    if (superTypeName.isDefined) {
-      getType(superTypeName.get) match {
-        case None => throw new InvalidTypeReferenceException(superTypeName.get)
-        case Some(superType) => {
-          if (superType.isInterface) {
-            throw new SimpleHierarchyException(InvalidExtendedType(superType))
-          } else if (EnvironmentComparisons.containsModifier(superType.modifiers, Modifier.Final)) {
-            throw new SimpleHierarchyException(InvalidExtendedClass(superType))
-          }
+    superTypeName map {
+      superType =>
+        if (superType.isInterface) {
+          throw new SimpleHierarchyException(InvalidExtendedType(superType))
+        } else if (EnvironmentComparisons.containsModifier(superType.modifiers, Modifier.Final)) {
+          throw new SimpleHierarchyException(InvalidExtendedClass(superType))
         }
-      }
-
     }
   }
+
 
   private def analyzeClassDeclaration(implicit typeDeclaration: TypeDeclaration) {
     require(!typeDeclaration.isInterface)

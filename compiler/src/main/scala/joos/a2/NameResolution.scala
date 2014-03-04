@@ -1,16 +1,17 @@
 package joos.a2
 
-import joos.analyzers.{AdvancedHierarchyAnalyzer, SimpleHierarchyAnalyzer, EnvironmentLinker, TypeEnvironmentBuilder}
 import joos.ast.AbstractSyntaxTree
 import joos.ast.declarations.ModuleDeclaration
+import joos.semantic.names.environments.EnvironmentBuilder
+import joos.semantic.names.{TypeLinker, SimpleHierarchyAnalyzer, AdvancedHierarchyAnalyzer}
 
-object SemanticCheck {
+object NameResolution {
 
   def getAnalyzers = {
     implicit val module = new ModuleDeclaration
     Seq(
-      new EnvironmentLinker,
-      new TypeEnvironmentBuilder,
+      new EnvironmentBuilder,
+      new TypeLinker,
       new SimpleHierarchyAnalyzer,
       new AdvancedHierarchyAnalyzer
     )

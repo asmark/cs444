@@ -1,11 +1,30 @@
-package joos.analyzers
+package joos.semantic.names
 
 import joos.ast._
 import joos.ast.declarations._
-import joos.ast.expressions.VariableDeclarationExpression
+import joos.ast.expressions.{NameExpression, VariableDeclarationExpression}
 import joos.semantic.BlockEnvironment
 
-class EnvironmentLinker(implicit module: ModuleDeclaration) extends AstVisitor {
+/**
+ * TypeLinker is responsible for the following name resolution checks:
+ * No single-type-import declaration clashes with the class or interface declared in the same file.
+ *
+ * No two single-type-import declarations clash with each other.
+ *
+ * All type names must resolve to some class or interface declared in some file listed on the Joos command line.
+ *
+ * All simple type names must resolve to a unique class or interface.
+ *
+ * When a fully qualified name resolves to a type, no strict prefix of the fully qualified name can resolve to a type in the same environment.
+ *
+ * No package names or prefixes of package names of declared packages, single-type-import declarations or import-on-demand declarations that are
+ * used may resolve to types, except for types in the default package.
+ *
+ * Every import-on-demand declaration must refer to a package declared in some file listed on the Joos command line. That is,
+ * the import-on-demand declaration must refer to a package whose name appears as the package declaration in some source file,
+ * or whose name is a prefix of the name appearing in some package declaration.
+ */
+class TypeLinker(implicit module: ModuleDeclaration) extends AstVisitor {
   private[this] implicit var typed: TypeDeclaration = null
   private[this] var unit: CompilationUnit = null
   private[this] var packaged: PackageDeclaration = null
@@ -15,8 +34,9 @@ class EnvironmentLinker(implicit module: ModuleDeclaration) extends AstVisitor {
   override def apply(unit: CompilationUnit) {
     this.unit = unit
     packaged = unit.packageDeclaration
-    module.add(unit)
-    unit.moduleDeclaration = module
+    unit.add(ImportDeclaration(NameExpression("java.lang"), true))
+    unit.addSelfPackage()
+    unit.importDeclarations foreach (unit.add(_))
     unit.typeDeclaration.map(_.accept(this))
   }
 
@@ -29,7 +49,7 @@ class EnvironmentLinker(implicit module: ModuleDeclaration) extends AstVisitor {
 
   override def apply(method: MethodDeclaration) {
     this.method = method
-    method.compilationUnit = unit
+//    method.compilationUnit = unit
     method.environment = method.parameters.foldRight(BlockEnvironment()) {
       (variable, environment) => environment.add(variable)
     }
