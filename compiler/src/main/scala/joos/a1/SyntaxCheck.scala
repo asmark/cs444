@@ -48,7 +48,7 @@ object SyntaxCheck {
       case e @ (_:ScanningException | _:WeederException | _:JoosParseException | _:AstConstructionException) => {
         val errors = new StringWriter()
         e.printStackTrace(new PrintWriter(errors))
-        Logger.logInformation(errors.toString())
+        Logger.logError(errors.toString())
         return None
       }
     }

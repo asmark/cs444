@@ -35,7 +35,7 @@ class NamespaceTrie {
           newNode
         }
         case Some(node@TypeNode(otherType)) => {
-          if (areEqual(typeDeclaration, otherType)) {
+          if (typeDeclaration eq otherType) {
             node
           } else {
             Logger.logError(s"${typeName} had an existing declaration in this namespace")

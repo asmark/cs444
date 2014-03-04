@@ -101,7 +101,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
       case (None, Some(_)) | (Some(_), None) =>
         throw new OverrideReturnTypeException(childMethod, parentMethod)
       case (Some(childRT), Some(parentRT)) => {
-        typeEquality(childRT, parentRT)(unit)
+        areEqual(childRT, parentRT)
       }
     }
   }
