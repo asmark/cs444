@@ -7,6 +7,7 @@ import joos.semantic.{EnvironmentComparisons, BlockEnvironment}
 
 /**
  * EnvironmentBuilder is responsible for the following name resolution checks:
+ *
  * No two fields declared in the same class may have the same name.
  * No two local variables with overlapping scope have the same name.
  * No two classes or interfaces have the same canonical name.

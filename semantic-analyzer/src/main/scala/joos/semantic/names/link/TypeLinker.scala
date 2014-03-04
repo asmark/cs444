@@ -2,7 +2,6 @@ package joos.semantic.names.link
 
 import joos.ast._
 import joos.ast.declarations._
-import joos.ast.expressions.NameExpression
 
 /**
  * TypeLinker is responsible for the following name resolution checks:

@@ -7,32 +7,16 @@ import joos.semantic.EnvironmentComparisons
 import scala.collection.mutable
 
 /**
- * Completes the following checks
- * (0) Any referenced type must be within the namespace
- * (1) Class A extends B => B must be a class
- * (2) Class C implements D => D must be an interface
- * (3) Class C implements E F => E cannot equal F
- * (4) Class A extends B => B must not be final
- * (5) Class A has constructor X, Y => X, Y must have distinct parameter types {{{TODO}}}
- * (6)
+ * SimpleHierarchyChecker is responsible for the following name resolution checks:
+ *
+ * A class must not extend an interface.
+ * A class must not implement a class.
+ * An interface must not be repeated in an implements clause, or in an extends clause of an interface.
+ * A class must not extend a final class.
+ * An interface must not extend a class.
+ * A class must not declare two constructors with the same parameter types TODO
  */
 class SimpleHierarchyChecker(implicit module: ModuleDeclaration) extends AstVisitor with TypeHierarchyAnalyzer {
-
-  private def InvalidExtendedClass(extendedType: TypeDeclaration)(implicit typeDeclaration: TypeDeclaration) = {
-    s"${typeDeclaration} extends ${extendedType} which is final"
-  }
-
-  private def InvalidExtendedType(extendedType: TypeDeclaration)(implicit typeDeclaration: TypeDeclaration) = {
-    s"${typeDeclaration} extends ${extendedType} which is not a class"
-  }
-
-  private def InvalidImplementedType(implementedType: TypeDeclaration)(implicit typeDeclaration: TypeDeclaration) = {
-    s"${typeDeclaration} implements ${implementedType} which is not an interface"
-  }
-
-  private def DuplicateImplementedInterface(implementedType: TypeDeclaration)(implicit typeDeclaration: TypeDeclaration) = {
-    s"${typeDeclaration} implements ${implementedType} twice"
-  }
 
   override def apply(unit: CompilationUnit) {
     unit.typeDeclaration.map(_.accept(this))
