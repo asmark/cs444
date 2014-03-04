@@ -21,7 +21,7 @@ class BlockEnvironment private(
 
   def getVariable(name: SimpleNameExpression): Option[TypedDeclaration] = {
     variables.get(name) match {
-      case None => typeEnvironment.getField(name)
+      case None => typeEnvironment.fieldMap.get(name)
       case x => x
     }
   }

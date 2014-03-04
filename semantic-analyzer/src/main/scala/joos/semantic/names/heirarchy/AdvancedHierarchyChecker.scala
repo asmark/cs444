@@ -75,7 +75,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
     typeDeclaration.methods.foreach(_.accept(this))
     typeDeclarations.pop
     // A class or interface must not contain (declare or inherit) two methods with the same signature but different return types
-    val dupe = EnvironmentComparisons.findDuplicate(typeDeclaration.getConstructors.toSeq.map(_.typedSignature))
+    val dupe = EnvironmentComparisons.findDuplicate(typeDeclaration.constructors.toSeq.map(_.typedSignature))
     if (dupe.isDefined) {
       throw new SameMethodSignatureException(dupe.get, typeDeclaration)
     }

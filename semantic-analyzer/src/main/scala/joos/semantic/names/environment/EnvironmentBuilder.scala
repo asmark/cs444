@@ -3,14 +3,14 @@ package joos.semantic.names.environment
 import joos.ast._
 import joos.ast.declarations._
 import joos.ast.expressions.VariableDeclarationExpression
-import joos.semantic.{EnvironmentComparisons, BlockEnvironment}
+import joos.semantic.BlockEnvironment
 
 /**
- * EnvironmentBuilder is responsible for the following name resolution checks:
+ * Environment builder is responsible for the following name resolution checks:
  *
- * No two fields declared in the same class may have the same name.
- * No two local variables with overlapping scope have the same name.
- * No two classes or interfaces have the same canonical name.
+ * DONE: No two fields declared in the same class may have the same name.
+ * DONE: No two local variables with overlapping scope have the same name.
+ * DONE: No two classes or interfaces have the same canonical name.
  */
 class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor {
   private[this] implicit var typed: TypeDeclaration = null
@@ -35,17 +35,11 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
 
     typed.fields foreach {
       field =>
-        if (!typed.add(field)) {
+        if (typed.fieldMap.contains(field.declarationName)) {
           throw new DuplicatedFieldException(field.declarationName)
         }
+        typed.fieldMap.put(field.declarationName, field)
     }
-    typed.methods foreach {
-      method =>
-        if (!typed.add(method)) {
-          throw new DuplicatedDeclarationException(method.name)
-        }
-    }
-
     typed.methods.foreach(_.accept(this))
   }
 

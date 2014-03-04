@@ -12,7 +12,7 @@ import scala.Some
 case class MethodDeclaration(
     modifiers: Seq[Modifier],
     returnType: Option[Type],
-    name: NameExpression,
+    name: SimpleNameExpression,
     parameters: IndexedSeq[SingleVariableDeclaration],
     body: Option[Block],
     isConstructor: Boolean)
@@ -35,9 +35,6 @@ case class MethodDeclaration(
 
   lazy val localSignature = {
     val localMethodName = name match {
-      case qualifiedNameExpression: QualifiedNameExpression => {
-        qualifiedNameExpression.name.standardName
-      }
       case simpleNameExpression: SimpleNameExpression => {
         simpleNameExpression.standardName
       }
