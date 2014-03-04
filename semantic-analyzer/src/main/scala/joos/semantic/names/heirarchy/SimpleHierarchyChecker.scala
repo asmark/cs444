@@ -3,7 +3,6 @@ package joos.semantic.names.heirarchy
 import joos.ast._
 import joos.ast.declarations.{PackageDeclaration, TypeDeclaration, ModuleDeclaration}
 import joos.ast.expressions.NameExpression
-import joos.semantic.EnvironmentComparisons
 import scala.collection.mutable
 
 /**
@@ -16,7 +15,7 @@ import scala.collection.mutable
  * An interface must not extend a class.
  * A class must not declare two constructors with the same parameter types TODO
  */
-class SimpleHierarchyChecker(implicit module: ModuleDeclaration) extends AstVisitor with TypeHierarchyChecker {
+class SimpleHierarchyChecker(implicit module: ModuleDeclaration, unit: CompilationUnit) extends AstVisitor with TypeHierarchyChecker {
 
   override def apply(unit: CompilationUnit) {
     unit.typeDeclaration.map(_.accept(this))
@@ -55,7 +54,7 @@ class SimpleHierarchyChecker(implicit module: ModuleDeclaration) extends AstVisi
       superType =>
         if (superType.isInterface) {
           throw new InvalidExtendedTypeException(superType)
-        } else if (EnvironmentComparisons.containsModifier(superType.modifiers, Modifier.Final)) {
+        } else if (superType.modifiers contains Modifier.Final) {
           throw new InvalidExtendedClassException(superType)
         }
     }

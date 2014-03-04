@@ -4,13 +4,14 @@ import joos.ast.declarations.{TypeDeclaration, FieldDeclaration, MethodDeclarati
 import joos.ast.expressions.{SimpleNameExpression, NameExpression}
 import scala.collection.mutable
 import scala.language.implicitConversions
+import joos.ast.CompilationUnit
 
 trait TypeEnvironment extends Environment {
   self: TypeDeclaration =>
 
-  private[this] val constructors = mutable.LinkedHashMap.empty[String, MethodDeclaration]
-  private[this] val methodMap = mutable.HashMap.empty[String, MethodDeclaration]
-  private[this] val fieldMap = mutable.HashMap.empty[NameExpression, FieldDeclaration]
+  private[this] val constructors = mutable.HashSet.empty[MethodDeclaration]
+  private[this] val methods1 = mutable.HashSet.empty[MethodDeclaration]
+  private[this] val fields1 = mutable.HashMap.empty[NameExpression, FieldDeclaration]
 
   /**
    * Adds the specified method declaration to the type environment
@@ -18,9 +19,9 @@ trait TypeEnvironment extends Environment {
    */
   def add(method: MethodDeclaration) = {
     if (method.isConstructor) {
-      constructors.put(method.typedSignature, method).isEmpty
+      constructors.add(method)
     } else {
-      methodMap.put(method.typedSignature, method).isEmpty
+      methods1.add(method)
     }
   }
 
@@ -29,27 +30,34 @@ trait TypeEnvironment extends Environment {
    * @return true if the field did not exist in the type environment before, false if it did
    */
   def add(field: FieldDeclaration) = {
-    fieldMap.put(field.fragment.identifier, field).isEmpty
+    fields1.put(field.fragment.identifier, field).isEmpty
   }
 
   /**
    * Gets the field by its {{name}}
    */
   def getField(name: SimpleNameExpression) = {
-    fieldMap.get(name)
+    fields1.get(name)
   }
+
+  // TODO: Inherited?
+  def getFields = fields1.values
 
   /**
    * Gets a method that matches the {{method}}'s name and parameter types passed in if it exists
    */
-  def getMethod(method: MethodDeclaration) = {
-    methodMap.get(method.typedSignature)
+  def getMethod(method: MethodDeclaration)(implicit unit: CompilationUnit) = {
   }
+
+  // TODO: Inherited?
+  def getMethods = methods1
 
   /**
    * Gets a constructor that matches the {{constructor}}'s parameter types passed in if it exists
    */
-  def getConstructor(constructor: MethodDeclaration) = {
-    constructors.get(constructor.typedSignature)
+  def getConstructor(constructor: MethodDeclaration)(implicit unit: CompilationUnit) = {
   }
+
+  // TODO: Inherited?
+  def getConstructors = constructors
 }

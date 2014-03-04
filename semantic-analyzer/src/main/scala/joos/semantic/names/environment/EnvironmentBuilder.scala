@@ -33,10 +33,17 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
     typed.compilationUnit = unit
     typed.packageDeclaration = packaged
 
-    val fieldNames = typed.fields map (_.declarationName)
-    EnvironmentComparisons.findDuplicate(fieldNames) map {
-      fieldName =>
-        throw new DuplicatedFieldException(fieldName)
+    typed.fields foreach {
+      field =>
+        if (!typed.add(field)) {
+          throw new DuplicatedFieldException(field.declarationName)
+        }
+    }
+    typed.methods foreach {
+      method =>
+        if (!typed.add(method)) {
+          throw new DuplicatedDeclarationException(method.name)
+        }
     }
 
     typed.methods.foreach(_.accept(this))
@@ -50,6 +57,7 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
           case None => throw new DuplicatedVariableException(variable.declarationName)
         }
     }
+    method.compilationUnit = unit
     method.typeDeclaration = typed
     block = method.environment
 

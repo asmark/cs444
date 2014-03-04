@@ -17,7 +17,7 @@ case class MethodDeclaration(
     body: Option[Block],
     isConstructor: Boolean)
     extends BodyDeclaration {
-
+  var compilationUnit: CompilationUnit = null
   var typeDeclaration: TypeDeclaration = null
   var environment: BlockEnvironment = null
 
@@ -53,11 +53,14 @@ case class MethodDeclaration(
     }
   }
 
-  private[this] def getTypeName(t: Type) = {
+  private[this] def getTypeName(t: Type):String = {
     t match {
       case PrimitiveType(token) => token.lexeme
-      case ArrayType(x: PrimitiveType, _) => x.token.lexeme
-//      case SimpleType(name) => compilationUnit.getVisibleType(x.asName).map(_.id)
+      case ArrayType(x, _) => getTypeName(x)
+      case SimpleType(name) => {
+        val typeDeclaration = compilationUnit.getVisibleType(name).get
+        typeDeclaration.packageDeclaration.name.standardName + '.' + typeDeclaration.name.standardName
+      }
     }
   }
 }

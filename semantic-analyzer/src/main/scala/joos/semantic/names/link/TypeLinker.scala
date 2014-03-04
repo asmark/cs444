@@ -26,7 +26,7 @@ import joos.ast.declarations._
 class TypeLinker(implicit module: ModuleDeclaration) extends AstVisitor {
   override def apply(unit: CompilationUnit) {
     unit.addSelfPackage()
-    unit.importDeclarations foreach (unit.add(_))
+    unit.importDeclarations foreach(unit.add(_))
   }
 
   // TODO

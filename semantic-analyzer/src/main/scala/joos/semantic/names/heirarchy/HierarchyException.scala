@@ -9,17 +9,17 @@ class HierarchyException(msg: String) extends NameResolutionException(msg)
 // Simple checks
 
 class InvalidExtendedClassException(extendedType: TypeDeclaration)(implicit typeDeclaration: TypeDeclaration)
-    extends NameResolutionException(s"${typeDeclaration} extends ${extendedType} which is final")
+    extends HierarchyException(s"${typeDeclaration} extends ${extendedType} which is final")
 
 class InvalidExtendedTypeException(extendedType: TypeDeclaration)(implicit typeDeclaration: TypeDeclaration)
-    extends NameResolutionException(s"${typeDeclaration} extends ${extendedType} which is not a class")
+    extends HierarchyException(s"${typeDeclaration} extends ${extendedType} which is not a class")
 
 
 class InvalidImplementedTypeException(implementedType: TypeDeclaration)(implicit typeDeclaration: TypeDeclaration)
-    extends NameResolutionException(s"${typeDeclaration} implements ${implementedType} which is not an interface")
+    extends HierarchyException(s"${typeDeclaration} implements ${implementedType} which is not an interface")
 
 class DuplicateImplementedInterfaceException(implementedType: TypeDeclaration)(implicit typeDeclaration: TypeDeclaration)
-    extends NameResolutionException(s"${typeDeclaration} implements ${implementedType} twice")
+    extends HierarchyException(s"${typeDeclaration} implements ${implementedType} twice")
 
 // Advanced checks
 
