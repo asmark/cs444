@@ -1,10 +1,11 @@
-package joos.semantic.names.environments
+package joos.semantic.names.environment
 
 import joos.semantic.SemanticException
 import joos.ast.expressions.NameExpression
 import joos.ast.declarations.FieldDeclaration
+import joos.semantic.names.NameResolutionException
 
-class EnvironmentBuildingException(msg: String) extends SemanticException(msg)
+class EnvironmentBuildingException(msg: String) extends NameResolutionException(msg)
 
 class DuplicatedDeclarationException(name: NameExpression) extends SemanticException(s"Duplicated declaration: ${name}")
 

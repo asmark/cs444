@@ -1,7 +1,8 @@
-package joos.semantic.names
+package joos.semantic.names.heirarchy
 
 import joos.ast.declarations.TypeDeclaration
 import joos.ast.expressions.NameExpression
+import joos.semantic.names.InvalidTypeReferenceException
 
 trait TypeHierarchyAnalyzer {
 

@@ -3,7 +3,9 @@ package joos.a2
 import joos.ast.AbstractSyntaxTree
 import joos.ast.declarations.ModuleDeclaration
 import joos.semantic.names.environments.EnvironmentBuilder
-import joos.semantic.names.{TypeLinker, SimpleHierarchyAnalyzer, AdvancedHierarchyAnalyzer}
+import joos.semantic.names.types.SimpleHierarchyChecker
+import joos.semantic.names.heirarchy.{SimpleHierarchyChecker, AdvancedHierarchyChecker}
+import joos.semantic.names.link.TypeLinker
 
 object NameResolution {
 
@@ -12,8 +14,8 @@ object NameResolution {
     Seq(
       new EnvironmentBuilder,
       new TypeLinker,
-      new SimpleHierarchyAnalyzer,
-      new AdvancedHierarchyAnalyzer
+      new SimpleHierarchyChecker,
+      new AdvancedHierarchyChecker
     )
   }
 

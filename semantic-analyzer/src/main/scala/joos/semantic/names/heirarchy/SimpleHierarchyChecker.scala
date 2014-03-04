@@ -1,9 +1,10 @@
-package joos.semantic.names
+package joos.semantic.names.heirarchy
 
 import joos.ast._
 import joos.ast.declarations.{PackageDeclaration, TypeDeclaration, ModuleDeclaration}
 import joos.ast.expressions.NameExpression
 import joos.semantic.EnvironmentComparisons
+import joos.semantic.names.SimpleHierarchyException
 import scala.collection.mutable
 
 /**
@@ -16,7 +17,7 @@ import scala.collection.mutable
  * (5) Class A has constructor X, Y => X, Y must have distinct parameter types {{{TODO}}}
  * (6)
  */
-class SimpleHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstVisitor with TypeHierarchyAnalyzer {
+class SimpleHierarchyChecker(implicit module: ModuleDeclaration) extends AstVisitor with TypeHierarchyAnalyzer {
 
   private def InvalidExtendedClass(extendedType: TypeDeclaration)(implicit typeDeclaration: TypeDeclaration) = {
     s"${typeDeclaration} extends ${extendedType} which is final"

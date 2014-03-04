@@ -62,7 +62,7 @@ class NamespaceTrie {
         node = node.addPackage(segment)
     }
 
-    typeDeclaration map (node.addType(_))
+    typeDeclaration map node.addType
   }
 
   def getAllTypesInPackage(packageName: NameExpression): Seq[TypeDeclaration] = {

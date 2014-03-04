@@ -1,9 +1,7 @@
-package joos.semantic.names
+package joos.semantic.names.heirarchy
 
+import joos.ast.AstVisitor
 import joos.ast.declarations.{MethodDeclaration, TypeDeclaration, ModuleDeclaration}
-import joos.ast.{Modifier, CompilationUnit, AstVisitor}
-import joos.semantic.EnvironmentComparisons
-import scala.Some
 import scala.collection.mutable
 
 /*
@@ -17,7 +15,7 @@ import scala.collection.mutable
  7. A protected method must not replace a public method.
  8. A method must not replace a final method.
 */
-class AdvancedHierarchyAnalyzer(implicit module: ModuleDeclaration) extends AstVisitor with TypeHierarchyAnalyzer {
+class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVisitor with TypeHierarchyAnalyzer {
   private[this] implicit val typeDeclarations = mutable.Stack[TypeDeclaration]()
   private[this] val methodDeclarations = mutable.Stack[MethodDeclaration]()
 

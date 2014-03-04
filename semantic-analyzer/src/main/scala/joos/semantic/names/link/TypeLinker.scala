@@ -1,4 +1,4 @@
-package joos.semantic.names
+package joos.semantic.names.link
 
 import joos.ast._
 import joos.ast.declarations._

@@ -1,9 +1,10 @@
-package joos.semantic.names.environments
+package joos.semantic.names.environment
 
 import joos.ast._
 import joos.ast.declarations._
 import joos.ast.expressions.VariableDeclarationExpression
 import joos.semantic.{EnvironmentComparisons, BlockEnvironment}
+import joos.semantic.names.environments.DuplicatedVariableException
 
 /**
  * EnvironmentBuilder is responsible for the following name resolution checks:
