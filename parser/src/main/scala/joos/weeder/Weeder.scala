@@ -15,7 +15,7 @@ abstract class Weeder {
   final val Native = "native"
   final val MethodDeclaration = "MethodDeclaration"
   final val Block = "Block"
-  final val Static = "static"f
+  final val Static = "static"
   final val AbstractMethodDeclaration = "AbstractMethodDeclaration"
   final val ClassBodyDeclarations = "ClassBodyDeclarations"
   final val ClassBodyDeclaration = "ClassBodyDeclaration"
