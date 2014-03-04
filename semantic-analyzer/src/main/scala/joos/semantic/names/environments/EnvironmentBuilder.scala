@@ -3,7 +3,7 @@ package joos.semantic.names.environments
 import joos.ast._
 import joos.ast.declarations._
 import joos.ast.expressions.VariableDeclarationExpression
-import joos.semantic.BlockEnvironment
+import joos.semantic.{EnvironmentComparisons, BlockEnvironment}
 
 /**
  * EnvironmentBuilder is responsible for the following name resolution checks:
@@ -20,8 +20,10 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
   override def apply(unit: CompilationUnit) {
     this.unit = unit
     this.packaged = unit.packageDeclaration
+
     module.add(unit)
     unit.moduleDeclaration = module
+
     unit.typeDeclaration.map(_.accept(this))
   }
 
@@ -29,14 +31,27 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
     this.typed = typed
     typed.compilationUnit = unit
     typed.packageDeclaration = packaged
+
+    val fieldNames = typed.fields map (_.declarationName)
+    EnvironmentComparisons.findDuplicate(fieldNames) map {
+      fieldName =>
+        throw new DuplicatedFieldException(fieldName)
+    }
+
     typed.methods.foreach(_.accept(this))
   }
 
   override def apply(method: MethodDeclaration) {
     method.environment = method.parameters.foldRight(BlockEnvironment()) {
-      (variable, environment) => environment.add(variable)
+      (variable, environment) =>
+        environment.add(variable) match {
+          case Some(blockEnvironment) => blockEnvironment
+          case None => throw new DuplicatedVariableException(variable.declarationName)
+        }
     }
+    method.typeDeclaration = typed
     block = method.environment
+
     method.body.map(_.accept(this))
   }
 
@@ -66,8 +81,12 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
     block = oldBlock
   }
 
+
   override def apply(expression: VariableDeclarationExpression) {
-    block = block.add(expression)
+    block = block.add(expression) match {
+      case Some(blockEnvironment) => blockEnvironment
+      case None => throw new DuplicatedVariableException(expression.declarationName)
+    }
   }
 
   override def apply(statement: ForStatement) {

@@ -24,10 +24,6 @@ case class TypeDeclaration (
 }
 
 object TypeDeclaration extends UniqueIdGenerator {
-  // TODO: Remove it if not used
-//  def newPrimitiveType(name: String): TypeDeclaration = {
-//    new TypeDeclaration(Seq(), false, SimpleNameExpression(name), None, Seq(), Seq(), Seq())
-//  }
 
   private def createInterfaceNodes(ptn: ParseTreeNode): Seq[NameExpression] = {
     ptn match {

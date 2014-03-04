@@ -12,11 +12,11 @@ class BlockEnvironment private(
     val typeEnvironment: TypeEnvironment,
     val variables: Map[NameExpression, TypedDeclaration]) {
 
-  def add(variable: TypedDeclaration): BlockEnvironment = {
-    if (variables.contains(variable.declarationName)) {
-      throw new DuplicatedDeclarationException(variable.declarationName)
+  def add(variable: TypedDeclaration) = {
+    variables.contains(variable.declarationName) match {
+      case true => None
+      case false => Some(new BlockEnvironment(typeEnvironment, variables + ((variable.declarationName, variable))))
     }
-    new BlockEnvironment(typeEnvironment, variables + ((variable.declarationName, variable)))
   }
 
   def getVariable(name: SimpleNameExpression): Option[TypedDeclaration] = {
