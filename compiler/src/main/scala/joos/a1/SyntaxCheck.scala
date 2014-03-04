@@ -1,6 +1,6 @@
 package joos.a1
 
-import java.io.FileInputStream
+import java.io.{PrintWriter, StringWriter, FileInputStream}
 import joos.automata.Dfa
 import joos.exceptions.ScanningException
 import joos.parser.exceptions.JoosParseException
@@ -14,6 +14,7 @@ import joos.weeder.exceptions.WeederException
 import scala.io.Source
 import joos.ast.AbstractSyntaxTree
 import joos.ast.exceptions.AstConstructionException
+import joos.core.Logger
 
 object SyntaxCheck {
 
@@ -45,6 +46,9 @@ object SyntaxCheck {
       return Some(AbstractSyntaxTree(parseTree))
     } catch {
       case e @ (_:ScanningException | _:WeederException | _:JoosParseException | _:AstConstructionException) => {
+        val errors = new StringWriter()
+        e.printStackTrace(new PrintWriter(errors))
+        Logger.logInformation(errors.toString())
         return None
       }
     }

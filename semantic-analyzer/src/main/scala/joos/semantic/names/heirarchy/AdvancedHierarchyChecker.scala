@@ -1,9 +1,9 @@
 package joos.semantic.names.heirarchy
 
 import joos.ast.declarations.{MethodDeclaration, TypeDeclaration, ModuleDeclaration}
-import joos.ast.{CompilationUnit, Modifier, AstVisitor}
+import joos.ast.{Modifier, CompilationUnit, AstVisitor}
 import joos.core.Logger
-import joos.semantic.{SemanticException, EnvironmentComparisons}
+import joos.semantic.EnvironmentComparisons
 import scala.collection.mutable
 
 /**
@@ -28,8 +28,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
 
     var visited: Set[TypeDeclaration] = Set()
 
-    val ancestors = mutable.Queue[TypeDeclaration]()
-    ancestors enqueue curTypeDeclaration
+    val ancestors = mutable.Queue[TypeDeclaration](curTypeDeclaration)
 
     while (!ancestors.isEmpty) {
       val front = ancestors.dequeue()
@@ -50,9 +49,10 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
           }
         case _ =>
       }
-      front.superInterfaces.foreach(
-        implmented =>
-          curTypeDeclaration.compilationUnit.getVisibleType(implmented) match {
+
+      front.superInterfaces.foreach {
+        implemented =>
+          curTypeDeclaration.compilationUnit.getVisibleType(implemented) match {
             case Some(ancestor) => {
               // Check
               if (ancestor.equals(curTypeDeclaration))
@@ -60,12 +60,13 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
               if (!visited.contains(ancestor))
                 ancestors enqueue ancestor
             }
-              // TODO: This case is wrong
-            case _ => Logger.logError(s"Interface ${implmented.standardName} not visible to implementer ${front.name.standardName}")
+            // TODO: This case is wrong
+            case _ => Logger.logError(s"Interface ${implemented.standardName} not visible to implementer ${front.name.standardName}")
           }
-      )
+      }
     }
   }
+
 
   override def apply(typeDeclaration: TypeDeclaration) = {
     // 1. The hierarchy must be acyclic.
@@ -73,11 +74,10 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
     checkCyclic()
     typeDeclaration.methods.foreach(_.accept(this))
     typeDeclarations.pop
-
     // A class or interface must not contain (declare or inherit) two methods with the same signature but different return types
     val dupe = EnvironmentComparisons.findDuplicate(typeDeclaration.getConstructors.toSeq.map(_.typedSignature))
     if (dupe.isDefined) {
-      throw new SemanticException(s"found duplicate ${dupe.get}")
+      throw new SameMethodSignatureException(dupe.get, typeDeclaration)
     }
   }
 
@@ -101,11 +101,11 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
   // A method must not replace a method with a different return type.
   private def checkReturnType(childMethod: MethodDeclaration, parentMethod: MethodDeclaration) = {
     (childMethod.returnType, parentMethod.returnType) match {
-      case (None, None) => {} // TODO: Set up special void return type?
+      case (None, None) => {
+      } // TODO: Set up special void return type?
       case (None, Some(_)) | (Some(_), None) =>
         throw new OverrideReturnTypeException(childMethod, parentMethod)
       case (Some(childRT), Some(parentRT)) => {
-        // TODO: the following code doesn't work
         typeEquality(childRT, parentRT)(unit)
       }
     }

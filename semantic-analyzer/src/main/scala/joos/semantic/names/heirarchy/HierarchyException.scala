@@ -39,3 +39,9 @@ class OverrideReturnTypeException(childMethod: MethodDeclaration, parentMethod: 
       s"${childMethod.typedSignature} with type ${childMethod.returnType.get}} attempts to override" +
           s"${parentMethod.typedSignature} with type ${parentMethod.returnType.get}}"
     )
+
+class ConcreteClassAbstractMethodException(methodDeclaration: MethodDeclaration, typeDeclaration: TypeDeclaration)
+  extends HierarchyException(s"${methodDeclaration.typedSignature} abstract in ${typeDeclaration}")
+
+class SameMethodSignatureException(signature: String, typeDeclaration: TypeDeclaration)
+  extends HierarchyException(s"${signature} duplicated in in ${typeDeclaration}")
