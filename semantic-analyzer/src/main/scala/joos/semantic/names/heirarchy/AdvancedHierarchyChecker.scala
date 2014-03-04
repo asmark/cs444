@@ -3,11 +3,8 @@ package joos.semantic.names.heirarchy
 import joos.ast.declarations.{MethodDeclaration, TypeDeclaration, ModuleDeclaration}
 import joos.ast.{Modifier, CompilationUnit, AstVisitor}
 import joos.core.Logger
-import joos.semantic.EnvironmentComparisons
 import scala.collection.mutable
 import joos.semantic._
-import joos.ast.expressions.NameExpression
-
 /**
  * AdvancedHierarchyChecker is responsible for the following name resolution checks:
  *
@@ -23,39 +20,6 @@ import joos.ast.expressions.NameExpression
 class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: CompilationUnit) extends AstVisitor with TypeHierarchyChecker {
   private[this] implicit val typeDeclarations = mutable.Stack[TypeDeclaration]()
   private[this] val methodDeclarations = mutable.Stack[MethodDeclaration]()
-
-  def getTypeDeclaration(name: NameExpression)(implicit unit: CompilationUnit): TypeDeclaration = {
-    unit.getVisibleType(name) match {
-      case None => {
-        val error = s"Cannot resolve ${name} to a type"
-        Logger.logError(error)
-        throw new SemanticException(error)
-      }
-      case Some(t) => t
-    }
-  }
-
-  def fullName(typeDeclaration: TypeDeclaration) = {
-    require(typeDeclaration.packageDeclaration != null)
-    val ret = s"${typeDeclaration.packageDeclaration.name.standardName}.${typeDeclaration.name.standardName}"
-    ret
-  }
-
-  // Refactor out the following function
-  private val javaLangObject = NameExpression("java.lang.Object")
-  def getSuperType(typeDeclaration: TypeDeclaration): Option[TypeDeclaration] = {
-    val compilationUnit = typeDeclaration.compilationUnit
-    val theFullName = fullName(typeDeclaration)
-    theFullName equals javaLangObject.standardName match {
-      case true => None
-      case false => {
-        Some(typeDeclaration.superType match {
-          case Some(superType) => getTypeDeclaration(superType)(compilationUnit)
-          case None => getTypeDeclaration(javaLangObject)(compilationUnit)
-        })
-      }
-    }
-  }
 
   // This function also stores the parent classes and interfaces of the hierarchy in the environment of each type declaration
   private def checkCyclic() = {
@@ -83,7 +47,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
 
       front.superInterfaces.foreach {
         implemented =>
-          curTypeDeclaration.compilationUnit.getVisibleType(implemented) match {
+          front.compilationUnit.getVisibleType(implemented) match {
             case Some(ancestor) => {
               // Check
               if (ancestor.equals(curTypeDeclaration))
@@ -106,7 +70,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
     typeDeclaration.methods.foreach(_.accept(this))
     typeDeclarations.pop
     // A class or interface must not contain (declare or inherit) two methods with the same signature but different return types
-    val dupe = EnvironmentComparisons.findDuplicate(typeDeclaration.constructors.toSeq.map(_.typedSignature))
+    val dupe = findDuplicate(typeDeclaration.constructors.toSeq.map(_.typedSignature))
     if (dupe.isDefined) {
       throw new SameMethodSignatureException(dupe.get, typeDeclaration)
     }
@@ -174,7 +138,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
 
       val interfaces = front.superInterfaces
       for (interface <- interfaces) {
-        interface.methods.foreach(
+        resolveType(interface)(front.compilationUnit).methods.foreach(
           method =>
             if (method.localSignature.equals(curMethodDeclaration.localSignature)) {
               checkModifiers(curMethodDeclaration, method)

@@ -36,8 +36,8 @@ class OverrideFinalMethodException(childMethod: MethodDeclaration, parentMethod:
 
 class OverrideReturnTypeException(childMethod: MethodDeclaration, parentMethod: MethodDeclaration)
     extends HierarchyException(
-      s"${childMethod.typedSignature} with type ${childMethod.returnType.get}} attempts to override" +
-          s"${parentMethod.typedSignature} with type ${parentMethod.returnType.get}}"
+      s"${childMethod.typedSignature} with type ${childMethod.returnType.getOrElse("void")}} attempts to override" +
+          s"${parentMethod.typedSignature} with type ${parentMethod.returnType.getOrElse("void")}}"
     )
 
 class ConcreteClassAbstractMethodException(methodDeclaration: MethodDeclaration, typeDeclaration: TypeDeclaration)

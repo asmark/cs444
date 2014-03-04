@@ -5,6 +5,7 @@ import joos.ast.declarations.TypeDeclaration
 import joos.ast.expressions.NameExpression
 import joos.core.Logger
 import scala.Some
+import scala.collection.mutable
 
 package object semantic {
   /**
@@ -21,7 +22,24 @@ package object semantic {
     }
   }
 
-  def fullName(typeDeclaration: TypeDeclaration) {
+  val javaLangObject = NameExpression("java.lang.Object")
+
+  def getSuperType(typeDeclaration: TypeDeclaration): Option[TypeDeclaration] = {
+    val compilationUnit = typeDeclaration.compilationUnit
+    val theFullName = fullName(typeDeclaration)
+    theFullName equals javaLangObject.standardName match {
+      case true => None
+      case false => {
+        Some(
+          typeDeclaration.superType match {
+            case Some(superType) => getTypeDeclaration(superType)(compilationUnit)
+            case None => getTypeDeclaration(javaLangObject)(compilationUnit)
+          })
+      }
+    }
+  }
+
+  def fullName(typeDeclaration: TypeDeclaration) = {
     require(typeDeclaration.packageDeclaration != null)
     s"${typeDeclaration.packageDeclaration.name.standardName}.${typeDeclaration.name.standardName}"
   }
@@ -43,5 +61,16 @@ package object semantic {
       case (PrimitiveType(token1), PrimitiveType(token2)) => token1 == token2
       case _ => false
     }
+  }
+
+  def findDuplicate[T](sequence: Iterable[T]): Option[T] = {
+    val set = mutable.HashSet.empty[T]
+    sequence foreach {
+      element =>
+        if (!set.add(element)) {
+          return Some(element)
+        }
+    }
+    return None
   }
 }

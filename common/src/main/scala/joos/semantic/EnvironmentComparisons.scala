@@ -23,15 +23,4 @@ object EnvironmentComparisons {
     getQualifiedName(typeDeclaration) equals "java.lang.Object"
   }
 
-  def findDuplicate[T](sequence: Iterable[T]): Option[T] = {
-    val set = mutable.HashSet.empty[T]
-    sequence foreach {
-      element =>
-        if (!set.add(element)) {
-          return Some(element)
-        }
-    }
-    return None
-  }
-
 }

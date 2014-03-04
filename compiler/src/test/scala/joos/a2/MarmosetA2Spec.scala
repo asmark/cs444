@@ -19,7 +19,6 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
 
   def getTestCases(dir: String) = {
     (new File(getClass.getResource(dir).getPath)).listFiles()
-//      .filter(file => file.getName.contains("FinalOverride"))
   }
 
   behavior of "Name resolution of valid joos"
