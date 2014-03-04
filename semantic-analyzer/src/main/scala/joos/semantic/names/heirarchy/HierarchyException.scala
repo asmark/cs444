@@ -42,3 +42,6 @@ class OverrideReturnTypeException(childMethod: MethodDeclaration, parentMethod: 
 
 class ConcreteClassAbstractMethodException(methodDeclaration: MethodDeclaration, typeDeclaration: TypeDeclaration)
   extends HierarchyException(s"${methodDeclaration.typedSignature} in ${typeDeclaration}")
+
+class SameMethodSignatureException(methodDeclaration: MethodDeclaration, typeDeclaration: TypeDeclaration)
+  extends HierarchyException(s"${methodDeclaration.typedSignature} in ${typeDeclaration}")

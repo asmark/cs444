@@ -136,13 +136,24 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
   override def apply(typeDeclaration: TypeDeclaration) = {
     // 1. The hierarchy must be acyclic.
     checkCyclic(typeDeclaration)
+    // A class that contains (declares or inherits) any abstract methods must be abstract.
     val isAbstractType: Boolean =
       EnvironmentComparisons.containsModifier(typeDeclaration.modifiers, Modifier.Abstract)
+    // A class or interface must not declare two methods with the same signature (name and parameter types).
+    val localMethods: mutable.HashSet[String] = mutable.HashSet()
+
     typeDeclaration.methods.foreach(
       method => {
-        method.accept(this)
         if (!isAbstractType && EnvironmentComparisons.containsModifier(method.modifiers, Modifier.Abstract))
           throw new ConcreteClassAbstractMethodException(method, typeDeclaration)
+
+        if (localMethods.contains(method.localSignature)) {
+          throw new SameMethodSignatureException(method, typeDeclaration)
+        } else {
+          localMethods.add(method.localSignature)
+        }
+
+        method.accept(this)
       }
     )
   }
