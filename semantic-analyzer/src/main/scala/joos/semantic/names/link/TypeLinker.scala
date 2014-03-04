@@ -2,6 +2,8 @@ package joos.semantic.names.link
 
 import joos.ast._
 import joos.ast.declarations._
+import joos.ast.expressions._
+import joos.semantic.MissingTypeException
 
 /**
  * TypeLinker is responsible for the following name resolution checks:
@@ -23,10 +25,87 @@ import joos.ast.declarations._
  * the import-on-demand declaration must refer to a package whose name appears as the package declaration in some source file,
  * or whose name is a prefix of the name appearing in some package declaration.
  */
-class TypeLinker(implicit module: ModuleDeclaration) extends AstVisitor {
+class TypeLinker(implicit module: ModuleDeclaration, unit: CompilationUnit) extends AstCompleteVisitor {
+
+  // TODO: Temporary until pkg object is set up
+  def resolveType(typed: Type) {
+    typed match {
+      case PrimitiveType(x) =>
+      case ArrayType(typed, dimensions) => resolveType(typed)
+      case SimpleType(name) => resolveType(name)
+    }
+  }
+
+  // TODO: Temporary until pkg object is set up
+  def resolveType(name: NameExpression) {
+    val typeDeclaration = unit.getVisibleType(name)
+    if (typeDeclaration.isEmpty) {
+      throw new MissingTypeException(name)
+    }
+  }
+
   override def apply(unit: CompilationUnit) {
     unit.addSelfPackage()
-    unit.importDeclarations foreach(unit.add(_))
+    unit.importDeclarations foreach (unit.add(_))
+
+    super.apply(unit)
+  }
+
+  override def apply(typed: TypeDeclaration) {
+    // TODO: Use exposed getSuperType method
+    typed.superType foreach resolveType
+    typed.superInterfaces foreach resolveType
+
+    super.apply(typed)
+  }
+
+  override def apply(field: FieldDeclaration) {
+    resolveType(field.declarationType)
+
+    super.apply(field)
+  }
+
+  override def apply(method: MethodDeclaration) {
+    method.returnType foreach resolveType
+    method.parameters foreach (parameter => resolveType(parameter.declarationType))
+
+    super.apply(method)
+  }
+
+  override def apply(variable: SingleVariableDeclaration) {
+    resolveType(variable.variableType)
+
+    super.apply(variable)
+  }
+
+  override def apply(expression: ArrayCreationExpression) {
+    resolveType(expression.arrayType)
+
+    super.apply(expression)
+  }
+
+  override def apply(expression: ClassCreationExpression) {
+    resolveType(expression.classType)
+
+    super.apply(expression)
+  }
+
+  override def apply(expression: InstanceOfExpression) {
+    resolveType(expression.classType)
+
+    super.apply(expression)
+  }
+
+  override def apply(expression: CastExpression) {
+    resolveType(expression.castType)
+
+    super.apply(expression)
+  }
+
+  override def apply(expression: VariableDeclarationExpression) {
+    resolveType(expression.variableType)
+
+    super.apply(expression)
   }
 
   // TODO
