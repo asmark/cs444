@@ -19,13 +19,8 @@ import joos.core.Logger
  * A method must not replace a final method.
  */
 class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVisitor with TypeHierarchyChecker {
-  private[this] implicit val typeDeclarations = mutable.Stack[TypeDeclaration]()
-  private[this] val methodDeclarations = mutable.Stack[MethodDeclaration]()
-
   // This function also stores the parent classes and interfaces of the hierarchy in the environment of each type declaration
-  private def checkCyclic() = {
-        val curTypeDeclaration = typeDeclarations.top
-
+  private def checkCyclic(curTypeDeclaration: TypeDeclaration) = {
         var visited: Set[TypeDeclaration] = Set()
 
         val ancestors = mutable.Queue[TypeDeclaration]()
@@ -65,95 +60,98 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
         }
   }
 
-    override def apply(typeDeclaration: TypeDeclaration) = {
-      // 1. The hierarchy must be acyclic.
-      typeDeclarations.push(typeDeclaration)
-      checkCyclic()
-      typeDeclaration.methods.foreach(_.accept(this))
-      typeDeclarations.pop
+  // A non-static method must not replace a static method.
+  // A protected method must not replace a public method.
+  // A method must not replace a final method.
+  private def checkModifiers(childMethod: MethodDeclaration, parentMethod: MethodDeclaration) = {
+    if (!EnvironmentComparisons.containsModifier(childMethod.modifiers, Modifier.Static) &&
+        EnvironmentComparisons.containsModifier(parentMethod.modifiers, Modifier.Static)) {
+      throw new OverrideStaticMethodException(childMethod, parentMethod)
     }
-
-    // A non-static method must not replace a static method.
-    // A protected method must not replace a public method.
-    // A method must not replace a final method.
-    private def checkModifiers(childMethod: MethodDeclaration, parentMethod: MethodDeclaration) = {
-      if (!EnvironmentComparisons.containsModifier(childMethod.modifiers, Modifier.Static) &&
-          EnvironmentComparisons.containsModifier(parentMethod.modifiers, Modifier.Static)) {
-        throw new OverrideStaticMethodException(childMethod, parentMethod)
-      }
-      if (EnvironmentComparisons.containsModifier(childMethod.modifiers, Modifier.Protected) &&
-          EnvironmentComparisons.containsModifier(parentMethod.modifiers, Modifier.Public)) {
-        throw new OverrideProtectedMethodException(childMethod, parentMethod)
-      }
-      if (EnvironmentComparisons.containsModifier(parentMethod.modifiers, Modifier.Final)) {
-        throw new OverrideFinalMethodException(childMethod, parentMethod)
-      }
+    if (EnvironmentComparisons.containsModifier(childMethod.modifiers, Modifier.Protected) &&
+        EnvironmentComparisons.containsModifier(parentMethod.modifiers, Modifier.Public)) {
+      throw new OverrideProtectedMethodException(childMethod, parentMethod)
     }
+    if (EnvironmentComparisons.containsModifier(parentMethod.modifiers, Modifier.Final)) {
+      throw new OverrideFinalMethodException(childMethod, parentMethod)
+    }
+  }
 
-    // A method must not replace a method with a different return type.
-    private def checkReturnType(childMethod: MethodDeclaration, parentMethod: MethodDeclaration) = {
-      (childMethod.returnType, parentMethod.returnType) match {
-        case (None, None) => {} // TODO: Set up special void return type?
-        case (None, Some(_)) | (Some(_), None) =>
-          throw new OverrideReturnTypeException(childMethod, parentMethod)
-        case (Some(childRT), Some(parentRT)) => {
-          // TODO: the following code doesn't work
+  // A method must not replace a method with a different return type.
+  private def checkReturnType(childMethod: MethodDeclaration, parentMethod: MethodDeclaration) = {
+    (childMethod.returnType, parentMethod.returnType) match {
+      case (None, None) => {} // TODO: Set up special void return type?
+      case (None, Some(_)) | (Some(_), None) =>
+        throw new OverrideReturnTypeException(childMethod, parentMethod)
+      case (Some(childRT), Some(parentRT)) => {
+        // TODO: the following code doesn't work
 //          if (!childRT.asName.standardName.equals(parentRT.asName.standardName))
 //            throw new OverrideReturnTypeException(childMethod, parentMethod)
-        }
       }
     }
+  }
 
-    private def checkMethodReplaces() = {
-      val curTypeDeclaration = typeDeclarations.top
-      val curMethodDeclaration = methodDeclarations.top
+  private def checkMethodReplaces(curMethodDeclaration: MethodDeclaration) = {
+    val curTypeDeclaration = curMethodDeclaration.typeDeclaration
 
-      var visited: Set[TypeDeclaration] = Set()
+    var visited: Set[TypeDeclaration] = Set()
 
-      val ancestors = mutable.Queue[TypeDeclaration]()
-      ancestors enqueue curTypeDeclaration
+    val ancestors = mutable.Queue[TypeDeclaration]()
+    ancestors enqueue curTypeDeclaration
 
-      while (!ancestors.isEmpty) {
-        implicit val front = ancestors.dequeue()
+    while (!ancestors.isEmpty) {
+      implicit val front = ancestors.dequeue()
 
-        visited += front
+      visited += front
 
-        front.superType match {
-          case Some(superType) => {
-            superType.methods.foreach(method =>
-              if (method.localSignature.equals(curMethodDeclaration.localSignature)) {
-                checkModifiers(curMethodDeclaration, method)
-                checkReturnType(curMethodDeclaration, method)
-              }
-            )
-
-            if (!visited.contains(superType))
-              ancestors enqueue superType
-          }
-          case _ =>
-        }
-        val interfaces = front.superInterfaces
-        for (interface <- interfaces) {
-          interface.methods.foreach(method =>
+      front.superType match {
+        case Some(superType) => {
+          superType.methods.foreach(method =>
             if (method.localSignature.equals(curMethodDeclaration.localSignature)) {
               checkModifiers(curMethodDeclaration, method)
               checkReturnType(curMethodDeclaration, method)
             }
           )
 
-          if (!visited.contains(interface))
-            ancestors enqueue interface
+          if (!visited.contains(superType))
+            ancestors enqueue superType
         }
+        case _ =>
+      }
+      val interfaces = front.superInterfaces
+      for (interface <- interfaces) {
+        interface.methods.foreach(method =>
+          if (method.localSignature.equals(curMethodDeclaration.localSignature)) {
+            checkModifiers(curMethodDeclaration, method)
+            checkReturnType(curMethodDeclaration, method)
+          }
+        )
+
+        if (!visited.contains(interface))
+          ancestors enqueue interface
       }
     }
+  }
 
-    override def apply(methodDeclaration: MethodDeclaration) = {
-      methodDeclarations.push(methodDeclaration)
-      checkMethodReplaces()
-      methodDeclarations.pop
-    }
+  override def apply(typeDeclaration: TypeDeclaration) = {
+    // 1. The hierarchy must be acyclic.
+    checkCyclic(typeDeclaration)
+    val isAbstractType: Boolean =
+      EnvironmentComparisons.containsModifier(typeDeclaration.modifiers, Modifier.Abstract)
+    typeDeclaration.methods.foreach(
+      method => {
+        method.accept(this)
+        if (!isAbstractType && EnvironmentComparisons.containsModifier(method.modifiers, Modifier.Abstract))
+          throw new ConcreteClassAbstractMethodException(method, typeDeclaration)
+      }
+    )
+  }
 
-    override def apply(compilationUnit: CompilationUnit): Unit = {
-      compilationUnit.typeDeclaration.map(_.accept(this))
-    }
+  override def apply(methodDeclaration: MethodDeclaration) = {
+    checkMethodReplaces(methodDeclaration)
+  }
+
+  override def apply(compilationUnit: CompilationUnit): Unit = {
+    compilationUnit.typeDeclaration.map(_.accept(this))
+  }
 }
