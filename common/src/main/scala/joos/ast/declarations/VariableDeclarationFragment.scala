@@ -4,11 +4,12 @@ import joos.ast.expressions.{Expression, SimpleNameExpression}
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
+import joos.ast.AstNode
 
 case class VariableDeclarationFragment(
   identifier: SimpleNameExpression,
   initializer: Option[Expression]
-)
+) extends AstNode
 
 object VariableDeclarationFragment {
   def apply(ptn: ParseTreeNode): VariableDeclarationFragment = {

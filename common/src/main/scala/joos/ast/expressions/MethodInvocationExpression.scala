@@ -1,14 +1,14 @@
 package joos.ast.expressions
 
-import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.language.ProductionRule
 import joos.ast.exceptions.AstConstructionException
+import joos.language.ProductionRule
+import joos.parsetree.{TreeNode, ParseTreeNode}
 
 case class MethodInvocationExpression(
-   expression: Option[Expression],
-   methodName: NameExpression,
-   arguments: Seq[Expression]
- ) extends Expression
+    expression: Option[Expression],
+    methodName: NameExpression,
+    arguments: Seq[Expression]
+    ) extends Expression
 
 object MethodInvocationExpression {
   def apply(ptn: ParseTreeNode): MethodInvocationExpression = {
