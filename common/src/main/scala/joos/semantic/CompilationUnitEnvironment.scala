@@ -20,13 +20,11 @@ trait CompilationUnitEnvironment extends Environment {
     }
   }
 
-  private def getTypeFromConcreteImports(name: SimpleNameExpression) = concreteImports.getSimpleType(name)
-
   private def addConcreteImport(packageName: NameExpression, typeDeclaration: TypeDeclaration, namespace: NamespaceTrie) {
     val qualifiedName = QualifiedNameExpression(packageName, typeDeclaration.name)
     concreteImports.getQualifiedType(qualifiedName) match {
       case None => {
-        getTypeFromConcreteImports(typeDeclaration.name) match {
+        concreteImports.getSimpleType(typeDeclaration.name) match {
           case None => concreteImports.add(packageName, Some(typeDeclaration))
           case _ => throw new NamespaceCollisionException(qualifiedName)
         }
@@ -56,14 +54,33 @@ trait CompilationUnitEnvironment extends Environment {
     typed
   }
 
+  // No package names or prefixes of package names of declared packages, single-type-import declarations
+  // or import-on-demand declarations that are used may resolve to types, except for types in the default package.
+  private def getQualifiedType(name: QualifiedNameExpression) = {
+    val prefixes = name.standardName.split('.')
+    if (prefixes.length >= 2) {
+      if (getUnqualifiedType(SimpleNameExpression(prefixes(0))).isDefined) {
+        throw new NamespacePrefixException(s"${name} conflicted with ${prefixes(1)} which is a prefix")
+      }
+      prefixes.dropRight(1).reduceRight {
+        (prefix, next) =>
+          val qualifiedName = QualifiedNameExpression(NameExpression(prefix), SimpleNameExpression(next))
+          if (moduleDeclaration.namespace.getQualifiedType(qualifiedName).isDefined) {
+            throw new NamespacePrefixException(s"${name} conflicted with ${qualifiedName.standardName} which is a prefix")
+          }
+          qualifiedName.standardName
+      }
+    }
+    moduleDeclaration.namespace.getQualifiedType(name)
+  }
+
   /**
    * Gets the type with the {{name}} if it's visible within this compilation unit
    */
   def getVisibleType(name: NameExpression): Option[TypeDeclaration] = {
     name match {
-
       case simpleName: SimpleNameExpression => getUnqualifiedType(simpleName)
-      case qualifiedName: QualifiedNameExpression => moduleDeclaration.namespace.getQualifiedType(qualifiedName)
+      case qualifiedName: QualifiedNameExpression => getQualifiedType(qualifiedName)
     }
   }
 
@@ -79,7 +96,10 @@ trait CompilationUnitEnvironment extends Environment {
           }
         }
         case _ => {
-          Logger.logError(s"ImportDeclaration was given a SimpleNameExpression ${importDeclaration.name}")
+          Logger.logError(
+            s"ImportDeclaration was given a SimpleNameExpression ${
+              importDeclaration.name
+            }")
           throw new RuntimeException("This also shouldnt happen")
         }
       }
