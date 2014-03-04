@@ -107,8 +107,4 @@ class TypeLinker(implicit module: ModuleDeclaration, unit: CompilationUnit) exte
 
     super.apply(expression)
   }
-
-  // TODO
-  // No package names or prefixes of package names of declared packages, single-type-import declarations or import-on-demand declarations that are
-  // used may resolve to types, except for types in the default package.
 }
