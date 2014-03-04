@@ -21,12 +21,17 @@ package object semantic {
     }
   }
 
+  def fullName(typeDeclaration: TypeDeclaration) {
+    require(typeDeclaration.packageDeclaration != null)
+    s"${typeDeclaration.packageDeclaration.name.standardName}.${typeDeclaration.name.standardName}"
+  }
+
   def areEqual(type1: TypeDeclaration, type2: TypeDeclaration): Boolean = {
     if (type1.packageDeclaration == null || type2.packageDeclaration == null) {
       Logger.logError(s"${type1.name} or ${type2.name} had null package declarations")
     }
 
-    (type1.packageDeclaration eq type2.packageDeclaration) && (type1 eq type2)
+    fullName(type1) equals fullName(type2)
   }
 
   def areEqual(type1: Type, type2: Type)(implicit unit: CompilationUnit): Boolean = {
