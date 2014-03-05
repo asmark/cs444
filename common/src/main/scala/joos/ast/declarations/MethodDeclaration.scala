@@ -64,7 +64,7 @@ case class MethodDeclaration(
     }
   }
 
-  lazy val isAbstractMethod = {
+  def isAbstractMethod: Boolean = {
     (modifiers contains Modifier.Abstract) || typeDeclaration.isInterface
   }
 

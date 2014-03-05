@@ -9,8 +9,6 @@ trait TypeEnvironment extends Environment {
   val constructorMap = mutable.HashMap.empty[String, MethodDeclaration]
   val methodMap = mutable.HashMap.empty[String, MethodDeclaration]
   val fieldMap = mutable.HashMap.empty[SimpleNameExpression, FieldDeclaration]
-  private var inheritedMethodMap = mutable.HashMap.empty[String, Seq[MethodDeclaration]]
-  private var inheritedFieldMap = mutable.HashMap.empty[String, Seq[FieldDeclaration]]
 
   /**
    * Adds the specified {{method}} to the type environment
@@ -70,7 +68,7 @@ trait TypeEnvironment extends Environment {
     var ret = mutable.HashMap.empty[String, Seq[MethodDeclaration]]
     getSuperType(this) match {
       case Some(superType) => {
-        inheritedMethodMap ++= superType.inheritedMethodMap
+        inheritMethods ++= superType.inheritMethods
       }
       case None => {}
     }
@@ -78,11 +76,11 @@ trait TypeEnvironment extends Environment {
     this.superInterfaces.foreach(
       superInterface => {
         val interface = getTypeDeclaration(superInterface)
-        inheritedMethodMap ++= interface.inheritedMethodMap
+        inheritMethods ++= interface.inheritMethods
       }
     )
 
-    ret ++= inheritedMethodMap
+    ret ++= inheritMethods
     ret += {fullName(this) -> methodMap.values.toSeq}
     ret
   }
@@ -92,11 +90,10 @@ trait TypeEnvironment extends Environment {
 
     this.supers.foreach(
       superType => {
-        val superTypeContained = superType.containedMethodMap.values.toSeq.flatten.toArray
-        val localSignatures = this.methods.map(method => method.localSignature)
-        superTypeContained.foreach(
+        val localSigatures = this.methods.map(method => method.localSignature)
+        superType.containedMethodMap.values.flatten foreach {
           contained =>
-            if (!localSignatures.contains(contained)) {
+            if (!localSigatures.contains(contained.localSignature)) {
               if (!contained.isAbstractMethod) {
                 // TODO: Inefficient
                 if (!ret.contains(fullName(contained.typeDeclaration)))
@@ -112,8 +109,8 @@ trait TypeEnvironment extends Environment {
                     ret(fullName(contained.typeDeclaration)) = ret(fullName(contained.typeDeclaration)) :+ contained
                 }
               }
-            }
-        )
+           }
+        }
       }
     )
 

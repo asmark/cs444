@@ -42,8 +42,9 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
           // Check
           if (ancestor.equals(curTypeDeclaration))
             throw new CyclicHierarchyException(ancestor.name)
-          if (!visited.contains(ancestor))
+          if (!visited.contains(ancestor)) {
             ancestors enqueue ancestor
+          }
         }
         case None =>
       }
@@ -55,8 +56,9 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
               // Check
               if (ancestor.equals(curTypeDeclaration))
                 throw new CyclicHierarchyException(ancestor.name)
-              if (!visited.contains(ancestor))
+              if (!visited.contains(ancestor)) {
                 ancestors enqueue ancestor
+              }
             }
             // TODO: This case is wrong
             case _ => Logger.logError(s"Interface ${implemented.standardName} not visible to implementer ${front.name.standardName}")
