@@ -1,13 +1,13 @@
 package joos
 
+import java.io.FileInputStream
 import joos.automata.{Dfa, AcceptingDfaNode, NonAcceptingDfaNode}
-import joos.exceptions.ScanningException
 import joos.regexp.{Concatenation, Alternation}
 import joos.scanner.Scanner
 import joos.tokens.TokenKind.TokenKindValue
 import joos.tokens.{TerminalToken, TokenKind}
 import org.scalatest.{FlatSpec, Matchers}
-import java.io.FileInputStream
+import joos.parser.exceptions.ScanningException
 
 class ScannerSpec extends FlatSpec with Matchers {
 

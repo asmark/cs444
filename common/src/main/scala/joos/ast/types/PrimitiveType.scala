@@ -1,14 +1,11 @@
 package joos.ast
 
+import joos.ast.exceptions.AstConstructionException
+import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.tokens.TerminalToken
-import joos.language.ProductionRule
-import joos.ast.exceptions.AstConstructionException
-import joos.ast.expressions.SimpleNameExpression
 
-case class PrimitiveType(token: TerminalToken) extends Type {
-  override lazy val asName = SimpleNameExpression(token.lexeme)
-}
+case class PrimitiveType(token: TerminalToken) extends Type
 
 object PrimitiveType {
 

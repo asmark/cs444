@@ -4,7 +4,7 @@ import joos.ast.declarations.{ImportDeclaration, TypeDeclaration, PackageDeclara
 import joos.ast.expressions.{QualifiedNameExpression, NameExpression, SimpleNameExpression}
 import joos.ast.{Modifier, CompilationUnit}
 
-package object semantic {
+package object semanticspec {
   def MockPackage1 = PackageDeclaration("mock.pkg")
   def MockPackage2 = PackageDeclaration("mock")
   def MockDefaultPackage = PackageDeclaration.DefaultPackage
@@ -35,9 +35,13 @@ package object semantic {
     }
   }
 
+  def MockStdLib = CompilationUnit(PackageDeclaration("java.lang"), Seq.empty, None)
+
   // Links the compilation units
   def mockLink(compilationUnits: Seq[CompilationUnit]) = {
     val mock = new ModuleDeclaration
+    mock.add(MockStdLib)
+
     compilationUnits foreach {
       unit =>
         mock.add(unit)

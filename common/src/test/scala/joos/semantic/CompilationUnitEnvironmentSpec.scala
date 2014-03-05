@@ -1,7 +1,8 @@
 package joos.semantic
 
 import joos.ast.CompilationUnit
-import org.scalatest.{BeforeAndAfterEach, Matchers, FlatSpec}
+import org.scalatest.{Matchers, FlatSpec}
+import joos.semanticspec._
 
 class CompilationUnitEnvironmentSpec extends FlatSpec with Matchers {
 
@@ -98,7 +99,7 @@ class CompilationUnitEnvironmentSpec extends FlatSpec with Matchers {
     val unit2 = CompilationUnit(MockPackage2, Seq.empty, Some(MockTypeDeclaration1))
     val unit3 = CompilationUnit(MockDefaultPackage, Seq(mockImport(MockPackage2, Some(MockSimpleTypeName1))), None)
 
-    mockLink(Seq(unit1,unit2,unit3))
+    mockLink(Seq(unit1, unit2, unit3))
 
     unit3.getVisibleType(MockQualifiedTypeName1) shouldBe Some(MockTypeDeclaration1)
     unit3.getVisibleType(MockSimpleTypeName1) shouldBe Some(MockTypeDeclaration1)

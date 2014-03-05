@@ -1,6 +1,7 @@
 package joos.semantic
 
 import joos.ast.expressions.{NameExpression, QualifiedNameExpression}
+import joos.semanticspec._
 import org.scalatest.{Matchers, FlatSpec}
 
 class NamespaceTrieSpec extends FlatSpec with Matchers {
@@ -62,7 +63,7 @@ class NamespaceTrieSpec extends FlatSpec with Matchers {
     val namespace = new NamespaceTrie
     namespace.add(NameExpression(s"foo.${MockSimpleTypeName1}"), Some(MockTypeDeclaration2))
     intercept[NamespaceCollisionException] {
-      namespace.add(NameExpression("foo" ), Some(MockTypeDeclaration1))
+      namespace.add(NameExpression("foo"), Some(MockTypeDeclaration1))
     }
   }
 
@@ -75,8 +76,8 @@ class NamespaceTrieSpec extends FlatSpec with Matchers {
   }
 
   "Referencing types that aren't in the namespace" should "return None" in {
-  val namespace = new NamespaceTrie
-  namespace.add(MockPackage2.name, Some(MockTypeDeclaration2))
+    val namespace = new NamespaceTrie
+    namespace.add(MockPackage2.name, Some(MockTypeDeclaration2))
 
     intercept[MissingTypeException] {
       namespace.getAllTypesInPackage(MockPackage1.name)

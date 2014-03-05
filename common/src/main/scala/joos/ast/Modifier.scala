@@ -3,6 +3,7 @@ package joos.ast
 import joos.parsetree.{LeafNode, TreeNode, ParseTreeNode}
 import joos.tokens.{TokenKind, TerminalToken}
 import joos.language.ProductionRule
+import joos.ast.exceptions.AstConstructionException
 
 case class Modifier(modifier: TerminalToken) extends AstNode
 
@@ -15,6 +16,7 @@ object Modifier {
         return Modifier(children(0))
       case TreeNode(ProductionRule("Modifier", Seq(_)), _, Seq(LeafNode(token))) =>
         return Seq(Modifier(token))
+      case _ => throw new AstConstructionException("Invalid production rule to create modifier")
     }
   }
 
@@ -22,6 +24,6 @@ object Modifier {
   val Public = Modifier(TerminalToken("public", TokenKind.Public))
   val Abstract = Modifier(TerminalToken("abstract", TokenKind.Abstract))
   val Static = Modifier(TerminalToken("static", TokenKind.Static))
-  val Final = Modifier(TerminalToken("final", TokenKind.Static))
+  val Final = Modifier(TerminalToken("final", TokenKind.Final))
 
 }

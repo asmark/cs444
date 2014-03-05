@@ -5,9 +5,7 @@ import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.ast.expressions.NameExpression
 
-trait Type extends AstNode {
-  def asName: NameExpression
-}
+trait Type extends AstNode
 
 object Type {
   def handleReferenceType(referenceType: ParseTreeNode): Type = {

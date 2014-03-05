@@ -3,7 +3,7 @@ package joos.semantic
 import joos.ast.declarations.{PackageDeclaration, TypeDeclaration}
 import joos.core.Logger
 import scala.collection.mutable
-import joos.ast.Modifier
+import joos.ast.{SimpleType, CompilationUnit, Type, Modifier}
 
 object EnvironmentComparisons {
 
@@ -14,15 +14,13 @@ object EnvironmentComparisons {
     (type1.packageDeclaration, type1) equals(type2.packageDeclaration, type2)
   }
 
-  def allDifferent(types: Seq[TypeDeclaration]): Boolean = {
-    val typeSet = mutable.HashSet.empty[(PackageDeclaration, TypeDeclaration)]
-    types foreach {
-      typeDeclaration =>
-        if (!typeSet.add((typeDeclaration.packageDeclaration, typeDeclaration))) return false
-    }
-    return true
+  def getQualifiedName(typeDeclaration:TypeDeclaration) = {
+    require(typeDeclaration.packageDeclaration != null)
+    typeDeclaration.packageDeclaration.name.standardName + "." + typeDeclaration.name.standardName
   }
 
-  def containsModifier(modifiers: Seq[Modifier], contained: Modifier) = modifiers exists(_ equals contained)
+  def isJavaLangObject(typeDeclaration: TypeDeclaration) = {
+    getQualifiedName(typeDeclaration) equals "java.lang.Object"
+  }
 
 }
