@@ -24,49 +24,6 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
   private[this] val methodDeclarations = mutable.Stack[MethodDeclaration]()
   private[this] implicit var unit: CompilationUnit = null
 
-  // This function also stores the parent classes and interfaces of the hierarchy in the environment of each type declaration
-  private def checkCyclic() = {
-    val curTypeDeclaration = typeDeclarations.top
-
-    var visited: Set[TypeDeclaration] = Set()
-
-    val ancestors = mutable.Queue[TypeDeclaration](curTypeDeclaration)
-
-    while (!ancestors.isEmpty) {
-      val front = ancestors.dequeue()
-
-      visited += front
-
-      getSuperType(front) match {
-        case Some(ancestor) => {
-          // Check
-          if (ancestor.equals(curTypeDeclaration))
-            throw new CyclicHierarchyException(ancestor.name)
-          if (!visited.contains(ancestor)) {
-            ancestors enqueue ancestor
-          }
-        }
-        case None =>
-      }
-
-      front.superInterfaces.foreach {
-        implemented =>
-          front.compilationUnit.getVisibleType(implemented) match {
-            case Some(ancestor) => {
-              // Check
-              if (ancestor.equals(curTypeDeclaration))
-                throw new CyclicHierarchyException(ancestor.name)
-              if (!visited.contains(ancestor)) {
-                ancestors enqueue ancestor
-              }
-            }
-            // TODO: This case is wrong
-            case _ => Logger.logError(s"Interface ${implemented.standardName} not visible to implementer ${front.name.standardName}")
-          }
-      }
-    }
-  }
-
   private def checkReturnType(methods: Seq[MethodDeclaration]) {
     var set: mutable.HashMap[String, MethodDeclaration] = mutable.HashMap()
 

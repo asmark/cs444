@@ -82,6 +82,11 @@ trait TypeEnvironment extends Environment {
 
     ret ++= inheritMethods
     ret += {fullName(this) -> methodMap.values.toSeq}
+    println("containedMethodMap" + this.name.identifier)
+    for((key, value) <- ret) {
+      println("has")
+      value.foreach(item => println(item.name.identifier))
+    }
     ret
   }
 
@@ -113,6 +118,12 @@ trait TypeEnvironment extends Environment {
         }
       }
     )
+
+    println("inheritMethods" + this.name.identifier)
+    for((key, value) <- ret) {
+      println("has")
+      value.foreach(item => println(item.name.identifier))
+    }
 
     ret
   }
