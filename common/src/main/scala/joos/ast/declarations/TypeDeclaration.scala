@@ -20,6 +20,7 @@ case class TypeDeclaration(
   var compilationUnit: CompilationUnit = null
   var packageDeclaration: PackageDeclaration = null
 
+  lazy val isConcreteClass = !isInterface && !(modifiers contains Modifier.Abstract)
   def toInterface: TypeDeclaration = {
     val methods = this.methods.map {
       method =>

@@ -21,7 +21,6 @@ class SimpleHierarchyChecker(implicit module: ModuleDeclaration, unit: Compilati
     unit.typeDeclaration.map(_.accept(this))
   }
 
-
   override def apply(typeDeclaration: TypeDeclaration) {
     typeDeclaration.isInterface match {
       case true => analyzeInterfaceDeclaration(typeDeclaration)
@@ -47,6 +46,7 @@ class SimpleHierarchyChecker(implicit module: ModuleDeclaration, unit: Compilati
     require(typeDeclaration.isInterface)
     assume(typeDeclaration.superType.isEmpty)
     analyzeImplementedInterfaces(typeDeclaration.superInterfaces)
+
   }
 
   private def analyzeImplementedInterfaces(interfaceNames: Seq[NameExpression])(implicit typeDeclaration: TypeDeclaration) {
@@ -73,9 +73,11 @@ class SimpleHierarchyChecker(implicit module: ModuleDeclaration, unit: Compilati
     }
   }
 
+
   private def analyzeClassDeclaration(implicit typeDeclaration: TypeDeclaration) {
     require(!typeDeclaration.isInterface)
     analyzeExtendedClass(typeDeclaration.superType)
     analyzeImplementedInterfaces(typeDeclaration.superInterfaces)
   }
+
 }

@@ -60,6 +60,14 @@ package object semantic {
     fullName(type1) equals fullName(type2)
   }
 
+  def areEqual(type1: Option[Type], type2: Option[Type])(implicit unit: CompilationUnit): Boolean = {
+    (type1, type2) match {
+      case (None, None) => true
+      case (Some(type1), Some(type2)) => areEqual(type1, type2)
+      case _ => false
+    }
+  }
+
   def areEqual(type1: Type, type2: Type)(implicit unit: CompilationUnit): Boolean = {
     require(unit != null)
     (type1, type2) match {

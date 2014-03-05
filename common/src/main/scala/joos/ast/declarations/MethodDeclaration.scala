@@ -50,6 +50,10 @@ case class MethodDeclaration(
     }
   }
 
+  lazy val isAbstractMethod = {
+    (modifiers contains Modifier.Abstract) || typeDeclaration.isInterface
+  }
+
   private[this] def getTypeName(t: Type): String = {
     t match {
       case PrimitiveType(token) => token.lexeme
