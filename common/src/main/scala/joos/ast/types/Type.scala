@@ -10,7 +10,6 @@ trait Type extends AstNode {
       case SimpleType(name) => name.standardName
       case PrimitiveType(token) => token.lexeme
       case ArrayType(baseType, dimension) => baseType.standardName + (0 until dimension).map(_ => "[]").mkString
-      case _ => ""
     }
   }
 }

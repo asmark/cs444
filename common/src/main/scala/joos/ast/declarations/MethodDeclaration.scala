@@ -49,10 +49,10 @@ case class MethodDeclaration(
 
   lazy val returnTypeLocalSignature = {
     var mods: String = null
-    this.modifiers.foreach(mod => mods += mod.modifier.lexeme)
+    this.modifiers.foreach(mod => mods += mod.modifier.lexeme + " ")
     mods + (returnType match {
-      case Some(someType) => getTypeName(someType) + localSignature
-      case None => "None" + localSignature
+      case Some(someType) => getTypeName(someType) + " " + localSignature
+      case None => "void " + localSignature
     })
   }
 
@@ -73,7 +73,7 @@ case class MethodDeclaration(
     }
   }
 
-  def isAbstractMethod: Boolean = {
+  lazy val isAbstractMethod: Boolean = {
     (modifiers contains Modifier.Abstract) || typeDeclaration.isInterface
   }
 

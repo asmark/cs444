@@ -52,7 +52,7 @@ trait TypeEnvironment extends Environment {
     var ret = true
     this.supers.foreach(
       superType => {
-        val superTypeContained = superType.containedMethodMap.values.toSeq.flatten.toArray
+        val superTypeContained = superType.containedMethodSet.toArray
         superTypeContained.foreach(
           contained =>
             if ((contained.returnTypeLocalSignature equals method.returnTypeLocalSignature) && !contained.isAbstractMethod &&
@@ -64,41 +64,34 @@ trait TypeEnvironment extends Environment {
     return ret
   }
 
-  lazy val containedMethodMap: mutable.HashMap[String, IndexedSeq[MethodDeclaration]] = {
-    var ret = mutable.HashMap.empty[String, IndexedSeq[MethodDeclaration]]
+  lazy val containedMethodSet: mutable.HashSet[MethodDeclaration] = {
+    var ret = mutable.HashSet.empty[MethodDeclaration]
 
-    ret ++= this.inheritMethods
-    ret += {fullName(this) -> methodMap.values.toIndexedSeq}
+    methodMap.values.foreach(local => ret += local)
+    this.inheritMethods.foreach(inherited => ret += inherited)
 
     ret
   }
 
-  lazy val inheritMethods: mutable.HashMap[String, IndexedSeq[MethodDeclaration]] = {
-    var ret = mutable.HashMap.empty[String, IndexedSeq[MethodDeclaration]]
+  lazy val inheritMethods: mutable.HashSet[MethodDeclaration] = {
+    var ret = mutable.HashSet.empty[MethodDeclaration]
 
     this.supers.foreach(
       superType => {
-        val localSigatures = this.methods.map(method => method.returnTypeLocalSignature)
-        val array = superType.containedMethodMap.values.flatten.toArray
+        val localSignatures = this.methods.map(method => method.returnTypeLocalSignature)
+        val array = superType.containedMethodSet.toArray
         array foreach {
           contained =>
-            if (!localSigatures.contains(contained.returnTypeLocalSignature)) {
+            if (!localSignatures.contains(contained.returnTypeLocalSignature)) {
               if (!contained.isAbstractMethod) {
-                // TODO: Inefficient
-                if (!ret.contains(fullName(contained.typeDeclaration)))
-                  ret += {fullName(contained.typeDeclaration) -> mutable.IndexedSeq(contained)}
-                else
-                  ret(fullName(contained.typeDeclaration)) = ret(fullName(contained.typeDeclaration)) :+ contained
+                ret += contained
               } else {
                 // All abs
                 if (isAllAbstract(contained)) {
-                  if (!ret.contains(fullName(contained.typeDeclaration)))
-                    ret += {fullName(contained.typeDeclaration) -> mutable.IndexedSeq(contained)}
-                  else
-                    ret(fullName(contained.typeDeclaration)) = ret(fullName(contained.typeDeclaration)) :+ contained
+                  ret += contained
                 }
               }
-           }
+            }
         }
       }
     )

@@ -21,7 +21,6 @@ import scala.collection.mutable
  */
 class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVisitor with TypeHierarchyChecker {
   private[this] implicit val typeDeclarations = mutable.Stack[TypeDeclaration]()
-  private[this] val methodDeclarations = mutable.Stack[MethodDeclaration]()
   private[this] implicit var unit: CompilationUnit = null
 
   private def checkReturnType(methods: Seq[MethodDeclaration]) {
@@ -50,7 +49,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
     val inheritMethods = curTypeDeclaration.inheritMethods
     val localMethods = curTypeDeclaration.methods
 
-    checkReturnType(inheritMethods.values.flatten.toSeq ++ localMethods.toSeq)
+    checkReturnType(inheritMethods.toSeq ++ localMethods.toSeq)
     localMethods.map(
       method => {
 
@@ -59,15 +58,11 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
       }
     )
     val localSignatures = localMethods.map(method => method.localSignature)
-    for ((inherited, inheritedMethods) <- inheritMethods) {
-      inheritedMethods.foreach(
-        method => {
-          if (curTypeDeclaration.isConcreteClass &&
-              method.isAbstractMethod &&
-              !localSignatures.contains(method.localSignature))
-            throw new ConcreteClassAbstractMethodException(method, curTypeDeclaration)
-        }
-      )
+    for (method <- inheritMethods) {
+      if (curTypeDeclaration.isConcreteClass &&
+          method.isAbstractMethod &&
+          !localSignatures.contains(method.localSignature))
+        throw new ConcreteClassAbstractMethodException(method, curTypeDeclaration)
     }
     ensureValidReplaces()
     typeDeclaration.methods.foreach(_.accept(this))
@@ -79,63 +74,24 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
     }
   }
 
-  // A non-static method must not replace a static method.
-  // A protected method must not replace a public method.
-  // A method must not replace a final method.
-  private def checkModifiers(childMethod: MethodDeclaration, parentMethod: MethodDeclaration) = {
-    if (!(childMethod.modifiers contains Modifier.Static) &&
-        (parentMethod.modifiers contains Modifier.Static)) {
-      throw new OverrideStaticMethodException(childMethod, parentMethod)
-    }
-    if ((childMethod.modifiers contains Modifier.Protected) &&
-        (parentMethod.modifiers contains Modifier.Public)) {
-      throw new OverrideProtectedMethodException(childMethod, parentMethod)
-    }
-    if (parentMethod.modifiers contains Modifier.Final) {
-      throw new OverrideFinalMethodException(childMethod, parentMethod)
-    }
-  }
-
-  // A method must not replace a method with a different return type.
-  private def checkReturnType(childMethod: MethodDeclaration, parentMethod: MethodDeclaration) {
-    implicit val unit = childMethod.compilationUnit
-    (childMethod.returnType, parentMethod.returnType) match {
-      case (None, Some(_)) | (Some(_), None) =>
-        throw new OverrideReturnTypeException(childMethod, parentMethod)
-      case (Some(childRT), Some(parentRT)) => {
-        if (!areEqual(childRT, parentRT)) {
-          throw new OverrideReturnTypeException(childMethod, parentMethod)
-        }
-      }
-      case _ =>
-    }
-  }
-
   private[this] def ensureValidReplaces()(implicit unit: CompilationUnit) {
     val typeDeclaration = typeDeclarations.top
 
-    for ((_, method) <- typeDeclaration.methodMap) {
-      for ((_, inheritedMethods) <- typeDeclaration.containedMethodMap) {
-        for (inheritedMethod <- inheritedMethods) {
-//          println(inheritedMethod.name.identifier + " up")
-          if (method.typedSignature == inheritedMethod.typedSignature &&
-              !areEqual(method.typeDeclaration, inheritedMethod.typeDeclaration)) {
-            ensureValidReplaces(method, inheritedMethod)
-          }
+    for (method <- typeDeclaration.methodMap.values) {
+      for (inheritedMethod <- typeDeclaration.containedMethodSet) {
+        if (method.typedSignature == inheritedMethod.typedSignature &&
+            !areEqual(method.typeDeclaration, inheritedMethod.typeDeclaration)) {
+          ensureValidReplaces(method, inheritedMethod)
         }
       }
     }
 
-    for ((_, inheritedMethodsA) <- typeDeclaration.containedMethodMap) {
-      for (inheritedMethodA <- inheritedMethodsA) {
-        for ((_, inheritedMethodsB) <- typeDeclaration.containedMethodMap) {
-          for (inheritedMethodB <- inheritedMethodsB) {
-            if (!inheritedMethodA.isAbstractMethod && inheritedMethodB.isAbstractMethod) {
-              if (inheritedMethodA.typedSignature == inheritedMethodB.typedSignature
-                  && !typeDeclaration.methodMap.contains(inheritedMethodA.typedSignature)) {
-                ensureValidReplaces(inheritedMethodA, inheritedMethodB)
-              }
-            }
+    for (inheritedMethodA <- typeDeclaration.containedMethodSet) {
+      for (inheritedMethodB <- typeDeclaration.containedMethodSet) {
+        if (!inheritedMethodA.isAbstractMethod && inheritedMethodB.isAbstractMethod) {
+          if (inheritedMethodA.typedSignature == inheritedMethodB.typedSignature
+              && !typeDeclaration.methodMap.contains(inheritedMethodA.typedSignature)) {
+            ensureValidReplaces(inheritedMethodA, inheritedMethodB)
           }
         }
       }
@@ -143,11 +99,6 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
   }
 
   private[this] def ensureValidReplaces(method: MethodDeclaration, inheritedMethod: MethodDeclaration)(implicit unit: CompilationUnit) {
-//    if (method.typeDeclaration eq inheritedMethod.typeDeclaration) {
-//      // If both methods are the same, we don't do check
-//      return
-//    }
-
     if (areEqual(method.typeDeclaration, inheritedMethod.typeDeclaration)) {
       // If both methods are the same, we don't do check
       return
