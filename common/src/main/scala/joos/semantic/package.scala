@@ -33,9 +33,17 @@ package object semantic {
         Some(
           typeDeclaration.superType match {
             case Some(superType) => getTypeDeclaration(superType)(compilationUnit)
-            case None => getTypeDeclaration(javaLangObject)(compilationUnit)
+            case None => compilationUnit.javaLangObjectClass
           })
       }
+    }
+  }
+
+  def getSuperInterfaces(typeDeclaration: TypeDeclaration)(implicit unit: CompilationUnit): Seq[TypeDeclaration] = {
+    if (typeDeclaration.isInterface && typeDeclaration.superInterfaces.isEmpty) {
+      Seq(unit.javaLangObjectInterface)
+    } else {
+      typeDeclaration.superInterfaces.map(getTypeDeclaration)
     }
   }
 

@@ -5,7 +5,6 @@ import joos.a1.SyntaxCheck
 import joos.semantic.SemanticException
 import joos.test.tags.IntegrationTest
 import org.scalatest.{Matchers, FlatSpec}
-import joos.core.Logger
 
 class MarmosetA2Spec extends FlatSpec with Matchers {
 
@@ -20,7 +19,7 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
 
   def getTestCases(dir: String) = {
     (new File(getClass.getResource(dir).getPath)).listFiles()
-    .filter(file => file.getName.contains("Je_4_AbstractMethod_InheritFromSuperInterface"))
+//    .filter(file => file.getName.contains("Je_4_AbstractMethod_InheritFromSuperInterface"))
   }
 
   behavior of "Name resolution of valid joos"
