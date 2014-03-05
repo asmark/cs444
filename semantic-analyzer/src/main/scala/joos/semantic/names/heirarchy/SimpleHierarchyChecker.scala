@@ -27,6 +27,20 @@ class SimpleHierarchyChecker(implicit module: ModuleDeclaration, unit: Compilati
       case true => analyzeInterfaceDeclaration(typeDeclaration)
       case false => analyzeClassDeclaration(typeDeclaration)
     }
+
+    // Check methods and constructors
+    for (method <- typeDeclaration.methods) {
+      if (method.isConstructor) {
+        if (typeDeclaration.constructorMap.contains(method.typedSignature)) {
+          throw new SameMethodSignatureException(method.typedSignature, typeDeclaration)
+        }
+      } else {
+        if (typeDeclaration.methodMap.contains(method.typedSignature)) {
+          throw new SameMethodSignatureException(method.typedSignature, typeDeclaration)
+        }
+      }
+      typeDeclaration.add(method)
+    }
   }
 
   private def analyzeInterfaceDeclaration(implicit typeDeclaration: TypeDeclaration) {
@@ -59,26 +73,9 @@ class SimpleHierarchyChecker(implicit module: ModuleDeclaration, unit: Compilati
     }
   }
 
-
   private def analyzeClassDeclaration(implicit typeDeclaration: TypeDeclaration) {
     require(!typeDeclaration.isInterface)
-
-    // Check methods and constructors
-    for (method <- typeDeclaration.methods) {
-      if (method.isConstructor) {
-        if (typeDeclaration.constructorMap.contains(method.typedSignature)) {
-          throw new SameMethodSignatureException(method.typedSignature, typeDeclaration)
-        }
-      } else {
-        if (typeDeclaration.methodMap.contains(method.typedSignature)) {
-          throw new SameMethodSignatureException(method.typedSignature, typeDeclaration)
-        }
-      }
-      typeDeclaration.add(method)
-    }
-
     analyzeExtendedClass(typeDeclaration.superType)
     analyzeImplementedInterfaces(typeDeclaration.superInterfaces)
   }
-
 }
