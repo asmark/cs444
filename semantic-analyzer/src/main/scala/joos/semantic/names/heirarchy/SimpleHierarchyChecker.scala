@@ -27,7 +27,20 @@ class SimpleHierarchyChecker(implicit module: ModuleDeclaration, unit: Compilati
       case true => analyzeInterfaceDeclaration(typeDeclaration)
       case false => analyzeClassDeclaration(typeDeclaration)
     }
-    typeDeclaration.methods.foreach(method => typeDeclaration.add(method))
+
+    // Check methods and constructors
+    for (method <- typeDeclaration.methods) {
+      if (method.isConstructor) {
+        if (typeDeclaration.constructorMap.contains(method.typedSignature)) {
+          throw new SameMethodSignatureException(method.typedSignature, typeDeclaration)
+        }
+      } else {
+        if (typeDeclaration.methodMap.contains(method.typedSignature)) {
+          throw new SameMethodSignatureException(method.typedSignature, typeDeclaration)
+        }
+      }
+      typeDeclaration.add(method)
+    }
   }
 
   private def analyzeInterfaceDeclaration(implicit typeDeclaration: TypeDeclaration) {

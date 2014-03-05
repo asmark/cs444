@@ -6,7 +6,7 @@ import scala.collection.mutable
 
 trait TypeEnvironment extends Environment {
   self: TypeDeclaration =>
-  val constructors = mutable.ArrayBuffer.empty[MethodDeclaration]
+  val constructorMap = mutable.HashMap.empty[String, MethodDeclaration]
   val methodMap = mutable.HashMap.empty[String, MethodDeclaration]
   val fieldMap = mutable.HashMap.empty[SimpleNameExpression, FieldDeclaration]
   private var inheritedMethodMap = mutable.HashMap.empty[String, Seq[MethodDeclaration]]
@@ -17,7 +17,7 @@ trait TypeEnvironment extends Environment {
    */
   def add(method: MethodDeclaration): this.type = {
     if (method.isConstructor) {
-      constructors += method
+      constructorMap.put(method.typedSignature, method)
     } else {
       assert(methodMap.put(method.typedSignature, method).isEmpty)
     }
@@ -55,7 +55,8 @@ trait TypeEnvironment extends Environment {
     this.supers.foreach(superType => {
         val superTypeContained = superType.containedMethodMap.values.toSeq.flatten.toArray
         superTypeContained.foreach(contained =>
-          if ((contained.localSignature equals method.localSignature) && !contained.isAbstractMethod)
+          if ((contained.localSignature equals method.localSignature) && !contained.isAbstractMethod &&
+              areEqual(contained.returnType, method.returnType))
             ret = false
         )
       }
@@ -114,11 +115,4 @@ trait TypeEnvironment extends Environment {
 
     ret
   }
-
-//  def setUpInheritance(): this.type = {
-//    this.compilationUnit.getVisibleType(this.superType)
-////    inheritedMethodMap ++= inherited.inheritedMethodMap
-////    inheritedMethodMap += {fullName(inherited) -> inherited.methodMap.values.toSeq}
-//    this
-//  }
 }
