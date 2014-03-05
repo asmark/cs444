@@ -47,6 +47,15 @@ case class MethodDeclaration(
       }
   }
 
+  lazy val returnTypeLocalSignature = {
+    var mods: String = null
+    this.modifiers.foreach(mod => mods += mod.modifier.lexeme)
+    mods + (returnType match {
+      case Some(someType) => getTypeName(someType) + localSignature
+      case None => "None" + localSignature
+    })
+  }
+
   lazy val localSignature = {
     val localMethodName = name match {
       case simpleNameExpression: SimpleNameExpression => {

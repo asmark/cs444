@@ -117,7 +117,9 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
     for ((_, method) <- typeDeclaration.methodMap) {
       for ((_, inheritedMethods) <- typeDeclaration.containedMethodMap) {
         for (inheritedMethod <- inheritedMethods) {
-          if (method.typedSignature == inheritedMethod.typedSignature) {
+//          println(inheritedMethod.name.identifier + " up")
+          if (method.typedSignature == inheritedMethod.typedSignature &&
+              !areEqual(method.typeDeclaration, inheritedMethod.typeDeclaration)) {
             ensureValidReplaces(method, inheritedMethod)
           }
         }
@@ -128,10 +130,11 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
       for (inheritedMethodA <- inheritedMethodsA) {
         for ((_, inheritedMethodsB) <- typeDeclaration.containedMethodMap) {
           for (inheritedMethodB <- inheritedMethodsB) {
-            if (inheritedMethodA.isAbstractMethod && inheritedMethodB.isAbstractMethod
-                && inheritedMethodA.typedSignature == inheritedMethodB.typedSignature
-                && !typeDeclaration.methodMap.contains(inheritedMethodA.typedSignature)) {
-              ensureValidReplaces(inheritedMethodA, inheritedMethodB)
+            if (!inheritedMethodA.isAbstractMethod && inheritedMethodB.isAbstractMethod) {
+              if (inheritedMethodA.typedSignature == inheritedMethodB.typedSignature
+                  && !typeDeclaration.methodMap.contains(inheritedMethodA.typedSignature)) {
+                ensureValidReplaces(inheritedMethodA, inheritedMethodB)
+              }
             }
           }
         }
@@ -140,13 +143,24 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
   }
 
   private[this] def ensureValidReplaces(method: MethodDeclaration, inheritedMethod: MethodDeclaration)(implicit unit: CompilationUnit) {
-    if (method.typeDeclaration eq inheritedMethod.typeDeclaration) {
+//    if (method.typeDeclaration eq inheritedMethod.typeDeclaration) {
+//      // If both methods are the same, we don't do check
+//      return
+//    }
+
+    if (areEqual(method.typeDeclaration, inheritedMethod.typeDeclaration)) {
       // If both methods are the same, we don't do check
       return
     }
 
     Logger.logInformation(s"Checking methods ${method} AND ${inheritedMethod}")
 
+    if (!method.modifiers.contains(Modifier.Static)
+        && inheritedMethod.modifiers.contains(Modifier.Static)) {
+      throw new OverrideStaticMethodException(method, inheritedMethod)
+    }
+
+    // A static method must not replace an instance method
     if (method.modifiers.contains(Modifier.Static)
         && !inheritedMethod.modifiers.contains(Modifier.Static)) {
       throw new OverrideStaticMethodException(method, inheritedMethod)
