@@ -67,6 +67,27 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
     // 1. The hierarchy must be acyclic.
     typeDeclarations.push(typeDeclaration)
     checkCyclic()
+
+    val curTypeDeclaration = typeDeclarations.top
+    val inheritMethods = curTypeDeclaration.inheritMethods
+    val localMethods = curTypeDeclaration.methods
+    localMethods.map(method => {
+        if (curTypeDeclaration.isConcreteClass && method.isAbstractMethod)
+          throw new ConcreteClassAbstractMethodException(method, curTypeDeclaration)
+      }
+    )
+    val localMethodsSignatures = localMethods.map(method => method.localSignature)
+    for ((inherited, inheritedMethods) <- inheritMethods) {
+      inheritedMethods.foreach(
+        method => {
+          if (curTypeDeclaration.isConcreteClass &&
+              method.isAbstractMethod &&
+              !localMethodsSignatures.contains(method.localSignature))
+            throw new ConcreteClassAbstractMethodException(method, curTypeDeclaration)
+        }
+      )
+    }
+
     typeDeclaration.methods.foreach(_.accept(this))
     typeDeclarations.pop
     // A class or interface must not contain (declare or inherit) two methods with the same signature but different return types

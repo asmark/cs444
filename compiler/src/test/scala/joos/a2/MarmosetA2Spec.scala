@@ -20,6 +20,7 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
 
   def getTestCases(dir: String) = {
     (new File(getClass.getResource(dir).getPath)).listFiles()
+//    .filter(file => file.getName.contains("J1_supermethod_override3"))
   }
 
   behavior of "Name resolution of valid joos"

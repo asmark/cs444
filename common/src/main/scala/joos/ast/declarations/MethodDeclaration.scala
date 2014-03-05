@@ -1,4 +1,4 @@
-package joos.ast.declarations
+ package joos.ast.declarations
 
 import joos.ast._
 import joos.ast.exceptions.AstConstructionException
@@ -48,6 +48,10 @@ case class MethodDeclaration(
           case _ => name
         }
     }
+  }
+
+  lazy val isAbstractMethod = {
+    (modifiers contains Modifier.Abstract) || typeDeclaration.isInterface
   }
 
   private[this] def getTypeName(t: Type):String = {

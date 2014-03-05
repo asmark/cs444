@@ -1,20 +1,23 @@
 package joos.semantic
 
-import joos.ast.declarations.{FieldDeclaration, MethodDeclaration}
+import joos.ast.declarations.{TypeDeclaration, FieldDeclaration, MethodDeclaration}
 import joos.ast.expressions.SimpleNameExpression
 import scala.collection.mutable
 
 trait TypeEnvironment extends Environment {
-  val constructorMap = mutable.HashMap.empty[String, MethodDeclaration]
+  self: TypeDeclaration =>
+  val constructors = mutable.ArrayBuffer.empty[MethodDeclaration]
   val methodMap = mutable.HashMap.empty[String, MethodDeclaration]
   val fieldMap = mutable.HashMap.empty[SimpleNameExpression, FieldDeclaration]
+  private var inheritedMethodMap = mutable.HashMap.empty[String, Seq[MethodDeclaration]]
+  private var inheritedFieldMap = mutable.HashMap.empty[String, Seq[FieldDeclaration]]
 
   /**
    * Adds the specified {{method}} to the type environment
    */
   def add(method: MethodDeclaration): this.type = {
     if (method.isConstructor) {
-      assert(constructorMap.put(method.typedSignature, method).isEmpty)
+      constructors += method
     } else {
       assert(methodMap.put(method.typedSignature, method).isEmpty)
     }
@@ -29,4 +32,93 @@ trait TypeEnvironment extends Environment {
     assert(fieldMap.put(field.fragment.identifier, field).isEmpty)
     this
   }
+
+  lazy val supers = {
+    var ret: Seq[TypeDeclaration] = Seq()
+
+    getSuperType(this) match {
+      case Some(superType) => ret = ret :+ superType
+      case None => {}
+    }
+
+    this.superInterfaces.foreach(
+      superInterface => {
+        ret = ret :+ getTypeDeclaration(superInterface)
+      }
+    )
+
+    ret
+  }
+
+  private def isAllAbstract(method: MethodDeclaration): Boolean = {
+    var ret = true
+    this.supers.foreach(superType => {
+        val superTypeContained = superType.containedMethodMap.values.toSeq.flatten.toArray
+        superTypeContained.foreach(contained =>
+          if ((contained.localSignature equals method.localSignature) && !contained.isAbstractMethod)
+            ret = false
+        )
+      }
+    )
+    return ret
+  }
+
+  lazy val containedMethodMap: mutable.HashMap[String, Seq[MethodDeclaration]] = {
+    var ret = mutable.HashMap.empty[String, Seq[MethodDeclaration]]
+    getSuperType(this) match {
+      case Some(superType) => {
+        inheritedMethodMap ++= superType.inheritedMethodMap
+      }
+      case None => {}
+    }
+
+    this.superInterfaces.foreach(
+      superInterface => {
+        val interface = getTypeDeclaration(superInterface)
+        inheritedMethodMap ++= interface.inheritedMethodMap
+      }
+    )
+
+    ret ++= inheritedMethodMap
+    ret += {fullName(this) -> methodMap.values.toSeq}
+    ret
+  }
+
+  lazy val inheritMethods: mutable.HashMap[String, Seq[MethodDeclaration]] = {
+    var ret = mutable.HashMap.empty[String, Seq[MethodDeclaration]]
+
+    this.supers.foreach(superType => {
+        val superTypeContained = superType.containedMethodMap.values.toSeq.flatten.toArray
+        val localSigatures = this.methods.map(method => method.localSignature)
+        superTypeContained.foreach(contained =>
+          if (!localSigatures.contains(contained)) {
+            if(!contained.isAbstractMethod) {
+              // TODO: Inefficient
+              if (!ret.contains(fullName(contained.typeDeclaration)))
+                ret += {fullName(contained.typeDeclaration) -> Seq(contained)}
+              else
+                ret(fullName(contained.typeDeclaration)) = ret(fullName(contained.typeDeclaration)) :+ contained
+            } else {
+              // All abs
+              if (isAllAbstract(contained)) {
+                if (!ret.contains(fullName(contained.typeDeclaration)))
+                  ret += {fullName(contained.typeDeclaration) -> Seq(contained)}
+                else
+                  ret(fullName(contained.typeDeclaration)) = ret(fullName(contained.typeDeclaration)) :+ contained
+              }
+            }
+          }
+        )
+      }
+    )
+
+    ret
+  }
+
+//  def setUpInheritance(): this.type = {
+//    this.compilationUnit.getVisibleType(this.superType)
+////    inheritedMethodMap ++= inherited.inheritedMethodMap
+////    inheritedMethodMap += {fullName(inherited) -> inherited.methodMap.values.toSeq}
+//    this
+//  }
 }
