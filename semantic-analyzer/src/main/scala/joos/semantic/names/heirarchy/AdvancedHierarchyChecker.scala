@@ -88,7 +88,6 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
   override def apply(typeDeclaration: TypeDeclaration) = {
     // 1. The hierarchy must be acyclic.
     typeDeclarations.push(typeDeclaration)
-    checkCyclic()
 
     val curTypeDeclaration = typeDeclarations.top
     val inheritMethods = curTypeDeclaration.inheritMethods
