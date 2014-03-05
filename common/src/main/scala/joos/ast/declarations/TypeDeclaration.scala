@@ -17,7 +17,7 @@ case class TypeDeclaration(
     methods: Seq[MethodDeclaration])
     extends BodyDeclaration
     with TypeEnvironment {
-  var compilationUnit: CompilationUnit = null
+  implicit var compilationUnit: CompilationUnit = null
   var packageDeclaration: PackageDeclaration = null
 
   lazy val isConcreteClass = !isInterface && !(modifiers contains Modifier.Abstract)
