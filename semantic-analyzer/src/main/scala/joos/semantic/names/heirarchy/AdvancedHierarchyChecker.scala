@@ -136,16 +136,17 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
   }
 
   // A method must not replace a method with a different return type.
-  private def checkReturnType(childMethod: MethodDeclaration, parentMethod: MethodDeclaration) = {
+  private def checkReturnType(childMethod: MethodDeclaration, parentMethod: MethodDeclaration) {
     implicit val unit = childMethod.compilationUnit
     (childMethod.returnType, parentMethod.returnType) match {
-      case (None, None) => {
-      } // TODO: Set up special void return type?
       case (None, Some(_)) | (Some(_), None) =>
         throw new OverrideReturnTypeException(childMethod, parentMethod)
       case (Some(childRT), Some(parentRT)) => {
-        areEqual(childRT, parentRT)
+        if(!areEqual(childRT, parentRT)) {
+          throw new OverrideReturnTypeException(childMethod, parentMethod)
+        }
       }
+      case _ =>
     }
   }
 
