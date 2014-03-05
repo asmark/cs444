@@ -1,8 +1,8 @@
 package joos.ast.statements
 
 import joos.ast.AstConstructionException
-import joos.language.ProductionRule
-import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
 case class Block(statements: Seq[Statement]) extends Statement
 

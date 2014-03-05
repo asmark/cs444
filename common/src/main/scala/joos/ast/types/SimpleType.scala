@@ -1,7 +1,7 @@
 package joos.ast.types
 
 import joos.ast.expressions.NameExpression
-import joos.parsetree.ParseTreeNode
+import joos.syntax.parsetree.ParseTreeNode
 
 case class SimpleType(name: NameExpression) extends Type
 

@@ -1,7 +1,7 @@
 package joos
 
 import java.io.FileInputStream
-import joos.parser.LrOneReader
+import joos.syntax.parser.LrOneReader
 import org.scalatest.{Matchers, FlatSpec}
 
 class LrOneReaderSpec extends FlatSpec with Matchers {

@@ -1,8 +1,8 @@
 package joos.ast
 
 import joos.ast.declarations.{ModuleDeclaration, TypeDeclaration, PackageDeclaration, ImportDeclaration}
-import joos.language.ProductionRule
-import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 import joos.semantic.CompilationUnitEnvironment
 
 case class CompilationUnit(

@@ -1,8 +1,8 @@
 package joos.ast.declarations
 
 import joos.ast.expressions.NameExpression
-import joos.language.ProductionRule
-import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 import joos.ast.AstNode
 import joos.ast.compositions.LikeDeclaration
 

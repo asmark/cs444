@@ -1,9 +1,9 @@
 package joos.ast.expressions
 
 import joos.ast.AstConstructionException
-import joos.language.ProductionRule
-import joos.parsetree.{TreeNode, LeafNode, ParseTreeNode}
-import joos.tokens.{TokenKind, TerminalToken}
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.{TreeNode, LeafNode, ParseTreeNode}
+import joos.syntax.tokens.{TokenKind, TerminalToken}
 
 case class SimpleNameExpression(identifier: TerminalToken) extends NameExpression {
   override def standardName = identifier.lexeme

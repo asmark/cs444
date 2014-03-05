@@ -1,7 +1,7 @@
 package joos.preprocessor.tasks.parser
 
 import java.io.FileOutputStream
-import joos.language.ContextFreeGrammar
+import joos.syntax.language.ContextFreeGrammar
 import joos.preprocessor.tasks.PreProcessorTask
 import joos.resources
 

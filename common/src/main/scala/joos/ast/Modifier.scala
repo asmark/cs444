@@ -1,8 +1,8 @@
 package joos.ast
 
-import joos.language.ProductionRule
-import joos.parsetree.{LeafNode, TreeNode, ParseTreeNode}
-import joos.tokens.{TokenKind, TerminalToken}
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.{LeafNode, TreeNode, ParseTreeNode}
+import joos.syntax.tokens.{TokenKind, TerminalToken}
 
 case class Modifier(modifier: TerminalToken) extends AstNode {
   override def toString = modifier.lexeme

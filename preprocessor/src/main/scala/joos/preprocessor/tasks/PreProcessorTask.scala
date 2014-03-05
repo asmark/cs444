@@ -14,6 +14,8 @@ trait PreProcessorTask {
     if (!isTaskCached()) {
       Logger.logInformation(s"Running ${this.getClass.getName}")
       executeTask()
+    } else {
+      Logger.logInformation(s"Skipping ${this.getClass.getName}")
     }
   }
 

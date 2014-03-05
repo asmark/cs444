@@ -4,8 +4,8 @@ import joos.ast.compositions.LikeTypedDeclaration
 import joos.ast.declarations.VariableDeclarationFragment
 import joos.ast.types.Type
 import joos.ast.{AstConstructionException, Modifier}
-import joos.language.ProductionRule
-import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
 case class VariableDeclarationExpression(
     modifiers: Seq[Modifier],

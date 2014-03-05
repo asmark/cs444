@@ -1,10 +1,10 @@
 package joos.preprocessor.tasks.scanner
 
 import java.io.FileOutputStream
-import joos.automata.Dfa
+import joos.syntax.automata.Dfa
 import joos.preprocessor.tasks.PreProcessorTask
-import joos.tokens.TokenKind
-import joos.tokens.TokenKind.TokenKindValue
+import joos.syntax.tokens.TokenKind
+import joos.syntax.tokens.TokenKind.TokenKindValue
 import joos.resources
 
 object DfaGeneratorTask extends PreProcessorTask {

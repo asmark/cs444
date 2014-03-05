@@ -2,9 +2,9 @@ package joos.ast.expressions
 
 import joos.ast._
 import joos.ast.types.{Type, PrimitiveType, SimpleType, ArrayType}
-import joos.language.ProductionRule
-import joos.parsetree.ParseTreeNode
-import joos.parsetree.TreeNode
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.ParseTreeNode
+import joos.syntax.parsetree.TreeNode
 
 case class CastExpression(castType: Type, expression: Expression) extends Expression
 

@@ -2,9 +2,9 @@ package joos.ast.statements
 
 import joos.ast.AstConstructionException
 import joos.ast.expressions._
-import joos.language.ProductionRule
-import joos.parsetree.ParseTreeNode
-import joos.parsetree.TreeNode
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.ParseTreeNode
+import joos.syntax.parsetree.TreeNode
 
 case class ExpressionStatement(expression: Expression) extends Statement
 

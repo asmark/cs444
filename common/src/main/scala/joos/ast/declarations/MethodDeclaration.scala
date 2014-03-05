@@ -4,9 +4,9 @@ import joos.ast._
 import joos.ast.expressions.SimpleNameExpression
 import joos.ast.statements.Block
 import joos.ast.types.{PrimitiveType, SimpleType, Type, ArrayType}
-import joos.language.ProductionRule
-import joos.parsetree.ParseTreeNode
-import joos.parsetree.TreeNode
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.ParseTreeNode
+import joos.syntax.parsetree.TreeNode
 import joos.semantic.BlockEnvironment
 
 case class MethodDeclaration(

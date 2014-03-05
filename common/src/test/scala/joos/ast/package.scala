@@ -1,8 +1,8 @@
 package joos
 
-import joos.language.ProductionRule
-import joos.parsetree.{TreeNode, LeafNode}
-import joos.tokens.{TokenKind, TerminalToken}
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.{TreeNode, LeafNode}
+import joos.syntax.tokens.{TokenKind, TerminalToken}
 
 package object astspec {
 

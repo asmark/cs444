@@ -1,10 +1,10 @@
 package joos.ast.expressions
 
 import joos.ast.AstConstructionException
-import joos.language.ProductionRule
-import joos.parsetree.ParseTreeNode
-import joos.parsetree.TreeNode
-import joos.tokens.TerminalToken
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.ParseTreeNode
+import joos.syntax.parsetree.TreeNode
+import joos.syntax.tokens.TerminalToken
 
 trait LiteralExpression extends Expression {
    def token: TerminalToken

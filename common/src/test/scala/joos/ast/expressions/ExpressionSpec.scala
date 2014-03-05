@@ -1,8 +1,8 @@
 package joos.ast.expressions
 
 import joos.astspec._
-import joos.parsetree.LeafNode
-import joos.tokens.{TerminalToken, TokenKind}
+import joos.syntax.parsetree.LeafNode
+import joos.syntax.tokens.{TerminalToken, TokenKind}
 import org.scalatest.{Matchers, FlatSpec}
 import joos.ast.AstConstructionException
 

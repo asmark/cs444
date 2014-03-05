@@ -2,8 +2,8 @@ package joos.ast.expressions
 
 import joos.ast.AstConstructionException
 import joos.ast.compositions.LikeName
-import joos.language.ProductionRule
-import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
 trait NameExpression extends Expression with LikeName
 

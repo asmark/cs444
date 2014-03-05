@@ -3,8 +3,8 @@ package joos.ast.declarations
 import joos.ast.compositions.LikeTypedDeclaration
 import joos.ast.types.Type
 import joos.ast.{AstConstructionException, Modifier}
-import joos.language.ProductionRule
-import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
 case class FieldDeclaration(
     modifiers: Seq[Modifier],

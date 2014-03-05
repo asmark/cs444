@@ -1,7 +1,7 @@
 package joos.ast
 
 import joos.ast.visitor.AstVisitor
-import joos.parsetree.ParseTree
+import joos.syntax.parsetree.ParseTree
 
 class AbstractSyntaxTree(val root: CompilationUnit) {
   def dispatch(visitor: AstVisitor) = root accept visitor

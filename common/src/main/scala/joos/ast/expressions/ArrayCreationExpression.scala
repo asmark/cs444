@@ -2,8 +2,8 @@ package joos.ast.expressions
 
 import joos.ast.AstConstructionException
 import joos.ast.types.Type
-import joos.language.ProductionRule
-import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
 case class ArrayCreationExpression(arrayType: Type, size: Expression) extends Expression
 
