@@ -80,8 +80,6 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
     for ((inherited, inheritedMethods) <- inheritMethods) {
       inheritedMethods.foreach(
         method => {
-          println(inherited)
-          println(method.localSignature)
           if (curTypeDeclaration.isConcreteClass &&
               method.isAbstractMethod &&
               !localMethodsSignatures.contains(method.localSignature))

@@ -13,14 +13,13 @@ import scala.collection.mutable
  * An interface must not be repeated in an implements clause, or in an extends clause of an interface.
  * A class must not extend a final class.
  * An interface must not extend a class.
- * A class must not declare two constructors with the same parameter types TODO
+ * A class must not declare two constructors with the same parameter types
  */
 class SimpleHierarchyChecker(implicit module: ModuleDeclaration, unit: CompilationUnit) extends AstVisitor with TypeHierarchyChecker {
 
   override def apply(unit: CompilationUnit) {
     unit.typeDeclaration.map(_.accept(this))
   }
-
 
   override def apply(typeDeclaration: TypeDeclaration) {
     typeDeclaration.isInterface match {

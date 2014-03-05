@@ -1,4 +1,4 @@
- package joos.ast.declarations
+package joos.ast.declarations
 
 import joos.ast._
 import joos.ast.exceptions.AstConstructionException

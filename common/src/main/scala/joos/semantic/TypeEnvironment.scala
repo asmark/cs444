@@ -17,7 +17,7 @@ trait TypeEnvironment extends Environment {
    */
   def add(method: MethodDeclaration): this.type = {
     if (method.isConstructor) {
-      constructorMap.put(method.typedSignature, method)
+      assert(constructorMap.put(method.typedSignature, method).isEmpty)
     } else {
       assert(methodMap.put(method.typedSignature, method).isEmpty)
     }
@@ -52,12 +52,14 @@ trait TypeEnvironment extends Environment {
 
   private def isAllAbstract(method: MethodDeclaration): Boolean = {
     var ret = true
-    this.supers.foreach(superType => {
+    this.supers.foreach(
+      superType => {
         val superTypeContained = superType.containedMethodMap.values.toSeq.flatten.toArray
-        superTypeContained.foreach(contained =>
-          if ((contained.localSignature equals method.localSignature) && !contained.isAbstractMethod &&
-              areEqual(contained.returnType, method.returnType))
-            ret = false
+        superTypeContained.foreach(
+          contained =>
+            if ((contained.localSignature equals method.localSignature) && !contained.isAbstractMethod &&
+                areEqual(contained.returnType, method.returnType))
+              ret = false
         )
       }
     )
@@ -88,27 +90,29 @@ trait TypeEnvironment extends Environment {
   lazy val inheritMethods: mutable.HashMap[String, Seq[MethodDeclaration]] = {
     var ret = mutable.HashMap.empty[String, Seq[MethodDeclaration]]
 
-    this.supers.foreach(superType => {
+    this.supers.foreach(
+      superType => {
         val superTypeContained = superType.containedMethodMap.values.toSeq.flatten.toArray
         val localSigatures = this.methods.map(method => method.localSignature)
-        superTypeContained.foreach(contained =>
-          if (!localSigatures.contains(contained)) {
-            if(!contained.isAbstractMethod) {
-              // TODO: Inefficient
-              if (!ret.contains(fullName(contained.typeDeclaration)))
-                ret += {fullName(contained.typeDeclaration) -> Seq(contained)}
-              else
-                ret(fullName(contained.typeDeclaration)) = ret(fullName(contained.typeDeclaration)) :+ contained
-            } else {
-              // All abs
-              if (isAllAbstract(contained)) {
+        superTypeContained.foreach(
+          contained =>
+            if (!localSigatures.contains(contained)) {
+              if (!contained.isAbstractMethod) {
+                // TODO: Inefficient
                 if (!ret.contains(fullName(contained.typeDeclaration)))
                   ret += {fullName(contained.typeDeclaration) -> Seq(contained)}
                 else
                   ret(fullName(contained.typeDeclaration)) = ret(fullName(contained.typeDeclaration)) :+ contained
+              } else {
+                // All abs
+                if (isAllAbstract(contained)) {
+                  if (!ret.contains(fullName(contained.typeDeclaration)))
+                    ret += {fullName(contained.typeDeclaration) -> Seq(contained)}
+                  else
+                    ret(fullName(contained.typeDeclaration)) = ret(fullName(contained.typeDeclaration)) :+ contained
+                }
               }
             }
-          }
         )
       }
     )
