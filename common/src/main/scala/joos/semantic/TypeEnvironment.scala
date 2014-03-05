@@ -6,7 +6,7 @@ import scala.collection.mutable
 
 trait TypeEnvironment extends Environment {
   self: TypeDeclaration =>
-  val constructors = mutable.ArrayBuffer.empty[MethodDeclaration]
+  val constructorMap = mutable.HashMap.empty[String, MethodDeclaration]
   val methodMap = mutable.HashMap.empty[String, MethodDeclaration]
   val fieldMap = mutable.HashMap.empty[SimpleNameExpression, FieldDeclaration]
   private var inheritedMethodMap = mutable.HashMap.empty[String, Seq[MethodDeclaration]]
@@ -17,7 +17,7 @@ trait TypeEnvironment extends Environment {
    */
   def add(method: MethodDeclaration): this.type = {
     if (method.isConstructor) {
-      constructors += method
+      constructorMap.put(method.typedSignature, method)
     } else {
       assert(methodMap.put(method.typedSignature, method).isEmpty)
     }
