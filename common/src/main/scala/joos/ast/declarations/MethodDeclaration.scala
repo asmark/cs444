@@ -21,6 +21,20 @@ case class MethodDeclaration(
   var typeDeclaration: TypeDeclaration = null
   var environment: BlockEnvironment = null
 
+
+  override def toString = {
+    val returnTypeString = returnType match {
+      case None => "void"
+      case Some(t) => t.standardName
+    }
+    val parametersString = parameters.foldLeft("") {
+      (result, parameter) =>
+        result + parameter.declarationType.standardName + ' ' + parameter.declarationName.standardName
+    }
+
+    List(modifiers.mkString(" "), returnTypeString, name.standardName, "(", parametersString, ")").mkString(" ")
+  }
+
   /**
    * Method signature with argument types added
    */

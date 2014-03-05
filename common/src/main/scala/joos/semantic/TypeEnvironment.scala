@@ -93,10 +93,10 @@ trait TypeEnvironment extends Environment {
     this.supers.foreach(
       superType => {
         val superTypeContained = superType.containedMethodMap.values.toSeq.flatten.toArray
-        val localSigatures = this.methods.map(method => method.localSignature)
+        val localSignatures = this.methods.map(method => method.localSignature)
         superTypeContained.foreach(
           contained =>
-            if (!localSigatures.contains(contained)) {
+            if (!localSignatures.contains(contained)) {
               if (!contained.isAbstractMethod) {
                 // TODO: Inefficient
                 if (!ret.contains(fullName(contained.typeDeclaration)))

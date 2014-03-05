@@ -3,9 +3,17 @@ package joos.ast
 import joos.ast.exceptions.AstConstructionException
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.ast.expressions.NameExpression
 
-trait Type extends AstNode
+trait Type extends AstNode {
+  def standardName: String = {
+    this match {
+      case SimpleType(name) => name.standardName
+      case PrimitiveType(token) => token.lexeme
+      case ArrayType(baseType, dimension) => baseType.standardName + (0 until dimension).map(_ => "[]").mkString
+      case _ => ""
+    }
+  }
+}
 
 object Type {
   def handleReferenceType(referenceType: ParseTreeNode): Type = {
