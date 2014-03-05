@@ -13,7 +13,7 @@ import scala.collection.mutable
  * An interface must not be repeated in an implements clause, or in an extends clause of an interface.
  * A class must not extend a final class.
  * An interface must not extend a class.
- * A class must not declare two constructors with the same parameter types TODO
+ * A class must not declare two constructors with the same parameter types
  */
 class SimpleHierarchyChecker(implicit module: ModuleDeclaration, unit: CompilationUnit) extends AstVisitor with TypeHierarchyChecker {
 
@@ -33,7 +33,6 @@ class SimpleHierarchyChecker(implicit module: ModuleDeclaration, unit: Compilati
     require(typeDeclaration.isInterface)
     assume(typeDeclaration.superType.isEmpty)
     analyzeImplementedInterfaces(typeDeclaration.superInterfaces)
-
   }
 
   private def analyzeImplementedInterfaces(interfaceNames: Seq[NameExpression])(implicit typeDeclaration: TypeDeclaration) {
@@ -63,6 +62,21 @@ class SimpleHierarchyChecker(implicit module: ModuleDeclaration, unit: Compilati
 
   private def analyzeClassDeclaration(implicit typeDeclaration: TypeDeclaration) {
     require(!typeDeclaration.isInterface)
+
+    // Check methods and constructors
+    for (method <- typeDeclaration.methods) {
+      if (method.isConstructor) {
+        if (typeDeclaration.constructorMap.contains(method.typedSignature)) {
+          throw new SameMethodSignatureException(method.typedSignature, typeDeclaration)
+        }
+      } else {
+        if (typeDeclaration.methodMap.contains(method.typedSignature)) {
+          throw new SameMethodSignatureException(method.typedSignature, typeDeclaration)
+        }
+      }
+      typeDeclaration.add(method)
+    }
+
     analyzeExtendedClass(typeDeclaration.superType)
     analyzeImplementedInterfaces(typeDeclaration.superInterfaces)
   }
