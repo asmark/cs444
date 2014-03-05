@@ -5,6 +5,7 @@ import joos.ast.{Modifier, CompilationUnit, AstVisitor}
 import joos.core.Logger
 import scala.collection.mutable
 import joos.semantic._
+import joos.ast.Type
 /**
  * AdvancedHierarchyChecker is responsible for the following name resolution checks:
  *
@@ -62,6 +63,23 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
     }
   }
 
+  private def checkReturnType(methods: Seq[MethodDeclaration]) {
+    var set: mutable.HashMap[String, MethodDeclaration] = mutable.HashMap()
+
+    methods.foreach(method => {
+      if (!set.contains(method.localSignature))
+        set += {method.localSignature -> method}
+      else {
+        set.get(method.localSignature) match {
+          case Some(existingMethod) =>
+            implicit val compilationUnit = existingMethod.compilationUnit
+            if(!areEqual(existingMethod.returnType, method.returnType) && !(existingMethod.isConstructor || method.isConstructor))
+              throw new ConcreteClassAbstractMethodException(method, typeDeclarations.top)
+          case _ =>
+        }
+      }
+    })
+  }
 
   override def apply(typeDeclaration: TypeDeclaration) = {
     // 1. The hierarchy must be acyclic.
@@ -71,6 +89,9 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
     val curTypeDeclaration = typeDeclarations.top
     val inheritMethods = curTypeDeclaration.inheritMethods
     val localMethods = curTypeDeclaration.methods
+
+    checkReturnType(inheritMethods.values.flatten.toSeq ++ localMethods.toSeq)
+
     localMethods.map(method => {
         if (curTypeDeclaration.isConcreteClass && method.isAbstractMethod)
           throw new ConcreteClassAbstractMethodException(method, curTypeDeclaration)
