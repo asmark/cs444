@@ -5,7 +5,6 @@ import joos.a1.SyntaxCheck
 import joos.semantic.SemanticException
 import joos.test.tags.IntegrationTest
 import org.scalatest.{Matchers, FlatSpec}
-import joos.core.Logger
 
 class MarmosetA2Spec extends FlatSpec with Matchers {
 

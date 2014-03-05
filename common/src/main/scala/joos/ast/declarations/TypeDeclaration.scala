@@ -7,7 +7,7 @@ import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.semantic.TypeEnvironment
 
-case class TypeDeclaration (
+case class TypeDeclaration(
     modifiers: Seq[Modifier],
     isInterface: Boolean,
     name: SimpleNameExpression,
@@ -19,6 +19,30 @@ case class TypeDeclaration (
     with TypeEnvironment {
   var compilationUnit: CompilationUnit = null
   var packageDeclaration: PackageDeclaration = null
+
+  def toInterface: TypeDeclaration = {
+    val methods = this.methods.map {
+      method =>
+        new MethodDeclaration(
+          Seq(Modifier.Abstract, Modifier.Public),
+          method.returnType,
+          name,
+          method.parameters,
+          None,
+          method.isConstructor
+        )
+    }
+
+    new TypeDeclaration(
+      Seq(Modifier.Public, Modifier.Abstract),
+      isInterface = true,
+      name,
+      None,
+      superInterfaces,
+      Seq(),
+      methods
+    )
+  }
 }
 
 object TypeDeclaration {
