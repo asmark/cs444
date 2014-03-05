@@ -75,7 +75,6 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
         else {
           set.get(method.localSignature) match {
             case Some(existingMethod) =>
-              implicit val compilationUnit = existingMethod.compilationUnit
               if (!areEqual(existingMethod.returnType, method.returnType) && !(existingMethod.isConstructor || method.isConstructor))
                 throw new ConcreteClassAbstractMethodException(method, typeDeclarations.top)
             case _ =>
@@ -170,13 +169,11 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
     for ((_, inheritedMethodsA) <- typeDeclaration.containedMethodMap) {
       for (inheritedMethodA <- inheritedMethodsA) {
         for ((_, inheritedMethodsB) <- typeDeclaration.containedMethodMap) {
-          if (true) {
-            for (inheritedMethodB <- inheritedMethodsB) {
-              if (inheritedMethodA.isAbstractMethod && inheritedMethodB.isAbstractMethod
-                  && inheritedMethodA.typedSignature == inheritedMethodB.typedSignature
-                  && !typeDeclaration.methodMap.contains(inheritedMethodA.typedSignature)) {
-                ensureValidReplaces(inheritedMethodA, inheritedMethodB)
-              }
+          for (inheritedMethodB <- inheritedMethodsB) {
+            if (inheritedMethodA.isAbstractMethod && inheritedMethodB.isAbstractMethod
+                && inheritedMethodA.typedSignature == inheritedMethodB.typedSignature
+                && !typeDeclaration.methodMap.contains(inheritedMethodA.typedSignature)) {
+              ensureValidReplaces(inheritedMethodA, inheritedMethodB)
             }
           }
         }
@@ -185,6 +182,8 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
   }
 
   private[this] def ensureValidReplaces(method: MethodDeclaration, inheritedMethod: MethodDeclaration)(implicit unit: CompilationUnit) {
+    Logger.logInformation(s"Checking methods ${method} AND ${inheritedMethod}")
+
     if (method.typeDeclaration eq inheritedMethod.typeDeclaration) {
       // If both methods are the same, we don't do check
       return
@@ -206,6 +205,11 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
 
     if (inheritedMethod.modifiers.contains(Modifier.Final)) {
       throw new OverrideFinalMethodException(method, inheritedMethod)
+    }
+
+    if ((method.modifiers contains Modifier.Protected) &&
+        (inheritedMethod.modifiers contains Modifier.Public)) {
+      throw new OverrideProtectedMethodException(method, inheritedMethod)
     }
   }
 
