@@ -2,7 +2,6 @@ package joos.weeder
 
 import joos.parser.ParseMetaData
 import joos.parsetree.ParseTreeNode
-import joos.weeder.exceptions.WeederException
 
 // TODO: Refactor
 case class DecimalIntegerRangeWeeder() extends Weeder {

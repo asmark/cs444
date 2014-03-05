@@ -8,8 +8,8 @@ abstract class Token {
   def lexeme: String
 }
 
-case class TerminalToken(val lexeme: String, val kind: TokenKind) extends Token {
+case class TerminalToken(lexeme: String, kind: TokenKind) extends Token {
   override def symbol = if (kind != null) TokenKind.kindToSymbol(kind) else lexeme
 }
 
-case class NonTerminalToken(val lexeme: String, val symbol: String) extends Token
+case class NonTerminalToken(lexeme: String, symbol: String) extends Token

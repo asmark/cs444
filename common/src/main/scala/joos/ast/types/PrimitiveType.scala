@@ -1,6 +1,6 @@
-package joos.ast
+package joos.ast.types
 
-import joos.ast.exceptions.AstConstructionException
+import joos.ast.AstConstructionException
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.tokens.TerminalToken

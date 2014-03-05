@@ -3,10 +3,11 @@ package joos.semantic.names.heirarchy
 import joos.ast._
 import joos.ast.declarations.{PackageDeclaration, TypeDeclaration, ModuleDeclaration}
 import joos.ast.expressions.NameExpression
-import scala.collection.mutable
+import joos.ast.visitor.AstVisitor
+import joos.core.Logger
 import joos.semantic._
 import scala.Some
-import joos.core.Logger
+import scala.collection.mutable
 
 /**
  * SimpleHierarchyChecker is responsible for the following name resolution checks:

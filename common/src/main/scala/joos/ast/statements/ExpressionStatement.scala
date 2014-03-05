@@ -1,6 +1,6 @@
-package joos.ast
+package joos.ast.statements
 
-import joos.ast.exceptions.AstConstructionException
+import joos.ast.AstConstructionException
 import joos.ast.expressions._
 import joos.language.ProductionRule
 import joos.parsetree.ParseTreeNode

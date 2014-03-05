@@ -1,4 +1,4 @@
-package joos.ast
+package joos.ast.types
 
 import joos.ast.expressions.NameExpression
 import joos.parsetree.ParseTreeNode

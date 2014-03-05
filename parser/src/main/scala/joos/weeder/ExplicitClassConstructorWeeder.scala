@@ -1,9 +1,8 @@
 package joos.weeder
 
+import joos.parser.ParseMetaData
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.tokens.NonTerminalToken
-import joos.weeder.exceptions.WeederException
-import joos.parser.ParseMetaData
 
 // Every class must contain at least one explicit constructor.
 case class ExplicitClassConstructorWeeder() extends Weeder {

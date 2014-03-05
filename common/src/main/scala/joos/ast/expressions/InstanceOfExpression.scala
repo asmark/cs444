@@ -1,6 +1,6 @@
 package joos.ast.expressions
 
-import joos.ast.Type
+import joos.ast.types.Type
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 

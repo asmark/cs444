@@ -1,7 +1,6 @@
 package joos.parser
 
 import joos.language.ProductionRule
-import joos.parser.exceptions.{ShiftException, ReduceException}
 
 class LrOneActionTable(val startSymbol: String, parseActions: collection.Map[(Int, String), ParseAction]) {
   def isReduce(state: Int, trigger: String): Boolean = {

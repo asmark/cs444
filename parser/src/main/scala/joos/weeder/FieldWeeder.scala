@@ -1,9 +1,8 @@
 package joos.weeder
 
+import joos.parser.ParseMetaData
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.tokens.NonTerminalToken
-import joos.weeder.exceptions.WeederException
-import joos.parser.ParseMetaData
 
 // No field can be final.
 case class FieldWeeder() extends Weeder {

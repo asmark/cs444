@@ -1,15 +1,12 @@
 package joos.parser
 
-import joos.parser.exceptions.JoosParseException
+import joos.parsetree.LeafNode
+import joos.parsetree.TreeNode
 import joos.parsetree._
 import joos.tokens.NonTerminalToken
 import joos.tokens.TerminalToken
 import joos.tokens._
 import scala.collection.mutable
-import joos.tokens.NonTerminalToken
-import joos.tokens.TerminalToken
-import joos.parsetree.LeafNode
-import joos.parsetree.TreeNode
 
 class ParseTreeBuilder(actionTable: LrOneActionTable) {
 

@@ -1,8 +1,8 @@
 package joos.ast.expressions
 
-import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.ast.AstConstructionException
 import joos.language.ProductionRule
-import joos.ast.exceptions.AstConstructionException
+import joos.parsetree.{TreeNode, ParseTreeNode}
 
 case class FieldAccessExpression(expression: Expression, identifier: SimpleNameExpression) extends Expression
 

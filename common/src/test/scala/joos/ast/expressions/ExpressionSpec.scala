@@ -1,10 +1,10 @@
 package joos.ast.expressions
 
-import joos.ast.AstSpecHelper._
-import joos.ast.exceptions.AstConstructionException
+import joos.astspec._
 import joos.parsetree.LeafNode
 import joos.tokens.{TerminalToken, TokenKind}
 import org.scalatest.{Matchers, FlatSpec}
+import joos.ast.AstConstructionException
 
 class ExpressionSpec extends FlatSpec with Matchers {
 

@@ -3,6 +3,7 @@ package joos
 import joos.ast._
 import joos.ast.declarations.{PackageDeclaration, TypeDeclaration}
 import joos.ast.expressions.NameExpression
+import joos.ast.types.{PrimitiveType, ArrayType, SimpleType, Type}
 import joos.core.Logger
 import scala.Some
 import scala.collection.mutable

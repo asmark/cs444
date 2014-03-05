@@ -1,6 +1,6 @@
-package joos.ast
+package joos.ast.compositions
 
-trait Name {
+trait LikeName {
   /**
    * Gets the standard name separated by .
    */
@@ -11,7 +11,7 @@ trait Name {
   override def hashCode = standardName.hashCode
 
   override def equals(that: Any) = that match {
-    case that: Name => that.standardName == standardName
+    case that: LikeName => that.standardName == standardName
     case _ => false
   }
 }

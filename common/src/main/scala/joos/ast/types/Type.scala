@@ -1,6 +1,6 @@
-package joos.ast
+package joos.ast.types
 
-import joos.ast.exceptions.AstConstructionException
+import joos.ast.{AstConstructionException, AstNode}
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 

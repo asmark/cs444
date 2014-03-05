@@ -1,12 +1,12 @@
 package joos.semantic.names.heirarchy
 
+import joos.ast._
 import joos.ast.declarations.TypeDeclaration
 import joos.ast.expressions.NameExpression
-import joos.semantic.SemanticException
 import joos.core.Logger
-import scala.language.implicitConversions
-import joos.ast._
+import joos.semantic.SemanticException
 import scala.Some
+import scala.language.implicitConversions
 
 trait TypeHierarchyChecker {
 

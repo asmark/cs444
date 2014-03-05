@@ -1,9 +1,9 @@
 package joos.ast.expressions
 
-import joos.tokens.TerminalToken
-import joos.parsetree.{LeafNode, TreeNode, ParseTreeNode}
+import joos.ast.AstConstructionException
 import joos.language.ProductionRule
-import joos.ast.exceptions.AstConstructionException
+import joos.parsetree.{LeafNode, TreeNode, ParseTreeNode}
+import joos.tokens.TerminalToken
 
 case class InfixExpression(left: Expression, operator: TerminalToken, right: Expression) extends Expression
 

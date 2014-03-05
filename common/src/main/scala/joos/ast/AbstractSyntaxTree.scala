@@ -1,5 +1,6 @@
 package joos.ast
 
+import joos.ast.visitor.AstVisitor
 import joos.parsetree.ParseTree
 
 class AbstractSyntaxTree(val root: CompilationUnit) {

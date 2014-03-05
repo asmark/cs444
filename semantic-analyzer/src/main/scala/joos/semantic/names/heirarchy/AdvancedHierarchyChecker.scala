@@ -1,7 +1,8 @@
 package joos.semantic.names.heirarchy
 
 import joos.ast.declarations.{MethodDeclaration, TypeDeclaration, ModuleDeclaration}
-import joos.ast.{Modifier, CompilationUnit, AstVisitor}
+import joos.ast.visitor.AstVisitor
+import joos.ast.{Modifier, CompilationUnit}
 import joos.core.Logger
 import joos.semantic._
 import scala.collection.mutable

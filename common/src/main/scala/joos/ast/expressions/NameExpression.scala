@@ -1,11 +1,11 @@
 package joos.ast.expressions
 
-import joos.ast.exceptions.AstConstructionException
+import joos.ast.AstConstructionException
+import joos.ast.compositions.LikeName
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.ast.Name
 
-trait NameExpression extends Expression with Name
+trait NameExpression extends Expression with LikeName
 
 object NameExpression {
   def apply(ptn: ParseTreeNode): NameExpression = {

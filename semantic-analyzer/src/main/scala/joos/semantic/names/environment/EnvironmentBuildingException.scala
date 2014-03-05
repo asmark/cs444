@@ -1,8 +1,6 @@
 package joos.semantic.names.environment
 
-import joos.semantic.SemanticException
 import joos.ast.expressions.NameExpression
-import joos.ast.declarations.FieldDeclaration
 import joos.semantic.names.NameResolutionException
 
 class EnvironmentBuildingException(msg: String) extends NameResolutionException(msg)

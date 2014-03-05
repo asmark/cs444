@@ -5,7 +5,7 @@ import joos.regexp.RegularExpression
 object TokenKind extends Enumeration {
   type TokenKind = Value
 
-  case class TokenKindValue(val name: String, regexp: Function0[RegularExpression]) extends Val(name) {
+  case class TokenKindValue(name: String, regexp: Function0[RegularExpression]) extends Val(name) {
     def getRegexp() = regexp() := this
 
     def getName() = name

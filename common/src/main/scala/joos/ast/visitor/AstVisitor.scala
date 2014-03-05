@@ -1,7 +1,9 @@
-package joos.ast
+package joos.ast.visitor
 
+import joos.ast._
 import joos.ast.declarations._
 import joos.ast.expressions._
+import joos.ast.statements._
 
 trait AstVisitor {
   def apply(field: FieldDeclaration) {}

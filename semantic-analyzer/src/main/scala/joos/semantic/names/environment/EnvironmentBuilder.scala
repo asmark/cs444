@@ -2,15 +2,18 @@ package joos.semantic.names.environment
 
 import joos.ast._
 import joos.ast.declarations._
+import joos.ast.statements._
 import joos.ast.expressions.VariableDeclarationExpression
+import joos.ast.statements.WhileStatement
+import joos.ast.visitor.AstVisitor
 import joos.semantic.BlockEnvironment
 
 /**
  * Environment builder is responsible for the following name resolution checks:
  *
- * DONE: No two fields declared in the same class may have the same name.
- * DONE: No two local variables with overlapping scope have the same name.
- * DONE: No two classes or interfaces have the same canonical name.
+ * No two fields declared in the same class may have the same name.
+ * No two local variables with overlapping scope have the same name.
+ * No two classes or interfaces have the same canonical name.
  */
 class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor {
   private[this] implicit var typed: TypeDeclaration = null

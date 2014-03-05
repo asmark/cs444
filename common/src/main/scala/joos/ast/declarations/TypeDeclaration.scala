@@ -1,8 +1,7 @@
 package joos.ast.declarations
 
-import joos.ast.exceptions.AstConstructionException
 import joos.ast.expressions.{SimpleNameExpression, NameExpression}
-import joos.ast.{CompilationUnit, Modifier}
+import joos.ast.{AstConstructionException, CompilationUnit, Modifier}
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.semantic.TypeEnvironment
@@ -283,7 +282,7 @@ object TypeDeclaration {
       ) => {
         return TypeDeclaration(
           Modifier(children(0)),
-          true,
+          isInterface = true,
           SimpleNameExpression(children(2)),
           None,
           createExtendedInterfaceNodes(children(3)),
@@ -299,7 +298,7 @@ object TypeDeclaration {
       ) => {
         return TypeDeclaration(
           Modifier(children(0)),
-          true,
+          isInterface = true,
           SimpleNameExpression(children(2)),
           None,
           Seq(),

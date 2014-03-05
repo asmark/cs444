@@ -1,10 +1,9 @@
 package joos.weeder
 
-import joos.parsetree.{LeafNode, ParseTreeNode}
-import joos.parser.ParseMetaData
-import joos.tokens.{TokenKind, TerminalToken}
 import java.util.regex.Pattern
-import joos.weeder.exceptions.WeederException
+import joos.parser.ParseMetaData
+import joos.parsetree.{LeafNode, ParseTreeNode}
+import joos.tokens.{TokenKind, TerminalToken}
 
 case class UnicodeCharacterWeeder() extends Weeder{
   lazy final val UnicodePattern = Pattern.compile("""\\u[a-fA-F0-9]{4}""")

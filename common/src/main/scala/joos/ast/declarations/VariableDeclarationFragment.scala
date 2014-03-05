@@ -1,10 +1,9 @@
 package joos.ast.declarations
 
 import joos.ast.expressions.{Expression, SimpleNameExpression}
-import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.ast.{AstConstructionException, AstNode}
 import joos.language.ProductionRule
-import joos.ast.exceptions.AstConstructionException
-import joos.ast.AstNode
+import joos.parsetree.{TreeNode, ParseTreeNode}
 
 case class VariableDeclarationFragment(
   identifier: SimpleNameExpression,

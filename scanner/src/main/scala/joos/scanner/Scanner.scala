@@ -5,7 +5,6 @@ import joos.tokens.TerminalToken
 import scala.Some
 import scala.collection.mutable
 import scala.io.Source
-import joos.parser.exceptions.ScanningException
 
 class Scanner(dfa: Dfa) {
 
@@ -16,8 +15,8 @@ class Scanner(dfa: Dfa) {
   private val tokens = mutable.MutableList[TerminalToken]()
 
   def tokenize(file: Source): List[TerminalToken] = {
-    file.foreach(scan(_))
-    return getTokens()
+    file foreach scan
+    getTokens()
   }
 
   def scan(char: Char) {
@@ -39,7 +38,7 @@ class Scanner(dfa: Dfa) {
   }
 
   private def getCurrentNode(): DfaNode = {
-    return if (dfaPath.isEmpty) throw new ScanningException() else dfaPath.top
+    return if (dfaPath.isEmpty) throw new ScanningException(s"Failed to scan at ${charPath}") else dfaPath.top
   }
 
   private def updatePath(char: Char, node: DfaNode) {
@@ -50,7 +49,7 @@ class Scanner(dfa: Dfa) {
   private def reducePath() {
     val extraChars = mutable.Stack[Char]()
     while (getCurrentNode().isAccepting().isEmpty) {
-      if (charPath.isEmpty) throw new ScanningException() else extraChars.push(charPath.pop())
+      if (charPath.isEmpty) throw new ScanningException(s"Failed to scan at ${extraChars}") else extraChars.push(charPath.pop())
       dfaPath.pop()
     }
 

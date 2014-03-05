@@ -2,7 +2,7 @@ package joos.parser
 
 import java.io.File
 import java.util.regex.Pattern
-import joos.weeder.exceptions.WeederException
+import joos.weeder.WeederException
 
 class ParseMetaData(val fileName: String)
 

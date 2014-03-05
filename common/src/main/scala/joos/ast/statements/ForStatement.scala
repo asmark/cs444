@@ -1,9 +1,9 @@
-package joos.ast
+package joos.ast.statements
 
+import joos.ast.AstConstructionException
 import joos.ast.expressions.{VariableDeclarationExpression, Expression}
-import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.language.ProductionRule
-import joos.ast.exceptions.AstConstructionException
+import joos.parsetree.{TreeNode, ParseTreeNode}
 
 case class ForStatement(
   initialization: Option[Expression],

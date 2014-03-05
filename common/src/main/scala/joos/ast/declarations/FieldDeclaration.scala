@@ -1,14 +1,15 @@
 package joos.ast.declarations
 
-import joos.ast.exceptions.AstConstructionException
-import joos.ast.{TypedDeclaration, Type, Modifier}
+import joos.ast.compositions.LikeTypedDeclaration
+import joos.ast.types.Type
+import joos.ast.{AstConstructionException, Modifier}
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 
 case class FieldDeclaration(
     modifiers: Seq[Modifier],
     variableType: Type,
-    fragment: VariableDeclarationFragment) extends BodyDeclaration with TypedDeclaration {
+    fragment: VariableDeclarationFragment) extends BodyDeclaration with LikeTypedDeclaration {
   def declarationType = variableType
 
   def declarationName = fragment.identifier

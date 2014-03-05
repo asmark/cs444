@@ -1,10 +1,10 @@
 package joos.weeder
 
-import joos.parsetree._
-import scala.collection.mutable
+import joos.parser.ParseMetaData
 import joos.parsetree.LeafNode
 import joos.parsetree.TreeNode
-import joos.parser.ParseMetaData
+import joos.parsetree._
+import scala.collection.mutable
 
 abstract class Weeder {
   // TODO: Get the name from a consolidated place

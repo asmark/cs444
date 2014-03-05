@@ -2,17 +2,14 @@ package joos.a1
 
 import java.io.{PrintWriter, StringWriter, FileInputStream}
 import joos.automata.Dfa
-import joos.parser.exceptions.{ScanningException, JoosParseException}
-import joos.parser.{ParseMetaData, ParseTreeBuilder, LrOneReader}
+import joos.parser.{JoosParseException, ParseMetaData, ParseTreeBuilder, LrOneReader}
 import joos.parsetree.ParseTree
 import joos.resources
-import joos.scanner.Scanner
+import joos.scanner.{ScanningException, Scanner}
 import joos.tokens.TerminalToken
-import joos.weeder.Weeder
-import joos.weeder.exceptions.WeederException
+import joos.weeder.{WeederException, Weeder}
 import scala.io.Source
-import joos.ast.AbstractSyntaxTree
-import joos.ast.exceptions.AstConstructionException
+import joos.ast.{AstConstructionException, AbstractSyntaxTree}
 import joos.core.Logger
 
 object SyntaxCheck {
