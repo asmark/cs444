@@ -90,7 +90,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
     val inheritMethods = curTypeDeclaration.inheritMethods
     val localMethods = curTypeDeclaration.methods
 
-    checkRT(inheritMethods.values.flatten.toSeq ++ localMethods.toSeq)
+    checkReturnType(inheritMethods.values.flatten.toSeq ++ localMethods.toSeq)
 
     localMethods.map(method => {
         if (curTypeDeclaration.isConcreteClass && method.isAbstractMethod)
@@ -101,8 +101,6 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
     for ((inherited, inheritedMethods) <- inheritMethods) {
       inheritedMethods.foreach(
         method => {
-          println(inherited)
-          println(method.typedSignature)
           if (curTypeDeclaration.isConcreteClass &&
               method.isAbstractMethod &&
               !localMethodsSignatures.contains(method.localSignature))
