@@ -5,8 +5,8 @@ import joos.ast.expressions.SimpleNameExpression
 import scala.collection.mutable
 
 trait TypeEnvironment extends Environment {
-  val constructors = mutable.ArrayBuffer.empty[MethodDeclaration]
-  val methodMap = mutable.HashMap.empty[SimpleNameExpression, MethodDeclaration]
+  val constructorMap = mutable.HashMap.empty[String, MethodDeclaration]
+  val methodMap = mutable.HashMap.empty[String, MethodDeclaration]
   val fieldMap = mutable.HashMap.empty[SimpleNameExpression, FieldDeclaration]
 
   /**
@@ -14,9 +14,9 @@ trait TypeEnvironment extends Environment {
    */
   def add(method: MethodDeclaration): this.type = {
     if (method.isConstructor) {
-      constructors += method
+      assert(constructorMap.put(method.typedSignature, method).isEmpty)
     } else {
-      assert(methodMap.put(method.name, method).isEmpty)
+      assert(methodMap.put(method.typedSignature, method).isEmpty)
     }
     this
   }
