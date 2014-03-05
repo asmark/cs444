@@ -61,7 +61,7 @@ object ContextFreeGrammar {
       }
     }
 
-    return queue
+    queue
   }
 
   /**
@@ -114,6 +114,6 @@ object ContextFreeGrammar {
       }
     }
 
-    return new ContextFreeGrammar(start, terminals, nonTerminals, rulesBuilder)
+    new ContextFreeGrammar(start, terminals, nonTerminals, rulesBuilder)
   }
 }

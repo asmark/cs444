@@ -34,11 +34,11 @@ class Scanner(dfa: Dfa) {
     while (!charPath.isEmpty) {
       reducePath()
     }
-    return tokens.toList
+    tokens.toList
   }
 
   private def getCurrentNode(): DfaNode = {
-    return if (dfaPath.isEmpty) throw new ScanningException(s"Failed to scan at ${charPath}") else dfaPath.top
+    if (dfaPath.isEmpty) throw new ScanningException(s"Failed to scan at ${charPath}") else dfaPath.top
   }
 
   private def updatePath(char: Char, node: DfaNode) {
@@ -65,6 +65,6 @@ class Scanner(dfa: Dfa) {
 
 object Scanner {
   def apply(dfa: Dfa): Scanner = {
-    return new Scanner(dfa)
+    new Scanner(dfa)
   }
 }

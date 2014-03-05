@@ -14,7 +14,7 @@ class MarmosetA1Spec extends FlatSpec with Matchers {
   behavior of "Parsing valid joos"
   getSource(validJoos).getLines().foreach {
     file =>
-      it should s"accept ${file}" taggedAs (IntegrationTest) in {
+      it should s"accept ${file}" taggedAs IntegrationTest in {
         val filePath = getClass.getResource(validJoos + "/" + file).getPath
         val result = SyntaxCheck(filePath)
         result shouldNot be(None)
@@ -24,10 +24,10 @@ class MarmosetA1Spec extends FlatSpec with Matchers {
   behavior of "Parsing invalid joos"
   getSource(invalidJoos).getLines().foreach {
     file =>
-      it should s"reject ${file}" taggedAs (IntegrationTest) in {
+      it should s"reject ${file}" taggedAs IntegrationTest in {
         val filePath = getClass.getResource(invalidJoos + "/" + file).getPath
         val result = SyntaxCheck(filePath)
-        result shouldBe (None)
+        result shouldBe None
       }
   }
 }

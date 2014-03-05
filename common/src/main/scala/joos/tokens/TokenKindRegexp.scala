@@ -43,7 +43,7 @@ object TokenKindRegexp {
     Concatenation("private")
   }
 
-  def This() = {
+  def This = {
     Concatenation("this")
   }
 
@@ -225,7 +225,7 @@ object TokenKindRegexp {
 
   // DecimalIntegerLiteral
   def DecimalIntLiteral = {
-    (Atom('0') | (Alternation(NonZeroDigits) + (Alternation(Digits) *)))
+    Atom('0') | (Alternation(NonZeroDigits) + (Alternation(Digits) *))
   }
 
   def DecimalLongLiteral = {

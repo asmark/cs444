@@ -26,7 +26,7 @@ object ForStatement {
         if (body < 0)
           body = derivation.indexOf("StatementNoShortIf")
 
-        return new ForStatement(
+        new ForStatement(
           if (init >= 0) Some(
             children(init) match {
               case TreeNode(ProductionRule("ForInit", Seq("StatementExpression")), _, children) =>

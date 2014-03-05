@@ -20,7 +20,7 @@ object ImportDeclaration {
        case TreeNode(ProductionRule("ImportDeclaration", _), _, children) =>
          ImportDeclaration(children(0))
        case TreeNode(ProductionRule("SingleTypeImportDeclaration", _), _, children) =>
-         Seq(ImportDeclaration(NameExpression(children(1)), false))
+         Seq(ImportDeclaration(NameExpression(children(1)), isOnDemand = false))
        case TreeNode(ProductionRule("TypeImportOnDemandDeclaration", _), _, children) =>
          Seq(ImportDeclaration(NameExpression(children(1)), isOnDemand = true))
        case _ => throw new AstConstructionException("No valid production rule to create ImportDeclaration")

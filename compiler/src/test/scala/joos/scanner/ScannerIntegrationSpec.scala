@@ -22,7 +22,7 @@ class ScannerIntegrationSpec extends FlatSpec with Matchers {
   behavior of "Scanning java programs (checked)"
   getSource(casesDirectory).getLines().foreach {
     file =>
-      it should s"tokenize ${file} and check" taggedAs (IntegrationTest) in {
+      it should s"tokenize ${file} and check" taggedAs IntegrationTest in {
         val scanner = Scanner(JavaDfa)
         val tokens = scanner.tokenize(getSource(casesDirectory, file))
 

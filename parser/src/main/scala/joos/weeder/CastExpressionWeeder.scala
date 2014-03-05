@@ -18,7 +18,7 @@ case class CastExpressionWeeder() extends Weeder {
 
     castTypeExpression match {
       case Some(expr) =>
-        val queue: mutable.Queue[ParseTreeNode] = mutable.Queue((expr))
+        val queue: mutable.Queue[ParseTreeNode] = mutable.Queue(expr)
         while (!queue.isEmpty) {
           val node = queue.dequeue()
 

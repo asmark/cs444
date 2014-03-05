@@ -18,12 +18,12 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
   }
 
   def getTestCases(dir: String) = {
-    (new File(getClass.getResource(dir).getPath)).listFiles()
+    new File(getClass.getResource(dir).getPath).listFiles()
   }
 
   behavior of "Name resolution of valid joos"
   getTestCases(validJoos).foreach {
-    testCase => it should s"accept ${testCase.getName}" taggedAs (IntegrationTest) in {
+    testCase => it should s"accept ${testCase.getName}" taggedAs IntegrationTest in {
       val files = getJavaFiles(testCase) ++ standardLibrary map (_.getAbsolutePath)
       val asts = files map SyntaxCheck.apply collect {
         case None => fail(s"Was not able to SyntaxCheck ${testCase.getName}")
@@ -35,7 +35,7 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
 
   behavior of "Name resolution of invalid joos"
   getTestCases(invalidJoos).foreach {
-    testCase => it should s"reject ${testCase.getName}" taggedAs (IntegrationTest) in {
+    testCase => it should s"reject ${testCase.getName}" taggedAs IntegrationTest in {
       val files = getJavaFiles(testCase) ++ standardLibrary map (_.getAbsolutePath)
 
       intercept[SemanticException] {

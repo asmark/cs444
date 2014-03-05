@@ -92,6 +92,6 @@ package object semantic {
           return Some(element)
         }
     }
-    return None
+    None
   }
 }

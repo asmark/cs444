@@ -67,7 +67,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
     }
     ensureValidReplaces()
     typeDeclaration.methods.foreach(_.accept(this))
-    typeDeclarations.pop
+    typeDeclarations.pop()
     // A class or interface must not contain (declare or inherit) two methods with the same signature but different return types
     val dupe = findDuplicate(typeDeclaration.constructorMap.values.toSeq.map(_.typedSignature))
     if (dupe.isDefined) {
@@ -104,8 +104,6 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
       // If both methods are the same, we don't do check
       return
     }
-
-    Logger.logInformation(s"Checking methods ${method} AND ${inheritedMethod}")
 
     if (!method.modifiers.contains(Modifier.Static)
         && inheritedMethod.modifiers.contains(Modifier.Static)) {

@@ -39,12 +39,12 @@ object SyntaxCheck {
       val tokens = tokenize(path)
       val parseTree = parse(tokens)
       weed(parseTree, metaData)
-      return Some(AbstractSyntaxTree(parseTree))
+      Some(AbstractSyntaxTree(parseTree))
     } catch {
       case e @ (_:ScanningException | _:WeederException | _:JoosParseException | _:AstConstructionException) => {
         val errors = new StringWriter()
         e.printStackTrace(new PrintWriter(errors))
-        Logger.logError(errors.toString())
+        Logger.logError(errors.toString)
         return None
       }
     }

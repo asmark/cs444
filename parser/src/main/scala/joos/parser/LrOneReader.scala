@@ -5,7 +5,7 @@ import joos.language.ProductionRule
 import scala.collection.mutable
 
 class LrOneReader(source: InputStream) {
-  private val reader = new BufferedReader(new InputStreamReader(source));
+  private val reader = new BufferedReader(new InputStreamReader(source))
 
   val numTerminals = reader.readLine().toInt
   val terminals = Range(0, numTerminals).foldRight(mutable.Set.empty[String])((idx, set) => set += reader.readLine())

@@ -35,7 +35,7 @@ object PrimitiveType {
         PrimitiveType(extractNumericToken(children(0)))
       case TreeNode(ProductionRule("PrimitiveType", Seq("boolean")), _, children) =>
         children(0).token match {
-          case terminalToken: TerminalToken => return PrimitiveType(terminalToken)
+          case terminalToken: TerminalToken => PrimitiveType(terminalToken)
           case _ => throw new AstConstructionException(
             "Invalid tree node to create boolean"
           )

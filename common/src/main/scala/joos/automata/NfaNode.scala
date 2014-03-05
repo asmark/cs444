@@ -9,11 +9,11 @@ sealed abstract class NfaNode {
   def addTransition(char: Char, node: NfaNode): NfaNode = {
     val neighbours = edges.getOrElse(char, Set.empty[NfaNode])
     edges += ((char, neighbours + node))
-    return this
+    this
   }
 
   def followTransition(char: Char): Set[NfaNode] = {
-    return edges.getOrElse(char, Set.empty[NfaNode])
+    edges.getOrElse(char, Set.empty[NfaNode])
   }
 
   def isAccepting(): Option[TokenKind] = this match {
@@ -32,7 +32,7 @@ sealed abstract class NfaNode {
         withFilter(neighbour => !closure.contains(neighbour)).
         foreach(neighbour => nodesToExamine.enqueue(neighbour))
     }
-    return closure.toSet
+    closure.toSet
   }
 
   override def equals(other: Any): Boolean = super.equals(other)

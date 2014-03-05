@@ -10,12 +10,12 @@ sealed abstract class DfaNode {
   def addTransition(char: Char, node: DfaNode): DfaNode = {
     edges.put(char, node) match {
       case Some(node: DfaNode) => throw new DuplicateTransitionException("Transition to %c already exists".format(char))
-      case None => return this
+      case None => this
     }
   }
 
   def followTransition(char: Char): Option[DfaNode] = {
-    return edges.get(char)
+    edges.get(char)
   }
 
   def isAccepting(): Option[TokenKind] = this match {

@@ -5,14 +5,14 @@ import joos.regexp.RegularExpression
 object TokenKind extends Enumeration {
   type TokenKind = Value
 
-  case class TokenKindValue(name: String, regexp: Function0[RegularExpression]) extends Val(name) {
+  case class TokenKindValue(name: String, regexp: () => RegularExpression) extends Val(name) {
     def getRegexp() = regexp() := this
 
     def getName() = name
   }
 
   def getHighestPriority(kinds: Set[TokenKind]): TokenKind = {
-    return values.find(kinds.contains).get
+    values.find(kinds.contains).get
   }
 
   def kindToSymbol(kind: TokenKind) = {

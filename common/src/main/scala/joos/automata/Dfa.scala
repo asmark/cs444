@@ -36,7 +36,7 @@ class Dfa(val root: DfaNode) {
 
     writer.append(s"${nextId}\n")
 
-    type Row = mutable.MutableList[Tuple2[Integer, Integer]]
+    type Row = mutable.MutableList[(Integer, Integer)]
     type AdjacencyList = Array[Row]
 
     // Construct the adjacency list and list all nodes followed by their accepting tokens (if any)
@@ -76,7 +76,7 @@ object Dfa {
   private def getEpsilonClosure(nfaNodes: Set[NfaNode]): Set[NfaNode] = {
     val epsilonClosure = mutable.Set[NfaNode]()
     nfaNodes.foreach(node => epsilonClosure ++= node.getClosure(NfaNode.Epsilon))
-    return epsilonClosure.toSet
+    epsilonClosure.toSet
   }
 
   private def newDfaNode(nfaNodes: Set[NfaNode]): DfaNode = {
@@ -85,7 +85,7 @@ object Dfa {
       case node: AcceptingNfaNode => node.kind
     }
 
-    return if (acceptingKinds.isEmpty) NonAcceptingDfaNode()
+    if (acceptingKinds.isEmpty) NonAcceptingDfaNode()
     else AcceptingDfaNode(
       TokenKind
         .getHighestPriority(acceptingKinds)
@@ -93,7 +93,7 @@ object Dfa {
   }
 
   private def getOrCreateDfaNode(dfaNodes: mutable.HashMap[Set[NfaNode], DfaNode], nfaNodes: Set[NfaNode]): DfaNode = {
-    return dfaNodes.get(nfaNodes) match {
+    dfaNodes.get(nfaNodes) match {
       case Some(dfaNode: DfaNode) => return dfaNode
       case None => {
         val dfaNode = newDfaNode(nfaNodes)
@@ -119,7 +119,7 @@ object Dfa {
         }
     }
 
-    return unionTransitions
+    unionTransitions
   }
 
   def apply(regexp: RegularExpression): Dfa = {
@@ -149,15 +149,15 @@ object Dfa {
       }
     }
 
-    return new Dfa(dfaNodeSet(rootNode))
+    new Dfa(dfaNodeSet(rootNode))
   }
 
   def apply(root: DfaNode): Dfa = {
-    return new Dfa(root)
+    new Dfa(root)
   }
 
   def deserialize(istream: InputStream): Dfa = {
-    val reader = new BufferedReader(new InputStreamReader(istream));
+    val reader = new BufferedReader(new InputStreamReader(istream))
     val numNodes = reader.readLine().toInt
 
     val nodeMap = mutable.HashMap.empty[Integer, DfaNode]
@@ -185,7 +185,7 @@ object Dfa {
       }
     }
 
-    return Dfa(nodeMap(0))
+    Dfa(nodeMap(0))
   }
 
 }

@@ -212,7 +212,7 @@ class ScannerSpec extends FlatSpec with Matchers {
     TokenKind.values.map(
       value => {
         val token_kind_value = value.asInstanceOf[TokenKindValue]
-        val keyword = token_kind_value.getName().toLowerCase()
+        val keyword = token_kind_value.getName().toLowerCase
         if (test_keywords.contains(keyword)) {
           keyword.toCharArray.foreach(c => scanner.scan(c))
           val tokens = scanner.getTokens()

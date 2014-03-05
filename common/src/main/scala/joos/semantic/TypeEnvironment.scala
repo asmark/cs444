@@ -61,7 +61,7 @@ trait TypeEnvironment extends Environment {
         )
       }
     )
-    return ret
+    ret
   }
 
   lazy val containedMethodSet: mutable.HashSet[MethodDeclaration] = {
