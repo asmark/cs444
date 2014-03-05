@@ -2,7 +2,7 @@ package joos.ast.declarations
 
 import joos.ast._
 import joos.ast.exceptions.AstConstructionException
-import joos.ast.expressions.{QualifiedNameExpression, NameExpression, SimpleNameExpression}
+import joos.ast.expressions.SimpleNameExpression
 import joos.language.ProductionRule
 import joos.parsetree.ParseTreeNode
 import joos.parsetree.TreeNode
@@ -50,7 +50,7 @@ case class MethodDeclaration(
     }
   }
 
-  private[this] def getTypeName(t: Type):String = {
+  private[this] def getTypeName(t: Type): String = {
     t match {
       case PrimitiveType(token) => token.lexeme
       case ArrayType(x, _) => getTypeName(x)

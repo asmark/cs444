@@ -12,6 +12,9 @@ trait CompilationUnitEnvironment extends Environment {
   val concreteImports = new NamespaceTrie
   val enclosingPackage = new NamespaceTrie
   val onDemandImports = new NamespaceTrie
+  implicit val that = this
+  lazy val javaLangObjectClass = getTypeDeclaration(javaLangObject)
+  lazy val javaLangObjectInterface = javaLangObjectClass.toInterface
 
   private def addOnDemandImport(name: NameExpression, namespace: NamespaceTrie) {
     moduleDeclaration.namespace.getAllTypesInPackage(name) map {

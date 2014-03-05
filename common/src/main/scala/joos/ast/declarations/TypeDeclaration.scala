@@ -6,6 +6,7 @@ import joos.ast.{CompilationUnit, Modifier}
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.semantic.TypeEnvironment
+import scala.collection.mutable
 
 case class TypeDeclaration (
     modifiers: Seq[Modifier],
@@ -19,6 +20,31 @@ case class TypeDeclaration (
     with TypeEnvironment {
   var compilationUnit: CompilationUnit = null
   var packageDeclaration: PackageDeclaration = null
+
+  def toInterface: TypeDeclaration = {
+    val methods = mutable.ArrayBuffer.empty[MethodDeclaration]
+    this.methods foreach {
+      method =>
+          methods += new MethodDeclaration(
+            Seq(Modifier.Abstract, Modifier.Public),
+            method.returnType,
+            name,
+            method.parameters,
+            None,
+            method.isConstructor
+          )
+    }
+
+    new TypeDeclaration(
+      Seq(Modifier.Public, Modifier.Abstract),
+      isInterface = true,
+      name,
+      None,
+      superInterfaces,
+      Seq(),
+      methods
+    )
+  }
 }
 
 object TypeDeclaration {
