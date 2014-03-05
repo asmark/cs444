@@ -182,12 +182,12 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
   }
 
   private[this] def ensureValidReplaces(method: MethodDeclaration, inheritedMethod: MethodDeclaration)(implicit unit: CompilationUnit) {
-    Logger.logInformation(s"Checking methods ${method} AND ${inheritedMethod}")
-
     if (method.typeDeclaration eq inheritedMethod.typeDeclaration) {
       // If both methods are the same, we don't do check
       return
     }
+
+    Logger.logInformation(s"Checking methods ${method} AND ${inheritedMethod}")
 
     if (method.modifiers.contains(Modifier.Static)
         && !inheritedMethod.modifiers.contains(Modifier.Static)) {
@@ -198,8 +198,8 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
       throw new OverrideReturnTypeException(method, inheritedMethod)
     }
 
-    if (method.modifiers.contains(Modifier.Public)
-        && !inheritedMethod.modifiers.contains(Modifier.Public)) {
+    if (!method.modifiers.contains(Modifier.Public)
+        && inheritedMethod.modifiers.contains(Modifier.Public)) {
       throw new SemanticException(s"The declared method ${method.name} should have 'public' modifier")
     }
 

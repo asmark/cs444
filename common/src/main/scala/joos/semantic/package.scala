@@ -1,7 +1,7 @@
 package joos
 
 import joos.ast._
-import joos.ast.declarations.TypeDeclaration
+import joos.ast.declarations.{PackageDeclaration, TypeDeclaration}
 import joos.ast.expressions.NameExpression
 import joos.core.Logger
 import scala.Some
@@ -49,7 +49,11 @@ package object semantic {
 
   def fullName(typeDeclaration: TypeDeclaration) = {
     require(typeDeclaration.packageDeclaration != null)
-    s"${typeDeclaration.packageDeclaration.name.standardName}.${typeDeclaration.name.standardName}"
+    if (typeDeclaration.packageDeclaration == PackageDeclaration.DefaultPackage) {
+      typeDeclaration.name.standardName
+    } else {
+      typeDeclaration.packageDeclaration.name.standardName + '.' + typeDeclaration.name.standardName
+    }
   }
 
   def areEqual(type1: TypeDeclaration, type2: TypeDeclaration): Boolean = {
