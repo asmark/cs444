@@ -6,9 +6,8 @@ import joos.ast.{CompilationUnit, Modifier}
 import joos.language.ProductionRule
 import joos.parsetree.{TreeNode, ParseTreeNode}
 import joos.semantic.TypeEnvironment
-import scala.collection.mutable
 
-case class TypeDeclaration (
+case class TypeDeclaration(
     modifiers: Seq[Modifier],
     isInterface: Boolean,
     name: SimpleNameExpression,
@@ -22,17 +21,16 @@ case class TypeDeclaration (
   var packageDeclaration: PackageDeclaration = null
 
   def toInterface: TypeDeclaration = {
-    val methods = mutable.ArrayBuffer.empty[MethodDeclaration]
-    this.methods foreach {
+    val methods = this.methods.map {
       method =>
-          methods += new MethodDeclaration(
-            Seq(Modifier.Abstract, Modifier.Public),
-            method.returnType,
-            name,
-            method.parameters,
-            None,
-            method.isConstructor
-          )
+        new MethodDeclaration(
+          Seq(Modifier.Abstract, Modifier.Public),
+          method.returnType,
+          name,
+          method.parameters,
+          None,
+          method.isConstructor
+        )
     }
 
     new TypeDeclaration(
