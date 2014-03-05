@@ -64,33 +64,12 @@ trait TypeEnvironment extends Environment {
     return ret
   }
 
-<<<<<<< HEAD
   lazy val containedMethodMap: mutable.HashMap[String, IndexedSeq[MethodDeclaration]] = {
     var ret = mutable.HashMap.empty[String, IndexedSeq[MethodDeclaration]]
 
     ret ++= this.inheritMethods
     ret += {fullName(this) -> methodMap.values.toIndexedSeq}
 
-=======
-  lazy val containedMethodMap: mutable.HashMap[String, Seq[MethodDeclaration]] = {
-    var ret = mutable.HashMap.empty[String, Seq[MethodDeclaration]]
-    getSuperType(this) match {
-      case Some(superType) => {
-        inheritMethods ++= superType.inheritMethods
-      }
-      case None => {}
-    }
-
-    this.superInterfaces.foreach(
-      superInterface => {
-        val interface = getTypeDeclaration(superInterface)
-        inheritMethods ++= interface.inheritMethods
-      }
-    )
-
-    ret ++= inheritMethods
-    ret += {fullName(this) -> methodMap.values.toSeq}
->>>>>>> 064b2f5a5c984e5eb62ee6939974c7135c55e0de
     ret
   }
 
@@ -99,18 +78,11 @@ trait TypeEnvironment extends Environment {
 
     this.supers.foreach(
       superType => {
-<<<<<<< HEAD
         val localSigatures = this.methods.map(method => method.returnTypeLocalSignature)
         val array = superType.containedMethodMap.values.flatten.toArray
         array foreach {
           contained =>
             if (!localSigatures.contains(contained.returnTypeLocalSignature)) {
-=======
-        val localSigatures = this.methods.map(method => method.localSignature)
-        superType.containedMethodMap.values.flatten foreach {
-          contained =>
-            if (!localSigatures.contains(contained.localSignature)) {
->>>>>>> 064b2f5a5c984e5eb62ee6939974c7135c55e0de
               if (!contained.isAbstractMethod) {
                 // TODO: Inefficient
                 if (!ret.contains(fullName(contained.typeDeclaration)))
