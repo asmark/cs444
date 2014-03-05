@@ -19,5 +19,6 @@ object Compiler {
         case e: SemanticException => sys.exit(42)
       }
     }
+    sys.exit(0)
   }
 }
