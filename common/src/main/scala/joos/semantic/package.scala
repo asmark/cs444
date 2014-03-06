@@ -28,8 +28,7 @@ package object semantic {
 
   def getSuperType(typeDeclaration: TypeDeclaration): Option[TypeDeclaration] = {
     val compilationUnit = typeDeclaration.compilationUnit
-    val theFullName = fullName(typeDeclaration)
-    theFullName equals javaLangObject.standardName match {
+    fullName(typeDeclaration) equals javaLangObject.standardName match {
       case true => None
       case false => {
         Some(
@@ -41,11 +40,15 @@ package object semantic {
     }
   }
 
-  def getSuperInterfaces(typeDeclaration: TypeDeclaration)(implicit unit: CompilationUnit): Seq[TypeDeclaration] = {
-    if (typeDeclaration.isInterface && typeDeclaration.superInterfaces.isEmpty) {
-      Seq(unit.javaLangObjectInterface)
+  def getSuperInterfaces(typeDeclaration: TypeDeclaration): Seq[TypeDeclaration] = {
+    val compilationUnit = typeDeclaration.compilationUnit
+    // TODO: This equals method may not work. We might have to do a fullName comparison.
+    if (typeDeclaration equals compilationUnit.javaLangObjectInterface) {
+      Seq.empty
+    } else if (typeDeclaration.isInterface && typeDeclaration.superInterfaces.isEmpty) {
+      Seq(compilationUnit.javaLangObjectInterface)
     } else {
-      typeDeclaration.superInterfaces.map(getTypeDeclaration)
+      typeDeclaration.superInterfaces.map(superInterface => getTypeDeclaration(superInterface)(compilationUnit))
     }
   }
 
