@@ -93,7 +93,7 @@ object Joos1wCompilerBuild extends Build {
     settings = commonSettings ++ Seq(
       description := "Joos 1W Compiler",
       jarName in assembly := "compiler.jar",
-      mainClass in assembly := Some("joos.Compiler")
+      mainClass in assembly := Some("joos.compiler.Compiler")
     )
   ) dependsOn(common, preprocessor, scanner, parser, semanticAnalyzer)
 
