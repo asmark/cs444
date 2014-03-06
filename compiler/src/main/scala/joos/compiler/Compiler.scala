@@ -6,22 +6,25 @@ import joos.syntax.{JoosSyntaxException, SyntaxCheck}
 
 object Compiler {
   def main(args: Array[String]) {
+    sys.exit(compile(args))
+  }
 
+  def compile(files: Array[String]) = {
     try {
-      val asts = args map SyntaxCheck.apply
+      val asts = files map SyntaxCheck.apply
       NameResolution(asts)
+      0
     } catch {
       case e: JoosSyntaxException => {
-        Logger.logWarning(s"${args} failed syntax check")
+        Logger.logWarning(s"${files} failed syntax check")
         Logger.logWarning(e.getMessage)
-        sys.exit(42)
+        42
       }
       case e: SemanticException => {
-        Logger.logWarning(s"${args} failed semantic check")
+        Logger.logWarning(s"${files} failed semantic check")
         Logger.logWarning(e.getMessage)
-        sys.exit(42)
+        42
       }
     }
-    sys.exit(0)
   }
 }

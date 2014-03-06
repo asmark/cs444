@@ -23,7 +23,7 @@ object Joos1wCompilerBuild extends Build {
       "-feature",
       "-deprecation",
       "-unchecked",
-      "-target:jvm-1.6",
+      "-target:jvm-1.7",
       "-encoding", "utf8"
     ),
     libraryDependencies ++= Seq(

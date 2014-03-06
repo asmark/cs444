@@ -6,6 +6,7 @@ import joos.syntax.SyntaxCheck
 import joos.test.tags.IntegrationTest
 import org.scalatest.{Matchers, FlatSpec}
 import joos.compiler.CompilationException
+import joos.core.Logger
 
 class MarmosetA2Spec extends FlatSpec with Matchers {
 
@@ -34,10 +35,10 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
     testCase => it should s"reject ${testCase.getName}" taggedAs IntegrationTest in {
       val files = getJavaFiles(testCase) ++ standardLibrary map (_.getAbsolutePath)
 
-      intercept[CompilationException] {
+      Logger.logInformation(intercept[CompilationException] {
         val asts = files map SyntaxCheck.apply
         NameResolution(asts)
-      }
+      }.getMessage)
     }
   }
 }
