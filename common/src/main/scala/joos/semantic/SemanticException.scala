@@ -1,3 +1,3 @@
 package joos.semantic
 
-class SemanticException(errorMessage: String) extends RuntimeException(errorMessage)
+class SemanticException(message: String) extends RuntimeException(message)

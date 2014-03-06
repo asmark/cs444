@@ -20,12 +20,53 @@ import scala.collection.mutable
  * A protected method must not replace a public method.
  * A method must not replace a final method.
  */
-class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVisitor with TypeHierarchyChecker {
-  private[this] implicit val typeDeclarations = mutable.Stack[TypeDeclaration]()
-  private[this] implicit var unit: CompilationUnit = null
+class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: CompilationUnit) extends AstVisitor with TypeHierarchyChecker {
 
-  private def checkReturnType(methods: Seq[MethodDeclaration]) {
+  private def checkCyclic(typeDeclaration: TypeDeclaration) = {
+    val curTypeDeclaration = typeDeclaration
+
+    var visited: Set[TypeDeclaration] = Set()
+
+    val ancestors = mutable.Queue[TypeDeclaration](curTypeDeclaration)
+
+    while (!ancestors.isEmpty) {
+      val front = ancestors.dequeue()
+
+      visited += front
+
+      getSuperType(front) match {
+        case Some(ancestor) => {
+          // Check
+          if (ancestor.equals(curTypeDeclaration))
+            throw new CyclicHierarchyException(ancestor.name)
+          if (!visited.contains(ancestor)) {
+            ancestors enqueue ancestor
+          }
+        }
+        case None =>
+      }
+
+      front.superInterfaces.foreach {
+        implemented =>
+          front.compilationUnit.getVisibleType(implemented) match {
+            case Some(ancestor) => {
+              // Check
+              if (ancestor.equals(curTypeDeclaration))
+                throw new CyclicHierarchyException(ancestor.name)
+              if (!visited.contains(ancestor)) {
+                ancestors enqueue ancestor
+              }
+            }
+            case _ => Logger.logError(s"Interface ${implemented.standardName} not visible to implementer ${front.name.standardName}")
+          }
+      }
+    }
+  }
+
+  private def checkReturnType(typeDeclaration: TypeDeclaration) {
     var set: mutable.HashMap[String, MethodDeclaration] = mutable.HashMap()
+
+    val methods = typeDeclaration.inheritMethods ++ typeDeclaration.methods
 
     methods.foreach(
       method => {
@@ -35,7 +76,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
           set.get(method.localSignature) match {
             case Some(existingMethod) =>
               if (!areEqual(existingMethod.returnType, method.returnType) && !(existingMethod.isConstructor || method.isConstructor))
-                throw new ConcreteClassAbstractMethodException(method, typeDeclarations.top)
+                throw new ConcreteClassAbstractMethodException(method, typeDeclaration)
             case _ =>
           }
         }
@@ -44,30 +85,28 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
 
   override def apply(typeDeclaration: TypeDeclaration) = {
     // 1. The hierarchy must be acyclic.
-    typeDeclarations.push(typeDeclaration)
+    checkCyclic(typeDeclaration)
 
-    val curTypeDeclaration = typeDeclarations.top
-    val inheritMethods = curTypeDeclaration.inheritMethods
-    val localMethods = curTypeDeclaration.methods
+    val inheritMethods = typeDeclaration.inheritMethods
+    val localMethods = typeDeclaration.methods
 
-    checkReturnType(inheritMethods.toSeq ++ localMethods.toSeq)
+    checkReturnType(typeDeclaration)
     localMethods.map(
       method => {
 
-        if (curTypeDeclaration.isConcreteClass && method.isAbstractMethod)
-          throw new ConcreteClassAbstractMethodException(method, curTypeDeclaration)
+        if (typeDeclaration.isConcreteClass && method.isAbstractMethod)
+          throw new ConcreteClassAbstractMethodException(method, typeDeclaration)
       }
     )
     val localSignatures = localMethods.map(method => method.localSignature)
     for (method <- inheritMethods) {
-      if (curTypeDeclaration.isConcreteClass &&
+      if (typeDeclaration.isConcreteClass &&
           method.isAbstractMethod &&
           !localSignatures.contains(method.localSignature))
-        throw new ConcreteClassAbstractMethodException(method, curTypeDeclaration)
+        throw new ConcreteClassAbstractMethodException(method, typeDeclaration)
     }
-    ensureValidReplaces()
+    ensureValidReplaces(typeDeclaration)
     typeDeclaration.methods.foreach(_.accept(this))
-    typeDeclarations.pop()
     // A class or interface must not contain (declare or inherit) two methods with the same signature but different return types
     val dupe = findDuplicate(typeDeclaration.constructorMap.values.toSeq.map(_.typedSignature))
     if (dupe.isDefined) {
@@ -75,8 +114,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
     }
   }
 
-  private[this] def ensureValidReplaces()(implicit unit: CompilationUnit) {
-    val typeDeclaration = typeDeclarations.top
+  private[this] def ensureValidReplaces(typeDeclaration: TypeDeclaration)(implicit unit: CompilationUnit) {
 
     for (method <- typeDeclaration.methodMap.values) {
       for (inheritedMethod <- typeDeclaration.containedMethodSet) {
@@ -136,7 +174,6 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration) extends AstVi
   }
 
   override def apply(compilationUnit: CompilationUnit): Unit = {
-    this.unit = compilationUnit
     compilationUnit.typeDeclaration.map(_.accept(this))
   }
 }

@@ -8,7 +8,6 @@ import joos.test.tags.IntegrationTest
 import org.scalatest.{FlatSpec, Matchers}
 import scala.io.Source
 import scala.language.postfixOps
-import joos.syntax.scanner.Scanner
 
 class ScannerIntegrationSpec extends FlatSpec with Matchers {
   final val casesDirectory = "/scanner/cases"

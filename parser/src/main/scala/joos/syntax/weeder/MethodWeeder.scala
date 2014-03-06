@@ -51,7 +51,6 @@ case class MethodWeeder() extends Weeder {
             if (!body.children.head.token.symbol.equals(Block)) {
               throw new WeederException("A method has a body if and only if it is neither abstract nor native.")
             }
-          case _ =>
         }
       }
       case _ =>

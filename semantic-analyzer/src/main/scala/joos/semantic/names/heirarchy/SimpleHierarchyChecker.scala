@@ -21,48 +21,6 @@ import scala.collection.mutable
  */
 class SimpleHierarchyChecker(implicit module: ModuleDeclaration, unit: CompilationUnit) extends AstVisitor with TypeHierarchyChecker {
 
-  private def checkCyclic(typeDeclaration: TypeDeclaration) = {
-    val curTypeDeclaration = typeDeclaration
-
-    var visited: Set[TypeDeclaration] = Set()
-
-    val ancestors = mutable.Queue[TypeDeclaration](curTypeDeclaration)
-
-    while (!ancestors.isEmpty) {
-      val front = ancestors.dequeue()
-
-      visited += front
-
-      getSuperType(front) match {
-        case Some(ancestor) => {
-          // Check
-          if (ancestor.equals(curTypeDeclaration))
-            throw new CyclicHierarchyException(ancestor.name)
-          if (!visited.contains(ancestor)) {
-            ancestors enqueue ancestor
-          }
-        }
-        case None =>
-      }
-
-      front.superInterfaces.foreach {
-        implemented =>
-          front.compilationUnit.getVisibleType(implemented) match {
-            case Some(ancestor) => {
-              // Check
-              if (ancestor.equals(curTypeDeclaration))
-                throw new CyclicHierarchyException(ancestor.name)
-              if (!visited.contains(ancestor)) {
-                ancestors enqueue ancestor
-              }
-            }
-            // TODO: This case is wrong
-            case _ => Logger.logError(s"Interface ${implemented.standardName} not visible to implementer ${front.name.standardName}")
-          }
-      }
-    }
-  }
-
   override def apply(unit: CompilationUnit) {
     unit.typeDeclaration.map(_.accept(this))
   }
@@ -74,6 +32,11 @@ class SimpleHierarchyChecker(implicit module: ModuleDeclaration, unit: Compilati
     }
 
     // Check methods and constructors
+    analyzeLocalMethods(typeDeclaration)
+  }
+
+
+  def analyzeLocalMethods(typeDeclaration: TypeDeclaration) {
     for (method <- typeDeclaration.methods) {
       if (method.isConstructor) {
         if (typeDeclaration.constructorMap.contains(method.typedSignature)) {
@@ -86,8 +49,6 @@ class SimpleHierarchyChecker(implicit module: ModuleDeclaration, unit: Compilati
       }
       typeDeclaration.add(method)
     }
-
-    checkCyclic(typeDeclaration)
   }
 
   private def analyzeInterfaceDeclaration(implicit typeDeclaration: TypeDeclaration) {

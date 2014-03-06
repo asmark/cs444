@@ -7,6 +7,7 @@ object Logger {
   private[this] val LogInformation = 1
   private[this] val LogLevel = LogInformation
 
+  // TODO: Append ERROR: to each line if ${text} spans multiple lines
 
   def logError(text: String): this.type = {
     if (LogLevel <= LogError) {
