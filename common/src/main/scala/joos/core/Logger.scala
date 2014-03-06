@@ -8,7 +8,6 @@ object Logger {
   private[this] val LogLevel = LogInformation
 
   private def prefixWith(prefix: String, original: String) = {
-
     original.split("[\\r\\n]").foldLeft(new StringBuilder) {
       (buffer : StringBuilder, line : String) =>
         buffer.append(prefix).append(' ').append(line).append("\r\n")

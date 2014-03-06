@@ -1,3 +1,5 @@
 package joos.syntax
 
-class JoosSyntaxException(message: String) extends RuntimeException(message)
+import joos.compiler.CompilationException
+
+class JoosSyntaxException(message: String) extends CompilationException(message)

@@ -16,7 +16,7 @@ sealed abstract class NfaNode {
     edges.getOrElse(char, Set.empty[NfaNode])
   }
 
-  def isAccepting(): Option[TokenKind] = this match {
+  def isAccepting: Option[TokenKind] = this match {
     case NonAcceptingNfaNode() => None
     case AcceptingNfaNode(token) => Some(token)
   }

@@ -1,6 +1,6 @@
 package joos.marmoset
 
-import joos.syntax.SyntaxCheck
+import joos.syntax.{JoosSyntaxException, SyntaxCheck}
 import joos.test.tags.IntegrationTest
 import org.scalatest.{Matchers, FlatSpec}
 import scala.io.Source
@@ -17,8 +17,7 @@ class MarmosetA1Spec extends FlatSpec with Matchers {
     file =>
       it should s"accept ${file}" taggedAs IntegrationTest in {
         val filePath = getClass.getResource(validJoos + "/" + file).getPath
-        val result = SyntaxCheck(filePath)
-        result shouldNot be(None)
+        SyntaxCheck(filePath)
       }
   }
 
@@ -27,8 +26,9 @@ class MarmosetA1Spec extends FlatSpec with Matchers {
     file =>
       it should s"reject ${file}" taggedAs IntegrationTest in {
         val filePath = getClass.getResource(invalidJoos + "/" + file).getPath
-        val result = SyntaxCheck(filePath)
-        result shouldBe None
+        intercept[JoosSyntaxException] {
+          SyntaxCheck(filePath)
+        }
       }
   }
 }

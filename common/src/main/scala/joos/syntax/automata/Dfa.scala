@@ -94,11 +94,11 @@ object Dfa {
 
   private def getOrCreateDfaNode(dfaNodes: mutable.HashMap[Set[NfaNode], DfaNode], nfaNodes: Set[NfaNode]): DfaNode = {
     dfaNodes.get(nfaNodes) match {
-      case Some(dfaNode: DfaNode) => return dfaNode
+      case Some(dfaNode: DfaNode) => dfaNode
       case None => {
         val dfaNode = newDfaNode(nfaNodes)
         dfaNodes += ((nfaNodes, dfaNode))
-        return dfaNode
+        dfaNode
       }
     }
   }

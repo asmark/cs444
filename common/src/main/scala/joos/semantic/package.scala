@@ -17,6 +17,7 @@ package object semantic {
       case None => {
         val error = s"Cannot resolve ${name} to a type"
         Logger.logError(error)
+        // TODO: Better error?
         throw new SemanticException(error)
       }
       case Some(t) => t

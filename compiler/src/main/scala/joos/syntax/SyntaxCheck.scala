@@ -1,16 +1,15 @@
 package joos.syntax
 
-import java.io.{PrintWriter, StringWriter, FileInputStream}
-import joos.ast.{AstConstructionException, AbstractSyntaxTree}
-import joos.core.Logger
+import java.io.FileInputStream
+import joos.ast.AbstractSyntaxTree
 import joos.resources
 import joos.syntax.automata.Dfa
-import joos.syntax.parser.{JoosParseException, ParseMetaData, ParseTreeBuilder, LrOneReader}
+import joos.syntax.parser.{ParseMetaData, ParseTreeBuilder, LrOneReader}
 import joos.syntax.parsetree.ParseTree
+import joos.syntax.scanner.Scanner
 import joos.syntax.tokens.TerminalToken
-import joos.syntax.weeder.{WeederException, Weeder}
+import joos.syntax.weeder.Weeder
 import scala.io.Source
-import joos.syntax.scanner.{ScanningException, Scanner}
 
 object SyntaxCheck {
 
@@ -25,6 +24,7 @@ object SyntaxCheck {
     source.close()
     tokens
   }
+
   private def parse(tokens: Seq[TerminalToken]): ParseTree = {
     ParseTreeBuilder(actionTable).build(tokens)
   }
@@ -33,20 +33,11 @@ object SyntaxCheck {
     Weeder.weed(parseTree, metaData)
   }
 
-  def apply(path: String): Option[AbstractSyntaxTree] = {
-    try {
-      val metaData = ParseMetaData(path)
-      val tokens = tokenize(path)
-      val parseTree = parse(tokens)
-      weed(parseTree, metaData)
-      Some(AbstractSyntaxTree(parseTree))
-    } catch {
-      case e @ (_:ScanningException | _:WeederException | _:JoosParseException | _:AstConstructionException) => {
-        val errors = new StringWriter()
-        e.printStackTrace(new PrintWriter(errors))
-        Logger.logError(errors.toString)
-        return None
-      }
-    }
+  def apply(path: String): AbstractSyntaxTree = {
+    val metaData = ParseMetaData(path)
+    val tokens = tokenize(path)
+    val parseTree = parse(tokens)
+    weed(parseTree, metaData)
+    AbstractSyntaxTree(parseTree)
   }
 }

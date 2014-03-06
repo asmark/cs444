@@ -158,11 +158,6 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
       throw new OverrideReturnTypeException(method, inheritedMethod)
     }
 
-    if (!method.modifiers.contains(Modifier.Public)
-        && inheritedMethod.modifiers.contains(Modifier.Public)) {
-      throw new SemanticException(s"The declared method ${method.name} should have 'public' modifier")
-    }
-
     if (inheritedMethod.modifiers.contains(Modifier.Final)) {
       throw new OverrideFinalMethodException(method, inheritedMethod)
     }
