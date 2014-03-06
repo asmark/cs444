@@ -25,6 +25,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
   private def checkCyclicHierarchy(typeDeclaration: TypeDeclaration) {
 
     def withPackage(typeDeclaration: TypeDeclaration) = {
+      require(typeDeclaration.packageDeclaration != null)
       (typeDeclaration.packageDeclaration, typeDeclaration)
     }
 
