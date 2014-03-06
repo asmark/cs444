@@ -1,13 +1,17 @@
 package joos.ast.declarations
 
 import joos.ast.expressions.NameExpression
-import joos.language.ProductionRule
-import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
+import joos.ast.AstNode
+import joos.ast.compositions.LikeDeclaration
 
 /**
  * @param name fully qualified name of the package
  */
-case class PackageDeclaration(name: NameExpression) extends Declaration
+case class PackageDeclaration(name: NameExpression) extends AstNode with LikeDeclaration {
+  def declarationName = name
+}
 
 object PackageDeclaration {
   /**

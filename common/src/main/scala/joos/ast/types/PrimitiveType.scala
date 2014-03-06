@@ -1,9 +1,9 @@
-package joos.ast
+package joos.ast.types
 
-import joos.ast.exceptions.AstConstructionException
-import joos.language.ProductionRule
-import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.tokens.TerminalToken
+import joos.ast.AstConstructionException
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
+import joos.syntax.tokens.TerminalToken
 
 case class PrimitiveType(token: TerminalToken) extends Type
 
@@ -35,7 +35,7 @@ object PrimitiveType {
         PrimitiveType(extractNumericToken(children(0)))
       case TreeNode(ProductionRule("PrimitiveType", Seq("boolean")), _, children) =>
         children(0).token match {
-          case terminalToken: TerminalToken => return PrimitiveType(terminalToken)
+          case terminalToken: TerminalToken => PrimitiveType(terminalToken)
           case _ => throw new AstConstructionException(
             "Invalid tree node to create boolean"
           )

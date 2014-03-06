@@ -17,21 +17,21 @@ package object semanticspec {
   def MockQualifiedTypeName1 = QualifiedNameExpression(MockPackage1.name, MockSimpleTypeName1)
   def MockQualifiedTypeName2 = QualifiedNameExpression(MockPackage2.name, MockSimpleTypeName2)
 
-  def MockTypeDeclaration1 = TypeDeclaration(Seq(Modifier.Public), false, MockSimpleTypeName1, None, Seq.empty, Seq.empty, Seq.empty)
-  def MockTypeDeclaration2 = TypeDeclaration(Seq(Modifier.Public), false, MockSimpleTypeName2, None, Seq.empty, Seq.empty, Seq.empty)
+  def MockTypeDeclaration1 = TypeDeclaration(Seq(Modifier.Public), isInterface = false, MockSimpleTypeName1, None, Seq.empty, Seq.empty, Seq.empty)
+  def MockTypeDeclaration2 = TypeDeclaration(Seq(Modifier.Public), isInterface = false, MockSimpleTypeName2, None, Seq.empty, Seq.empty, Seq.empty)
   def MockDefaultDeclaration1 = TypeDeclaration(
-    Seq(Modifier.Public), false, MockSimpleDefaultTypeName1,
+    Seq(Modifier.Public), isInterface = false, MockSimpleDefaultTypeName1,
     None, Seq.empty, Seq.empty, Seq.empty)
   def MockDefaultDeclaration2 = TypeDeclaration(
-    Seq(Modifier.Public), false, MockSimpleDefaultTypeName2,
+    Seq(Modifier.Public), isInterface = false, MockSimpleDefaultTypeName2,
     None, Seq.empty, Seq.empty, Seq.empty)
 
   def mockImport(packageDeclaration: PackageDeclaration, name: Option[SimpleNameExpression]) = {
     if (name.isDefined) {
       val newName = NameExpression(packageDeclaration.name.standardName + "." + name.get.standardName)
-      ImportDeclaration(newName, false)
+      ImportDeclaration(newName, isOnDemand = false)
     } else {
-      ImportDeclaration(packageDeclaration.name, true)
+      ImportDeclaration(packageDeclaration.name, isOnDemand = true)
     }
   }
 

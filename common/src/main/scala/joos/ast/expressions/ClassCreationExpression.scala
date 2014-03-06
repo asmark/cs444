@@ -1,9 +1,9 @@
 package joos.ast.expressions
 
-import joos.ast.{SimpleType, Type}
-import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.language.ProductionRule
-import joos.ast.exceptions.AstConstructionException
+import joos.ast.AstConstructionException
+import joos.ast.types.{Type, SimpleType}
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
 case class ClassCreationExpression(classType: Type, arguments: Seq[Expression]) extends Expression
 

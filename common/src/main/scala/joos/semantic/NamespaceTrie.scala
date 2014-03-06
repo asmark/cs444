@@ -21,7 +21,7 @@ class NamespaceTrie {
           children.put(segment, newNode)
           newNode
         }
-        case Some(node@PackageNode(children)) => node
+        case Some(node@PackageNode(_)) => node
         case Some(TypeNode(typeDeclaration)) => throw new NamespaceCollisionException(typeDeclaration.name)
       }
     }
@@ -104,8 +104,8 @@ class NamespaceTrie {
     }
 
     node match {
-      case Some(TypeNode(typeDeclaration)) => return Some(typeDeclaration)
-      case _ => return None
+      case Some(TypeNode(typeDeclaration)) => Some(typeDeclaration)
+      case _ => None
     }
   }
 }

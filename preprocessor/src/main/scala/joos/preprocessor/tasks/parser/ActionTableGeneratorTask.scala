@@ -1,9 +1,9 @@
 package joos.preprocessor.tasks.parser
 
 import java.io.{FileOutputStream, FileInputStream}
-import joos.preprocessing.ActionTableGenerator
 import joos.preprocessor.tasks.PreProcessorTask
 import joos.resources
+import joos.preprocessor.ActionTableGenerator
 
 object ActionTableGeneratorTask extends PreProcessorTask {
   protected def dependsOn = List(CfgGeneratorTask)

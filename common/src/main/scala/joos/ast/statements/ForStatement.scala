@@ -1,9 +1,9 @@
-package joos.ast
+package joos.ast.statements
 
+import joos.ast.AstConstructionException
 import joos.ast.expressions.{VariableDeclarationExpression, Expression}
-import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.language.ProductionRule
-import joos.ast.exceptions.AstConstructionException
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
 case class ForStatement(
   initialization: Option[Expression],
@@ -26,7 +26,7 @@ object ForStatement {
         if (body < 0)
           body = derivation.indexOf("StatementNoShortIf")
 
-        return new ForStatement(
+        new ForStatement(
           if (init >= 0) Some(
             children(init) match {
               case TreeNode(ProductionRule("ForInit", Seq("StatementExpression")), _, children) =>

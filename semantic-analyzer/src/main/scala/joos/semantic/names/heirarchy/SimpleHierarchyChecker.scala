@@ -3,6 +3,10 @@ package joos.semantic.names.heirarchy
 import joos.ast._
 import joos.ast.declarations.{PackageDeclaration, TypeDeclaration, ModuleDeclaration}
 import joos.ast.expressions.NameExpression
+import joos.ast.visitor.AstVisitor
+import joos.core.Logger
+import joos.semantic._
+import scala.Some
 import scala.collection.mutable
 
 /**
@@ -28,6 +32,11 @@ class SimpleHierarchyChecker(implicit module: ModuleDeclaration, unit: Compilati
     }
 
     // Check methods and constructors
+    analyzeLocalMethods(typeDeclaration)
+  }
+
+
+  def analyzeLocalMethods(typeDeclaration: TypeDeclaration) {
     for (method <- typeDeclaration.methods) {
       if (method.isConstructor) {
         if (typeDeclaration.constructorMap.contains(method.typedSignature)) {

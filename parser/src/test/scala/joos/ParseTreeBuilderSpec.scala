@@ -1,10 +1,9 @@
 package joos
 
-import joos.parser.{ParseTreeBuilder, LrOneReader}
-import joos.tokens.{TerminalToken, Token}
-import joos.tokens.TokenKind.TokenKindValue
+import joos.syntax.parser.{JoosParseException, ParseTreeBuilder, LrOneReader}
+import joos.syntax.tokens.{TerminalToken, Token}
+import joos.syntax.tokens.TokenKind.TokenKindValue
 import org.scalatest.{Matchers, FlatSpec}
-import joos.parser.exceptions.JoosParseException
 
 class ParseTreeBuilderSpec extends FlatSpec with Matchers {
 

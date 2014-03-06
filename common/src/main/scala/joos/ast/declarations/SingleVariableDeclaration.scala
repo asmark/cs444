@@ -1,16 +1,17 @@
 package joos.ast.declarations
 
-import joos.ast.exceptions.AstConstructionException
+import joos.ast.compositions.LikeTypedDeclaration
 import joos.ast.expressions.{Expression, SimpleNameExpression}
-import joos.ast.{TypedDeclaration, Type, Modifier}
-import joos.language.ProductionRule
-import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.ast.types.Type
+import joos.ast.{AstConstructionException, Modifier}
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
 case class SingleVariableDeclaration(
     modifiers: Seq[Modifier],
     variableType: Type,
     identifier: SimpleNameExpression,
-    initializer: Option[Expression]) extends VariableDeclaration with TypedDeclaration {
+    initializer: Option[Expression]) extends VariableDeclaration with LikeTypedDeclaration {
 
   override def declarationName = identifier
 

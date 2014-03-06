@@ -2,7 +2,8 @@ package joos.ast
 
 import joos.ast.declarations._
 import joos.ast.expressions._
-import joos.core.Logger
+import joos.ast.statements._
+import joos.ast.visitor.AstVisitor
 
 trait AstNode {
   def accept(visitor: AstVisitor) {

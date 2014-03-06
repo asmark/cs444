@@ -1,8 +1,8 @@
 package joos.ast.expressions
 
-import joos.ast.exceptions.AstConstructionException
-import joos.parsetree.{LeafNode, ParseTreeNode}
-import joos.tokens.{TokenKind, TerminalToken}
+import joos.ast.AstConstructionException
+import joos.syntax.parsetree.{LeafNode, ParseTreeNode}
+import joos.syntax.tokens.{TokenKind, TerminalToken}
 
 case class StringLiteral(token: TerminalToken) extends LiteralExpression
 

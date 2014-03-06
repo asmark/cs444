@@ -1,6 +1,7 @@
 package joos.ast
 
-import joos.parsetree.ParseTree
+import joos.ast.visitor.AstVisitor
+import joos.syntax.parsetree.ParseTree
 
 class AbstractSyntaxTree(val root: CompilationUnit) {
   def dispatch(visitor: AstVisitor) = root accept visitor
@@ -8,6 +9,6 @@ class AbstractSyntaxTree(val root: CompilationUnit) {
 
 object AbstractSyntaxTree {
   def apply(parseTree: ParseTree): AbstractSyntaxTree = {
-    return new AbstractSyntaxTree(CompilationUnit(parseTree.root))
+    new AbstractSyntaxTree(CompilationUnit(parseTree.root))
   }
 }

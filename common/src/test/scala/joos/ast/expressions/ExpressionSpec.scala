@@ -1,10 +1,10 @@
 package joos.ast.expressions
 
-import joos.ast.AstSpecHelper._
-import joos.ast.exceptions.AstConstructionException
-import joos.parsetree.LeafNode
-import joos.tokens.{TerminalToken, TokenKind}
+import joos.astspec._
+import joos.syntax.parsetree.LeafNode
+import joos.syntax.tokens.{TerminalToken, TokenKind}
 import org.scalatest.{Matchers, FlatSpec}
+import joos.ast.AstConstructionException
 
 class ExpressionSpec extends FlatSpec with Matchers {
 
@@ -33,7 +33,7 @@ class ExpressionSpec extends FlatSpec with Matchers {
     astNode.name.identifier.lexeme shouldEqual "someId"
     astNode.qualifier match {
       case SimpleNameExpression(id) => id.lexeme shouldEqual "someId"
-      case _ => fail
+      case _ => fail()
     }
   }
 
@@ -48,7 +48,7 @@ class ExpressionSpec extends FlatSpec with Matchers {
     val astNode = NameExpression(nameToSimpleNameTree)
     astNode match {
       case SimpleNameExpression(id) => id.lexeme shouldEqual "someId"
-      case _ => fail
+      case _ => fail()
     }
   }
 
@@ -56,7 +56,7 @@ class ExpressionSpec extends FlatSpec with Matchers {
     val astNode = NameExpression(nameToQualifiedNameTree)
     astNode match {
       case QualifiedNameExpression(qualifier, name) => name.identifier.lexeme shouldEqual "someId"
-      case _ => fail
+      case _ => fail()
     }
   }
 

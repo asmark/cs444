@@ -3,7 +3,9 @@ package joos.semantic.names.link
 import joos.ast._
 import joos.ast.declarations._
 import joos.ast.expressions._
+import joos.ast.visitor.AstCompleteVisitor
 import joos.semantic.MissingTypeException
+import joos.ast.types.{SimpleType, Type, PrimitiveType, ArrayType}
 
 /**
  * TypeLinker is responsible for the following name resolution checks:
@@ -27,7 +29,6 @@ import joos.semantic.MissingTypeException
  */
 class TypeLinker(implicit module: ModuleDeclaration, unit: CompilationUnit) extends AstCompleteVisitor {
 
-  // TODO: Temporary until pkg object is set up
   def resolveType(typed: Type) {
     typed match {
       case PrimitiveType(x) =>
@@ -36,7 +37,6 @@ class TypeLinker(implicit module: ModuleDeclaration, unit: CompilationUnit) exte
     }
   }
 
-  // TODO: Temporary until pkg object is set up
   def resolveType(name: NameExpression) {
     val typeDeclaration = unit.getVisibleType(name)
     if (typeDeclaration.isEmpty) {
@@ -46,13 +46,12 @@ class TypeLinker(implicit module: ModuleDeclaration, unit: CompilationUnit) exte
 
   override def apply(unit: CompilationUnit) {
     unit.addSelfPackage()
-    unit.importDeclarations foreach (unit.add(_))
+//    unit.importDeclarations.foreach(unit.add)
 
     super.apply(unit)
   }
 
   override def apply(typed: TypeDeclaration) {
-    // TODO: Use exposed getSuperType method
     typed.superType foreach resolveType
     typed.superInterfaces foreach resolveType
 

@@ -1,13 +1,13 @@
 package joos.ast.declarations
 
 import joos.ast._
-import joos.ast.exceptions.AstConstructionException
 import joos.ast.expressions.SimpleNameExpression
-import joos.language.ProductionRule
-import joos.parsetree.ParseTreeNode
-import joos.parsetree.TreeNode
+import joos.ast.statements.Block
+import joos.ast.types.{PrimitiveType, SimpleType, Type, ArrayType}
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.ParseTreeNode
+import joos.syntax.parsetree.TreeNode
 import joos.semantic.BlockEnvironment
-import scala.Some
 
 case class MethodDeclaration(
     modifiers: Seq[Modifier],
@@ -21,6 +21,20 @@ case class MethodDeclaration(
   var typeDeclaration: TypeDeclaration = null
   var environment: BlockEnvironment = null
 
+
+  override def toString = {
+    val returnTypeString = returnType match {
+      case None => "void"
+      case Some(t) => t.standardName
+    }
+    val parametersString = parameters.foldLeft("") {
+      (result, parameter) =>
+        result + parameter.declarationType.standardName + ' ' + parameter.declarationName.standardName
+    }
+
+    List(modifiers.mkString(" "), returnTypeString, name.standardName, "(", parametersString, ")").mkString(" ")
+  }
+
   /**
    * Method signature with argument types added
    */
@@ -31,6 +45,15 @@ case class MethodDeclaration(
         case _: ArrayType => name + "[]"
         case _ => name
       }
+  }
+
+  lazy val returnTypeLocalSignature = {
+    var mods: String = null
+    this.modifiers.foreach(mod => mods += mod.modifier.lexeme + " ")
+    mods + (returnType match {
+      case Some(someType) => getTypeName(someType) + " " + localSignature
+      case None => "void " + localSignature
+    })
   }
 
   lazy val localSignature = {
@@ -50,7 +73,7 @@ case class MethodDeclaration(
     }
   }
 
-  lazy val isAbstractMethod = {
+  lazy val isAbstractMethod: Boolean = {
     (modifiers contains Modifier.Abstract) || typeDeclaration.isInterface
   }
 
@@ -101,7 +124,7 @@ object MethodDeclaration {
               ) => {
                 val name = SimpleNameExpression(children(0))
                 val params = SingleVariableDeclaration.createFormalParameterNodes(children(2))
-                return new MethodDeclaration(modifiers, returnType, name, params, body, false)
+                new MethodDeclaration(modifiers, returnType, name, params, body, false)
               }
 
               case TreeNode(
@@ -110,7 +133,7 @@ object MethodDeclaration {
               children
               ) => {
                 val name = SimpleNameExpression(children(0))
-                return new MethodDeclaration(modifiers, returnType, name, IndexedSeq(), body, false)
+                new MethodDeclaration(modifiers, returnType, name, IndexedSeq(), body, false)
               }
 
               case _ => throw new AstConstructionException("No valid production rule to create MethodHeader")
@@ -137,7 +160,7 @@ object MethodDeclaration {
           ) => {
             val name = SimpleNameExpression(children(0).children(0))
             val params = SingleVariableDeclaration.createFormalParameterNodes(children(2))
-            return new MethodDeclaration(modifiers, None, name, params, body, true)
+            new MethodDeclaration(modifiers, None, name, params, body, true)
           }
 
           case TreeNode(
@@ -146,7 +169,7 @@ object MethodDeclaration {
           children
           ) => {
             val name = SimpleNameExpression(children(0).children(0))
-            return new MethodDeclaration(modifiers, None, name, IndexedSeq(), body, true)
+            new MethodDeclaration(modifiers, None, name, IndexedSeq(), body, true)
           }
 
           case _ => throw new AstConstructionException("No valid production rule to create ConstructorDeclarator")
@@ -180,7 +203,7 @@ object MethodDeclaration {
               ) => {
                 val name = SimpleNameExpression(children(0))
                 val params = SingleVariableDeclaration.createFormalParameterNodes(children(2))
-                return new MethodDeclaration(modifiers, returnType, name, params, body, false)
+                new MethodDeclaration(modifiers, returnType, name, params, body, false)
               }
 
               case TreeNode(
@@ -189,7 +212,7 @@ object MethodDeclaration {
               children
               ) => {
                 val name = SimpleNameExpression(children(0))
-                return new MethodDeclaration(modifiers, returnType, name, IndexedSeq(), body, false)
+                new MethodDeclaration(modifiers, returnType, name, IndexedSeq(), body, false)
               }
 
               case _ => throw new AstConstructionException("No valid production rule to create MethodHeader")

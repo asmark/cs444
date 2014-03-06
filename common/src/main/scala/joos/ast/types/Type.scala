@@ -1,11 +1,18 @@
-package joos.ast
+package joos.ast.types
 
-import joos.ast.exceptions.AstConstructionException
-import joos.language.ProductionRule
-import joos.parsetree.{TreeNode, ParseTreeNode}
-import joos.ast.expressions.NameExpression
+import joos.ast.{AstConstructionException, AstNode}
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
-trait Type extends AstNode
+trait Type extends AstNode {
+  def standardName: String = {
+    this match {
+      case SimpleType(name) => name.standardName
+      case PrimitiveType(token) => token.lexeme
+      case ArrayType(baseType, dimension) => baseType.standardName + (0 until dimension).map(_ => "[]").mkString
+    }
+  }
+}
 
 object Type {
   def handleReferenceType(referenceType: ParseTreeNode): Type = {

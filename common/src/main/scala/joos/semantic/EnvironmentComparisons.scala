@@ -1,9 +1,7 @@
 package joos.semantic
 
-import joos.ast.declarations.{PackageDeclaration, TypeDeclaration}
+import joos.ast.declarations.TypeDeclaration
 import joos.core.Logger
-import scala.collection.mutable
-import joos.ast.{SimpleType, CompilationUnit, Type, Modifier}
 
 object EnvironmentComparisons {
 

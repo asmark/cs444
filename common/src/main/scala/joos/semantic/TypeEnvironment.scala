@@ -9,8 +9,6 @@ trait TypeEnvironment extends Environment {
   val constructorMap = mutable.HashMap.empty[String, MethodDeclaration]
   val methodMap = mutable.HashMap.empty[String, MethodDeclaration]
   val fieldMap = mutable.HashMap.empty[SimpleNameExpression, FieldDeclaration]
-  private var inheritedMethodMap = mutable.HashMap.empty[String, Seq[MethodDeclaration]]
-  private var inheritedFieldMap = mutable.HashMap.empty[String, Seq[FieldDeclaration]]
 
   /**
    * Adds the specified {{method}} to the type environment
@@ -54,66 +52,47 @@ trait TypeEnvironment extends Environment {
     var ret = true
     this.supers.foreach(
       superType => {
-        val superTypeContained = superType.containedMethodMap.values.toSeq.flatten.toArray
+        val superTypeContained = superType.containedMethodSet.toArray
         superTypeContained.foreach(
           contained =>
-            if ((contained.localSignature equals method.localSignature) && !contained.isAbstractMethod &&
+            if ((contained.returnTypeLocalSignature equals method.returnTypeLocalSignature) && !contained.isAbstractMethod &&
                 areEqual(contained.returnType, method.returnType))
               ret = false
         )
       }
     )
-    return ret
-  }
-
-  lazy val containedMethodMap: mutable.HashMap[String, Seq[MethodDeclaration]] = {
-    var ret = mutable.HashMap.empty[String, Seq[MethodDeclaration]]
-    getSuperType(this) match {
-      case Some(superType) => {
-        inheritedMethodMap ++= superType.inheritedMethodMap
-      }
-      case None => {}
-    }
-
-    this.superInterfaces.foreach(
-      superInterface => {
-        val interface = getTypeDeclaration(superInterface)
-        inheritedMethodMap ++= interface.inheritedMethodMap
-      }
-    )
-
-    ret ++= inheritedMethodMap
-    ret += {fullName(this) -> methodMap.values.toSeq}
     ret
   }
 
-  lazy val inheritMethods: mutable.HashMap[String, Seq[MethodDeclaration]] = {
-    var ret = mutable.HashMap.empty[String, Seq[MethodDeclaration]]
+  lazy val containedMethodSet: mutable.HashSet[MethodDeclaration] = {
+    var ret = mutable.HashSet.empty[MethodDeclaration]
+
+    methodMap.values.foreach(local => ret += local)
+    this.inheritMethods.foreach(inherited => ret += inherited)
+
+    ret
+  }
+
+  lazy val inheritMethods: mutable.HashSet[MethodDeclaration] = {
+    var ret = mutable.HashSet.empty[MethodDeclaration]
 
     this.supers.foreach(
       superType => {
-        val superTypeContained = superType.containedMethodMap.values.toSeq.flatten.toArray
-        val localSigatures = this.methods.map(method => method.localSignature)
-        superTypeContained.foreach(
+        val localSignatures = this.methods.map(method => method.returnTypeLocalSignature)
+        val array = superType.containedMethodSet.toArray
+        array foreach {
           contained =>
-            if (!localSigatures.contains(contained)) {
+            if (!localSignatures.contains(contained.returnTypeLocalSignature)) {
               if (!contained.isAbstractMethod) {
-                // TODO: Inefficient
-                if (!ret.contains(fullName(contained.typeDeclaration)))
-                  ret += {fullName(contained.typeDeclaration) -> Seq(contained)}
-                else
-                  ret(fullName(contained.typeDeclaration)) = ret(fullName(contained.typeDeclaration)) :+ contained
+                ret += contained
               } else {
                 // All abs
                 if (isAllAbstract(contained)) {
-                  if (!ret.contains(fullName(contained.typeDeclaration)))
-                    ret += {fullName(contained.typeDeclaration) -> Seq(contained)}
-                  else
-                    ret(fullName(contained.typeDeclaration)) = ret(fullName(contained.typeDeclaration)) :+ contained
+                  ret += contained
                 }
               }
             }
-        )
+        }
       }
     )
 

@@ -1,8 +1,8 @@
 package joos.ast.expressions
 
-import joos.tokens.{TokenKind, TerminalToken}
-import joos.parsetree.{LeafNode, ParseTreeNode}
-import joos.ast.exceptions.AstConstructionException
+import joos.ast.AstConstructionException
+import joos.syntax.parsetree.{LeafNode, ParseTreeNode}
+import joos.syntax.tokens.{TokenKind, TerminalToken}
 
 case class ThisExpression(token: TerminalToken) extends Expression
 

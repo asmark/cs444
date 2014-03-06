@@ -1,8 +1,7 @@
 package joos
 
-import joos.parser.LrOneReader
+import joos.syntax.parser.{ShiftException, ReduceException, LrOneReader}
 import org.scalatest.{Matchers, FlatSpec}
-import joos.parser.exceptions.{ShiftException, ReduceException}
 
 class LrOneActionTableSpec extends FlatSpec with Matchers {
 
@@ -35,7 +34,7 @@ class LrOneActionTableSpec extends FlatSpec with Matchers {
   behavior of "reduce"
   it should "determine the correct production rule on a valid reduce" in {
     val productionRule = actionTable.reduce(8, "eof")
-    productionRule.base shouldEqual ("expr")
+    productionRule.base shouldEqual "expr"
     productionRule.derivation shouldEqual Seq("expr", "-", "term")
   }
 

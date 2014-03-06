@@ -1,11 +1,9 @@
 package joos.ast
 
 import joos.ast.declarations.{ModuleDeclaration, TypeDeclaration, PackageDeclaration, ImportDeclaration}
-import joos.ast.exceptions.AstConstructionException
-import joos.language.ProductionRule
-import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 import joos.semantic.CompilationUnitEnvironment
-import joos.ast.expressions.NameExpression
 
 case class CompilationUnit(
     packageDeclaration: PackageDeclaration,

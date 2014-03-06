@@ -1,8 +1,8 @@
-package joos.ast
+package joos.ast.types
 
-import joos.ast.exceptions.AstConstructionException
-import joos.language.ProductionRule
-import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.ast.AstConstructionException
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
 case class ArrayType(elementType: Type, dimensions: Int = 1) extends Type
 

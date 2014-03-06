@@ -1,8 +1,8 @@
-package joos.ast
+package joos.ast.statements
 
-import joos.ast.exceptions.AstConstructionException
-import joos.language.ProductionRule
-import joos.parsetree.{TreeNode, ParseTreeNode}
+import joos.ast.{AstConstructionException, AstNode}
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
 trait Statement extends AstNode
 
