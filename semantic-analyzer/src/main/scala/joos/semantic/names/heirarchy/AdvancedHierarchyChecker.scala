@@ -1,9 +1,8 @@
 package joos.semantic.names.heirarchy
 
-import joos.ast.declarations.{MethodDeclaration, TypeDeclaration, ModuleDeclaration}
+import joos.ast.declarations.{PackageDeclaration, MethodDeclaration, TypeDeclaration, ModuleDeclaration}
 import joos.ast.visitor.AstVisitor
 import joos.ast.{Modifier, CompilationUnit}
-import joos.core.Logger
 import joos.semantic._
 import scala.collection.mutable
 
@@ -22,45 +21,31 @@ import scala.collection.mutable
  */
 class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: CompilationUnit) extends AstVisitor with TypeHierarchyChecker {
 
-  private def checkCyclic(typeDeclaration: TypeDeclaration) = {
-    val curTypeDeclaration = typeDeclaration
 
-    var visited: Set[TypeDeclaration] = Set()
+  private def checkCyclicHierarchy(typeDeclaration: TypeDeclaration) {
 
-    val ancestors = mutable.Queue[TypeDeclaration](curTypeDeclaration)
+    def withPackage(typeDeclaration: TypeDeclaration) = {
+      (typeDeclaration.packageDeclaration, typeDeclaration)
+    }
 
-    while (!ancestors.isEmpty) {
-      val front = ancestors.dequeue()
+    val children = mutable.LinkedHashSet.empty[(PackageDeclaration, TypeDeclaration)]
 
-      visited += front
-
-      getSuperType(front) match {
-        case Some(ancestor) => {
-          // Check
-          if (ancestor.equals(curTypeDeclaration))
-            throw new CyclicHierarchyException(ancestor.name)
-          if (!visited.contains(ancestor)) {
-            ancestors enqueue ancestor
-          }
-        }
-        case None =>
-      }
-
-      front.superInterfaces.foreach {
-        implemented =>
-          front.compilationUnit.getVisibleType(implemented) match {
-            case Some(ancestor) => {
-              // Check
-              if (ancestor.equals(curTypeDeclaration))
-                throw new CyclicHierarchyException(ancestor.name)
-              if (!visited.contains(ancestor)) {
-                ancestors enqueue ancestor
-              }
-            }
-            case _ => Logger.logError(s"Interface ${implemented.standardName} not visible to implementer ${front.name.standardName}")
-          }
+    def visit(typeDeclaration: TypeDeclaration) = {
+      if (!(children add withPackage(typeDeclaration))) {
+        throw new CyclicHierarchyException(typeDeclaration.name)
       }
     }
+
+    def leave(typeDeclaration: TypeDeclaration) = assert(children remove withPackage(typeDeclaration))
+
+    // Topological sort of dependency graph
+    def findCycle(currentType: TypeDeclaration) {
+      visit(currentType)
+      getSuperType(currentType) ++ getSuperInterfaces(currentType) foreach findCycle
+      leave(currentType)
+    }
+
+    findCycle(typeDeclaration)
   }
 
   private def checkReturnType(typeDeclaration: TypeDeclaration) {
@@ -85,7 +70,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
 
   override def apply(typeDeclaration: TypeDeclaration) = {
     // 1. The hierarchy must be acyclic.
-    checkCyclic(typeDeclaration)
+    checkCyclicHierarchy(typeDeclaration)
 
     val inheritMethods = typeDeclaration.inheritMethods
     val localMethods = typeDeclaration.methods

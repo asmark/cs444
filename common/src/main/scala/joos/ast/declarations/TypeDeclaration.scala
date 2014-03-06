@@ -21,6 +21,8 @@ case class TypeDeclaration(
 
   lazy val isConcreteClass = !isInterface && !(modifiers contains Modifier.Abstract)
   def toInterface: TypeDeclaration = {
+    require(compilationUnit != null)
+    require(packageDeclaration != null)
     val methods = this.methods.map {
       method =>
         new MethodDeclaration(
@@ -33,7 +35,7 @@ case class TypeDeclaration(
         )
     }
 
-    new TypeDeclaration(
+    val objectInterface = new TypeDeclaration(
       Seq(Modifier.Public, Modifier.Abstract),
       isInterface = true,
       name,
@@ -42,6 +44,9 @@ case class TypeDeclaration(
       Seq(),
       methods
     )
+    objectInterface.compilationUnit = compilationUnit
+    objectInterface.packageDeclaration = packageDeclaration
+    objectInterface
   }
 }
 

@@ -18,7 +18,7 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
   }
 
   def getTestCases(dir: String) = {
-    new File(getClass.getResource(dir).getPath).listFiles()
+    (new File(getClass.getResource(dir).getPath)).listFiles()
   }
 
   behavior of "Name resolution of valid joos"
