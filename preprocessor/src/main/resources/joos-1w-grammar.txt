@@ -114,8 +114,6 @@ TypeDeclaration:
 
   InterfaceDeclaration
 
-  ;
-
 Modifiers:
 
   Modifier

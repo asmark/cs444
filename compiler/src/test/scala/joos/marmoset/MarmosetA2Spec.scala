@@ -1,10 +1,12 @@
 package joos.marmoset
 
 import java.io.File
-import joos.semantic.{NameResolution, SemanticException}
+import joos.semantic.{NameResolution}
 import joos.syntax.SyntaxCheck
 import joos.test.tags.IntegrationTest
 import org.scalatest.{Matchers, FlatSpec}
+import joos.compiler.CompilationException
+import joos.core.Logger
 
 class MarmosetA2Spec extends FlatSpec with Matchers {
 
@@ -17,18 +19,13 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
     these.filterNot(_.isDirectory) ++ these.filter(_.isDirectory).flatMap(getJavaFiles)
   }
 
-  def getTestCases(dir: String) = {
-    new File(getClass.getResource(dir).getPath).listFiles()
-  }
+  def getTestCases(dir: String) = (new File(getClass.getResource(dir).getPath)).listFiles()
 
   behavior of "Name resolution of valid joos"
   getTestCases(validJoos).foreach {
     testCase => it should s"accept ${testCase.getName}" taggedAs IntegrationTest in {
       val files = getJavaFiles(testCase) ++ standardLibrary map (_.getAbsolutePath)
-      val asts = files map SyntaxCheck.apply collect {
-        case None => fail(s"Was not able to SyntaxCheck ${testCase.getName}")
-        case Some(ast) => ast
-      }
+      val asts = files map SyntaxCheck.apply
       NameResolution(asts)
     }
   }
@@ -38,13 +35,10 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
     testCase => it should s"reject ${testCase.getName}" taggedAs IntegrationTest in {
       val files = getJavaFiles(testCase) ++ standardLibrary map (_.getAbsolutePath)
 
-      intercept[SemanticException] {
-        val asts = files map SyntaxCheck.apply collect {
-          case None => throw new SemanticException(s"Was not able to SyntaxCheck ${testCase.getName}")
-          case Some(ast) => ast
-        }
+      Logger.logInformation(intercept[CompilationException] {
+        val asts = files map SyntaxCheck.apply
         NameResolution(asts)
-      }
+      }.getMessage)
     }
   }
 }

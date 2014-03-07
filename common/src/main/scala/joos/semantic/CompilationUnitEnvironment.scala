@@ -1,9 +1,9 @@
 package joos.semantic
 
-import joos.ast._
 import joos.ast.declarations.{ImportDeclaration, TypeDeclaration}
 import joos.ast.expressions.{QualifiedNameExpression, SimpleNameExpression, NameExpression}
 import joos.core.Logger
+import joos.ast.CompilationUnit
 
 trait CompilationUnitEnvironment extends Environment {
   self: CompilationUnit =>

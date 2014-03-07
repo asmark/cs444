@@ -317,8 +317,6 @@ object TypeDeclaration {
         handleClassDeclaration(children(0))
       case TreeNode(ProductionRule("TypeDeclaration", Seq("InterfaceDeclaration")), _, children) =>
         handleInterfaceDeclaration(children(0))
-      case TreeNode(ProductionRule("TypeDeclaration", Seq(";")), _, children) =>
-        null
       case _ => throw new AstConstructionException("No valid production rule to create TypeDeclaration")
     }
   }

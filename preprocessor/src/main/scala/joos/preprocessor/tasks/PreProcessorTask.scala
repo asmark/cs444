@@ -11,7 +11,7 @@ trait PreProcessorTask {
 
   def runTask() {
     dependsOn.foreach(_.runTask())
-    if (!isTaskCached()) {
+    if (!isTaskCached) {
       Logger.logInformation(s"Running ${this.getClass.getName}")
       executeTask()
     } else {
@@ -21,7 +21,7 @@ trait PreProcessorTask {
 
   protected def dependsOn: List[PreProcessorTask]
 
-  protected def isTaskCached(): Boolean
+  protected def isTaskCached: Boolean
 
   protected def executeTask()
 

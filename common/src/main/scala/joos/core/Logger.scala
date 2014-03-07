@@ -7,25 +7,30 @@ object Logger {
   private[this] val LogInformation = 1
   private[this] val LogLevel = LogInformation
 
-  // TODO: Append ERROR: to each line if ${text} spans multiple lines
+  private def prefixWith(prefix: String, original: String) = {
+    original.split("[\\r\\n]").foldLeft(Seq.empty[String]) {
+      (lines : Seq[String], line: String) =>
+          lines :+ s"${prefix} ${line}"
+    }.mkString("\r\n")
+  }
 
   def logError(text: String): this.type = {
     if (LogLevel <= LogError) {
-      Console.err.println(s"${Console.RED} ERROR: ${text} ${Console.RESET}")
+      Console.err.println(s"${Console.RED} ${prefixWith("[ERROR]", text)} ${Console.RESET}")
     }
     this
   }
 
   def logWarning(text: String): this.type = {
     if (LogLevel <= LogWarning) {
-      Console.err.println(s"${Console.YELLOW} WARN: ${text} ${Console.RESET}")
+      Console.err.println(s"${Console.YELLOW} ${prefixWith("[WARN]", text)} ${Console.RESET}")
     }
     this
   }
 
   def logInformation(text: String): this.type = {
     if (LogLevel <= LogInformation) {
-      Console.err.println(s"${Console.BLUE} INFO: ${text} ${Console.RESET}")
+      Console.err.println(s"${Console.BLUE} ${prefixWith("[INFO]", text)} ${Console.RESET}")
     }
     this
   }
