@@ -13,6 +13,7 @@ package object semantic {
    * You can only call this after the environment is built
    */
   def getTypeDeclaration(name: NameExpression)(implicit unit: CompilationUnit): TypeDeclaration = {
+    require(unit != null)
     unit.getVisibleType(name) match {
       case None => {
         val error = s"Cannot resolve ${name} to a type"
@@ -27,9 +28,9 @@ package object semantic {
   val javaLangObject = NameExpression("java.lang.Object")
 
   def getSuperType(typeDeclaration: TypeDeclaration): Option[TypeDeclaration] = {
+    require(typeDeclaration.compilationUnit != null)
     val compilationUnit = typeDeclaration.compilationUnit
-    val theFullName = fullName(typeDeclaration)
-    theFullName equals javaLangObject.standardName match {
+    fullName(typeDeclaration) equals javaLangObject.standardName match {
       case true => None
       case false => {
         Some(
@@ -41,11 +42,15 @@ package object semantic {
     }
   }
 
-  def getSuperInterfaces(typeDeclaration: TypeDeclaration)(implicit unit: CompilationUnit): Seq[TypeDeclaration] = {
-    if (typeDeclaration.isInterface && typeDeclaration.superInterfaces.isEmpty) {
-      Seq(unit.javaLangObjectInterface)
+  def getSuperInterfaces(typeDeclaration: TypeDeclaration): Seq[TypeDeclaration] = {
+    val compilationUnit = typeDeclaration.compilationUnit
+    // TODO: This equals method may not work. We might have to do a fullName comparison.
+    if (typeDeclaration equals compilationUnit.javaLangObjectInterface) {
+      Seq.empty
+    } else if (typeDeclaration.isInterface && typeDeclaration.superInterfaces.isEmpty) {
+      Seq(compilationUnit.javaLangObjectInterface)
     } else {
-      typeDeclaration.superInterfaces.map(getTypeDeclaration)
+      typeDeclaration.superInterfaces.map(superInterface => getTypeDeclaration(superInterface)(compilationUnit))
     }
   }
 
@@ -59,9 +64,8 @@ package object semantic {
   }
 
   def areEqual(type1: TypeDeclaration, type2: TypeDeclaration): Boolean = {
-    if (type1.packageDeclaration == null || type2.packageDeclaration == null) {
-      Logger.logError(s"${type1.name} or ${type2.name} had null package declarations")
-    }
+    require(type1.packageDeclaration != null)
+    require(type2.packageDeclaration != null)
 
     fullName(type1) equals fullName(type2)
   }

@@ -4,9 +4,7 @@ import joos.ast._
 import joos.ast.declarations.{PackageDeclaration, TypeDeclaration, ModuleDeclaration}
 import joos.ast.expressions.NameExpression
 import joos.ast.visitor.AstVisitor
-import joos.core.Logger
 import joos.semantic._
-import scala.Some
 import scala.collection.mutable
 
 /**
@@ -18,6 +16,7 @@ import scala.collection.mutable
  * A class must not extend a final class.
  * An interface must not extend a class.
  * A class must not declare two constructors with the same parameter types
+ * A class/interface must not extend itself
  */
 class SimpleHierarchyChecker(implicit module: ModuleDeclaration, unit: CompilationUnit) extends AstVisitor with TypeHierarchyChecker {
 
@@ -66,18 +65,22 @@ class SimpleHierarchyChecker(implicit module: ModuleDeclaration, unit: Compilati
           throw new InvalidImplementedTypeException(interface)
         } else if (!interfaceSet.add(interface.packageDeclaration, interface)) {
           throw new DuplicateImplementedInterfaceException(interface)
+        } else if (areEqual(interface, typeDeclaration)) {
+          throw new CyclicHierarchyException(interface.name)
         }
     }
   }
 
   // TODO: If None, it should extend java.lang.Object?
   private def analyzeExtendedClass(superTypeName: Option[NameExpression])(implicit typeDeclaration: TypeDeclaration) {
-    superTypeName map {
+    superTypeName foreach {
       superType =>
         if (superType.isInterface) {
           throw new InvalidExtendedTypeException(superType)
         } else if (superType.modifiers contains Modifier.Final) {
           throw new InvalidExtendedClassException(superType)
+        } else if (areEqual(superType, typeDeclaration)) {
+          throw new CyclicHierarchyException(typeDeclaration.name)
         }
     }
   }
