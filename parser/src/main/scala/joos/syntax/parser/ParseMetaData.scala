@@ -8,13 +8,13 @@ class ParseMetaData(val fileName: String)
 
 object ParseMetaData {
 
-  final lazy val javaFilePattern = Pattern.compile("([A-Za-z][0-9a-zA-Z$_]*).java")
+  final lazy val javaFilePattern = Pattern.compile("([A-Za-z][0-9a-zA-Z\\$_]*).(java|java.test)$")
 
   def apply(filePath: String) = {
     val fileNameWithExt = new File(filePath).getName
     val fileMatcher = javaFilePattern.matcher(fileNameWithExt)
     if (!fileMatcher.find()) {
-      throw new WeederException("File name must end in .java")
+      throw new WeederException(s"File name (${fileNameWithExt}) must end in .java")
     }
     new ParseMetaData(fileMatcher.group(1))
   }

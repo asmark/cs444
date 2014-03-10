@@ -10,30 +10,22 @@ import joos.core.Logger
 
 class MarmosetA2Spec extends FlatSpec with Matchers {
 
-  final val validJoos = "/a2/marmoset/valid"
-  final val invalidJoos = "/a2/marmoset/invalid"
-  final val standardLibrary = getJavaFiles(new File(this.getClass.getResource("/a2/marmoset/stdlib").getPath))
-
-  def getJavaFiles(dir: File): Array[File] = {
-    val these = dir.listFiles()
-    these.filterNot(_.isDirectory) ++ these.filter(_.isDirectory).flatMap(getJavaFiles)
-  }
-
-  def getTestCases(dir: String) = (new File(getClass.getResource(dir).getPath)).listFiles()
+  val assignmentNumber = 2
+  val standardLibrary = getStandardLibrary(assignmentNumber).flatMap(getJavaFiles)
 
   behavior of "Name resolution of valid joos"
-  getTestCases(validJoos).foreach {
+  getValidTestCases(assignmentNumber).foreach {
     testCase => it should s"accept ${testCase.getName}" taggedAs IntegrationTest in {
-      val files = getJavaFiles(testCase) ++ standardLibrary map (_.getAbsolutePath)
+      val files = getJavaFiles(testCase) ++ standardLibrary
       val asts = files map SyntaxCheck.apply
       NameResolution(asts)
     }
   }
 
   behavior of "Name resolution of invalid joos"
-  getTestCases(invalidJoos).foreach {
+  getInvalidTestCases(assignmentNumber).foreach {
     testCase => it should s"reject ${testCase.getName}" taggedAs IntegrationTest in {
-      val files = getJavaFiles(testCase) ++ standardLibrary map (_.getAbsolutePath)
+      val files = getJavaFiles(testCase) ++ standardLibrary
 
       Logger.logInformation(intercept[CompilationException] {
         val asts = files map SyntaxCheck.apply

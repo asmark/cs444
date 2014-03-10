@@ -1,6 +1,6 @@
 package joos.syntax
 
-import java.io.FileInputStream
+import java.io.{File, FileInputStream}
 import joos.ast.AbstractSyntaxTree
 import joos.resources
 import joos.syntax.automata.Dfa
@@ -39,5 +39,9 @@ object SyntaxCheck {
     val parseTree = parse(tokens)
     weed(parseTree, metaData)
     AbstractSyntaxTree(parseTree)
+  }
+
+  def apply(file: File): AbstractSyntaxTree = {
+    apply(file.getAbsolutePath)
   }
 }
