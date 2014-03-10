@@ -52,7 +52,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
   private def checkReturnType(typeDeclaration: TypeDeclaration) {
     var set: mutable.HashMap[String, MethodDeclaration] = mutable.HashMap()
 
-    val methods = typeDeclaration.inheritMethods ++ typeDeclaration.methods
+    val methods = typeDeclaration.inheritedMethods.values.flatten ++ typeDeclaration.methods
 
     methods.foreach(
       method => {
@@ -73,7 +73,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
     // 1. The hierarchy must be acyclic.
     checkCyclicHierarchy(typeDeclaration)
 
-    val inheritMethods = typeDeclaration.inheritMethods
+    val inheritMethods = typeDeclaration.inheritedMethods
     val localMethods = typeDeclaration.methods
 
     checkReturnType(typeDeclaration)
@@ -85,7 +85,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
       }
     )
     val localSignatures = localMethods.map(method => method.localSignature)
-    for (method <- inheritMethods) {
+    for (method <- inheritMethods.values.flatten) {
       if (typeDeclaration.isConcreteClass &&
           method.isAbstractMethod &&
           !localSignatures.contains(method.localSignature))
@@ -103,7 +103,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
   private[this] def ensureValidReplaces(typeDeclaration: TypeDeclaration)(implicit unit: CompilationUnit) {
 
     for (method <- typeDeclaration.methodMap.values) {
-      for (inheritedMethod <- typeDeclaration.containedMethodSet) {
+      for (inheritedMethod <- typeDeclaration.containedMethods.values.flatten) {
         if (method.typedSignature == inheritedMethod.typedSignature &&
             !areEqual(method.typeDeclaration, inheritedMethod.typeDeclaration)) {
           ensureValidReplaces(method, inheritedMethod)
@@ -111,8 +111,8 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
       }
     }
 
-    for (inheritedMethodA <- typeDeclaration.containedMethodSet) {
-      for (inheritedMethodB <- typeDeclaration.containedMethodSet) {
+    for (inheritedMethodA <- typeDeclaration.containedMethods.values.flatten) {
+      for (inheritedMethodB <- typeDeclaration.containedMethods.values.flatten) {
         if (!inheritedMethodA.isAbstractMethod && inheritedMethodB.isAbstractMethod) {
           if (inheritedMethodA.typedSignature == inheritedMethodB.typedSignature
               && !typeDeclaration.methodMap.contains(inheritedMethodA.typedSignature)) {

@@ -7,10 +7,10 @@ import joos.ast.statements._
 
 trait AstVisitor {
   def apply(field: FieldDeclaration) {}
-//  def apply(importd: ImportDeclaration) {}
+  def apply(importd: ImportDeclaration) {}
   def apply(method: MethodDeclaration) {}
 //  def apply(module: ModuleDeclaration) {}
-//  def apply(packaged: PackageDeclaration) {}
+  def apply(packaged: PackageDeclaration) {}
   def apply(variable: SingleVariableDeclaration) {}
   def apply(typed: TypeDeclaration) {}
   def apply(expression: ArrayAccessExpression) {}
@@ -28,6 +28,8 @@ trait AstVisitor {
 //  def apply(expression: NullLiteral) {}
   def apply(expression: ParenthesizedExpression) {}
   def apply(expression: PrefixExpression) {}
+  def apply(expression: QualifiedNameExpression) {}
+  def apply(expression: SimpleNameExpression) {}
 //  def apply(expression: StringLiteral) {}
 //  def apply(expression: ThisExpression) {}
   def apply(expression: VariableDeclarationExpression) {}

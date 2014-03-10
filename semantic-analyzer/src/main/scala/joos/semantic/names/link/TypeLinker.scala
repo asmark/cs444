@@ -46,7 +46,6 @@ class TypeLinker(implicit module: ModuleDeclaration, unit: CompilationUnit) exte
 
   override def apply(unit: CompilationUnit) {
     unit.addSelfPackage()
-//    unit.importDeclarations.foreach(unit.add)
 
     super.apply(unit)
   }
