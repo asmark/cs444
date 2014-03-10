@@ -74,6 +74,7 @@ case class MethodDeclaration(
   }
 
   lazy val isAbstractMethod: Boolean = {
+    require(typeDeclaration != null)
     (modifiers contains Modifier.Abstract) || typeDeclaration.isInterface
   }
 
