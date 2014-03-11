@@ -52,7 +52,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
   private def checkReturnType(typeDeclaration: TypeDeclaration) {
     var set: mutable.HashMap[String, MethodDeclaration] = mutable.HashMap()
 
-    val methods = typeDeclaration.inheritMethods ++ typeDeclaration.methods
+    val methods = typeDeclaration.inheritedMethods ++ typeDeclaration.methods
 
     methods.foreach(
       method => {
@@ -73,7 +73,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
     // 1. The hierarchy must be acyclic.
     checkCyclicHierarchy(typeDeclaration)
 
-    val inheritMethods = typeDeclaration.inheritMethods
+    val inheritMethods = typeDeclaration.inheritedMethods
     val localMethods = typeDeclaration.methods
 
     checkReturnType(typeDeclaration)
@@ -94,7 +94,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
     ensureValidReplaces(typeDeclaration)
     typeDeclaration.methods.foreach(_.accept(this))
     // A class or interface must not contain (declare or inherit) two methods with the same signature but different return types
-    val dupe = findDuplicate(typeDeclaration.constructorMap.values.toSeq.map(_.typedSignature))
+    val dupe = findDuplicate(typeDeclaration.constructorMap.values.map(_.typedSignature))
     if (dupe.isDefined) {
       throw new SameMethodSignatureException(dupe.get, typeDeclaration)
     }
@@ -103,7 +103,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
   private[this] def ensureValidReplaces(typeDeclaration: TypeDeclaration)(implicit unit: CompilationUnit) {
 
     for (method <- typeDeclaration.methodMap.values) {
-      for (inheritedMethod <- typeDeclaration.containedMethodSet) {
+      for (inheritedMethod <- typeDeclaration.containedMethods) {
         if (method.typedSignature == inheritedMethod.typedSignature &&
             !areEqual(method.typeDeclaration, inheritedMethod.typeDeclaration)) {
           ensureValidReplaces(method, inheritedMethod)
@@ -111,8 +111,8 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
       }
     }
 
-    for (inheritedMethodA <- typeDeclaration.containedMethodSet) {
-      for (inheritedMethodB <- typeDeclaration.containedMethodSet) {
+    for (inheritedMethodA <- typeDeclaration.containedMethods) {
+      for (inheritedMethodB <- typeDeclaration.containedMethods) {
         if (!inheritedMethodA.isAbstractMethod && inheritedMethodB.isAbstractMethod) {
           if (inheritedMethodA.typedSignature == inheritedMethodB.typedSignature
               && !typeDeclaration.methodMap.contains(inheritedMethodA.typedSignature)) {
