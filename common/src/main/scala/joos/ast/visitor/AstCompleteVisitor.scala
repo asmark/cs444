@@ -28,7 +28,7 @@ abstract class AstCompleteVisitor extends AstVisitor {
 
   override def apply(expression: ArrayAccessExpression) {
     expression.reference.accept(this)
-    expression.reference.accept(this)
+    expression.index.accept(this)
   }
 
   override def apply(expression: ArrayCreationExpression) {

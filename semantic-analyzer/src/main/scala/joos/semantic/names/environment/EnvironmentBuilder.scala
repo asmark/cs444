@@ -2,11 +2,12 @@ package joos.semantic.names.environment
 
 import joos.ast._
 import joos.ast.declarations._
-import joos.ast.statements._
-import joos.ast.expressions.VariableDeclarationExpression
+import joos.ast.expressions.{SimpleNameExpression, VariableDeclarationExpression}
 import joos.ast.statements.WhileStatement
+import joos.ast.statements._
 import joos.ast.visitor.AstVisitor
 import joos.semantic.BlockEnvironment
+import scala.collection.mutable
 
 /**
  * Environment builder is responsible for the following name resolution checks:
@@ -20,6 +21,7 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
   private[this] var unit: CompilationUnit = null
   private[this] var packaged: PackageDeclaration = null
   private[this] var block: BlockEnvironment = null
+  private[this] val fieldDeclarations = mutable.HashMap.empty[SimpleNameExpression, FieldDeclaration]
 
   override def apply(unit: CompilationUnit) {
     this.unit = unit
@@ -38,10 +40,10 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
 
     typed.fields foreach {
       field =>
-        if (typed.fieldMap.contains(field.declarationName)) {
+        if (fieldDeclarations.contains(field.declarationName)) {
           throw new DuplicatedFieldException(field.declarationName)
         }
-        typed.fieldMap.put(field.declarationName, field)
+        fieldDeclarations.put(field.declarationName, field)
     }
     typed.methods.foreach(_.accept(this))
   }
