@@ -1,13 +1,14 @@
 package joos.ast.declarations
 
 import joos.ast._
-import joos.ast.expressions.SimpleNameExpression
+import joos.ast.compositions.LikeDeclaration
+import joos.ast.expressions.{NameExpression, SimpleNameExpression}
 import joos.ast.statements.Block
 import joos.ast.types.{PrimitiveType, SimpleType, Type, ArrayType}
+import joos.semantic.BlockEnvironment
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.ParseTreeNode
 import joos.syntax.parsetree.TreeNode
-import joos.semantic.BlockEnvironment
 
 case class MethodDeclaration(
     modifiers: Seq[Modifier],
@@ -16,7 +17,7 @@ case class MethodDeclaration(
     parameters: IndexedSeq[SingleVariableDeclaration],
     body: Option[Block],
     isConstructor: Boolean)
-    extends BodyDeclaration {
+    extends BodyDeclaration with LikeDeclaration{
   var compilationUnit: CompilationUnit = null
   var typeDeclaration: TypeDeclaration = null
   var environment: BlockEnvironment = null
@@ -88,6 +89,8 @@ case class MethodDeclaration(
       }
     }
   }
+
+  override def declarationName: NameExpression = name
 }
 
 object MethodDeclaration {
