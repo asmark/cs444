@@ -79,6 +79,7 @@ abstract class AstCompleteVisitor extends AstVisitor {
   }
 
   override def apply(expression: VariableDeclarationFragment) {
+    expression.identifier.accept(this)
     expression.initializer foreach (_.accept(this))
   }
 
