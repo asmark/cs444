@@ -28,6 +28,8 @@ trait AstVisitor {
 //  def apply(expression: NullLiteral) {}
   def apply(expression: ParenthesizedExpression) {}
   def apply(expression: PrefixExpression) {}
+  def apply(expression: QualifiedNameExpression) {}
+  def apply(expression: SimpleNameExpression) {}
 //  def apply(expression: StringLiteral) {}
 //  def apply(expression: ThisExpression) {}
   def apply(expression: VariableDeclarationExpression) {}

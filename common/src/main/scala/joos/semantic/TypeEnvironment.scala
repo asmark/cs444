@@ -10,6 +10,23 @@ trait TypeEnvironment extends Environment {
   val methodMap = mutable.HashMap.empty[String, MethodDeclaration]
   val fieldMap = mutable.HashMap.empty[SimpleNameExpression, FieldDeclaration]
 
+
+  lazy val inheritedFields: Map[SimpleNameExpression, FieldDeclaration] = {
+    getSuperType(this) match {
+      case Some(superType) => superType.containedFields
+      case None => Map.empty
+    }
+  }
+
+  def containedFields: Map[SimpleNameExpression, FieldDeclaration] = {
+    // By adding top-level classes first, we replace older overridden methods with new ones
+    inheritedFields ++ fieldMap
+//    getSuperType(this).foldRight(Map() ++ fieldMap) {
+//      (superType: TypeDeclaration, localFields: Map[SimpleNameExpression, FieldDeclaration]) =>
+//        localFields ++ superType.containedFields
+//    }
+  }
+
   /**
    * Adds the specified {{method}} to the type environment
    */
@@ -22,7 +39,6 @@ trait TypeEnvironment extends Environment {
     this
   }
 
-
   /**
    * Adds the specified {{field}} to the type environment
    */
@@ -31,7 +47,7 @@ trait TypeEnvironment extends Environment {
     this
   }
 
-  lazy val supers = {
+  private lazy val supers = {
     var ret: Seq[TypeDeclaration] = Seq()
 
     getSuperType(this) match {
@@ -52,35 +68,34 @@ trait TypeEnvironment extends Environment {
     var ret = true
     this.supers.foreach(
       superType => {
-        val superTypeContained = superType.containedMethodSet.toArray
-        superTypeContained.foreach(
+        val superTypeContained = superType.containedMethods
+        superTypeContained.foreach {
           contained =>
             if ((contained.returnTypeLocalSignature equals method.returnTypeLocalSignature) && !contained.isAbstractMethod &&
                 areEqual(contained.returnType, method.returnType))
               ret = false
-        )
+        }
       }
     )
     ret
   }
 
-  lazy val containedMethodSet: mutable.HashSet[MethodDeclaration] = {
+  lazy val containedMethods: mutable.HashSet[MethodDeclaration] = {
     var ret = mutable.HashSet.empty[MethodDeclaration]
 
     methodMap.values.foreach(local => ret += local)
-    this.inheritMethods.foreach(inherited => ret += inherited)
+    this.inheritedMethods.foreach(inherited => ret += inherited)
 
     ret
   }
 
-  lazy val inheritMethods: mutable.HashSet[MethodDeclaration] = {
+  lazy val inheritedMethods: mutable.HashSet[MethodDeclaration] = {
     var ret = mutable.HashSet.empty[MethodDeclaration]
 
-    this.supers.foreach(
-      superType => {
+    this.supers.foreach {
+      superType =>
         val localSignatures = this.methods.map(method => method.returnTypeLocalSignature)
-        val array = superType.containedMethodSet.toArray
-        array foreach {
+        superType.containedMethods foreach {
           contained =>
             if (!localSignatures.contains(contained.returnTypeLocalSignature)) {
               if (!contained.isAbstractMethod) {
@@ -93,9 +108,7 @@ trait TypeEnvironment extends Environment {
               }
             }
         }
-      }
-    )
-
+    }
     ret
   }
 }
