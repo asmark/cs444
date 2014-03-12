@@ -126,7 +126,7 @@ class NameLinker(implicit unit: CompilationUnit) extends AstCompleteVisitor {
       case TypeName => {
         unit.getVisibleType(qualifiedName) match {
           case None => throw new AmbiguousNameException(qualifiedName)
-          case Some(typeDeclaration) => qualifiedName.declaration = SimpleType(qualifiedName)
+          case Some(typeDeclaration) => qualifiedName.declarationType = SimpleType(qualifiedName)
         }
       }
       case PackageName => {
@@ -144,15 +144,15 @@ class NameLinker(implicit unit: CompilationUnit) extends AstCompleteVisitor {
           case q: SimpleNameExpression => apply(q)
         }
         val qualifier = qualifiedName.qualifier
-        assert(qualifier.declaration != null)
+        assert(qualifier.declarationType != null)
 
         val simpleName = qualifiedName.name
         // Check if simpleType is a method on q. If so, set the declaration to be the return type declaration
-        if (getField(qualifier.declaration, simpleName).isDefined) {
-          qualifiedName.declaration = getField(qualifier.declaration, simpleName).get
-        } else if (getMethod(qualifier.declaration, simpleName).isDefined) {
+        if (getField(qualifier.declarationType, simpleName).isDefined) {
+          qualifiedName.declarationType = getField(qualifier.declarationType, simpleName).get
+        } else if (getMethod(qualifier.declarationType, simpleName).isDefined) {
           // TODO: Last .get call might fail if reference a constructor
-          qualifiedName.declaration = getMethod(qualifier.declaration, simpleName).get
+          qualifiedName.declarationType = getMethod(qualifier.declarationType, simpleName).get
         } else {
           throw new AmbiguousNameException(qualifiedName)
         }
@@ -166,7 +166,7 @@ class NameLinker(implicit unit: CompilationUnit) extends AstCompleteVisitor {
           case Some(typeDeclaration) => {
             val simpleName = qualifiedName.name
             getMethod(SimpleType(typeDeclaration.name), simpleName) match {
-              case Some(returnType) => qualifiedName.declaration = returnType
+              case Some(returnType) => qualifiedName.declarationType = returnType
               case None => throw new AmbiguousNameException(qualifiedName)
             }
           }
@@ -184,19 +184,19 @@ class NameLinker(implicit unit: CompilationUnit) extends AstCompleteVisitor {
         unit.getVisibleType(simpleName) match {
           case None => throw new AmbiguousNameException(simpleName)
           case Some(typeDeclaration) => {
-            simpleName.declaration = SimpleType(typeDeclaration.name)
+            simpleName.declarationType = SimpleType(typeDeclaration.name)
           }
         }
       }
       case ExpressionName => {
         if (blockEnvironment != null && blockEnvironment.getVariable(simpleName).isDefined) {
-          simpleName.declaration = blockEnvironment.getVariable(simpleName).get.declarationType
+          simpleName.declarationType = blockEnvironment.getVariable(simpleName).get.declarationType
           //              getTypeDeclarationFromType(blockEnvironment.getVariable(simpleName).get.declarationType)
         } else {
           typeEnvironment.containedFields.get(simpleName) match {
             case None => throw new AmbiguousNameException(simpleName)
             case Some(fieldDeclaration) => {
-              simpleName.declaration = fieldDeclaration.variableType
+              simpleName.declarationType = fieldDeclaration.variableType
               //                  getTypeDeclarationFromType(typeEnvironment.containedFields(simpleName).variableType)
             }
           }
@@ -208,7 +208,7 @@ class NameLinker(implicit unit: CompilationUnit) extends AstCompleteVisitor {
           case Some(methodDeclarations) => {
             // TODO: Last .get call might fail if reference a constructor
             // TODO: Link parameter types to correct method call
-            simpleName.declaration = methodDeclarations.head.returnType.get
+            simpleName.declarationType = methodDeclarations.head.returnType.get
           }
         }
       }
