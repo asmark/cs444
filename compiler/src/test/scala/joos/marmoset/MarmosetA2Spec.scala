@@ -1,6 +1,5 @@
 package joos.marmoset
 
-import java.io.File
 import joos.semantic.{NameResolution}
 import joos.syntax.SyntaxCheck
 import joos.test.tags.IntegrationTest

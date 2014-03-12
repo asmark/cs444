@@ -5,6 +5,7 @@ import joos.ast.{AstConstructionException, CompilationUnit, Modifier}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 import joos.semantic.TypeEnvironment
+import joos.ast.compositions.LikeDeclaration
 
 case class TypeDeclaration(
     modifiers: Seq[Modifier],
@@ -15,7 +16,7 @@ case class TypeDeclaration(
     fields: Seq[FieldDeclaration],
     methods: Seq[MethodDeclaration])
     extends BodyDeclaration
-    with TypeEnvironment {
+    with TypeEnvironment with LikeDeclaration {
   implicit var compilationUnit: CompilationUnit = null
   var packageDeclaration: PackageDeclaration = null
 
@@ -48,6 +49,8 @@ case class TypeDeclaration(
     objectInterface.packageDeclaration = packageDeclaration
     objectInterface
   }
+
+  override def declarationName: NameExpression = name
 }
 
 object TypeDeclaration {

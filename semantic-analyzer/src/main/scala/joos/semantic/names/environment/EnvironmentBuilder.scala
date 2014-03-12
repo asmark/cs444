@@ -2,11 +2,12 @@ package joos.semantic.names.environment
 
 import joos.ast._
 import joos.ast.declarations._
-import joos.ast.statements._
-import joos.ast.expressions.VariableDeclarationExpression
+import joos.ast.expressions.{SimpleNameExpression, VariableDeclarationExpression}
 import joos.ast.statements.WhileStatement
+import joos.ast.statements._
 import joos.ast.visitor.AstVisitor
 import joos.semantic.BlockEnvironment
+import scala.collection.mutable
 
 /**
  * Environment builder is responsible for the following name resolution checks:
@@ -41,7 +42,7 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
         if (typed.fieldMap.contains(field.declarationName)) {
           throw new DuplicatedFieldException(field.declarationName)
         }
-        typed.fieldMap.put(field.declarationName, field)
+        typed.add(field)
     }
     typed.methods.foreach(_.accept(this))
   }
