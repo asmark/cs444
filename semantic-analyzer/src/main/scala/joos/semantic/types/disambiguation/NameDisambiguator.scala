@@ -3,9 +3,10 @@ package joos.semantic.types.disambiguation
 import joos.ast.CompilationUnit
 import joos.ast.compositions.LikeName._
 import joos.ast.declarations.MethodDeclaration
-import joos.ast.expressions.{QualifiedNameExpression, SimpleNameExpression}
+import joos.ast.expressions.{VariableDeclarationExpression, QualifiedNameExpression, SimpleNameExpression}
 import joos.ast.visitor.AstCompleteVisitor
 import joos.semantic.{BlockEnvironment, TypeEnvironment}
+import joos.ast.statements._
 
 class NameDisambiguator(implicit unit: CompilationUnit) extends AstCompleteVisitor {
   private var typeEnvironment: TypeEnvironment = null
@@ -18,9 +19,65 @@ class NameDisambiguator(implicit unit: CompilationUnit) extends AstCompleteVisit
   }
 
   override def apply(methodDeclaration: MethodDeclaration) {
+    val oldBlock = blockEnvironment
     blockEnvironment = methodDeclaration.environment
     super.apply(methodDeclaration)
-    blockEnvironment = null
+    blockEnvironment = oldBlock
+  }
+
+  override def apply(block: Block) {
+    val oldBlock = blockEnvironment
+    blockEnvironment = block.environment
+    block.statements foreach (_.accept(this))
+    blockEnvironment = oldBlock
+  }
+
+  override def apply(statement: IfStatement) {
+    val oldBlock = blockEnvironment
+    blockEnvironment = statement.environment
+    statement.condition.accept(this)
+    blockEnvironment = statement.environment
+    statement.trueStatement.accept(this)
+    blockEnvironment = statement.environment
+    statement.falseStatement.map(_.accept(this))
+    blockEnvironment = oldBlock
+  }
+
+  override def apply(statement: ExpressionStatement) {
+    val oldBlock = blockEnvironment
+    blockEnvironment = statement.environment
+    statement.expression.accept(this)
+    blockEnvironment = oldBlock
+  }
+
+  override def apply(statement: WhileStatement) {
+    val oldBlock = blockEnvironment
+    blockEnvironment = statement.environment
+    statement.condition.accept(this)
+    statement.body.accept(this)
+    blockEnvironment = oldBlock
+  }
+
+  override def apply(statement: ForStatement) {
+    val oldBlock = blockEnvironment
+    blockEnvironment = statement.environment
+    statement.initialization.map(_.accept(this))
+    statement.condition.map(_.accept(this))
+    statement.update.map(_.accept(this))
+    statement.body.accept(this)
+    blockEnvironment = oldBlock
+  }
+
+  override def apply(statement: ReturnStatement) {
+    val oldBlock = blockEnvironment
+    blockEnvironment = statement.environment
+    statement.expression.map(_.accept(this))
+    blockEnvironment = oldBlock
+  }
+
+  override def apply(expression: VariableDeclarationExpression) {
+    blockEnvironment = expression.environment
+    expression.declaration.accept(this)
   }
 
   // If the AmbiguousName is a simple name, consisting of a single Identifier:
@@ -31,11 +88,9 @@ class NameDisambiguator(implicit unit: CompilationUnit) extends AstCompleteVisit
     require(typeEnvironment != null)
     // If the Identifier appears within the scope (§6.3) of a local variable declaration (§14.4) or parameter declaration (§8.4.1, §8.8.1,
     // §14.19) or field declaration (§8.3) with that name, then the AmbiguousName is reclassified as an ExpressionName.
-    if (blockEnvironment != null) {
-      val typeFromBlock = blockEnvironment.getVariable(simpleName)
-      if (typeFromBlock.isDefined) {
+    if (blockEnvironment != null && blockEnvironment.getVariable(simpleName).isDefined) {
         simpleName.classifyContext(ExpressionName)
-      }
+
       // Otherwise, if the Identifier appears within the scope (§6.3) of a local class declaration (§14.3) or member type declaration (§8.5,
       // §9.5) with that name, then the AmbiguousName is reclassified as a TypeName.
     } else if (typeEnvironment.containedFields.contains(simpleName) ||

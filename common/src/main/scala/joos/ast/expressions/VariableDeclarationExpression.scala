@@ -1,19 +1,22 @@
 package joos.ast.expressions
 
-import joos.ast.compositions.LikeTypedDeclaration
+import joos.ast.compositions.{LikeBlock, LikeTypedDeclaration}
 import joos.ast.declarations.VariableDeclarationFragment
 import joos.ast.types.Type
 import joos.ast.{AstConstructionException, Modifier}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
+import joos.semantic.BlockEnvironment
 
 case class VariableDeclarationExpression(
     modifiers: Seq[Modifier],
     variableType: Type,
-    declaration: VariableDeclarationFragment) extends Expression with LikeTypedDeclaration {
+    declaration: VariableDeclarationFragment) extends Expression with LikeTypedDeclaration with LikeBlock {
   override def declarationName = declaration.identifier
 
   override def declarationType = variableType
+
+  override var environment: BlockEnvironment = null
 }
 
 object VariableDeclarationExpression {

@@ -4,12 +4,15 @@ import joos.ast.AstConstructionException
 import joos.ast.expressions.{VariableDeclarationExpression, Expression}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
+import joos.semantic.BlockEnvironment
 
 case class ForStatement(
   initialization: Option[Expression],
   condition: Option[Expression],
   update: Option[Expression],
-  body: Statement) extends Statement
+  body: Statement) extends Statement {
+  override var environment: BlockEnvironment = null
+}
 
 object ForStatement {
   def apply(ptn: ParseTreeNode): ForStatement = {

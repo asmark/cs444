@@ -5,8 +5,11 @@ import joos.ast.expressions._
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.ParseTreeNode
 import joos.syntax.parsetree.TreeNode
+import joos.semantic.BlockEnvironment
 
-case class ExpressionStatement(expression: Expression) extends Statement
+case class ExpressionStatement(expression: Expression) extends Statement{
+  override var environment: BlockEnvironment = null
+}
 
 object ExpressionStatement {
   def constructStatementExpression(statementExpression: ParseTreeNode): Expression = {

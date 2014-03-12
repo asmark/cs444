@@ -1,3 +1,7 @@
 package joos.ast.statements
 
-object EmptyStatement extends Statement
+import joos.semantic.BlockEnvironment
+
+object EmptyStatement extends Statement {
+  override var environment: BlockEnvironment = null
+}
