@@ -4,8 +4,11 @@ import joos.ast.AstConstructionException
 import joos.syntax.parsetree.{LeafNode, ParseTreeNode}
 import joos.syntax.tokens.{TokenKind, TerminalToken}
 import joos.ast.compositions.LikeTyped
+import joos.ast.types.PrimitiveType
 
-case class IntegerLiteral(token: TerminalToken) extends LiteralExpression with LikeTyped
+case class IntegerLiteral(token: TerminalToken) extends LiteralExpression with LikeTyped {
+  override def declarationType = PrimitiveType(TerminalToken("int", TokenKind.Int))
+}
 
 object IntegerLiteral {
   def apply(ptn: ParseTreeNode): IntegerLiteral = {
