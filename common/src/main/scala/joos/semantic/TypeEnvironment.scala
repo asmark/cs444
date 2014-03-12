@@ -22,7 +22,6 @@ trait TypeEnvironment extends Environment {
     this
   }
 
-
   /**
    * Adds the specified {{field}} to the type environment
    */
@@ -31,7 +30,7 @@ trait TypeEnvironment extends Environment {
     this
   }
 
-  lazy val supers = {
+  private lazy val supers = {
     var ret: Seq[TypeDeclaration] = Seq()
 
     getSuperType(this) match {
@@ -52,13 +51,13 @@ trait TypeEnvironment extends Environment {
     var ret = true
     this.supers.foreach(
       superType => {
-        val superTypeContained = superType.containedMethodSet.toArray
-        superTypeContained.foreach(
+        val superTypeContained = superType.containedMethodSet
+        superTypeContained.foreach {
           contained =>
             if ((contained.returnTypeLocalSignature equals method.returnTypeLocalSignature) && !contained.isAbstractMethod &&
                 areEqual(contained.returnType, method.returnType))
               ret = false
-        )
+        }
       }
     )
     ret
@@ -79,8 +78,7 @@ trait TypeEnvironment extends Environment {
     this.supers.foreach(
       superType => {
         val localSignatures = this.methods.map(method => method.returnTypeLocalSignature)
-        val array = superType.containedMethodSet.toArray
-        array foreach {
+        superType.containedMethodSet foreach {
           contained =>
             if (!localSignatures.contains(contained.returnTypeLocalSignature)) {
               if (!contained.isAbstractMethod) {
@@ -95,7 +93,6 @@ trait TypeEnvironment extends Environment {
         }
       }
     )
-
     ret
   }
 }
