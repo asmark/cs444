@@ -4,9 +4,8 @@ import joos.ast.AstConstructionException
 import joos.syntax.parsetree.{LeafNode, ParseTreeNode}
 import joos.syntax.tokens.{TokenKind, TerminalToken}
 import joos.ast.types.{NullType}
-import joos.ast.compositions.LikeTyped
 
-case class NullLiteral(token: TerminalToken) extends LiteralExpression with LikeTyped {
+case class NullLiteral(token: TerminalToken) extends LiteralExpression {
   override def declarationType = NullType()
 }
 
