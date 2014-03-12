@@ -10,6 +10,19 @@ trait TypeEnvironment extends Environment {
   val methodMap = mutable.HashMap.empty[String, MethodDeclaration]
   val fieldMap = mutable.HashMap.empty[SimpleNameExpression, FieldDeclaration]
 
+
+  lazy val inheritedFields: Map[SimpleNameExpression, FieldDeclaration] = {
+    getSuperType(this) match {
+      case Some(superType) => superType.containedFields
+      case None => Map.empty
+    }
+  }
+
+  lazy val containedFields: Map[SimpleNameExpression, FieldDeclaration] = {
+    // By adding top-level classes first, we replace older overridden methods with new ones
+    inheritedFields ++ fieldMap
+  }
+
   /**
    * Adds the specified {{method}} to the type environment
    */
@@ -51,8 +64,8 @@ trait TypeEnvironment extends Environment {
     var ret = true
     this.supers.foreach(
       superType => {
-        val superTypeContained = superType.containedMethodSet
-        superTypeContained.foreach {
+        val superTypeContained = superType.containedMethods
+        superTypeContained.values.flatten.foreach {
           contained =>
             if ((contained.returnTypeLocalSignature equals method.returnTypeLocalSignature) && !contained.isAbstractMethod &&
                 areEqual(contained.returnType, method.returnType))
@@ -63,36 +76,42 @@ trait TypeEnvironment extends Environment {
     ret
   }
 
-  lazy val containedMethodSet: mutable.HashSet[MethodDeclaration] = {
-    var ret = mutable.HashSet.empty[MethodDeclaration]
-
-    methodMap.values.foreach(local => ret += local)
-    this.inheritMethods.foreach(inherited => ret += inherited)
-
-    ret
+  private def addBinding(method: MethodDeclaration, map: Map[SimpleNameExpression, Set[MethodDeclaration]]) = {
+    if (map.get(method.name).isEmpty) {
+      map + (method.name -> Set(method))
+    } else {
+      val currentMethods = map(method.name) + method
+      map + (method.name -> currentMethods)
+    }
   }
 
-  lazy val inheritMethods: mutable.HashSet[MethodDeclaration] = {
-    var ret = mutable.HashSet.empty[MethodDeclaration]
+  lazy val containedMethods: Map[SimpleNameExpression, Set[MethodDeclaration]]= {
+    (methodMap.values ++ inheritedMethods.values.flatten).foldRight(Map.empty[SimpleNameExpression, Set[MethodDeclaration]]) {
+      (method: MethodDeclaration, map: Map[SimpleNameExpression, Set[MethodDeclaration]]) =>
+        addBinding(method, map)
+     }
+  }
 
-    this.supers.foreach(
-      superType => {
+  lazy val inheritedMethods: Map[SimpleNameExpression, Set[MethodDeclaration]] = {
+    var ret = Map.empty[SimpleNameExpression, Set[MethodDeclaration]]
+
+    this.supers.foreach {
+      superType =>
         val localSignatures = this.methods.map(method => method.returnTypeLocalSignature)
-        superType.containedMethodSet foreach {
+        superType.containedMethods.values.flatten foreach {
           contained =>
             if (!localSignatures.contains(contained.returnTypeLocalSignature)) {
               if (!contained.isAbstractMethod) {
-                ret += contained
+                ret = addBinding(contained, ret)
               } else {
                 // All abs
                 if (isAllAbstract(contained)) {
-                  ret += contained
+                  ret = addBinding(contained, ret)
                 }
               }
             }
         }
-      }
-    )
+    }
     ret
   }
 }

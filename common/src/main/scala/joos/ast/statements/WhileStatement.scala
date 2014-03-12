@@ -4,8 +4,11 @@ import joos.ast.AstConstructionException
 import joos.ast.expressions.Expression
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
+import joos.semantic.BlockEnvironment
 
-case class WhileStatement(condition: Expression, body: Statement) extends Statement
+case class WhileStatement(condition: Expression, body: Statement) extends Statement {
+  override var environment: BlockEnvironment = null
+}
 
 object WhileStatement {
   def apply(ptn: ParseTreeNode): WhileStatement = {

@@ -3,8 +3,9 @@ package joos.ast.statements
 import joos.ast.{AstConstructionException, AstNode}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
+import joos.ast.compositions.LikeBlock
 
-trait Statement extends AstNode
+trait Statement extends AstNode with LikeBlock
 
 object Statement {
   private def handleStatementWithoutTrailingSubstatement(ptn: ParseTreeNode): Statement = {

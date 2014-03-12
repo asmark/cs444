@@ -3,7 +3,7 @@ package joos.marmoset
 import java.io.File
 import joos.compiler.CompilationException
 import joos.core.Logger
-import joos.semantic.NameResolution
+import joos.semantic.{TypeChecking, NameResolution}
 import joos.syntax.SyntaxCheck
 import joos.test.tags.IntegrationTest
 import org.scalatest.{Matchers, FlatSpec}
@@ -19,6 +19,7 @@ class MarmosetA3Spec extends FlatSpec with Matchers {
       val files = getJavaFiles(testCase) ++ standardLibrary
       val asts = files map SyntaxCheck.apply
       NameResolution(asts)
+      TypeChecking(asts)
     }
   }
 
@@ -29,6 +30,7 @@ class MarmosetA3Spec extends FlatSpec with Matchers {
       Logger.logInformation(intercept[CompilationException] {
         val asts = files map SyntaxCheck.apply
         NameResolution(asts)
+        TypeChecking(asts)
       }.getMessage)
     }
   }

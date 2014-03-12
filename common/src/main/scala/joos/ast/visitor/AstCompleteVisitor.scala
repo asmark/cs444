@@ -28,7 +28,7 @@ abstract class AstCompleteVisitor extends AstVisitor {
 
   override def apply(expression: ArrayAccessExpression) {
     expression.reference.accept(this)
-    expression.reference.accept(this)
+    expression.index.accept(this)
   }
 
   override def apply(expression: ArrayCreationExpression) {
@@ -79,6 +79,7 @@ abstract class AstCompleteVisitor extends AstVisitor {
   }
 
   override def apply(expression: VariableDeclarationFragment) {
+    expression.identifier.accept(this)
     expression.initializer foreach (_.accept(this))
   }
 
@@ -114,7 +115,6 @@ abstract class AstCompleteVisitor extends AstVisitor {
     unit.importDeclarations foreach (_.accept(this))
     unit.typeDeclaration foreach (_.accept(this))
   }
-
 
   override def apply(block: Block) {
     block.statements foreach (_.accept(this))
