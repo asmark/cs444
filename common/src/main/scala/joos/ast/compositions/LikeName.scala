@@ -22,7 +22,7 @@ trait LikeName {
   def standardName: String
   def declarationType = declaration
 
-  var declaration: LikeDeclaration = null
+  var declaration: Type = null
   var classification = Ambiguous
 
   def classifyContext(newClassification: NameClassification) {
