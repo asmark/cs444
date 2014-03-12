@@ -3,15 +3,13 @@ package joos.ast.expressions
 import joos.ast.{AstConstructionException, AstNode}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{LeafNode, TreeNode, ParseTreeNode}
-import joos.ast.compositions.TypeCheckableLike
+import joos.ast.compositions.LikeTyped
 import joos.ast.types.Type
-import joos.ast.visitor.AstVisitor
 
-trait Expression extends AstNode with TypeCheckableLike {
+trait Expression extends AstNode with LikeTyped {
   private var _declarationType: Type = null
   override def declarationType = _declarationType
-  def declarationType_(newType: Type) = _declarationType = newType
-  override def checkType(visitor: AstVisitor) = {}
+  def declarationType_=(newType: Type) = _declarationType = newType
 }
 
 object Expression {

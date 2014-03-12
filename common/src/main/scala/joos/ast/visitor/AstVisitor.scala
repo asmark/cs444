@@ -31,7 +31,7 @@ trait AstVisitor {
   def apply(expression: QualifiedNameExpression) {}
   def apply(expression: SimpleNameExpression) {}
 //  def apply(expression: StringLiteral) {}
-//  def apply(expression: ThisExpression) {}
+  def apply(expression: ThisExpression) {}
   def apply(expression: VariableDeclarationExpression) {}
   def apply(expression: VariableDeclarationFragment) {}
   def apply(statement: ExpressionStatement) {}

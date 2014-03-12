@@ -9,7 +9,7 @@ import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 trait NameExpression extends Expression with LikeName with LikeTyped {
   private var _declarationType: Type = null
   override def declarationType = _declarationType
-  def declarationType_=(newType: Type) = _declarationType = newType
+  override def declarationType_=(newType: Type) = _declarationType = newType
 }
 
 object NameExpression {

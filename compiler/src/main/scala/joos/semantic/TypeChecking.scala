@@ -3,6 +3,7 @@ package joos.semantic
 import joos.ast.AbstractSyntaxTree
 import joos.ast.declarations.ModuleDeclaration
 import joos.semantic.types.disambiguation.{NameLinker, NameDisambiguator, NameClassifier}
+import joos.semantic.types.checking.TypeChecker
 
 object TypeChecking {
 

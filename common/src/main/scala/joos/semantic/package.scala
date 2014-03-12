@@ -84,7 +84,7 @@ package object semantic {
       case (SimpleType(name1), SimpleType(name2)) => areEqual(getTypeDeclaration(name1), getTypeDeclaration(name2))
       case (ArrayType(name1, dimensions1), ArrayType(name2, dimensions2)) =>
         dimensions1 == dimensions2 && areEqual(name1, name2)
-      case (PrimitiveType(token1), PrimitiveType(token2)) => token1 == token2
+      case (PrimitiveType(token1), PrimitiveType(token2)) => token1.kind == token2.kind
       case _ => false
     }
   }

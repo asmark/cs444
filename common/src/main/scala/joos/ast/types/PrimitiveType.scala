@@ -16,7 +16,7 @@ object PrimitiveType {
     "boolean",
     "char",
     "double",
-    "float",
+    "float", // TODO: is it needed?
     "short"
   )
 
