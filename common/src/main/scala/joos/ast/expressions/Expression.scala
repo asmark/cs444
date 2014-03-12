@@ -3,8 +3,14 @@ package joos.ast.expressions
 import joos.ast.{AstConstructionException, AstNode}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{LeafNode, TreeNode, ParseTreeNode}
+import joos.ast.compositions.TypeCheckable
+import joos.ast.types.Type
 
-trait Expression extends AstNode
+trait Expression extends AstNode with TypeCheckable {
+  var exprType: Type = null
+  override def declarationType = exprType
+  override def checkType = {}
+}
 
 object Expression {
   def apply(ptn: ParseTreeNode): Expression = {
