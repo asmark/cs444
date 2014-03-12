@@ -1,5 +1,7 @@
 package joos.ast.compositions
 
+import joos.ast.visitor.AstVisitor
+
 trait TypeCheckable extends LikeTyped {
-  def checkType
+  def checkType(visitor: AstVisitor)
 }

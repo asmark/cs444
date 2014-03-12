@@ -5,11 +5,13 @@ import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{LeafNode, TreeNode, ParseTreeNode}
 import joos.ast.compositions.TypeCheckable
 import joos.ast.types.Type
+import joos.ast.visitor.AstVisitor
 
 trait Expression extends AstNode with TypeCheckable {
-  var exprType: Type = null
-  override def declarationType = exprType
-  override def checkType = {}
+  private var _declarationType: Type = null
+  override def declarationType = _declarationType
+  def declarationType_(newType: Type) = _declarationType = newType
+  override def checkType(visitor: AstVisitor) = {}
 }
 
 object Expression {
