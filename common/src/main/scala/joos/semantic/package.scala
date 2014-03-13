@@ -145,6 +145,7 @@ package object semantic {
         }
       }
       case (NullType(), _) => false
+      case (unit.javaLangObjectType, ArrayType) => true
       case (_,_) => false
     }
   }
