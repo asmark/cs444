@@ -24,3 +24,9 @@ class InstanceOfExpressionException(msg: String) extends TypeCheckingException(m
 class VariableDeclarationExpressionException(msg: String) extends TypeCheckingException(msg)
 
 class AssignmentExpressionException(msg: String) extends TypeCheckingException(msg)
+
+class FieldAccessExpressionException(msg: String) extends TypeCheckingException(msg)
+
+class MethodInvocationExpressionException(msg: String) extends TypeCheckingException(msg)
+
+class ParenthesizedExpressionException(msg: String) extends TypeCheckingException(msg)
