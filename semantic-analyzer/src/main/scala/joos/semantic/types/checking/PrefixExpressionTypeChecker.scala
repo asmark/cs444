@@ -13,7 +13,7 @@ trait PrefixExpressionTypeChecker extends AstVisitor {
     prefixExpression.operator match {
       case TerminalToken(_, TokenKind.Increment | TokenKind.Decrement | TokenKind.Plus | TokenKind.Minus | TokenKind.Tilde) => {
         prefixExpression.operand.declarationType match {
-          case PrimitiveType(TerminalToken(_, TokenKind.DecimalIntLiteral)) => {
+          case PrimitiveType.IntegerType => {
             prefixExpression.declarationType = prefixExpression.operand.declarationType
           }
           case others => throw new PrefixExpressionException(s"invalid operand type ${others.standardName}")
@@ -21,7 +21,7 @@ trait PrefixExpressionTypeChecker extends AstVisitor {
       }
       case TerminalToken(_, TokenKind.Exclamation) => {
         prefixExpression.operand.declarationType  match {
-          case PrimitiveType(TerminalToken(_, TokenKind.Boolean)) => {
+          case PrimitiveType.BooleanType => {
             prefixExpression.declarationType = prefixExpression.operand.declarationType
           }
           case others => throw new PrefixExpressionException(s"invalid operand type ${others.standardName}")

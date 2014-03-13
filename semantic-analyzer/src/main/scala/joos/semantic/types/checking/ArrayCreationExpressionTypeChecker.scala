@@ -10,8 +10,8 @@ trait ArrayCreationExpressionTypeChecker {
   override def apply(arrayCreationExpression: ArrayCreationExpression) {
     arrayCreationExpression.size.accept(this)
     arrayCreationExpression.size.declarationType match {
-      case PrimitiveType(TerminalToken(integer, TokenKind.DecimalIntLiteral)) =>
-        arrayCreationExpression.declarationType = ArrayType(arrayCreationExpression.arrayType, integer.toInt)
+      case PrimitiveType.IntegerType =>
+        arrayCreationExpression.declarationType = ArrayType(arrayCreationExpression.arrayType)
       case _ => throw new ArrayCreationException(s"invalid size expression in array creation: ${arrayCreationExpression.arrayType.standardName}")
     }
   }

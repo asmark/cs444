@@ -12,14 +12,15 @@ object TypeChecking {
     Seq(
       new NameClassifier,
       new NameDisambiguator,
-      new NameLinker
+      new NameLinker,
+      new TypeChecker
     )
   }
 
   def apply(asts: Seq[AbstractSyntaxTree]) {
     implicit val module = new ModuleDeclaration
 
-    val analyzers = 3
+    val analyzers = 4
     for (i <- Range(0, analyzers)) {
       for (ast <- asts) {
         ast dispatch getAnalyzers(ast).apply(i)
