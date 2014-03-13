@@ -11,6 +11,8 @@ trait CastExpressionTypeChecker extends AstVisitor {
   override def apply(castExpression: CastExpression) {
     castExpression.expression.accept(this)
 
+    require(castExpression.expression.declarationType != null)
+
     if (PrimitiveType.isNumeric(castExpression.castType) &&
         PrimitiveType.isNumeric(castExpression.expression.declarationType)) {
       castExpression.declarationType = castExpression.castType

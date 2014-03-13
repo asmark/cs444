@@ -10,6 +10,8 @@ trait PrefixExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
   override def apply(prefixExpression: PrefixExpression) {
     prefixExpression.operand.accept(this)
+    require(prefixExpression.operand.declarationType != null)
+
     prefixExpression.operator match {
       case TerminalToken(_, TokenKind.Increment | TokenKind.Decrement | TokenKind.Plus | TokenKind.Minus | TokenKind.Tilde) => {
         prefixExpression.operand.declarationType match {

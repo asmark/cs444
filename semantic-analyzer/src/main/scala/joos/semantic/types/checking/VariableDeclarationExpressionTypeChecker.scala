@@ -8,12 +8,12 @@ import joos.semantic.types.VariableDeclarationExpressionException
 trait VariableDeclarationExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
   override def apply(variableDeclarationExpression: VariableDeclarationExpression) {
-    variableDeclarationExpression.declaration.identifier.accept(this)
-
     variableDeclarationExpression.declaration.initializer match {
       // TODO: verify this is the only check needed
       case Some(initExpr) => {
         initExpr.accept(this)
+
+        require(initExpr.declarationType != null)
         if(!isAssignable(variableDeclarationExpression.variableType, initExpr.declarationType))
           throw new VariableDeclarationExpressionException(
             s"attempt to assign ${initExpr.declarationType.standardName} to ${variableDeclarationExpression.variableType.standardName}"

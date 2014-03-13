@@ -12,9 +12,11 @@ trait ArrayAccessExpressionTypeChecker extends AstVisitor {
     arrayAccessExpression.reference.accept(this)
     arrayAccessExpression.index.accept(this)
 
+    require(arrayAccessExpression.reference.declarationType != null)
     arrayAccessExpression.reference.declarationType match {
       case arrayType: ArrayType => {
         // TODO: the index type undergoes promotion
+        require(arrayAccessExpression.index.declarationType != null)
         if (PrimitiveType.isNumeric(arrayAccessExpression.index.declarationType)) {
           arrayAccessExpression.declarationType = arrayType.elementType
         } else {

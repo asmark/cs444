@@ -10,18 +10,16 @@ trait FieldAccessExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
   override def apply(fieldAccessExpression: FieldAccessExpression) {
     fieldAccessExpression.expression.accept(this)
+    require(fieldAccessExpression.expression.declarationType != null)
     val primaryType = fieldAccessExpression.expression.declarationType
+
     fieldAccessExpression.identifier.accept(this)
+    require(fieldAccessExpression.identifier.declarationType != null)
     val identifierType = fieldAccessExpression.identifier.declarationType
 
     if (!primaryType.isInstanceOf[SimpleType]) {
       throw new FieldAccessExpressionException(s"Primary expression is not of a reference type ${primaryType.standardName}")
     }
-
-    /*
-    * TODO: (Checked in name resolution?) If the identifier names several accessible member fields of type T,
-    * then the field access is ambiguous and a compile-time error occurs.
-    */
 
     /*
     * If the identifier does not name an accessible member field of type T,
@@ -42,6 +40,7 @@ trait FieldAccessExpressionTypeChecker extends AstVisitor {
             }
 
             val fieldDeclaration = option.get
+            require(fieldDeclaration.declarationType != null)
             if (fieldDeclaration.declarationType equals null) {
               fieldDeclaration.accept(this)
             }

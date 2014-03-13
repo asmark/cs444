@@ -11,6 +11,7 @@ trait ArrayCreationExpressionTypeChecker extends AstVisitor {
   override def apply(arrayCreationExpression: ArrayCreationExpression) {
     arrayCreationExpression.size.accept(this)
 
+    require(arrayCreationExpression.size.declarationType != null)
     if (PrimitiveType.isNumeric(arrayCreationExpression.size.declarationType)) {
       arrayCreationExpression.declarationType = ArrayType(arrayCreationExpression.arrayType)
     } else {

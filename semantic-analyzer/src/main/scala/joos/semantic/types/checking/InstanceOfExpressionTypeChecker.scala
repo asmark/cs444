@@ -11,6 +11,7 @@ trait InstanceOfExpressionTypeChecker extends AstVisitor {
   override def apply(instanceOfExpression: InstanceOfExpression) {
     instanceOfExpression.expression.accept(this)
 
+    require(instanceOfExpression.expression.declarationType != null)
     if (isAssignable(instanceOfExpression.classType, instanceOfExpression.expression.declarationType) ||
         isAssignable(instanceOfExpression.expression.declarationType, instanceOfExpression.classType)) {
       instanceOfExpression.classType match {

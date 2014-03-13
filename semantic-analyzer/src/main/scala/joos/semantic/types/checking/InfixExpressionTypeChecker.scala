@@ -9,6 +9,7 @@ trait InfixExpressionTypeChecker extends AstVisitor {
   override def apply(expression: InfixExpression) {
     expression.left.accept(this)
     expression.right.accept(this)
+    require(expression.left.declarationType != null && expression.right.declarationType != null)
     val leftType = expression.left.declarationType
     val rightType = expression.right.declarationType
     // TODO:
