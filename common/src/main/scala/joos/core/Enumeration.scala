@@ -36,7 +36,7 @@ trait Enumeration {
 
   def values: collection.IndexedSeq[T] = _values
 
-  def apply(name: String): T = {
+  def fromName(name: String): T = {
     nameMap(name)
   }
 }

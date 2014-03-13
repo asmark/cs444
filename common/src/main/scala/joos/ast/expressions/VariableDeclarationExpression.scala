@@ -1,12 +1,13 @@
 package joos.ast.expressions
 
+import joos.ast.AstConstructionException
+import joos.ast.Modifier.Modifier
 import joos.ast.compositions.{LikeBlock, LikeTypedDeclaration}
 import joos.ast.declarations.VariableDeclarationFragment
 import joos.ast.types.Type
-import joos.ast.{AstConstructionException, Modifier}
+import joos.semantic.BlockEnvironment
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
-import joos.semantic.BlockEnvironment
 
 case class VariableDeclarationExpression(
     modifiers: Seq[Modifier],

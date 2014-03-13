@@ -26,7 +26,7 @@ object PrimitiveType extends Enumeration {
 
   private[this] def extractNumericToken(numericType: ParseTreeNode) = {
     numericType.children(0).children(0).token match {
-      case terminalToken: TerminalToken => PrimitiveType(terminalToken.lexeme)
+      case terminalToken: TerminalToken => fromName(terminalToken.lexeme)
       case _ => throw new AstConstructionException(
         "Invalid tree node to create NumericType"
       )

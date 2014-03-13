@@ -10,6 +10,8 @@ import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.ParseTreeNode
 import joos.syntax.parsetree.TreeNode
 import joos.ast.types.PrimitiveType.PrimitiveType
+import joos.ast.Modifier.Modifier
+import joos.ast.Modifier
 
 case class MethodDeclaration(
     modifiers: Seq[Modifier],
@@ -51,7 +53,7 @@ case class MethodDeclaration(
 
   lazy val returnTypeLocalSignature = {
     var mods: String = null
-    this.modifiers.foreach(mod => mods += mod.modifier.lexeme + " ")
+    this.modifiers.foreach(mod => mods += mod.name + " ")
     mods + (returnType match {
       case Some(someType) => getTypeName(someType) + " " + localSignature
       case None => "void " + localSignature
