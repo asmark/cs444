@@ -8,6 +8,7 @@ import joos.core.Logger
 import scala.Some
 import scala.collection.mutable
 import scala.Some
+import joos.syntax.tokens.TokenKind
 
 package object semantic {
   /**
@@ -65,6 +66,7 @@ package object semantic {
   }
 
   def areEqual(type1: TypeDeclaration, type2: TypeDeclaration): Boolean = {
+
     require(type1.packageDeclaration != null)
     require(type2.packageDeclaration != null)
 
@@ -116,9 +118,12 @@ package object semantic {
     }
   }
 
+  // dst = src
   def isAssignable(dst: Type, src: Type)(implicit unit: CompilationUnit): Boolean = {
     (dst, src) match {
-      case (dstPrimitive: PrimitiveType, srcPrimitive: PrimitiveType) => dstPrimitive.equals(srcPrimitive)
+      case (dstPrimitive: PrimitiveType, srcPrimitive: PrimitiveType) => {
+        // TODO(Shengmin):
+      }
       case (dstArrayType: ArrayType, srcType) => {
         srcType match {
           case srcArrayType: ArrayType => isAssignable(dstArrayType.elementType, srcArrayType.elementType)

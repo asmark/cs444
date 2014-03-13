@@ -9,8 +9,17 @@ case class PrimitiveType(token: TerminalToken) extends Type
 
 object PrimitiveType {
   val IntegerType = PrimitiveType(TerminalToken("int", TokenKind.Int))
-  val CharacterType = PrimitiveType(TerminalToken("char", TokenKind.Char))
-  val BooleanType = PrimitiveType(TerminalToken("boolean", TokenKind.Char))
+  val CharType = PrimitiveType(TerminalToken("char", TokenKind.Char))
+  val BooleanType = PrimitiveType(TerminalToken("boolean", TokenKind.Boolean))
+  val ByteType = PrimitiveType(TerminalToken("byte", TokenKind.Byte))
+  val ShortType = PrimitiveType(TerminalToken("byte", TokenKind.Short))
+
+  def isNumeric(inputType: Type): Boolean = {
+    inputType match {
+      case IntegerType | ByteType | CharType | ShortType=> true
+      case _ => false
+    }
+  }
 
   private def extractNumericToken(numericType: ParseTreeNode): TerminalToken = {
     numericType.children(0).children(0).token match {
