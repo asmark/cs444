@@ -12,17 +12,6 @@ object PrimitiveType {
   val CharacterType = PrimitiveType(TerminalToken("char", TokenKind.Char))
   val BooleanType = PrimitiveType(TerminalToken("boolean", TokenKind.Char))
 
-  final val Types = Set(
-    "int",
-    "long",
-    "byte",
-    "boolean",
-    "char",
-    "double",
-    "float", // TODO: is it needed?
-    "short"
-  )
-
   private def extractNumericToken(numericType: ParseTreeNode): TerminalToken = {
     numericType.children(0).children(0).token match {
       case terminalToken: TerminalToken => terminalToken

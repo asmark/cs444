@@ -3,10 +3,11 @@ package joos
 import joos.ast._
 import joos.ast.declarations.{PackageDeclaration, TypeDeclaration}
 import joos.ast.expressions.NameExpression
-import joos.ast.types.{PrimitiveType, ArrayType, SimpleType, Type}
+import joos.ast.types._
 import joos.core.Logger
 import scala.Some
 import scala.collection.mutable
+import scala.Some
 
 package object semantic {
   /**
@@ -98,5 +99,45 @@ package object semantic {
         }
     }
     None
+  }
+
+  private def getUpperTypeDeclarations(aType: Type)(implicit unit: CompilationUnit): Set[TypeDeclaration] = {
+    aType match {
+      case PrimitiveType => Set()
+      case ArrayType => Set()
+      case SimpleType(typeName) => {
+        unit.getVisibleType(typeName) match {
+          case Some(typeDeclaration) => {
+            typeDeclaration.allAncestors.toSeq
+          }
+          case _ => Set()
+        }
+      }
+    }
+  }
+
+  def isAssignable(dst: Type, src: Type)(implicit unit: CompilationUnit): Boolean = {
+    (dst, src) match {
+      case (dstPrimitive: PrimitiveType, srcPrimitive: PrimitiveType) => dstPrimitive.equals(srcPrimitive)
+      case (dstArrayType: ArrayType, srcType) => {
+        srcType match {
+          case srcArrayType: ArrayType => isAssignable(dstArrayType.elementType, srcArrayType.elementType)
+          case NullType => true
+          case _ => false
+        }
+      }
+      case (dstSimpleType: SimpleType, srcType) => {
+        srcType match {
+          case SimpleType => {
+            unit.getVisibleType(dstSimpleType.name) match {
+              case Some(typeDeclaration) => getUpperTypeDeclarations(srcType).contains(typeDeclaration)
+              case None => false
+            }
+          }
+          case NullType => true
+          case _ => false
+        }
+      }
+    }
   }
 }

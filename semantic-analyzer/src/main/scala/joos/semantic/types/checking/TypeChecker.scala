@@ -31,8 +31,8 @@ class TypeChecker(implicit val unit: CompilationUnit) extends AstCompleteVisitor
       try {
         super.apply(fieldDeclaration)
       } catch  {
-        case e: ImplicitThisInStaticExpception =>
-          throw new ImplicitThisInStaticExpception(s"In ${fieldDeclaration.variableType.standardName}")
+        case e: ImplicitThisInStaticException =>
+          throw new ImplicitThisInStaticException(s"In ${fieldDeclaration.variableType.standardName}")
         case e: Throwable => throw e
       }
       checkImplicitThis = false
@@ -47,8 +47,8 @@ class TypeChecker(implicit val unit: CompilationUnit) extends AstCompleteVisitor
       try {
         super.apply(methodDeclaration)
       } catch  {
-        case e: ImplicitThisInStaticExpception =>
-          throw new ImplicitThisInStaticExpception(s"In ${methodDeclaration.localSignature}")
+        case e: ImplicitThisInStaticException =>
+          throw new ImplicitThisInStaticException(s"In ${methodDeclaration.localSignature}")
         case e: Throwable => throw e
       }
       checkImplicitThis = false
