@@ -10,6 +10,7 @@ trait ArrayAccessExpressionTypeChecker {
   override def apply(arrayAccessExpression: ArrayAccessExpression) {
     arrayAccessExpression.reference.accept(this)
     arrayAccessExpression.index.accept(this)
+
     arrayAccessExpression.reference.declarationType match {
       case arrayType: ArrayType => {
         arrayAccessExpression.index.declarationType match {

@@ -3,11 +3,14 @@ package joos.ast.types
 import joos.ast.AstConstructionException
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
-import joos.syntax.tokens.TerminalToken
+import joos.syntax.tokens.{TokenKind, TerminalToken}
 
 case class PrimitiveType(token: TerminalToken) extends Type
 
 object PrimitiveType {
+  val IntegerType = PrimitiveType(TerminalToken("int", TokenKind.Int))
+  val CharacterType = PrimitiveType(TerminalToken("char", TokenKind.Char))
+  val BooleanType = PrimitiveType(TerminalToken("boolean", TokenKind.Char))
 
   final val Types = Set(
     "int",

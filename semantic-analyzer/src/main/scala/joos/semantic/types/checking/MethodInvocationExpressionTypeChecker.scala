@@ -9,6 +9,6 @@ import joos.ast.expressions.MethodInvocationExpression
 trait MethodInvocationExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
   override def apply(methodInvocationExpression: MethodInvocationExpression) {
-
+    // TODO:
   }
 }

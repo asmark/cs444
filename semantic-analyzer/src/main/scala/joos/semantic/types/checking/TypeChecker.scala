@@ -20,8 +20,6 @@ class TypeChecker(implicit val unit: CompilationUnit) extends AstCompleteVisitor
   with InfixExpressionTypeChecker
   with MethodInvocationExpressionTypeChecker
   with ParenthesizedExpressionTypeChecker
-  with QualifiedNameExpressionTypeChecker
-  with SimpleNameExpressionTypeChecker
   with ThisExpressionTypeChecker
   with VariableDeclarationExpressionTypeChecker {
   var checkImplicitThis = false // TODO: this approach should be fine as long as the field decl checking and method decl checking are not recursive

@@ -10,5 +10,6 @@ trait InfixExpressionTypeChecker extends AstVisitor {
     infixExpression.right.accept(this)
     val leftType = infixExpression.left.declarationType
     val rightType = infixExpression.right.declarationType
+    // TODO:
   }
 }

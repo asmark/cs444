@@ -23,5 +23,7 @@ trait ClassCreationExpressionTypeChecker extends AstVisitor {
           case _ => throw new ClassCreationException(s"Attempt to create class: ${classType.standardName}")
         }
     }
+
+    // TODO:
   }
 }
