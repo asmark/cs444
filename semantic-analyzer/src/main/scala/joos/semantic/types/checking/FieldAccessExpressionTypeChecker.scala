@@ -2,7 +2,7 @@ package joos.semantic.types.checking
 
 import joos.ast.visitor.AstVisitor
 import joos.ast.expressions.FieldAccessExpression
-import joos.ast.types.SimpleType
+import joos.ast.types.{ArrayType, PrimitiveType, SimpleType}
 import joos.semantic.types.FieldAccessExpressionException
 import joos.semantic._
 
@@ -17,21 +17,16 @@ trait FieldAccessExpressionTypeChecker extends AstVisitor {
     require(fieldAccessExpression.identifier.declarationType != null)
     val identifierType = fieldAccessExpression.identifier.declarationType
 
-    if (!primaryType.isInstanceOf[SimpleType]) {
-      throw new FieldAccessExpressionException(s"Primary expression is not of a reference type ${primaryType.standardName}")
-    }
-
     /*
     * If the identifier does not name an accessible member field of type T,
     * then the field access is undefined and a compile-time error occurs.
     */
     primaryType match {
+      case PrimitiveType(_) | ArrayType(_,_) =>
+        throw new FieldAccessExpressionException(s"Primary expression is not of a reference type ${primaryType.standardName}")
       case SimpleType(typeName) => {
         unit.getVisibleType(typeName) match {
           case Some(typeDeclaration) => {
-            // TODO: How to avoid checking the same declaration again?
-            typeDeclaration.accept(this)
-
             val containedFields = typeDeclaration.containedFields
             val fieldName = fieldAccessExpression.identifier
             val option = containedFields.get(fieldName)
@@ -53,8 +48,6 @@ trait FieldAccessExpressionTypeChecker extends AstVisitor {
             throw new FieldAccessExpressionException(s"Unable to find type ${typeName}")
         }
       }
-      case _ =>
-        throw new FieldAccessExpressionException(s"Primary expression is not of a reference type ${primaryType.standardName}")
     }
 
     fieldAccessExpression.declarationType = identifierType

@@ -1,10 +1,11 @@
 package joos.semantic.types.checking
 
-import joos.ast.expressions.ClassInstanceCreationExpression
+import joos.ast.expressions.{NameExpression, ClassInstanceCreationExpression}
 import joos.ast.types.SimpleType
-import joos.ast.{AstNode, Modifier}
+import joos.ast.{Modifier}
 import joos.semantic.types.{ClassCreationException, AbstractClassCreationException}
 import joos.ast.visitor.AstVisitor
+import joos.semantic._
 
 trait ClassCreationExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
@@ -26,13 +27,10 @@ trait ClassCreationExpressionTypeChecker extends AstVisitor {
             if (typeDeclaration.modifiers.contains(Modifier.Abstract)) {
               throw new AbstractClassCreationException(s"Attempt to create class: ${typeDeclaration.name.standardName}")
             }
-            classCreationExpression.declarationType = SimpleType(className)
+            classCreationExpression.declarationType = SimpleType(NameExpression(fullName(typeDeclaration)))
           }
           case _ => throw new ClassCreationException(s"Attempt to create class: ${classType.standardName}")
         }
     }
-
-    // TODO: Very complicated according to 15.9.1
-
   }
 }
