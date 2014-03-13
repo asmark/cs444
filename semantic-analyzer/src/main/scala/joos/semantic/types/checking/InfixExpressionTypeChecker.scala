@@ -5,11 +5,12 @@ import joos.ast.expressions.InfixExpression
 
 trait InfixExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
-  override def apply(infixExpression: InfixExpression) {
-    infixExpression.left.accept(this)
-    infixExpression.right.accept(this)
-    val leftType = infixExpression.left.declarationType
-    val rightType = infixExpression.right.declarationType
+
+  override def apply(expression: InfixExpression) {
+    expression.left.accept(this)
+    expression.right.accept(this)
+    val leftType = expression.left.declarationType
+    val rightType = expression.right.declarationType
     // TODO:
   }
 }
