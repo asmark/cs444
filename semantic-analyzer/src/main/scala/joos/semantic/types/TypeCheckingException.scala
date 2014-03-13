@@ -18,3 +18,5 @@ class ArrayCreationException(msg: String) extends TypeCheckingException(msg)
 class PrefixExpressionException(msg: String) extends TypeCheckingException(msg)
 
 class CastExpressionException(msg: String) extends TypeCheckingException(msg)
+
+class InstanceOfExpressionException(msg: String) extends TypeCheckingException(msg)

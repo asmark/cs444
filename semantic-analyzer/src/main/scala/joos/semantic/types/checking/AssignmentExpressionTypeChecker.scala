@@ -3,7 +3,7 @@ package joos.semantic.types.checking
 import joos.ast.expressions.{InfixExpression, AssignmentExpression}
 import joos.ast.visitor.AstVisitor
 
-trait AssignmentExpressionTypeChecker {
+trait AssignmentExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
   override def apply(assignmentExpression: InfixExpression) {
     assignmentExpression.left.accept(this)

@@ -15,7 +15,7 @@ trait CastExpressionTypeChecker extends AstVisitor {
       return
     }
 
-    if (isAssignable(castExpression.castType, castExpression.expression.declarationType) &&
+    if (isAssignable(castExpression.castType, castExpression.expression.declarationType) ||
         isAssignable(castExpression.expression.declarationType, castExpression.castType)) {
       castExpression.declarationType = castExpression.castType
       return

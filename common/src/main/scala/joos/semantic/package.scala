@@ -123,6 +123,7 @@ package object semantic {
     (dst, src) match {
       case (dstPrimitive: PrimitiveType, srcPrimitive: PrimitiveType) => {
         // TODO(Shengmin):
+        false
       }
       case (dstArrayType: ArrayType, srcType) => {
         srcType match {
@@ -143,6 +144,8 @@ package object semantic {
           case _ => false
         }
       }
+      case (NullType(), _) => false
+      case (_,_) => false
     }
   }
 }

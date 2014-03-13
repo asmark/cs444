@@ -1,6 +1,6 @@
 package joos.syntax.tokens
 
-import joos.syntax.tokens.TokenKind.TokenKind
+import joos.syntax.tokens.TokenKind.{TokenKind}
 
 abstract class Token {
   def symbol: String
