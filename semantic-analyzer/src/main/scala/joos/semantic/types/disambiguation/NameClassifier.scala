@@ -6,6 +6,7 @@ import joos.ast.expressions._
 import joos.ast.types.{PrimitiveType, ArrayType, SimpleType, Type}
 import joos.ast.visitor.AstCompleteVisitor
 import joos.core.Logger
+import joos.ast.types.PrimitiveType.PrimitiveType
 
 class NameClassifier extends AstCompleteVisitor {
 
@@ -32,7 +33,7 @@ class NameClassifier extends AstCompleteVisitor {
         classifyNameAs(classification, simpleName)
     }
       case ArrayType(elementType, dimensions) => classifyTypeAs(classification, elementType)
-      case PrimitiveType(identifier) =>
+      case _: PrimitiveType =>
     }
   }
 

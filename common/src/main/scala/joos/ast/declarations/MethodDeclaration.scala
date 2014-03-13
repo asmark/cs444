@@ -9,6 +9,7 @@ import joos.semantic.BlockEnvironment
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.ParseTreeNode
 import joos.syntax.parsetree.TreeNode
+import joos.ast.types.PrimitiveType.PrimitiveType
 
 case class MethodDeclaration(
     modifiers: Seq[Modifier],
@@ -81,7 +82,7 @@ case class MethodDeclaration(
 
   private[this] def getTypeName(t: Type): String = {
     t match {
-      case PrimitiveType(token) => token.lexeme
+      case t: PrimitiveType => t.name
       case ArrayType(x, _) => getTypeName(x)
       case SimpleType(name) => {
         val typeDeclaration = compilationUnit.getVisibleType(name).get

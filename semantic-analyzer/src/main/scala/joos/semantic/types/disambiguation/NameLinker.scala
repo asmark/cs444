@@ -10,6 +10,8 @@ import joos.ast.visitor.AstCompleteVisitor
 import joos.core.Logger
 import joos.semantic.{BlockEnvironment, TypeEnvironment}
 import joos.syntax.tokens.{TokenKind, TerminalToken}
+import joos.ast.types.PrimitiveType.PrimitiveType
+import joos.ast.types.PrimitiveType
 
 class NameLinker(implicit unit: CompilationUnit) extends AstCompleteVisitor {
 
@@ -28,7 +30,7 @@ class NameLinker(implicit unit: CompilationUnit) extends AstCompleteVisitor {
         }
       }
       case ArrayType(t, dim) => None
-      case PrimitiveType(t) => None
+      case _: PrimitiveType => None
     }
   }
 
@@ -44,11 +46,11 @@ class NameLinker(implicit unit: CompilationUnit) extends AstCompleteVisitor {
       }
       case ArrayType(t, dim) => {
         fieldName.standardName match {
-          case "length" => Some(PrimitiveType(TerminalToken("int", TokenKind.Int)))
+          case "length" => Some(PrimitiveType.IntegerType)
           case _ => None
         }
       }
-      case PrimitiveType(t) => None
+      case _: PrimitiveType => None
     }
   }
 

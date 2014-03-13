@@ -9,8 +9,11 @@ trait Enumeration {
    */
   type T <: Value
 
-  protected class Value(val name: String) {
+  trait Value {
     val id = _values.length
+
+    /** Name of this value */
+    def name: String
 
     override def hashCode(): Int = id.##
 

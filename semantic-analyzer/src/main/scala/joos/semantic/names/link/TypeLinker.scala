@@ -6,6 +6,7 @@ import joos.ast.expressions._
 import joos.ast.visitor.AstCompleteVisitor
 import joos.semantic.MissingTypeException
 import joos.ast.types.{SimpleType, Type, PrimitiveType, ArrayType}
+import joos.ast.types.PrimitiveType.PrimitiveType
 
 /**
  * TypeLinker is responsible for the following name resolution checks:
@@ -31,7 +32,7 @@ class TypeLinker(implicit module: ModuleDeclaration, unit: CompilationUnit) exte
 
   def resolveType(typed: Type) {
     typed match {
-      case PrimitiveType(x) =>
+      case _: PrimitiveType =>
       case ArrayType(typed, dimensions) => resolveType(typed)
       case SimpleType(name) => resolveType(name)
     }
