@@ -15,12 +15,10 @@ class MarmosetA3Spec extends FlatSpec with Matchers {
   behavior of "Name resolution of valid joos"
   getValidTestCases(assignmentNumber).foreach {
     testCase => it should s"accept ${testCase.getName}" taggedAs IntegrationTest in {
-//      if (testCase.getName contains ("J1_evalMethodInvocationFromThis")) {
-        val files = getJavaFiles(testCase) ++ standardLibrary
-        val asts = files map SyntaxCheck.apply
-        NameResolution(asts)
-        TypeChecking(asts)
-//      }
+      val files = getJavaFiles(testCase) ++ standardLibrary
+      val asts = files map SyntaxCheck.apply
+      NameResolution(asts)
+      TypeChecking(asts)
     }
   }
 
