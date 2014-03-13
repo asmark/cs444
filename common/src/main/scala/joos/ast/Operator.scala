@@ -1,6 +1,5 @@
 package joos.ast
 
-import joos.semantic.SemanticException
 import joos.syntax.tokens.TerminalToken
 import joos.syntax.tokens.TokenKind
 
@@ -47,7 +46,6 @@ object Operator extends Enumeration {
       case TokenKind.BitOr => BitwiseInclusiveOr
       case TokenKind.Carrot => BitwiseExclusiveOr
       case TokenKind.Tilde => BitwiseNot
-      case _ => throw new SemanticException(s"${token.lexeme} is not an operator")
     }
   }
 }

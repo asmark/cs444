@@ -165,7 +165,7 @@ object Dfa {
     for (i <- 0 until numNodes) {
       val nodeData = reader.readLine().split(":")
       nodeData.length match {
-        case 2 => nodeMap += ((nodeData(0).toInt, AcceptingDfaNode(TokenKind.fromName(nodeData(1)))))
+        case 2 => nodeMap += ((nodeData(0).toInt, AcceptingDfaNode(TokenKind(nodeData(1)))))
         case 1 => nodeMap += ((nodeData(0).toInt, NonAcceptingDfaNode()))
       }
     }
