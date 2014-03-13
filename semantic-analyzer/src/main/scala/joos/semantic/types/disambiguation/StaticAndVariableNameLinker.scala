@@ -2,28 +2,50 @@ package joos.semantic.types.disambiguation
 
 import joos.ast.CompilationUnit
 import joos.ast.compositions.LikeName._
-import joos.ast.declarations.{TypeDeclaration, MethodDeclaration}
-import joos.ast.expressions.{VariableDeclarationExpression, SimpleNameExpression, QualifiedNameExpression}
+import joos.ast.declarations.MethodDeclaration
+import joos.ast.expressions._
 import joos.ast.statements._
 import joos.ast.types.{PrimitiveType, ArrayType, SimpleType, Type}
 import joos.ast.visitor.AstCompleteVisitor
 import joos.core.Logger
 import joos.semantic.{BlockEnvironment, TypeEnvironment}
-import joos.syntax.tokens.{TokenKind, TerminalToken}
+import joos.syntax.tokens.TerminalToken
+import joos.syntax.tokens.TokenKind
+import scala.Some
 
-class NameLinker(implicit unit: CompilationUnit) extends AstCompleteVisitor {
-
+class StaticAndVariableNameLinker(implicit unit: CompilationUnit) extends AstCompleteVisitor {
   private var typeEnvironment: TypeEnvironment = null
   private var blockEnvironment: BlockEnvironment = null
 
+  private def fullType(typeName: Type, unit: CompilationUnit): Type = {
+    typeName match {
+      case PrimitiveType(t) => PrimitiveType(t)
+      case ArrayType(t, dims) => ArrayType(fullType(t, unit), dims)
+      case SimpleType(t) => {
+        val typeDeclaration = unit.getVisibleType(t).get
+        SimpleType(QualifiedNameExpression(typeDeclaration.packageDeclaration.name, typeDeclaration.name))
+      }
+    }
+  }
+  
   private def getMethod(typeName: Type, methodName: SimpleNameExpression): Option[Type] = {
-    // array length first
     typeName match {
       case SimpleType(t) => {
         unit.getVisibleType(t).get.containedMethods.get(methodName) match {
           case None => None
-          case Some(methods) => {
-            methods.head.returnType
+          case Some(methodDeclarations) => {
+            methodDeclarations.head.returnType match {
+              case Some(returnType) => Some(fullType(returnType, methodDeclarations.head.typeDeclaration.compilationUnit))
+              case None => {
+                if (methodDeclarations.head.isConstructor) {
+                  throw new AmbiguousNameException(methodName)
+                } else {
+                  // TODO: Convert
+                  Some(PrimitiveType(TerminalToken("void", TokenKind.Void)))
+                  //simpleName.declarationType = void
+                }
+              }
+            }
           }
         }
       }
@@ -38,12 +60,13 @@ class NameLinker(implicit unit: CompilationUnit) extends AstCompleteVisitor {
         unit.getVisibleType(t).get.containedFields.get(fieldName) match {
           case None => None
           case Some(field) => {
-            Some(field.variableType)
+            Some(fullType(field.variableType, field.typeDeclaration.compilationUnit))
           }
         }
       }
       case ArrayType(t, dim) => {
         fieldName.standardName match {
+          // TODO: Convert
           case "length" => Some(PrimitiveType(TerminalToken("int", TokenKind.Int)))
           case _ => None
         }
@@ -120,6 +143,17 @@ class NameLinker(implicit unit: CompilationUnit) extends AstCompleteVisitor {
     expression.declaration.accept(this)
   }
 
+  override def apply(invocation: MethodInvocationExpression) {
+    invocation.expression foreach (_.accept(this))
+    invocation.arguments foreach (_.accept(this))
+    invocation.methodName.accept(this)
+  }
+
+  override def apply(expression: ArrayAccessExpression) {
+    expression.reference.accept(this)
+    expression.index.accept(this)
+  }
+
   override def apply(qualifiedName: QualifiedNameExpression) {
     require(qualifiedName.classification != Ambiguous)
     qualifiedName.classification match {
@@ -141,7 +175,7 @@ class NameLinker(implicit unit: CompilationUnit) extends AstCompleteVisitor {
         // Resolve left side of name first, and then use it to resolve self
         qualifiedName.qualifier match {
           case q: QualifiedNameExpression => apply(q)
-          case q: SimpleNameExpression => apply(q)
+          case q: SimpleNameExpression => resolve(q)
         }
         val qualifier = qualifiedName.qualifier
         assert(qualifier.declarationType != null)
@@ -151,7 +185,6 @@ class NameLinker(implicit unit: CompilationUnit) extends AstCompleteVisitor {
         if (getField(qualifier.declarationType, simpleName).isDefined) {
           qualifiedName.declarationType = getField(qualifier.declarationType, simpleName).get
         } else if (getMethod(qualifier.declarationType, simpleName).isDefined) {
-          // TODO: Last .get call might fail if reference a constructor
           qualifiedName.declarationType = getMethod(qualifier.declarationType, simpleName).get
         } else {
           throw new AmbiguousNameException(qualifiedName)
@@ -175,7 +208,7 @@ class NameLinker(implicit unit: CompilationUnit) extends AstCompleteVisitor {
     }
   }
 
-  override def apply(simpleName: SimpleNameExpression) {
+  def resolve(simpleName: SimpleNameExpression) {
     require(simpleName.classification != Ambiguous)
     simpleName.classification match {
       case PackageName => Logger.logInformation(s"SimpleName ${simpleName} is a PackageName")
@@ -191,24 +224,33 @@ class NameLinker(implicit unit: CompilationUnit) extends AstCompleteVisitor {
       case ExpressionName => {
         if (blockEnvironment != null && blockEnvironment.getVariable(simpleName).isDefined) {
           simpleName.declarationType = blockEnvironment.getVariable(simpleName).get.declarationType
-          //              getTypeDeclarationFromType(blockEnvironment.getVariable(simpleName).get.declarationType)
         } else {
           typeEnvironment.containedFields.get(simpleName) match {
             case None => throw new AmbiguousNameException(simpleName)
             case Some(fieldDeclaration) => {
               simpleName.declarationType = fieldDeclaration.variableType
-              //                  getTypeDeclarationFromType(typeEnvironment.containedFields(simpleName).variableType)
             }
           }
         }
       }
       case MethodName => {
         typeEnvironment.containedMethods.get(simpleName) match {
-          case None => throw new AmbiguousNameException(simpleName)
+          case None => {
+            throw new AmbiguousNameException(simpleName)
+          }
           case Some(methodDeclarations) => {
-            // TODO: Last .get call might fail if reference a constructor
-            // TODO: Link parameter types to correct method call
-            simpleName.declarationType = methodDeclarations.head.returnType.get
+            methodDeclarations.head.returnType match {
+              case Some(returnType) => simpleName.declarationType = returnType
+              case None => {
+                if (methodDeclarations.head.isConstructor) {
+                  throw new AmbiguousNameException(simpleName)
+                } else {
+                  // TODO: Convert
+                  simpleName.declarationType = PrimitiveType(TerminalToken("void", TokenKind.Void))
+                  //simpleName.declarationType = void
+                }
+              }
+            }
           }
         }
       }

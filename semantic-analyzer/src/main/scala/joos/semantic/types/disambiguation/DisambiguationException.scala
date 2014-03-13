@@ -8,3 +8,5 @@ abstract class DisambiguationException(message: String) extends TypeCheckingExce
 class ForwardFieldUseException(name: NameExpression) extends DisambiguationException(s"${name.standardName} was used before declaration")
 
 class AmbiguousNameException(name: NameExpression) extends DisambiguationException(s"${name.standardName} could not be resolved to a declaration")
+
+class InvalidStaticUseException(name: NameExpression) extends DisambiguationException(s"Attempted to reference static ${name.standardName} non-statically")
