@@ -20,7 +20,7 @@ trait AstNode {
 //      case node: BooleanLiteral => visitor(node)
       case node: CastExpression => visitor(node)
 //      case node: CharacterLiteral => visitor(node)
-      case node: ClassCreationExpression => visitor(node)
+      case node: ClassInstanceCreationExpression => visitor(node)
       case node: FieldAccessExpression => visitor(node)
       case node: InfixExpression => visitor(node)
       case node: InstanceOfExpression => visitor(node)

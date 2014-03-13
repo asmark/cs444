@@ -19,7 +19,7 @@ trait AstVisitor {
 //  def apply(expression: BooleanLiteral) {}
   def apply(expression: CastExpression) {}
 //  def apply(expression: CharacterLiteral) {}
-  def apply(expression: ClassCreationExpression) {}
+  def apply(expression: ClassInstanceCreationExpression) {}
   def apply(expression: FieldAccessExpression) {}
   def apply(expression: InfixExpression) {}
   def apply(expression: InstanceOfExpression) {}

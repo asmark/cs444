@@ -86,7 +86,7 @@ class NameClassifier extends AstCompleteVisitor {
     super.apply(instanceOfExpression)
   }
 
-  override def apply(classCreationExpression: ClassCreationExpression) {
+  override def apply(classCreationExpression: ClassInstanceCreationExpression) {
     classifyTypeAs(TypeName, classCreationExpression.classType)
 
     super.apply(classCreationExpression)

@@ -44,7 +44,7 @@ abstract class AstCompleteVisitor extends AstVisitor {
     expression.expression.accept(this)
   }
 
-  override def apply(expression: ClassCreationExpression) {
+  override def apply(expression: ClassInstanceCreationExpression) {
     expression.arguments foreach (_.accept(this))
   }
 

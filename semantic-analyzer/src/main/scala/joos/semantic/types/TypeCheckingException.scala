@@ -20,3 +20,7 @@ class PrefixExpressionException(msg: String) extends TypeCheckingException(msg)
 class CastExpressionException(msg: String) extends TypeCheckingException(msg)
 
 class InstanceOfExpressionException(msg: String) extends TypeCheckingException(msg)
+
+class VariableDeclarationExpressionException(msg: String) extends TypeCheckingException(msg)
+
+class AssignmentExpressionException(msg: String) extends TypeCheckingException(msg)

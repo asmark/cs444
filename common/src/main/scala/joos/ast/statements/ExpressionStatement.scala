@@ -19,7 +19,7 @@ object ExpressionStatement {
       case TreeNode(ProductionRule("StatementExpression", Seq("MethodInvocation")), _, children) =>
         MethodInvocationExpression(children(0))
       case TreeNode(ProductionRule("StatementExpression", Seq("ClassInstanceCreationExpression")), _, children) =>
-        ClassCreationExpression(children(0))
+        ClassInstanceCreationExpression(children(0))
       case _ => throw new AstConstructionException(
         "Invalid tree node to create StatementExpression"
       )

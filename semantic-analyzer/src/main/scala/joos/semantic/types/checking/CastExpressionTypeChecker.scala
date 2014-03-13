@@ -9,6 +9,8 @@ import joos.semantic.types.CastExpressionException
 trait CastExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
   override def apply(castExpression: CastExpression) {
+    castExpression.expression.accept(this)
+
     if (PrimitiveType.isNumeric(castExpression.castType) &&
         PrimitiveType.isNumeric(castExpression.expression.declarationType)) {
       castExpression.declarationType = castExpression.castType

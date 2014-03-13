@@ -1,6 +1,6 @@
 package joos.semantic.types.checking
 
-import joos.ast.expressions.ClassCreationExpression
+import joos.ast.expressions.ClassInstanceCreationExpression
 import joos.ast.types.SimpleType
 import joos.ast.{AstNode, Modifier}
 import joos.semantic.types.{ClassCreationException, AbstractClassCreationException}
@@ -8,7 +8,7 @@ import joos.ast.visitor.AstVisitor
 
 trait ClassCreationExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
-  override def apply(classCreationExpression: ClassCreationExpression) {
+  override def apply(classCreationExpression: ClassInstanceCreationExpression) {
     // Check that no objects of abstract classes are created
     val classType = classCreationExpression.classType
     classType match {
@@ -24,6 +24,7 @@ trait ClassCreationExpressionTypeChecker extends AstVisitor {
         }
     }
 
-    // TODO:
+    // TODO: Very complicated according to 15.9.1
+
   }
 }

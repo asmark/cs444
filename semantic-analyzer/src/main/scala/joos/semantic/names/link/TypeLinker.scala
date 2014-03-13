@@ -82,7 +82,7 @@ class TypeLinker(implicit module: ModuleDeclaration, unit: CompilationUnit) exte
     super.apply(expression)
   }
 
-  override def apply(expression: ClassCreationExpression) {
+  override def apply(expression: ClassInstanceCreationExpression) {
     resolveType(expression.classType)
 
     super.apply(expression)
