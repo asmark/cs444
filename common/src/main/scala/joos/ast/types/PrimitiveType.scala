@@ -3,22 +3,23 @@ package joos.ast.types
 import joos.ast.AstConstructionException
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
-import joos.syntax.tokens.TerminalToken
+import joos.syntax.tokens.{TokenKind, TerminalToken}
 
 case class PrimitiveType(token: TerminalToken) extends Type
 
 object PrimitiveType {
+  val IntegerType = PrimitiveType(TerminalToken("int", TokenKind.Int))
+  val CharType = PrimitiveType(TerminalToken("char", TokenKind.Char))
+  val BooleanType = PrimitiveType(TerminalToken("boolean", TokenKind.Boolean))
+  val ByteType = PrimitiveType(TerminalToken("byte", TokenKind.Byte))
+  val ShortType = PrimitiveType(TerminalToken("byte", TokenKind.Short))
 
-  final val Types = Set(
-    "int",
-    "long",
-    "byte",
-    "boolean",
-    "char",
-    "double",
-    "float",
-    "short"
-  )
+  def isNumeric(inputType: Type): Boolean = {
+    inputType match {
+      case IntegerType | ByteType | CharType | ShortType=> true
+      case _ => false
+    }
+  }
 
   private def extractNumericToken(numericType: ParseTreeNode): TerminalToken = {
     numericType.children(0).children(0).token match {

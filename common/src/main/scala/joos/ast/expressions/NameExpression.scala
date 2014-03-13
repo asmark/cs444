@@ -1,15 +1,15 @@
 package joos.ast.expressions
 
 import joos.ast.AstConstructionException
-import joos.ast.compositions.{LikeTyped, LikeName}
+import joos.ast.compositions.{LikeName}
 import joos.ast.types.Type
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
-trait NameExpression extends Expression with LikeName with LikeTyped {
+trait NameExpression extends Expression with LikeName {
   private var _declarationType: Type = null
   override def declarationType = _declarationType
-  def declarationType_=(newType: Type) = _declarationType = newType
+  override def declarationType_=(newType: Type) = _declarationType = newType
 }
 
 object NameExpression {

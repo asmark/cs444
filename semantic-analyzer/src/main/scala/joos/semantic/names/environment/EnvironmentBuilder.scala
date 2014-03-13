@@ -43,6 +43,7 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
           throw new DuplicatedFieldException(field.declarationName)
         }
         typed.add(field)
+        field.typeDeclaration = typed
     }
     typed.methods.foreach(_.accept(this))
   }

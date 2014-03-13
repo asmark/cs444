@@ -3,8 +3,11 @@ package joos.ast.expressions
 import joos.ast.AstConstructionException
 import joos.syntax.parsetree.{LeafNode, ParseTreeNode}
 import joos.syntax.tokens.{TokenKind, TerminalToken}
+import joos.ast.types.PrimitiveType
 
-case class CharacterLiteral(token: TerminalToken) extends LiteralExpression
+case class CharacterLiteral(token: TerminalToken) extends LiteralExpression {
+  override def declarationType = PrimitiveType.CharType
+}
 
 object CharacterLiteral {
   def apply(ptn: ParseTreeNode): CharacterLiteral = {

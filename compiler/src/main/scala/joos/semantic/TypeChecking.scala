@@ -2,7 +2,8 @@ package joos.semantic
 
 import joos.ast.AbstractSyntaxTree
 import joos.ast.declarations.ModuleDeclaration
-import joos.semantic.types.disambiguation.{NameLinker, NameDisambiguator, NameClassifier}
+import joos.semantic.types.checking.TypeChecker
+import joos.semantic.types.disambiguation.{StaticAndVariableNameLinker, NameDisambiguator, NameClassifier}
 
 object TypeChecking {
 
@@ -11,7 +12,8 @@ object TypeChecking {
     Seq(
       new NameClassifier,
       new NameDisambiguator,
-      new NameLinker
+      new StaticAndVariableNameLinker
+//      new TypeChecker
     )
   }
 

@@ -3,8 +3,11 @@ package joos.ast.expressions
 import joos.ast.AstConstructionException
 import joos.syntax.parsetree.{LeafNode, ParseTreeNode}
 import joos.syntax.tokens.{TokenKind, TerminalToken}
+import joos.ast.types.{NullType}
 
-case class NullLiteral(token: TerminalToken) extends LiteralExpression
+case class NullLiteral(token: TerminalToken) extends LiteralExpression {
+  override def declarationType = NullType()
+}
 
 object NullLiteral {
   def apply(ptn: ParseTreeNode): NullLiteral = {

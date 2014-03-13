@@ -3,9 +3,11 @@ package joos.ast.expressions
 import joos.ast.AstConstructionException
 import joos.syntax.parsetree.{LeafNode, ParseTreeNode}
 import joos.syntax.tokens.{TokenKind, TerminalToken}
+import joos.ast.types.PrimitiveType
 
-case class BooleanLiteral(token: TerminalToken) extends LiteralExpression
-
+case class BooleanLiteral(token: TerminalToken) extends LiteralExpression {
+  override def declarationType = PrimitiveType(TerminalToken("boolean", TokenKind.Boolean))
+}
 
 object BooleanLiteral {
   def apply(ptn: ParseTreeNode): BooleanLiteral = {

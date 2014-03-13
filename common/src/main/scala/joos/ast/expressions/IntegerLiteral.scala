@@ -3,8 +3,11 @@ package joos.ast.expressions
 import joos.ast.AstConstructionException
 import joos.syntax.parsetree.{LeafNode, ParseTreeNode}
 import joos.syntax.tokens.{TokenKind, TerminalToken}
+import joos.ast.types.PrimitiveType
 
-case class IntegerLiteral(token: TerminalToken) extends LiteralExpression
+case class IntegerLiteral(token: TerminalToken) extends LiteralExpression {
+  override def declarationType = PrimitiveType.IntegerType
+}
 
 object IntegerLiteral {
   def apply(ptn: ParseTreeNode): IntegerLiteral = {

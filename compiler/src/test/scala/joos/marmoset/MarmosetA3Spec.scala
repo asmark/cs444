@@ -1,6 +1,5 @@
 package joos.marmoset
 
-import java.io.File
 import joos.compiler.CompilationException
 import joos.core.Logger
 import joos.semantic.{TypeChecking, NameResolution}
@@ -27,11 +26,12 @@ class MarmosetA3Spec extends FlatSpec with Matchers {
   getInvalidTestCases(assignmentNumber).foreach {
     testCase => it should s"reject ${testCase.getName}" taggedAs IntegrationTest in {
       val files = getJavaFiles(testCase) ++ standardLibrary
-      Logger.logInformation(intercept[CompilationException] {
-        val asts = files map SyntaxCheck.apply
-        NameResolution(asts)
-        TypeChecking(asts)
-      }.getMessage)
+      Logger.logInformation(
+        intercept[CompilationException] {
+          val asts = files map SyntaxCheck.apply
+          NameResolution(asts)
+          TypeChecking(asts)
+        }.getMessage)
     }
   }
 }

@@ -3,10 +3,12 @@ package joos
 import joos.ast._
 import joos.ast.declarations.{PackageDeclaration, TypeDeclaration}
 import joos.ast.expressions.NameExpression
-import joos.ast.types.{PrimitiveType, ArrayType, SimpleType, Type}
+import joos.ast.types._
 import joos.core.Logger
 import scala.Some
 import scala.collection.mutable
+import scala.Some
+import joos.syntax.tokens.TokenKind
 
 package object semantic {
   /**
@@ -64,6 +66,7 @@ package object semantic {
   }
 
   def areEqual(type1: TypeDeclaration, type2: TypeDeclaration): Boolean = {
+
     require(type1.packageDeclaration != null)
     require(type2.packageDeclaration != null)
 
@@ -84,7 +87,7 @@ package object semantic {
       case (SimpleType(name1), SimpleType(name2)) => areEqual(getTypeDeclaration(name1), getTypeDeclaration(name2))
       case (ArrayType(name1, dimensions1), ArrayType(name2, dimensions2)) =>
         dimensions1 == dimensions2 && areEqual(name1, name2)
-      case (PrimitiveType(token1), PrimitiveType(token2)) => token1 == token2
+      case (PrimitiveType(token1), PrimitiveType(token2)) => token1.kind == token2.kind
       case _ => false
     }
   }
@@ -98,5 +101,51 @@ package object semantic {
         }
     }
     None
+  }
+
+  private def getUpperTypeDeclarations(aType: Type)(implicit unit: CompilationUnit): Set[TypeDeclaration] = {
+    aType match {
+      case PrimitiveType(_) => Set()
+      case ArrayType(_,_) => Set()
+      case SimpleType(typeName) => {
+        unit.getVisibleType(typeName) match {
+          case Some(typeDeclaration) => {
+            typeDeclaration.allAncestors
+          }
+          case _ => Set()
+        }
+      }
+    }
+  }
+
+  // dst = src
+  def isAssignable(dst: Type, src: Type)(implicit unit: CompilationUnit): Boolean = {
+    (dst, src) match {
+      case (dstPrimitive: PrimitiveType, srcPrimitive: PrimitiveType) => {
+        // TODO(Shengmin):
+        false
+      }
+      case (dstArrayType: ArrayType, srcType) => {
+        srcType match {
+          case srcArrayType: ArrayType => isAssignable(dstArrayType.elementType, srcArrayType.elementType)
+          case NullType() => true
+          case _ => false
+        }
+      }
+      case (dstSimpleType: SimpleType, srcType) => {
+        srcType match {
+          case SimpleType(_) => {
+            unit.getVisibleType(dstSimpleType.name) match {
+              case Some(typeDeclaration) => getUpperTypeDeclarations(srcType).contains(typeDeclaration)
+              case None => false
+            }
+          }
+          case NullType() => true
+          case _ => false
+        }
+      }
+      case (NullType(), _) => false
+      case (_,_) => false
+    }
   }
 }
