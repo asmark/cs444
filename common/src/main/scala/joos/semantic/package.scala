@@ -103,12 +103,12 @@ package object semantic {
 
   private def getUpperTypeDeclarations(aType: Type)(implicit unit: CompilationUnit): Set[TypeDeclaration] = {
     aType match {
-      case PrimitiveType => Set()
-      case ArrayType => Set()
+      case PrimitiveType(_) => Set()
+      case ArrayType(_,_) => Set()
       case SimpleType(typeName) => {
         unit.getVisibleType(typeName) match {
           case Some(typeDeclaration) => {
-            typeDeclaration.allAncestors.toSeq
+            typeDeclaration.allAncestors
           }
           case _ => Set()
         }
@@ -122,19 +122,19 @@ package object semantic {
       case (dstArrayType: ArrayType, srcType) => {
         srcType match {
           case srcArrayType: ArrayType => isAssignable(dstArrayType.elementType, srcArrayType.elementType)
-          case NullType => true
+          case NullType() => true
           case _ => false
         }
       }
       case (dstSimpleType: SimpleType, srcType) => {
         srcType match {
-          case SimpleType => {
+          case SimpleType(_) => {
             unit.getVisibleType(dstSimpleType.name) match {
               case Some(typeDeclaration) => getUpperTypeDeclarations(srcType).contains(typeDeclaration)
               case None => false
             }
           }
-          case NullType => true
+          case NullType() => true
           case _ => false
         }
       }
