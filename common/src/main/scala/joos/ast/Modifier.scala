@@ -4,10 +4,10 @@ import joos.core.Enumeration
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{LeafNode, TreeNode, ParseTreeNode}
 
+class Modifier(val name: String) extends AstNode with Modifier.Value
+
 object Modifier extends Enumeration {
   type T = Modifier
-
-  class Modifier(val name: String) extends AstNode with Value
 
   final val Protected = this + new Modifier("protected")
   final val Public = this + new Modifier("public")
@@ -27,6 +27,4 @@ object Modifier extends Enumeration {
       case _ => throw new AstConstructionException("Invalid production rule to create modifier")
     }
   }
-
-
 }

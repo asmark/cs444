@@ -1,17 +1,16 @@
 package joos.ast.declarations
 
+import joos.ast.Modifier
 import joos.ast._
 import joos.ast.compositions.{LikeBlock, LikeDeclaration}
 import joos.ast.expressions.{NameExpression, SimpleNameExpression}
 import joos.ast.statements.Block
-import joos.ast.types.{PrimitiveType, SimpleType, Type, ArrayType}
+import joos.ast.types.PrimitiveType
+import joos.ast.types.{SimpleType, Type, ArrayType}
 import joos.semantic.BlockEnvironment
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.ParseTreeNode
 import joos.syntax.parsetree.TreeNode
-import joos.ast.types.PrimitiveType.PrimitiveType
-import joos.ast.Modifier.Modifier
-import joos.ast.Modifier
 
 case class MethodDeclaration(
     modifiers: Seq[Modifier],

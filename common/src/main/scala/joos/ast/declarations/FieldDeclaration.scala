@@ -2,7 +2,6 @@ package joos.ast.declarations
 
 import joos.ast.AstConstructionException
 import joos.ast.Modifier
-import joos.ast.Modifier.Modifier
 import joos.ast.compositions.LikeTypedDeclaration
 import joos.ast.types.Type
 import joos.syntax.language.ProductionRule

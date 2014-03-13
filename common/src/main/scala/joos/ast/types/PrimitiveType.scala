@@ -6,10 +6,10 @@ import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 import joos.syntax.tokens.TerminalToken
 
+class PrimitiveType(val name: String) extends Type with PrimitiveType.Value
+
 object PrimitiveType extends Enumeration {
   type T = PrimitiveType
-
-  class PrimitiveType(val name: String) extends Type with Value
 
   final val IntegerType = this + new PrimitiveType("int")
   final val CharType = this + new PrimitiveType("char")

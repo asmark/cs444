@@ -3,10 +3,10 @@ package joos.semantic.names.link
 import joos.ast._
 import joos.ast.declarations._
 import joos.ast.expressions._
+import joos.ast.types.PrimitiveType
+import joos.ast.types.{SimpleType, Type, ArrayType}
 import joos.ast.visitor.AstCompleteVisitor
 import joos.semantic.MissingTypeException
-import joos.ast.types.{SimpleType, Type, PrimitiveType, ArrayType}
-import joos.ast.types.PrimitiveType.PrimitiveType
 
 /**
  * TypeLinker is responsible for the following name resolution checks:

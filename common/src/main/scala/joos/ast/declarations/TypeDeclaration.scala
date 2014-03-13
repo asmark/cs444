@@ -1,7 +1,6 @@
 package joos.ast.declarations
 
 import joos.ast.Modifier
-import joos.ast.Modifier.Modifier
 import joos.ast.compositions.LikeDeclaration
 import joos.ast.expressions.{SimpleNameExpression, NameExpression}
 import joos.ast.{AstConstructionException, CompilationUnit}

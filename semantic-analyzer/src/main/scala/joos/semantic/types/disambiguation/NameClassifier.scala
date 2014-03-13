@@ -3,10 +3,10 @@ package joos.semantic.types.disambiguation
 import joos.ast.compositions.LikeName._
 import joos.ast.declarations._
 import joos.ast.expressions._
-import joos.ast.types.{PrimitiveType, ArrayType, SimpleType, Type}
+import joos.ast.types.PrimitiveType
+import joos.ast.types.{ArrayType, SimpleType, Type}
 import joos.ast.visitor.AstCompleteVisitor
 import joos.core.Logger
-import joos.ast.types.PrimitiveType.PrimitiveType
 
 class NameClassifier extends AstCompleteVisitor {
 
@@ -31,7 +31,7 @@ class NameClassifier extends AstCompleteVisitor {
       }
       case SimpleType(simpleName) => {
         classifyNameAs(classification, simpleName)
-    }
+      }
       case ArrayType(elementType, dimensions) => classifyTypeAs(classification, elementType)
       case _: PrimitiveType =>
     }

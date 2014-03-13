@@ -4,7 +4,6 @@ import joos.ast.expressions.NameExpression
 import joos.ast.{AstConstructionException, AstNode}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
-import joos.ast.types.PrimitiveType.PrimitiveType
 
 trait Type extends AstNode {
   def standardName: String = {

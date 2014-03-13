@@ -7,10 +7,6 @@ import joos.ast.types._
 import joos.core.Logger
 import scala.Some
 import scala.collection.mutable
-import scala.Some
-import joos.syntax.tokens.TokenKind
-import joos.ast.types.PrimitiveType.PrimitiveType
-import joos.ast.types.PrimitiveType
 
 package object semantic {
   /**
@@ -108,7 +104,7 @@ package object semantic {
   private def getUpperTypeDeclarations(aType: Type)(implicit unit: CompilationUnit): Set[TypeDeclaration] = {
     aType match {
       case _: PrimitiveType => Set()
-      case ArrayType(_,_) => Set()
+      case ArrayType(_, _) => Set()
       case SimpleType(typeName) => {
         unit.getVisibleType(typeName) match {
           case Some(typeDeclaration) => {
@@ -147,8 +143,8 @@ package object semantic {
         }
       }
       case (NullType(), _) => false
-      case (unit.javaLangObjectType, ArrayType(_,_)) => true
-      case (_,_) => false
+      case (unit.javaLangObjectType, ArrayType(_, _)) => true
+      case (_, _) => false
     }
   }
 }

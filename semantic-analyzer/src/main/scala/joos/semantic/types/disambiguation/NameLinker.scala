@@ -2,16 +2,14 @@ package joos.semantic.types.disambiguation
 
 import joos.ast.CompilationUnit
 import joos.ast.compositions.LikeName._
-import joos.ast.declarations.{TypeDeclaration, MethodDeclaration}
+import joos.ast.declarations.MethodDeclaration
 import joos.ast.expressions.{VariableDeclarationExpression, SimpleNameExpression, QualifiedNameExpression}
 import joos.ast.statements._
-import joos.ast.types.{PrimitiveType, ArrayType, SimpleType, Type}
+import joos.ast.types.PrimitiveType
+import joos.ast.types.{ArrayType, SimpleType, Type}
 import joos.ast.visitor.AstCompleteVisitor
 import joos.core.Logger
 import joos.semantic.{BlockEnvironment, TypeEnvironment}
-import joos.syntax.tokens.{TokenKind, TerminalToken}
-import joos.ast.types.PrimitiveType.PrimitiveType
-import joos.ast.types.PrimitiveType
 
 class NameLinker(implicit unit: CompilationUnit) extends AstCompleteVisitor {
 

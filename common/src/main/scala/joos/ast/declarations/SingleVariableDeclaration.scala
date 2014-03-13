@@ -1,7 +1,7 @@
 package joos.ast.declarations
 
 import joos.ast.AstConstructionException
-import joos.ast.Modifier.Modifier
+import joos.ast.Modifier
 import joos.ast.compositions.LikeTypedDeclaration
 import joos.ast.expressions.{Expression, SimpleNameExpression}
 import joos.ast.types.Type
