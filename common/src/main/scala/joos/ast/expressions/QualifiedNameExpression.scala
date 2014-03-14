@@ -6,6 +6,12 @@ import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
 case class QualifiedNameExpression(qualifier: NameExpression, name: SimpleNameExpression) extends NameExpression {
   override lazy val standardName = qualifier.standardName + '.' + name.standardName
+  def unfold: Seq[SimpleNameExpression] = {
+    qualifier match {
+      case simpleName: SimpleNameExpression => Seq(simpleName) :+ name
+      case qualifiedName: QualifiedNameExpression => qualifiedName.unfold :+ name
+    }
+  }
 }
 
 object QualifiedNameExpression {

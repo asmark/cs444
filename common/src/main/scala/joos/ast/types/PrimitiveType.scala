@@ -19,9 +19,6 @@ object PrimitiveType extends Enumeration {
   final val VoidType = this + new PrimitiveType("void")
   final val NullType = this + new PrimitiveType("null")
 
-  @deprecated("Use {{Type.isNumeric}} instead", "3.0.0")
-  def isNumeric(inputType: Type): Boolean = inputType.isNumeric
-
   private[this] def extractNumericToken(numericType: ParseTreeNode) = {
     numericType.children(0).children(0).token match {
       case terminalToken: TerminalToken => fromName(terminalToken.lexeme)

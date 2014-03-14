@@ -2,7 +2,7 @@ package joos.ast.declarations
 
 import joos.ast.AstConstructionException
 import joos.ast.Modifier
-import joos.ast.compositions.LikeTypedDeclaration
+import joos.ast.compositions.TypedDeclarationLike
 import joos.ast.types.Type
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
@@ -10,14 +10,14 @@ import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 case class FieldDeclaration(
     modifiers: Seq[Modifier],
     variableType: Type,
-    fragment: VariableDeclarationFragment) extends BodyDeclaration with LikeTypedDeclaration {
+    fragment: VariableDeclarationFragment) extends BodyDeclaration with TypedDeclarationLike {
   def declarationType = variableType
 
   def declarationName = fragment.identifier
 
   var typeDeclaration: TypeDeclaration = null
   
-  def isStatic = {
+  lazy val isStatic = {
     require(typeDeclaration != null)
     typeDeclaration.isInterface || (modifiers contains Modifier.Static)
   }

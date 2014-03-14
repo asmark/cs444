@@ -15,6 +15,8 @@ trait Type extends AstNode {
     }
   }
 
+  override def toString = standardName
+
   def isNumeric: Boolean = this match {
     case IntegerType | ByteType | CharType | ShortType => true
     case _ => false

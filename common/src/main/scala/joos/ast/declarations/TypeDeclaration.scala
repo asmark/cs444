@@ -1,7 +1,7 @@
 package joos.ast.declarations
 
 import joos.ast.Modifier
-import joos.ast.compositions.LikeDeclaration
+import joos.ast.compositions.DeclarationLike
 import joos.ast.expressions.{SimpleNameExpression, NameExpression}
 import joos.ast.{AstConstructionException, CompilationUnit}
 import joos.semantic.TypeEnvironment
@@ -17,7 +17,7 @@ case class TypeDeclaration(
     fields: Seq[FieldDeclaration],
     methods: Seq[MethodDeclaration])
     extends BodyDeclaration
-    with TypeEnvironment with LikeDeclaration {
+    with TypeEnvironment with DeclarationLike {
   implicit var compilationUnit: CompilationUnit = null
   var packageDeclaration: PackageDeclaration = null
 

@@ -80,14 +80,14 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
     localMethods.map(
       method => {
 
-        if (typeDeclaration.isConcreteClass && method.isAbstractMethod)
+        if (typeDeclaration.isConcreteClass && method.isAbstract)
           throw new ConcreteClassAbstractMethodException(method, typeDeclaration)
       }
     )
     val localSignatures = localMethods.map(method => method.localSignature)
     for (method <- inheritMethods.values.flatten) {
       if (typeDeclaration.isConcreteClass &&
-          method.isAbstractMethod &&
+          method.isAbstract &&
           !localSignatures.contains(method.localSignature))
         throw new ConcreteClassAbstractMethodException(method, typeDeclaration)
     }
@@ -113,7 +113,7 @@ class AdvancedHierarchyChecker(implicit module: ModuleDeclaration, unit: Compila
 
     for (inheritedMethodA <- typeDeclaration.containedMethods.values.flatten) {
       for (inheritedMethodB <- typeDeclaration.containedMethods.values.flatten) {
-        if (!inheritedMethodA.isAbstractMethod && inheritedMethodB.isAbstractMethod) {
+        if (!inheritedMethodA.isAbstract && inheritedMethodB.isAbstract) {
           if (inheritedMethodA.typedSignature == inheritedMethodB.typedSignature
               && !typeDeclaration.methodMap.contains(inheritedMethodA.typedSignature)) {
             ensureValidReplaces(inheritedMethodA, inheritedMethodB)
