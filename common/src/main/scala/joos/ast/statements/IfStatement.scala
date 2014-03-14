@@ -8,6 +8,14 @@ import joos.semantic.BlockEnvironment
 
 case class IfStatement(condition: Expression, trueStatement: Statement, falseStatement: Option[Statement]) extends Statement {
   override var environment: BlockEnvironment = null
+
+  override def toString = {
+    val suffix = falseStatement match {
+      case None => ""
+      case Some(statement) => s" else {\n${statement}\n}"
+    }
+    s"if (${condition}) {\n${trueStatement}\n}${suffix}\n"
+  }
 }
 
 object IfStatement {

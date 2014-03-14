@@ -6,9 +6,17 @@ import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
 case class VariableDeclarationFragment(
-  identifier: SimpleNameExpression,
-  initializer: Option[Expression]
-) extends AstNode
+    identifier: SimpleNameExpression,
+    initializer: Option[Expression]) extends AstNode {
+
+  override def toString = {
+    val suffix = initializer match {
+      case Some(expression) => " = " + expression.toString
+      case None => ""
+    }
+    identifier.standardName + suffix
+  }
+}
 
 object VariableDeclarationFragment {
   def apply(ptn: ParseTreeNode): VariableDeclarationFragment = {
@@ -16,9 +24,9 @@ object VariableDeclarationFragment {
       case TreeNode(ProductionRule("VariableDeclarator", Seq("VariableDeclaratorId")), _, children) =>
         VariableDeclarationFragment(SimpleNameExpression(children(0).children(0)), None)
       case TreeNode(
-        ProductionRule("VariableDeclarator", Seq("VariableDeclaratorId", "=", "VariableInitializer")),
-        _,
-        children
+      ProductionRule("VariableDeclarator", Seq("VariableDeclaratorId", "=", "VariableInitializer")),
+      _,
+      children
       ) =>
         VariableDeclarationFragment(
           SimpleNameExpression(children(0).children(0)),

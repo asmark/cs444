@@ -4,11 +4,8 @@ import joos.ast.AstConstructionException
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.ParseTreeNode
 import joos.syntax.parsetree.TreeNode
-import joos.syntax.tokens.TerminalToken
 
-trait LiteralExpression extends Expression {
-   def token: TerminalToken
- }
+trait LiteralExpression extends Expression
 
 object LiteralExpression {
   def apply(ptn: ParseTreeNode): LiteralExpression = {

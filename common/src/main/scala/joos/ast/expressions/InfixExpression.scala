@@ -4,7 +4,9 @@ import joos.ast.{Operator, AstConstructionException}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{LeafNode, TreeNode, ParseTreeNode}
 
-case class InfixExpression(left: Expression, operator: Operator, right: Expression) extends Expression
+case class InfixExpression(left: Expression, operator: Operator, right: Expression) extends Expression {
+  override def toString = s"${left} ${operator} ${right}"
+}
 
 object InfixExpression {
   def apply(ptn: ParseTreeNode): InfixExpression = {
