@@ -5,7 +5,7 @@ import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
 case class ParenthesizedExpression(expression: Expression) extends Expression {
-  override def toString = '(' + expression.toString + ')'
+  override def toString = s"(${expression})"
 }
 
 object ParenthesizedExpression {

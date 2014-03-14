@@ -14,7 +14,7 @@ trait PrefixExpressionTypeChecker extends AstVisitor {
     require(prefixExpression.operand.declarationType != null)
 
     prefixExpression.operator match {
-      case Increment | Decrement | Plus | Minus | Tilde => {
+      case Plus | Minus => {
         prefixExpression.operand.declarationType match {
           case PrimitiveType.IntegerType => {
             prefixExpression.declarationType = prefixExpression.operand.declarationType
