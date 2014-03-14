@@ -9,7 +9,7 @@ class ImplicitThisInStaticException(msg: String) extends TypeCheckingException(m
 
 class AbstractClassCreationException(msg: String) extends TypeCheckingException(msg)
 
-class ClassCreationException(msg: String) extends TypeCheckingException(msg)
+class ClassInstanceCreationException(msg: String) extends TypeCheckingException(msg)
 
 class ArrayAccessException(msg: String) extends TypeCheckingException(msg)
 
@@ -30,3 +30,5 @@ class FieldAccessExpressionException(msg: String) extends TypeCheckingException(
 class MethodInvocationExpressionException(msg: String) extends TypeCheckingException(msg)
 
 class ParenthesizedExpressionException(msg: String) extends TypeCheckingException(msg)
+
+class MissingConstructorException(msg: String) extends TypeCheckingException(msg)

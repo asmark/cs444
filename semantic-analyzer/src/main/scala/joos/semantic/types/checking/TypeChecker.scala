@@ -3,19 +3,15 @@ package joos.semantic.types.checking
 import joos.ast.visitor.AstCompleteVisitor
 import joos.ast.{Modifier, CompilationUnit}
 import joos.ast.declarations.{TypeDeclaration, MethodDeclaration, FieldDeclaration}
-import joos.ast.expressions._
 import joos.semantic.types._
-import joos.ast.types.{ArrayType, SimpleType, PrimitiveType, Type}
-import joos.syntax.tokens.{TokenKind, TerminalToken}
-import scala.Some
-import joos.syntax.tokens.TerminalToken
+import joos.semantic._
 
 class TypeChecker(implicit val unit: CompilationUnit) extends AstCompleteVisitor
   with AssignmentExpressionTypeChecker
   with ArrayAccessExpressionTypeChecker
   with ArrayCreationExpressionTypeChecker
   with CastExpressionTypeChecker
-  with ClassCreationExpressionTypeChecker
+  with ClassInstanceCreationExpressionTypeChecker
   with FieldAccessExpressionTypeChecker
   with InfixExpressionTypeChecker
   with MethodInvocationExpressionTypeChecker
@@ -55,6 +51,25 @@ class TypeChecker(implicit val unit: CompilationUnit) extends AstCompleteVisitor
     } else {
       super.apply(methodDeclaration)
     }
+  }
 
+  override def apply(typeDeclaration: TypeDeclaration) {
+    // A constructor in a class other than java.lang.Object implicitly calls the zero-argument constructor of its superclass.
+    // Check that this zero-argument constructor exists.
+    getSuperType(typeDeclaration) map {
+      superType => {
+        val zeroArgConstructor = superType.constructorMap.values.find(_.parameters.size == 0)
+        if (zeroArgConstructor.isEmpty)
+          throw new MissingConstructorException(s"Missing zero argument constructor in ${superType.declarationName.standardName}")
+      }
+    }
+
+    typeDeclaration.constructorMap.values.foreach(
+      constructor => {
+        if (!(constructor.name equals typeDeclaration.name)) {
+          throw new MissingConstructorException(s"Mismatched constructor and type declaration ${typeDeclaration.declarationName.standardName}")
+        }
+      }
+    )
   }
 }
