@@ -22,7 +22,7 @@ trait FieldAccessExpressionTypeChecker extends AstVisitor {
     * then the field access is undefined and a compile-time error occurs.
     */
     primaryType match {
-      case PrimitiveType(_) | ArrayType(_,_) =>
+      case _: PrimitiveType | ArrayType(_,_) =>
         throw new FieldAccessExpressionException(s"Primary expression is not of a reference type ${primaryType.standardName}")
       case SimpleType(typeName) => {
         unit.getVisibleType(typeName) match {
