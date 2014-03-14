@@ -18,6 +18,7 @@ abstract class AstCompleteVisitor extends AstVisitor {
   }
 
   override def apply(variable: SingleVariableDeclaration) {
+    variable.identifier.accept(this)
     variable.initializer foreach (_.accept(this))
   }
 
@@ -50,6 +51,7 @@ abstract class AstCompleteVisitor extends AstVisitor {
 
   override def apply(expression: FieldAccessExpression) {
     expression.expression.accept(this)
+    expression.identifier.accept(this)
   }
 
   override def apply(expression: InfixExpression) {
@@ -64,6 +66,7 @@ abstract class AstCompleteVisitor extends AstVisitor {
   override def apply(expression: MethodInvocationExpression) {
     expression.expression foreach (_.accept(this))
     expression.arguments foreach (_.accept(this))
+    expression.methodName.accept(this)
   }
 
   override def apply(expression: ParenthesizedExpression) {

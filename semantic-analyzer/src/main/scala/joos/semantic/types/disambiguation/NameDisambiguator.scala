@@ -135,10 +135,8 @@ class NameDisambiguator(implicit unit: CompilationUnit) extends AstCompleteVisit
     if (leftName.classification == PackageName) {
       if (unit.getVisibleType(qualifiedName).isDefined) {
         qualifiedName.classifyContext(TypeName)
-        rightName.classifyContext(TypeName)
       } else {
         qualifiedName.classifyContext(PackageName)
-        rightName.classifyContext(PackageName)
       }
       // If the name to the left of the "." is reclassified as a TypeName, then if the Identifier is the name of a method or field of the class or
       // interface denoted by TypeName, this AmbiguousName is reclassified as an ExpressionName. Otherwise,
@@ -152,7 +150,6 @@ class NameDisambiguator(implicit unit: CompilationUnit) extends AstCompleteVisit
 
       if (referencedType.get.containedFields.contains(rightName) || referencedType.get.containedMethods.contains(rightName)) {
         qualifiedName.classifyContext(ExpressionName)
-        rightName.classifyContext(ExpressionName)
 
       } else {
         throw new AmbiguousNameException(qualifiedName)
@@ -161,7 +158,6 @@ class NameDisambiguator(implicit unit: CompilationUnit) extends AstCompleteVisit
       // If the name to the left of the "." is reclassified as an ExpressionName, then this AmbiguousName is reclassified as an ExpressionName.
     } else if (leftName.classification == ExpressionName) {
       qualifiedName.classifyContext(ExpressionName)
-      rightName.classifyContext(ExpressionName)
     }
 
   }

@@ -14,6 +14,13 @@ case class FieldDeclaration(
   def declarationType = variableType
 
   def declarationName = fragment.identifier
+
+  var typeDeclaration: TypeDeclaration = null
+  
+  def isStatic = {
+    require(typeDeclaration != null)
+    typeDeclaration.isInterface || (modifiers contains Modifier.Static)
+  }
 }
 
 object FieldDeclaration {

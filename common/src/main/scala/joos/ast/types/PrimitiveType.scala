@@ -16,6 +16,7 @@ object PrimitiveType extends Enumeration {
   final val BooleanType = this + new PrimitiveType("boolean")
   final val ByteType = this + new PrimitiveType("byte")
   final val ShortType = this + new PrimitiveType("short")
+  final val VoidType = this + new PrimitiveType("void")
 
   def isNumeric(inputType: Type): Boolean = {
     inputType match {
