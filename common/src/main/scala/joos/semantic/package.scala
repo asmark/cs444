@@ -30,7 +30,7 @@ package object semantic {
   def getSuperType(typeDeclaration: TypeDeclaration): Option[TypeDeclaration] = {
     require(typeDeclaration.compilationUnit != null)
     val compilationUnit = typeDeclaration.compilationUnit
-    fullName(typeDeclaration) equals javaLangObject.standardName match {
+    typeDeclaration.fullName equals javaLangObject.standardName match {
       case true => None
       case false => {
         Some(
@@ -54,21 +54,8 @@ package object semantic {
     }
   }
 
-  def fullName(typeDeclaration: TypeDeclaration) = {
-    require(typeDeclaration.packageDeclaration != null)
-    if (typeDeclaration.packageDeclaration == PackageDeclaration.DefaultPackage) {
-      typeDeclaration.name.standardName
-    } else {
-      typeDeclaration.packageDeclaration.name.standardName + '.' + typeDeclaration.name.standardName
-    }
-  }
-
   def areEqual(type1: TypeDeclaration, type2: TypeDeclaration): Boolean = {
-
-    require(type1.packageDeclaration != null)
-    require(type2.packageDeclaration != null)
-
-    fullName(type1) equals fullName(type2)
+    type1.fullName equals type2.fullName
   }
 
   def areEqual(type1: Option[Type], type2: Option[Type])(implicit unit: CompilationUnit): Boolean = {
