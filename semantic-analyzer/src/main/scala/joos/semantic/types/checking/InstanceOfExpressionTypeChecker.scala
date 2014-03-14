@@ -9,6 +9,9 @@ import joos.ast.types.{ArrayType, SimpleType, NullType, PrimitiveType}
 trait InstanceOfExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
   override def apply(instanceOfExpression: InstanceOfExpression) {
+    instanceOfExpression.expression.accept(this)
+
+    require(instanceOfExpression.expression.declarationType != null)
     if (isAssignable(instanceOfExpression.classType, instanceOfExpression.expression.declarationType) ||
         isAssignable(instanceOfExpression.expression.declarationType, instanceOfExpression.classType)) {
       instanceOfExpression.classType match {

@@ -1,15 +1,22 @@
 package joos.syntax.tokens
 
+import joos.core.Enumeration
 import joos.syntax.regexp.RegularExpression
 
 object TokenKind extends Enumeration {
-  type TokenKind = Value
+  self =>
 
-  case class TokenKindValue(name: String, regexp: () => RegularExpression) extends Val(name) {
+  type T = TokenKindValue
+  type TokenKind = TokenKindValue
+
+  class TokenKindValue(val name: String, regexp: () => RegularExpression) extends Value {
+    self + this
+
     def getRegexp() = regexp() := this
 
     def getName() = name
   }
+
 
   def getHighestPriority(kinds: Set[TokenKind]): TokenKind = {
     values.find(kinds.contains).get
@@ -21,6 +28,10 @@ object TokenKind extends Enumeration {
       case Some(symbol: String) => symbol
       case None => tokenName
     }
+  }
+
+  private[this] def TokenKindValue(name: String, regex: () => RegularExpression): TokenKindValue = {
+    new TokenKindValue(name, regex)
   }
 
   // In order of priority

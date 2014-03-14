@@ -7,8 +7,6 @@ import joos.ast.types._
 import joos.core.Logger
 import scala.Some
 import scala.collection.mutable
-import scala.Some
-import joos.syntax.tokens.TokenKind
 
 package object semantic {
   /**
@@ -87,7 +85,7 @@ package object semantic {
       case (SimpleType(name1), SimpleType(name2)) => areEqual(getTypeDeclaration(name1), getTypeDeclaration(name2))
       case (ArrayType(name1, dimensions1), ArrayType(name2, dimensions2)) =>
         dimensions1 == dimensions2 && areEqual(name1, name2)
-      case (PrimitiveType(token1), PrimitiveType(token2)) => token1.kind == token2.kind
+      case (t1: PrimitiveType, t2: PrimitiveType) => t1 == t2
       case _ => false
     }
   }
@@ -105,8 +103,8 @@ package object semantic {
 
   private def getUpperTypeDeclarations(aType: Type)(implicit unit: CompilationUnit): Set[TypeDeclaration] = {
     aType match {
-      case PrimitiveType(_) => Set()
-      case ArrayType(_,_) => Set()
+      case _: PrimitiveType => Set()
+      case ArrayType(_, _) => Set()
       case SimpleType(typeName) => {
         unit.getVisibleType(typeName) match {
           case Some(typeDeclaration) => {
@@ -145,7 +143,8 @@ package object semantic {
         }
       }
       case (NullType(), _) => false
-      case (_,_) => false
+      case (unit.javaLangObjectType, ArrayType(_, _)) => true
+      case (_, _) => false
     }
   }
 }

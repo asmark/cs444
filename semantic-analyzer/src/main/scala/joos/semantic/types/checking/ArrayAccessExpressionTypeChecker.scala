@@ -1,6 +1,6 @@
 package joos.semantic.types.checking
 
-import joos.ast.expressions.ArrayAccessExpression
+import joos.ast.expressions.{ArrayCreationExpression, ArrayAccessExpression}
 import joos.ast.types.{PrimitiveType, ArrayType}
 import joos.syntax.tokens.{TokenKind, TerminalToken}
 import joos.semantic.types.ArrayAccessException
@@ -12,13 +12,15 @@ trait ArrayAccessExpressionTypeChecker extends AstVisitor {
     arrayAccessExpression.reference.accept(this)
     arrayAccessExpression.index.accept(this)
 
+    require(arrayAccessExpression.reference.declarationType != null)
     arrayAccessExpression.reference.declarationType match {
       case arrayType: ArrayType => {
-        val temp = arrayAccessExpression.index.declarationType.equals(PrimitiveType.IntegerType)
-        arrayAccessExpression.index.declarationType match {
-          case PrimitiveType.IntegerType =>
-            arrayAccessExpression.declarationType = arrayType.elementType
-          case _ => throw new ArrayAccessException(
+        // TODO: the index type undergoes promotion
+        require(arrayAccessExpression.index.declarationType != null)
+        if (PrimitiveType.isNumeric(arrayAccessExpression.index.declarationType)) {
+          arrayAccessExpression.declarationType = arrayType.elementType
+        } else {
+          throw new ArrayAccessException(
             s"invalid index type ${arrayAccessExpression.index.declarationType.standardName} in ${arrayType.elementType}[]"
           )
         }

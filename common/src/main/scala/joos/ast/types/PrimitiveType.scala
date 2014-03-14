@@ -1,29 +1,33 @@
 package joos.ast.types
 
 import joos.ast.AstConstructionException
+import joos.core.Enumeration
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
-import joos.syntax.tokens.{TokenKind, TerminalToken}
+import joos.syntax.tokens.TerminalToken
 
-case class PrimitiveType(token: TerminalToken) extends Type
+class PrimitiveType(val name: String) extends Type with PrimitiveType.Value
 
-object PrimitiveType {
-  val IntegerType = PrimitiveType(TerminalToken("int", TokenKind.Int))
-  val CharType = PrimitiveType(TerminalToken("char", TokenKind.Char))
-  val BooleanType = PrimitiveType(TerminalToken("boolean", TokenKind.Boolean))
-  val ByteType = PrimitiveType(TerminalToken("byte", TokenKind.Byte))
-  val ShortType = PrimitiveType(TerminalToken("byte", TokenKind.Short))
+object PrimitiveType extends Enumeration {
+  type T = PrimitiveType
+
+  final val IntegerType = this + new PrimitiveType("int")
+  final val CharType = this + new PrimitiveType("char")
+  final val BooleanType = this + new PrimitiveType("boolean")
+  final val ByteType = this + new PrimitiveType("byte")
+  final val ShortType = this + new PrimitiveType("short")
+  final val VoidType = this + new PrimitiveType("void")
 
   def isNumeric(inputType: Type): Boolean = {
     inputType match {
-      case IntegerType | ByteType | CharType | ShortType=> true
+      case IntegerType | ByteType | CharType | ShortType => true
       case _ => false
     }
   }
 
-  private def extractNumericToken(numericType: ParseTreeNode): TerminalToken = {
+  private[this] def extractNumericToken(numericType: ParseTreeNode) = {
     numericType.children(0).children(0).token match {
-      case terminalToken: TerminalToken => terminalToken
+      case terminalToken: TerminalToken => fromName(terminalToken.lexeme)
       case _ => throw new AstConstructionException(
         "Invalid tree node to create NumericType"
       )
@@ -33,10 +37,10 @@ object PrimitiveType {
   def apply(ptn: ParseTreeNode): PrimitiveType = {
     ptn match {
       case TreeNode(ProductionRule("PrimitiveType", Seq("NumericType")), _, children) =>
-        PrimitiveType(extractNumericToken(children(0)))
+        extractNumericToken(children(0))
       case TreeNode(ProductionRule("PrimitiveType", Seq("boolean")), _, children) =>
         children(0).token match {
-          case terminalToken: TerminalToken => PrimitiveType(terminalToken)
+          case terminalToken: TerminalToken => BooleanType
           case _ => throw new AstConstructionException(
             "Invalid tree node to create boolean"
           )

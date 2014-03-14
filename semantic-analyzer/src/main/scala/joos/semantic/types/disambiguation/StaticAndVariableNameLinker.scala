@@ -1,25 +1,63 @@
 package joos.semantic.types.disambiguation
 
-import joos.ast.CompilationUnit
 import joos.ast.compositions.LikeName._
-import joos.ast.declarations.MethodDeclaration
+import joos.ast.declarations.{FieldDeclaration, MethodDeclaration}
 import joos.ast.expressions._
 import joos.ast.statements._
-import joos.ast.types.{PrimitiveType, ArrayType, SimpleType, Type}
+import joos.ast.types.PrimitiveType
+import joos.ast.types.{ArrayType, SimpleType, Type}
 import joos.ast.visitor.AstCompleteVisitor
+import joos.ast.{Modifier, CompilationUnit}
 import joos.core.Logger
 import joos.semantic.{BlockEnvironment, TypeEnvironment}
-import joos.syntax.tokens.TerminalToken
-import joos.syntax.tokens.TokenKind
 import scala.Some
 
+// Check the rules specified in Section 8.3.2.3 of the Java Language Specification regarding forward references. The initializer of a non-static
+// field must not use (i.e. read) by simple name (i.e. without an explicit this) itself or a non-static field declared later in the same class.
+class ForwardUseChecker(fieldScope: Map[SimpleNameExpression, Type]) extends AstCompleteVisitor {
+
+  override def apply(expression: FieldAccessExpression) {
+    expression.expression match {
+      case ThisExpression(_) => return // No uses-before-declaration can occur in a this expression
+      case _ => {
+        expression.expression.accept(this)
+        expression.identifier.accept(this)
+      }
+    }
+  }
+
+  override def apply(fieldName: SimpleNameExpression) {
+    if (!(fieldScope contains fieldName)) {
+      throw new ForwardFieldUseException(fieldName)
+    }
+  }
+
+  override def apply(fieldAccess: QualifiedNameExpression) {
+    if (fieldAccess.qualifier.classification == ExpressionName) {
+      fieldAccess.qualifier.accept(this)
+    }
+  }
+
+  override def apply(assignment: AssignmentExpression) {
+    assignment.right.accept(this)
+
+    assignment.left match {
+      case name: SimpleNameExpression => return // No uses-before-declaration can occur as a simple name on the left hand side of an assignment
+      case complex => complex.accept(this)
+    }
+  }
+}
+
+// Check that all names (except non-static field and method accesses) can be disambiguated. It is an error if a name cannot be linked to any entity
+// that is in scope at the point where the name is used.
 class StaticAndVariableNameLinker(implicit unit: CompilationUnit) extends AstCompleteVisitor {
   private var typeEnvironment: TypeEnvironment = null
   private var blockEnvironment: BlockEnvironment = null
+  private var localFields = Map.empty[SimpleNameExpression, Type]
 
   private def fullType(typeName: Type, unit: CompilationUnit): Type = {
     typeName match {
-      case PrimitiveType(t) => PrimitiveType(t)
+      case primitive: PrimitiveType => primitive
       case ArrayType(t, dims) => ArrayType(fullType(t, unit), dims)
       case SimpleType(t) => {
         val typeDeclaration = unit.getVisibleType(t).get
@@ -27,7 +65,7 @@ class StaticAndVariableNameLinker(implicit unit: CompilationUnit) extends AstCom
       }
     }
   }
-  
+
   private def getMethod(typeName: Type, methodName: SimpleNameExpression): Option[Type] = {
     typeName match {
       case SimpleType(t) => {
@@ -40,9 +78,7 @@ class StaticAndVariableNameLinker(implicit unit: CompilationUnit) extends AstCom
                 if (methodDeclarations.head.isConstructor) {
                   throw new AmbiguousNameException(methodName)
                 } else {
-                  // TODO: Convert
-                  Some(PrimitiveType(TerminalToken("void", TokenKind.Void)))
-                  //simpleName.declarationType = void
+                  Some(PrimitiveType.VoidType)
                 }
               }
             }
@@ -50,7 +86,7 @@ class StaticAndVariableNameLinker(implicit unit: CompilationUnit) extends AstCom
         }
       }
       case ArrayType(t, dim) => None
-      case PrimitiveType(t) => None
+      case _: PrimitiveType => None
     }
   }
 
@@ -66,19 +102,25 @@ class StaticAndVariableNameLinker(implicit unit: CompilationUnit) extends AstCom
       }
       case ArrayType(t, dim) => {
         fieldName.standardName match {
-          // TODO: Convert
-          case "length" => Some(PrimitiveType(TerminalToken("int", TokenKind.Int)))
+          case "length" => Some(PrimitiveType.IntegerType)
           case _ => None
         }
       }
-      case PrimitiveType(t) => None
+      case _: PrimitiveType => None
     }
   }
 
   override def apply(unit: CompilationUnit) {
     typeEnvironment = unit.typeDeclaration.getOrElse(null)
-
     super.apply(unit)
+  }
+
+  override def apply(fieldDeclaration: FieldDeclaration) {
+
+    fieldDeclaration.fragment.initializer map (_.accept(new ForwardUseChecker(localFields)))
+    if (!(fieldDeclaration.modifiers contains Modifier.Static)) {
+      localFields += (fieldDeclaration.declarationName -> fieldDeclaration.declarationType)
+    }
   }
 
   override def apply(methodDeclaration: MethodDeclaration) {
@@ -245,9 +287,7 @@ class StaticAndVariableNameLinker(implicit unit: CompilationUnit) extends AstCom
                 if (methodDeclarations.head.isConstructor) {
                   throw new AmbiguousNameException(simpleName)
                 } else {
-                  // TODO: Convert
-                  simpleName.declarationType = PrimitiveType(TerminalToken("void", TokenKind.Void))
-                  //simpleName.declarationType = void
+                  simpleName.declarationType = PrimitiveType.VoidType
                 }
               }
             }

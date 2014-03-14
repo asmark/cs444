@@ -82,7 +82,7 @@ object Expression {
       case TreeNode(ProductionRule("PrimaryNoNewArray", Seq("Literal")), _, children) =>
         LiteralExpression(children(0))
       case TreeNode(ProductionRule("PrimaryNoNewArray", Seq("ClassInstanceCreationExpression")), _, children) =>
-        ClassCreationExpression(children(0))
+        ClassInstanceCreationExpression(children(0))
       case TreeNode(ProductionRule("PrimaryNoNewArray", Seq("(", "Expression", ")")), _, children) =>
         ParenthesizedExpression(ptn)
       case TreeNode(ProductionRule("PrimaryNoNewArray", Seq("FieldAccess")), _, children) =>

@@ -1,11 +1,12 @@
 package joos.ast.declarations
 
+import joos.ast.Modifier
+import joos.ast.compositions.LikeDeclaration
 import joos.ast.expressions.{SimpleNameExpression, NameExpression}
-import joos.ast.{AstConstructionException, CompilationUnit, Modifier}
+import joos.ast.{AstConstructionException, CompilationUnit}
+import joos.semantic.TypeEnvironment
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
-import joos.semantic.TypeEnvironment
-import joos.ast.compositions.LikeDeclaration
 
 case class TypeDeclaration(
     modifiers: Seq[Modifier],
@@ -21,6 +22,7 @@ case class TypeDeclaration(
   var packageDeclaration: PackageDeclaration = null
 
   lazy val isConcreteClass = !isInterface && !(modifiers contains Modifier.Abstract)
+
   def toInterface: TypeDeclaration = {
     require(compilationUnit != null)
     require(packageDeclaration != null)

@@ -10,6 +10,7 @@ trait ThisExpressionTypeChecker extends AstVisitor {
   override def apply(thisExpression: ThisExpression) {
     if (checkImplicitThis)
       throw new ImplicitThisInStaticException("")
+
     // TODO: The code below might be incorrect
     unit.typeDeclaration match {
       case Some(typeDeclaration) => thisExpression.declarationType = SimpleType(typeDeclaration.name)
