@@ -1,5 +1,6 @@
 package joos.ast.types
 
+import joos.ast.expressions.NameExpression
 import joos.ast.{AstConstructionException, AstNode}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
@@ -8,13 +9,17 @@ trait Type extends AstNode {
   def standardName: String = {
     this match {
       case SimpleType(name) => name.standardName
-      case PrimitiveType(token) => token.lexeme
+      case t: PrimitiveType => t.name
       case ArrayType(baseType, dimension) => baseType.standardName + (0 until dimension).map(_ => "[]").mkString
     }
   }
 }
 
 object Type {
+  def apply(name: String): Type = {
+    SimpleType(NameExpression(name))
+  }
+
   def handleReferenceType(referenceType: ParseTreeNode): Type = {
     referenceType match {
       case TreeNode(ProductionRule("ReferenceType", Seq("ClassOrInterfaceType")), _, children) =>

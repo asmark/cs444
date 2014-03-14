@@ -1,10 +1,12 @@
 package joos.ast.declarations
 
+import joos.ast.Modifier
 import joos.ast._
 import joos.ast.compositions.{LikeBlock, LikeDeclaration}
 import joos.ast.expressions.{NameExpression, SimpleNameExpression}
 import joos.ast.statements.Block
-import joos.ast.types.{PrimitiveType, SimpleType, Type, ArrayType}
+import joos.ast.types.PrimitiveType
+import joos.ast.types.{SimpleType, Type, ArrayType}
 import joos.semantic.BlockEnvironment
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.ParseTreeNode
@@ -50,7 +52,7 @@ case class MethodDeclaration(
 
   lazy val returnTypeLocalSignature = {
     var mods: String = null
-    this.modifiers.foreach(mod => mods += mod.modifier.lexeme + " ")
+    this.modifiers.foreach(mod => mods += mod.name + " ")
     mods + (returnType match {
       case Some(someType) => getTypeName(someType) + " " + localSignature
       case None => "void " + localSignature
@@ -81,7 +83,7 @@ case class MethodDeclaration(
 
   private[this] def getTypeName(t: Type): String = {
     t match {
-      case PrimitiveType(token) => token.lexeme
+      case t: PrimitiveType => t.name
       case ArrayType(x, _) => getTypeName(x)
       case SimpleType(name) => {
         val typeDeclaration = compilationUnit.getVisibleType(name).get
