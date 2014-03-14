@@ -6,7 +6,6 @@ import joos.ast.{AstConstructionException, AstNode}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
-
 trait Type extends AstNode {
   def standardName: String = {
     this match {
@@ -21,8 +20,10 @@ trait Type extends AstNode {
     case _ => false
   }
 
-  def isReferenceType: Boolean = {
-    (!isNumeric && (this != VoidType) && (this != NullType)) || this.isInstanceOf[ArrayType]
+  def isReferenceType: Boolean = this match {
+    case t: ArrayType => true
+    case t: SimpleType => true
+    case _ => false
   }
 }
 
