@@ -23,7 +23,7 @@ object CastExpression {
           case _ => throw new AstConstructionException("CastExpression expanded to Expression that did not expand to a Type")
         }
       case TreeNode(ProductionRule("CastExpression", Seq("(", "Name", "Dims", ")", "UnaryExpressionNotPlusMinus")), _, children) =>
-        CastExpression(SimpleType(children(1)), Expression(children(4)))
+        CastExpression(ArrayType(SimpleType(children(1))), Expression(children(4)))
       case _ => throw new AstConstructionException("Invalid parse tree node to create CastExpression")
     }
   }

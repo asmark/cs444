@@ -1,48 +1,127 @@
 package joos.semantic.types.disambiguation
 
-import joos.ast.CompilationUnit
-import joos.ast.declarations.{TypeDeclaration, BodyDeclaration}
-import joos.ast.expressions.{NameExpression, SimpleNameExpression, QualifiedNameExpression, MethodInvocationExpression}
+import joos.ast.{Modifier, CompilationUnit}
+import joos.ast.declarations.{FieldDeclaration, TypeDeclaration, BodyDeclaration}
+import joos.ast.expressions._
 import joos.ast.types.{PrimitiveType, SimpleType, ArrayType, Type}
-import joos.ast.visitor.AstEnvironmentVisitor
+import joos.ast.visitor.{AstCompleteVisitor, AstEnvironmentVisitor}
+import joos.ast.compositions.NameLike
 import joos.semantic.Declaration
 
-class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVisitor {
+// Check the rules specified in Section 8.3.2.3 of the Java Language Specification regarding forward references. The initializer of a non-static
+// field must not use (i.e. read) by simple name (i.e. without an explicit this) itself or a non-static field declared later in the same class.
+class ForwardUseChecker(fieldScope: Map[SimpleNameExpression, Type]) extends AstCompleteVisitor {
 
-  private def getDeclarationRef(t: Type)(implicit unit: CompilationUnit): Declaration = {
-
-    def getTypeDeclaration(t: Type): Option[BodyDeclaration] = {
-      t match {
-        case ArrayType(x, _) => getTypeDeclaration(x)
-        case SimpleType(x) => unit.getVisibleType(x)
-        case _: PrimitiveType => None
+  override def apply(expression: FieldAccessExpression) {
+    expression.expression match {
+      case t: ThisExpression => return // No uses-before-declaration can occur in a this expression
+      case _ => {
+        expression.expression.accept(this)
+        expression.identifier.accept(this)
       }
     }
+  }
 
-    t match {
-      case _: ArrayType => Left(getTypeDeclaration(t))
-      case _: PrimitiveType => Left(None)
-      case _: SimpleType => Right(getTypeDeclaration(t).get)
+  override def apply(fieldName: SimpleNameExpression) {
+    if (!(fieldScope contains fieldName)) {
+      throw new ForwardFieldUseException(fieldName)
     }
   }
 
-  private def fold(names: Seq[SimpleNameExpression]) = {
-    names.reduceLeft {
-      (tree: NameExpression, name: SimpleNameExpression) =>
-        QualifiedNameExpression(tree, name)
+  override def apply(fieldAccess: QualifiedNameExpression) {
+    if (fieldAccess.qualifier.classification == NameLike.ExpressionName) {
+      fieldAccess.qualifier.accept(this)
     }
   }
 
-  override def apply(typed: TypeDeclaration) {
-    typed.fields.withFilter(f => f.isStatic) foreach (_.accept(this))
-    typed.methods.withFilter(m => m.isStatic) foreach (_.accept(this))
-  }
+  override def apply(assignment: AssignmentExpression) {
+    assignment.right.accept(this)
 
-  // TODO: Only visit statics
+    assignment.left match {
+      case name: SimpleNameExpression => return // No uses-before-declaration can occur as a simple name on the left hand side of an assignment
+      case complex => complex.accept(this)
+    }
+  }
+}
+
+
+class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVisitor {
+  private var localFields = Map.empty[SimpleNameExpression, Type]
+
+  override def apply(fieldDeclaration: FieldDeclaration) {
+    fieldDeclaration.fragment.initializer foreach (_.accept(new ForwardUseChecker(localFields)))
+    if (!(fieldDeclaration.modifiers contains Modifier.Static)) {
+      localFields += (fieldDeclaration.declarationName -> fieldDeclaration.declarationType)
+    }
+    fieldDeclaration.fragment.initializer foreach (_.accept(this))
+  }
 
   override def apply(invocation: MethodInvocationExpression) {
-    // TODO
+    invocation.expression foreach (_.accept(this))
+    invocation.arguments foreach (_.accept(this))
+
+    // Can't resolve method names yet
+    //    invocation.methodName match {
+    //      case QualifiedNameExpression(qualifier, methodName) => {
+    //        qualifier.accept(this)
+    //
+    //        qualifier.declarationRef match {
+    //          case Right(t@TypeDeclaration(_, _, _, _, _, _, _)) => {
+    //            t.containedMethods.get(methodName) match {
+    //              case Some(method) => {
+    //                // TODO: Find correct method and ensure static
+    //                invocation.methodName.declarationRef = Right(method.head)
+    //              }
+    //              case None => throw new AmbiguousNameException(invocation.methodName)
+    //            }
+    //          }
+    //          case _ => throw new AmbiguousNameException(invocation.methodName)
+    //        }
+    //      }
+
+    //      case methodName: SimpleNameExpression => {
+    //        typeEnvironment.containedMethods.get(methodName) match {
+    //          case Some(method) => {
+    //            // TODO: Find correct method and ensure static
+    //            invocation.methodName.declarationRef = Right(method.head)
+    //          }
+    //          case None => throw new AmbiguousNameException(invocation.methodName)
+    //        }
+    //
+    //      }
   }
+
+  //  override def apply(name: SimpleNameExpression) {
+  //    var declaration: Declaration = null
+  //
+  //    // (1) Check local variable
+  //    require(blockEnvironment != null)
+  //    blockEnvironment.getVariable(name) match {
+  //      case Some(localVariable) => declaration = getDeclarationRef(localVariable.declarationType)
+  //      case None =>
+  //
+  //        // (2) Check local field
+  //        typeEnvironment.containedFields.get(name) match {
+  //          case Some(field) => {
+  //            declaration = getDeclarationRef(field.declarationType)
+  //            if (field.isStatic) {
+  //              throw new InvalidStaticUseException(name)
+  //            }
+  //          }
+  //          case None => {
+  //
+  //            // (3) Check Static access
+  //            unit.getVisibleType(name) match {
+  //              case Some(typeName) => {
+  //                declaration = Right(typeName)
+  //              }
+  //              case None => throw new AmbiguousNameException(name)
+  //            }
+  //          }
+  //        }
+  //    }
+  //    name.declarationRef = declaration
+  //  }
 
   override def apply(name: QualifiedNameExpression) {
     var names = name.unfold
@@ -69,18 +148,18 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
             // (3) Check static accesses
 
             // Must have a prefix that is a valid type
-            while (unit.getVisibleType(fold(names.take(typeIndex))).isEmpty) {
+            while (unit.getVisibleType(names.take(typeIndex)).isEmpty) {
               typeIndex += 1
               if (typeIndex > names.length) {
                 throw new AmbiguousNameException(name)
               }
             }
 
-            val typeName = unit.getVisibleType(fold(names.take(typeIndex))).get
+            val typeName = unit.getVisibleType(names.take(typeIndex)).get
             declaration = Right(typeName)
 
-            typeIndex += 1
             // Next name must be a static field
+
             if (names.size > typeIndex) {
               val fieldName = names(typeIndex)
               typeName.containedFields.get(fieldName) match {
@@ -88,7 +167,8 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
                   if (!field.isStatic) {
                     throw new InvalidStaticUseException(name)
                   }
-                  name.declarationRef = getDeclarationRef(field.declarationType)(typeName.compilationUnit)
+                  declaration = getDeclarationRef(field.declarationType)(typeName.compilationUnit)
+                  typeIndex += 1
                 }
                 case None => throw new AmbiguousNameException(name)
               }
@@ -125,7 +205,6 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
         }
     }
     name.declarationRef = declaration
-
   }
 
 }

@@ -1,16 +1,15 @@
 package joos
 
 import joos.ast._
-import joos.ast.declarations.{BodyDeclaration, PackageDeclaration, TypeDeclaration}
+import joos.ast.declarations.{BodyDeclaration, TypeDeclaration}
 import joos.ast.expressions.NameExpression
-import joos.ast.types._
 import joos.ast.types.PrimitiveType._
+import joos.ast.types._
 import joos.core.Logger
 import scala.Some
 import scala.collection.mutable
 
 package object semantic {
-
   // Right => Has a field/type/method declaration
   // Left => Some(BodyDeclaration) => Array of inner Body Declaration
   // Left => None => Primitive declaration

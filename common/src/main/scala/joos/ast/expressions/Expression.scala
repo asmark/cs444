@@ -1,7 +1,6 @@
 package joos.ast.expressions
 
 import joos.ast.compositions.TypedLike
-import joos.ast.declarations.BodyDeclaration
 import joos.ast.types.Type
 import joos.ast.{AstConstructionException, AstNode}
 import joos.syntax.language.ProductionRule

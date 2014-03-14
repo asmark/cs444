@@ -17,7 +17,7 @@ case class FieldDeclaration(
 
   var typeDeclaration: TypeDeclaration = null
   
-  def isStatic = {
+  lazy val isStatic = {
     require(typeDeclaration != null)
     typeDeclaration.isInterface || (modifiers contains Modifier.Static)
   }
