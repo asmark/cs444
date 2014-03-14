@@ -78,7 +78,7 @@ abstract class AstCompleteVisitor extends AstVisitor {
   }
 
   override def apply(expression: VariableDeclarationExpression) {
-    expression.declaration.accept(this)
+    expression.fragment.accept(this)
   }
 
   override def apply(expression: VariableDeclarationFragment) {

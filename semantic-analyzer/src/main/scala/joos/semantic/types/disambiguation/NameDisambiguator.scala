@@ -77,7 +77,7 @@ class NameDisambiguator(implicit unit: CompilationUnit) extends AstCompleteVisit
 
   override def apply(expression: VariableDeclarationExpression) {
     blockEnvironment = expression.environment
-    expression.declaration.accept(this)
+    expression.fragment.accept(this)
   }
 
   // If the AmbiguousName is a simple name, consisting of a single Identifier:

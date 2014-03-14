@@ -12,15 +12,15 @@ import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 case class VariableDeclarationExpression(
     modifiers: Seq[Modifier],
     variableType: Type,
-    declaration: VariableDeclarationFragment) extends Expression with TypedDeclarationLike with BlockLike {
-  override def declarationName = declaration.identifier
+    fragment: VariableDeclarationFragment) extends Expression with TypedDeclarationLike with BlockLike {
+  override def declarationName = fragment.identifier
 
   override def declarationType = variableType
 
   override var environment: BlockEnvironment = null
 
   override def toString = {
-    s"${variableType.standardName} ${modifiers.mkString(" ")} ${declaration}"
+    s"${variableType.standardName} ${modifiers.mkString(" ")} ${fragment}"
   }
 }
 

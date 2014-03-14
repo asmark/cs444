@@ -8,7 +8,7 @@ import joos.semantic.types.VariableDeclarationExpressionException
 trait VariableDeclarationExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
   override def apply(variableDeclarationExpression: VariableDeclarationExpression) {
-    variableDeclarationExpression.declaration.initializer match {
+    variableDeclarationExpression.fragment.initializer match {
       // TODO: verify this is the only check needed
       case Some(initExpr) => {
         initExpr.accept(this)

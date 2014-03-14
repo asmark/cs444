@@ -182,7 +182,7 @@ class StaticAndVariableNameLinker(implicit unit: CompilationUnit) extends AstCom
 
   override def apply(expression: VariableDeclarationExpression) {
     blockEnvironment = expression.environment
-    expression.declaration.accept(this)
+    expression.fragment.accept(this)
   }
 
   override def apply(invocation: MethodInvocationExpression) {
