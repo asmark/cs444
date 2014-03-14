@@ -7,13 +7,8 @@ import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
 trait Type extends AstNode {
-  def standardName: String = {
-    this match {
-      case SimpleType(name) => name.standardName
-      case t: PrimitiveType => t.name
-      case ArrayType(baseType, dimension) => baseType.standardName + (0 until dimension).map(_ => "[]").mkString
-    }
-  }
+
+  def standardName: String
 
   def isNumeric: Boolean = this match {
     case IntegerType | ByteType | CharType | ShortType => true
