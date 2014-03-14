@@ -2,7 +2,7 @@ package joos.ast.expressions
 
 import joos.ast.AstConstructionException
 import joos.ast.Modifier
-import joos.ast.compositions.{LikeBlock, LikeTypedDeclaration}
+import joos.ast.compositions.{BlockLike, TypedDeclarationLike}
 import joos.ast.declarations.VariableDeclarationFragment
 import joos.ast.types.Type
 import joos.semantic.BlockEnvironment
@@ -12,7 +12,7 @@ import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 case class VariableDeclarationExpression(
     modifiers: Seq[Modifier],
     variableType: Type,
-    declaration: VariableDeclarationFragment) extends Expression with LikeTypedDeclaration with LikeBlock {
+    declaration: VariableDeclarationFragment) extends Expression with TypedDeclarationLike with BlockLike {
   override def declarationName = declaration.identifier
 
   override def declarationType = variableType

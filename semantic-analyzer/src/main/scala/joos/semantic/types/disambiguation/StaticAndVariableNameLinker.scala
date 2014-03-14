@@ -1,6 +1,6 @@
 package joos.semantic.types.disambiguation
 
-import joos.ast.compositions.LikeName._
+import joos.ast.compositions.NameLike._
 import joos.ast.declarations.{FieldDeclaration, MethodDeclaration}
 import joos.ast.expressions._
 import joos.ast.statements._

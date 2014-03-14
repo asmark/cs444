@@ -1,7 +1,7 @@
 package joos.ast.declarations
 
 import joos.ast._
-import joos.ast.compositions.{LikeBlock, LikeDeclaration}
+import joos.ast.compositions.{BlockLike, DeclarationLike}
 import joos.ast.expressions.{NameExpression, SimpleNameExpression}
 import joos.ast.statements.Block
 import joos.ast.types.PrimitiveType
@@ -18,7 +18,7 @@ case class MethodDeclaration(
     parameters: IndexedSeq[SingleVariableDeclaration],
     body: Option[Block],
     isConstructor: Boolean)
-    extends BodyDeclaration with LikeDeclaration with LikeBlock {
+    extends BodyDeclaration with DeclarationLike with BlockLike {
   var compilationUnit: CompilationUnit = null
   var typeDeclaration: TypeDeclaration = null
   var environment: BlockEnvironment = null

@@ -2,7 +2,7 @@ package joos.ast.declarations
 
 import joos.ast.AstConstructionException
 import joos.ast.Modifier
-import joos.ast.compositions.LikeTypedDeclaration
+import joos.ast.compositions.TypedDeclarationLike
 import joos.ast.expressions.{Expression, SimpleNameExpression}
 import joos.ast.types.Type
 import joos.syntax.language.ProductionRule
@@ -12,7 +12,7 @@ case class SingleVariableDeclaration(
     modifiers: Seq[Modifier],
     variableType: Type,
     identifier: SimpleNameExpression,
-    initializer: Option[Expression]) extends VariableDeclaration with LikeTypedDeclaration {
+    initializer: Option[Expression]) extends VariableDeclaration with TypedDeclarationLike {
 
   override def declarationName = identifier
 
