@@ -9,6 +9,10 @@ import joos.semantic.Declaration
 
 package object disambiguation {
 
+  def matchMethod(invocation: MethodDeclaration, declarations: Seq[MethodDeclaration]): Option[MethodDeclaration] = {
+    None
+  }
+
   def getDeclarationRef(t: Type)(implicit unit: CompilationUnit): Declaration = {
 
     def getTypeDeclaration(t: Type): Option[BodyDeclaration] = {
