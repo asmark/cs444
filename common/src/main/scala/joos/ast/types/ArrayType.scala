@@ -3,8 +3,11 @@ package joos.ast.types
 import joos.ast.AstConstructionException
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
+import joos.ast.declarations.TypeDeclaration
 
-case class ArrayType(elementType: Type, dimensions: Int = 1) extends Type
+case class ArrayType(elementType: Type, dimensions: Int = 1) extends Type{
+  override var declaration: Option[TypeDeclaration] = _
+}
 
 object ArrayType {
   def apply(ptn: ParseTreeNode): ArrayType = {

@@ -11,8 +11,6 @@ import scala.collection.mutable
 
 package object semantic {
 
-  type Declaration = (Type, Option[BodyDeclaration])
-
   /**
    * You can only call this after the environment is built
    */

@@ -7,6 +7,7 @@ import joos.ast.{AstConstructionException, CompilationUnit}
 import joos.semantic.TypeEnvironment
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
+import joos.ast.types.SimpleType
 
 case class TypeDeclaration(
     modifiers: Seq[Modifier],
@@ -29,6 +30,12 @@ case class TypeDeclaration(
     } else {
       s"${packageDeclaration.name.standardName}.${name.standardName}"
     }
+  }
+
+  lazy val asType = {
+    val simple = SimpleType(NameExpression(fullName))
+    simple.declaration = Some(this)
+    simple
   }
 
   def toInterface: TypeDeclaration = {

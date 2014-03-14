@@ -1,12 +1,11 @@
 package joos.semantic.types.disambiguation
 
 import joos.ast.compositions.NameLike
-import joos.ast.declarations.{FieldDeclaration, TypeDeclaration}
+import joos.ast.declarations.FieldDeclaration
 import joos.ast.expressions._
 import joos.ast.types.{PrimitiveType, SimpleType, ArrayType, Type}
 import joos.ast.visitor.{AstCompleteVisitor, AstEnvironmentVisitor}
 import joos.ast.{Modifier, CompilationUnit}
-import joos.semantic.Declaration
 
 // Check the rules specified in Section 8.3.2.3 of the Java Language Specification regarding forward references. The initializer of a non-static
 // field must not use (i.e. read) by simple name (i.e. without an explicit this) itself or a non-static field declared later in the same class.
@@ -98,18 +97,18 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
   }
 
     override def apply(name: SimpleNameExpression) {
-      var declaration: Declaration = null
+      var declarationType: Type = null
 
       // (1) Check local variable
       require(blockEnvironment != null)
       blockEnvironment.getVariable(name) match {
-        case Some(localVariable) => declaration = getDeclarationRef(localVariable.declarationType)
+        case Some(localVariable) => declarationType = localVariable.declarationType
         case None =>
 
           // (2) Check local field
           typeEnvironment.containedFields.get(name) match {
             case Some(field) => {
-              declaration = getDeclarationRef(field.declarationType)
+              declarationType = field.variableType
               if (field.isStatic) {
                 throw new InvalidStaticUseException(name)
               }
@@ -119,32 +118,32 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
               // (3) Check Static access
               unit.getVisibleType(name) match {
                 case Some(typeName) => {
-                  declaration = getDeclarationRef(typeName)
+                  declarationType = typeName.asType
                 }
                 case None => throw new AmbiguousNameException(name)
               }
             }
           }
       }
-      name.declarationRef = declaration
+      name.declarationType = declarationType
     }
 
   override def apply(name: QualifiedNameExpression) {
     var names = name.unfold
     var typeIndex = 1
-    var declaration: Declaration = null
+    var declarationType: Type = null
 
 
     // (1) Check local variable
     require(blockEnvironment != null)
     blockEnvironment.getVariable(names.head) match {
-      case Some(localVariable) => declaration = getDeclarationRef(localVariable.declarationType)
+      case Some(localVariable) => declarationType = localVariable.declarationType
       case None =>
 
         // (2) Check local field
         typeEnvironment.containedFields.get(names.head) match {
           case Some(field) => {
-            declaration = getDeclarationRef(field.declarationType)
+            declarationType = field.declarationType
             if (field.isStatic) {
               throw new InvalidStaticUseException(name)
             }
@@ -162,7 +161,7 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
             }
 
             val typeName = unit.getVisibleType(names.take(typeIndex)).get
-            declaration = getDeclarationRef(typeName)
+            declarationType = typeName.asType
 
             // Next name must be a static field
 
@@ -173,7 +172,7 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
                   if (!field.isStatic) {
                     throw new InvalidStaticUseException(name)
                   }
-                  declaration = getDeclarationRef(field.declarationType)(typeName.compilationUnit)
+                  declarationType = field.variableType
                   typeIndex += 1
                 }
                 case None => throw new AmbiguousNameException(name)
@@ -187,35 +186,35 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
     names = names.drop(typeIndex)
     names foreach {
       name =>
-        declaration match {
+        declarationType match {
           // Arrays only have a "length" field
-          case (_: ArrayType, _) => {
+          case _: ArrayType => {
             if (name.standardName equals "length") {
-              declaration = (PrimitiveType.IntegerType, None)
+              declarationType = PrimitiveType.BooleanType
             } else {
               throw new AmbiguousNameException(name)
             }
           }
           // Primitives do not have any fields
-          case (_: PrimitiveType, _) => {
+          case _: PrimitiveType => {
             throw new AmbiguousNameException(name)
           }
 
-          case (_: SimpleType, Some(t: TypeDeclaration)) => {
-            t.containedFields.get(name) match {
+          case simpleType: SimpleType => {
+            simpleType.declaration.get.containedFields.get(name) match {
               case None => throw new AmbiguousNameException(name)
               case Some(field) => {
                 if (field.isStatic) {
                   throw new InvalidStaticUseException(name)
                 }
-                declaration = getDeclarationRef(field.declarationType)(t.compilationUnit)
+                declarationType = field.variableType
               }
             }
           }
           case _ => throw new AmbiguousNameException(name)
         }
     }
-    name.declarationRef = declaration
+    name.declarationType = declarationType
   }
 
 }
