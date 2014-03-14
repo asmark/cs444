@@ -25,7 +25,7 @@ trait ClassInstanceCreationExpressionTypeChecker extends AstVisitor {
       case SimpleType(className) =>
         self.unit.getVisibleType(className) match {
           case Some(typeDeclaration) => {
-            if (typeDeclaration.modifiers.contains(Modifier.Abstract)) {
+            if (!typeDeclaration.isConcreteClass) {
               throw new AbstractOrInstanceCreationException(s"Attempt to create abstract class instance: ${typeDeclaration.name.standardName}")
             }
 
