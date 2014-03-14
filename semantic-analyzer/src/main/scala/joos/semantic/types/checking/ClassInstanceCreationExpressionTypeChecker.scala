@@ -3,7 +3,7 @@ package joos.semantic.types.checking
 import joos.ast.expressions.{NameExpression, ClassInstanceCreationExpression}
 import joos.ast.types.SimpleType
 import joos.ast.{Modifier}
-import joos.semantic.types.{ClassInstanceCreationException, AbstractClassCreationException}
+import joos.semantic.types.{InterfaceInstanceCreationException, ClassInstanceCreationException, AbstractOrInstanceCreationException}
 import joos.ast.visitor.AstVisitor
 import joos.semantic._
 import joos.ast.declarations.TypeDeclaration
@@ -26,7 +26,7 @@ trait ClassInstanceCreationExpressionTypeChecker extends AstVisitor {
         self.unit.getVisibleType(className) match {
           case Some(typeDeclaration) => {
             if (typeDeclaration.modifiers.contains(Modifier.Abstract)) {
-              throw new AbstractClassCreationException(s"Attempt to create class: ${typeDeclaration.name.standardName}")
+              throw new AbstractOrInstanceCreationException(s"Attempt to create abstract class instance: ${typeDeclaration.name.standardName}")
             }
 
             classInstanceCreationExpression.declarationType = SimpleType(NameExpression(fullName(typeDeclaration)))
@@ -35,17 +35,4 @@ trait ClassInstanceCreationExpressionTypeChecker extends AstVisitor {
         }
     }
   }
-
-//  private def checkProtectedConstructor(classInstanceCreationExpression: ClassInstanceCreationExpression, typeDeclaration: TypeDeclaration) {
-//    val targetConstructor = typeDeclaration.constructorMap.values.find(
-//      constructor => {
-//        val params = constructor.parameters.toArray
-//        val arguments = classInstanceCreationExpression.arguments.toArray
-//        for (i <- 1 until params.length) {
-//          if (params(i) != arguments(i))
-//        }
-//        return true
-//      }
-//    )
-//  }
 }

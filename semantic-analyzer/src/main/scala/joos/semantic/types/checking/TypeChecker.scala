@@ -67,7 +67,7 @@ class TypeChecker(implicit val unit: CompilationUnit) extends AstCompleteVisitor
     typeDeclaration.constructorMap.values.foreach(
       constructor => {
         if (!(constructor.name equals typeDeclaration.name)) {
-          throw new MissingConstructorException(s"Mismatched constructor and type declaration ${typeDeclaration.declarationName.standardName}")
+          throw new InvalidConstructorException(s"Mismatched constructor and type declaration ${typeDeclaration.declarationName.standardName}")
         }
       }
     )

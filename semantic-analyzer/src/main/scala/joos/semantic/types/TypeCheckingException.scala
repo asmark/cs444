@@ -7,7 +7,7 @@ class TypeCheckingException(msg: String) extends SemanticException(msg)
 // TODO: Refine the exception
 class ImplicitThisInStaticException(msg: String) extends TypeCheckingException(msg)
 
-class AbstractClassCreationException(msg: String) extends TypeCheckingException(msg)
+class AbstractOrInstanceCreationException(msg: String) extends TypeCheckingException(msg)
 
 class ClassInstanceCreationException(msg: String) extends TypeCheckingException(msg)
 
@@ -32,3 +32,5 @@ class MethodInvocationExpressionException(msg: String) extends TypeCheckingExcep
 class ParenthesizedExpressionException(msg: String) extends TypeCheckingException(msg)
 
 class MissingConstructorException(msg: String) extends TypeCheckingException(msg)
+
+class InvalidConstructorException(msg: String) extends TypeCheckingException(msg)
