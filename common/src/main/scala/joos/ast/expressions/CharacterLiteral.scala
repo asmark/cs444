@@ -7,6 +7,8 @@ import joos.ast.types.PrimitiveType
 
 case class CharacterLiteral(token: TerminalToken) extends LiteralExpression {
   override def declarationType = PrimitiveType.CharType
+
+  override def toString = s"'${token.lexeme}'"
 }
 
 object CharacterLiteral {

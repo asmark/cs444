@@ -4,7 +4,9 @@ import joos.ast.AstConstructionException
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
-case class AssignmentExpression(left: Expression, right: Expression) extends Expression
+case class AssignmentExpression(left: Expression, right: Expression) extends Expression {
+  override def toString = s"${left} = ${right}"
+}
 
 object AssignmentExpression {
    def apply(ptn: ParseTreeNode): AssignmentExpression = {

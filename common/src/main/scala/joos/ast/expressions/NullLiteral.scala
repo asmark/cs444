@@ -1,19 +1,22 @@
 package joos.ast.expressions
 
 import joos.ast.AstConstructionException
-import joos.syntax.parsetree.{LeafNode, ParseTreeNode}
-import joos.syntax.tokens.{TokenKind, TerminalToken}
 import joos.ast.types.PrimitiveType._
+import joos.syntax.parsetree.{LeafNode, ParseTreeNode}
+import joos.syntax.tokens.TokenKind
 
-case class NullLiteral(token: TerminalToken) extends LiteralExpression {
+class NullLiteral extends LiteralExpression {
   override def declarationType = NullType
+
+  override def toString = NullType.name
 }
 
 object NullLiteral {
+  private[this] final val instance = new NullLiteral
+
   def apply(ptn: ParseTreeNode): NullLiteral = {
     ptn match {
-      case LeafNode(token) if token.kind == TokenKind.NullLiteral =>
-        NullLiteral(token)
+      case LeafNode(token) if token.kind == TokenKind.NullLiteral => instance
       case _ => throw new AstConstructionException("No valid production rule to make NullLiteral")
     }
   }

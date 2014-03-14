@@ -4,7 +4,9 @@ import joos.ast.types.Type
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
-case class InstanceOfExpression(expression: Expression, classType: Type) extends Expression
+case class InstanceOfExpression(expression: Expression, classType: Type) extends Expression {
+  override def toString = s"${expression} instanceof ${classType}"
+}
 
 object InstanceOfExpression {
   def apply(ptn: ParseTreeNode): InstanceOfExpression = {

@@ -26,5 +26,5 @@ object Operator extends Enumeration {
   final val BitwiseAnd = this + new Operator("&")
   final val BitwiseInclusiveOr = this + new Operator("|")
   final val BitwiseExclusiveOr = this + new Operator("^")
-  final val BitwiseNot = this + new Operator("~")
+  final val Not = this + new Operator("!")
 }

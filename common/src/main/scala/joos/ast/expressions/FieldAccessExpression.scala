@@ -4,7 +4,9 @@ import joos.ast.AstConstructionException
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
-case class FieldAccessExpression(expression: Expression, identifier: SimpleNameExpression) extends Expression
+case class FieldAccessExpression(expression: Expression, identifier: SimpleNameExpression) extends Expression {
+  override def toString = s"${expression}.${identifier}"
+}
 
 object FieldAccessExpression {
   def apply(ptn: ParseTreeNode): FieldAccessExpression = {

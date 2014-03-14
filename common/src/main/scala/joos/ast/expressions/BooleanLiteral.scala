@@ -7,6 +7,8 @@ import joos.ast.types.PrimitiveType
 
 case class BooleanLiteral(token: TerminalToken) extends LiteralExpression {
   override def declarationType = PrimitiveType.BooleanType
+
+  override def toString = token.lexeme
 }
 
 object BooleanLiteral {

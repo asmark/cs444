@@ -7,8 +7,16 @@ import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 case class MethodInvocationExpression(
     expression: Option[Expression],
     methodName: NameExpression,
-    arguments: Seq[Expression]
-    ) extends Expression
+    arguments: Seq[Expression]) extends Expression {
+
+  override def toString = {
+    val prefix = expression match {
+      case None => ""
+      case Some(expression) => expression.toString + '.'
+    }
+    s"${prefix}${methodName}(${arguments.mkString(", ")})"
+  }
+}
 
 object MethodInvocationExpression {
   def apply(ptn: ParseTreeNode): MethodInvocationExpression = {
