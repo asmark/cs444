@@ -5,6 +5,7 @@ import joos.ast.expressions.PrefixExpression
 import joos.syntax.tokens.{TokenKind, TerminalToken}
 import joos.ast.types.PrimitiveType
 import joos.semantic.types.PrefixExpressionException
+import joos.ast.Operator._
 
 trait PrefixExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
@@ -13,7 +14,7 @@ trait PrefixExpressionTypeChecker extends AstVisitor {
     require(prefixExpression.operand.declarationType != null)
 
     prefixExpression.operator match {
-      case TerminalToken(_, TokenKind.Increment | TokenKind.Decrement | TokenKind.Plus | TokenKind.Minus | TokenKind.Tilde) => {
+      case Increment | Decrement | Plus | Minus | Tilde => {
         prefixExpression.operand.declarationType match {
           case PrimitiveType.IntegerType => {
             prefixExpression.declarationType = prefixExpression.operand.declarationType
@@ -21,7 +22,7 @@ trait PrefixExpressionTypeChecker extends AstVisitor {
           case others => throw new PrefixExpressionException(s"invalid operand type ${others.standardName}")
         }
       }
-      case TerminalToken(_, TokenKind.Exclamation) => {
+      case Not => {
         prefixExpression.operand.declarationType  match {
           case PrimitiveType.BooleanType => {
             prefixExpression.declarationType = prefixExpression.operand.declarationType

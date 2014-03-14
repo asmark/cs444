@@ -17,6 +17,14 @@ case class SingleVariableDeclaration(
   override def declarationName = identifier
 
   override def declarationType = variableType
+
+  override def toString = {
+    val initializerText = initializer match {
+      case None => ""
+      case Some(initializer) => "= " + initializer.toString
+    }
+    s"${modifiers.mkString(" ")} ${variableType} ${identifier} ${initializerText}"
+  }
 }
 
 object SingleVariableDeclaration {

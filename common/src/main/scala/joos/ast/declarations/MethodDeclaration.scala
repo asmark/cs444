@@ -1,6 +1,5 @@
 package joos.ast.declarations
 
-import joos.ast.Modifier
 import joos.ast._
 import joos.ast.compositions.{LikeBlock, LikeDeclaration}
 import joos.ast.expressions.{NameExpression, SimpleNameExpression}
@@ -30,12 +29,14 @@ case class MethodDeclaration(
       case None => ""
       case Some(t) => t.standardName
     }
-    val parametersString = parameters.foldLeft("") {
-      (result, parameter) =>
-        result + parameter.declarationType.standardName + ' ' + parameter.declarationName.standardName
+    val parametersString = parameters.mkString(", ")
+
+    val bodyText = body match {
+      case None => ";\n"
+      case Some(block) => s"\n${block}\n"
     }
 
-    List(modifiers.mkString(" "), returnTypeString, name.standardName, "(", parametersString, ")").mkString(" ")
+    s"${modifiers.mkString(" ")} ${returnTypeString} ${name} (${parametersString}) ${bodyText}"
   }
 
   /**
