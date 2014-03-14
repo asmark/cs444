@@ -56,6 +56,12 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
     fieldDeclaration.fragment.initializer foreach (_.accept(this))
   }
 
+  override def apply(fieldAccess: FieldAccessExpression) {
+    fieldAccess.expression.accept(this)
+
+    // Can't resolve simple name of a field access yet
+  }
+
   override def apply(invocation: MethodInvocationExpression) {
     invocation.expression foreach (_.accept(this))
     invocation.arguments foreach (_.accept(this))
@@ -91,37 +97,37 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
     //      }
   }
 
-  //  override def apply(name: SimpleNameExpression) {
-  //    var declaration: Declaration = null
-  //
-  //    // (1) Check local variable
-  //    require(blockEnvironment != null)
-  //    blockEnvironment.getVariable(name) match {
-  //      case Some(localVariable) => declaration = getDeclarationRef(localVariable.declarationType)
-  //      case None =>
-  //
-  //        // (2) Check local field
-  //        typeEnvironment.containedFields.get(name) match {
-  //          case Some(field) => {
-  //            declaration = getDeclarationRef(field.declarationType)
-  //            if (field.isStatic) {
-  //              throw new InvalidStaticUseException(name)
-  //            }
-  //          }
-  //          case None => {
-  //
-  //            // (3) Check Static access
-  //            unit.getVisibleType(name) match {
-  //              case Some(typeName) => {
-  //                declaration = Right(typeName)
-  //              }
-  //              case None => throw new AmbiguousNameException(name)
-  //            }
-  //          }
-  //        }
-  //    }
-  //    name.declarationRef = declaration
-  //  }
+    override def apply(name: SimpleNameExpression) {
+      var declaration: Declaration = null
+
+      // (1) Check local variable
+      require(blockEnvironment != null)
+      blockEnvironment.getVariable(name) match {
+        case Some(localVariable) => declaration = getDeclarationRef(localVariable.declarationType)
+        case None =>
+
+          // (2) Check local field
+          typeEnvironment.containedFields.get(name) match {
+            case Some(field) => {
+              declaration = getDeclarationRef(field.declarationType)
+              if (field.isStatic) {
+                throw new InvalidStaticUseException(name)
+              }
+            }
+            case None => {
+
+              // (3) Check Static access
+              unit.getVisibleType(name) match {
+                case Some(typeName) => {
+                  declaration = getDeclarationRef(typeName)
+                }
+                case None => throw new AmbiguousNameException(name)
+              }
+            }
+          }
+      }
+      name.declarationRef = declaration
+    }
 
   override def apply(name: QualifiedNameExpression) {
     var names = name.unfold

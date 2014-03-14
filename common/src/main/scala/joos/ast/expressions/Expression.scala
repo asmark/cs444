@@ -13,7 +13,12 @@ trait Expression extends AstNode with TypedLike {
   }
 
   private var _declarationRef: Declaration = null
-  def declarationRef = _declarationRef
+
+  def declarationRef = {
+//    require(_declarationRef != null)
+    _declarationRef
+  }
+
   def declarationRef_=(declarationRef: Declaration) = _declarationRef = declarationRef
 }
 
