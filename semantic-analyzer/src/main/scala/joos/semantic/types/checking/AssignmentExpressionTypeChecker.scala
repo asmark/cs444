@@ -1,6 +1,6 @@
 package joos.semantic.types.checking
 
-import joos.ast.expressions.{InfixExpression, AssignmentExpression}
+import joos.ast.expressions.AssignmentExpression
 import joos.ast.visitor.AstVisitor
 import joos.semantic._
 import joos.semantic.types.AssignmentExpressionException
