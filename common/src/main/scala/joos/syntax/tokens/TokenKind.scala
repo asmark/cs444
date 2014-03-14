@@ -9,7 +9,7 @@ object TokenKind extends Enumeration {
   type T = TokenKindValue
   type TokenKind = TokenKindValue
 
-  class TokenKindValue(name: String, regexp: () => RegularExpression) extends Value(name) {
+  class TokenKindValue(val name: String, regexp: () => RegularExpression) extends Value {
     self + this
 
     def getRegexp() = regexp() := this
