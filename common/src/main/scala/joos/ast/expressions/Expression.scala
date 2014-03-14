@@ -1,8 +1,6 @@
 package joos.ast.expressions
 
 import joos.ast.compositions.TypedLike
-import joos.ast.declarations.TypeDeclaration
-import joos.ast.types.{ArrayType, PrimitiveType}
 import joos.ast.{AstConstructionException, AstNode}
 import joos.semantic.Declaration
 import joos.syntax.language.ProductionRule
