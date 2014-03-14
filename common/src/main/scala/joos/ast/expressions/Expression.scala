@@ -12,9 +12,15 @@ trait Expression extends AstNode with TypedLike {
   override def declarationType = _declarationType
   def declarationType_=(newType: Type) = _declarationType = newType
 
-  private var _declarationRef: BodyDeclaration = null
+  // Right => Has a field/type/method declaration
+  // Left => Some(BodyDeclaration) => Array of inner Body Declaration
+  // Left => None => Primitive declaration
+  type Declaration = Either[Option[BodyDeclaration], BodyDeclaration]
+
+  private var _declarationRef: Declaration = Left(None)
   def declarationRef = _declarationRef
-  def declarationRef_=(declarationRef: BodyDeclaration) = _declarationRef = declarationRef
+  def declarationRef_=(declarationRef: BodyDeclaration) = _declarationRef = Right(declarationRef)
+  def declarationRef_=(declarationRef: Option[BodyDeclaration]) = _declarationRef = Left(declarationRef)
 }
 
 object Expression {
