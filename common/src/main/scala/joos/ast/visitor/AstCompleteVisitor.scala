@@ -51,6 +51,7 @@ abstract class AstCompleteVisitor extends AstVisitor {
 
   override def apply(expression: FieldAccessExpression) {
     expression.expression.accept(this)
+    expression.identifier.accept(this)
   }
 
   override def apply(expression: InfixExpression) {

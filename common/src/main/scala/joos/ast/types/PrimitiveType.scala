@@ -12,7 +12,8 @@ object PrimitiveType {
   val CharType = PrimitiveType(TerminalToken("char", TokenKind.Char))
   val BooleanType = PrimitiveType(TerminalToken("boolean", TokenKind.Boolean))
   val ByteType = PrimitiveType(TerminalToken("byte", TokenKind.Byte))
-  val ShortType = PrimitiveType(TerminalToken("byte", TokenKind.Short))
+  val ShortType = PrimitiveType(TerminalToken("short", TokenKind.Short))
+  val VoidType = PrimitiveType(TerminalToken("void", TokenKind.Void))
 
   def isNumeric(inputType: Type): Boolean = {
     inputType match {
