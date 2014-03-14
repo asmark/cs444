@@ -1,11 +1,10 @@
 package joos.semantic.types.checking
 
-import joos.ast.expressions.{NameExpression, ClassInstanceCreationExpression}
+import joos.ast.Modifier
+import joos.ast.expressions.ClassInstanceCreationExpression
 import joos.ast.types.SimpleType
-import joos.ast.{Modifier}
-import joos.semantic.types.{ClassCreationException, AbstractClassCreationException}
 import joos.ast.visitor.AstVisitor
-import joos.semantic._
+import joos.semantic.types.{ClassCreationException, AbstractClassCreationException}
 
 trait ClassCreationExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
