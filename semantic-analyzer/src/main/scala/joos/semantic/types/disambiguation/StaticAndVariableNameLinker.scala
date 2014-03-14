@@ -61,7 +61,7 @@ class StaticAndVariableNameLinker(implicit unit: CompilationUnit) extends AstCom
       case ArrayType(t, dims) => ArrayType(fullType(t, unit), dims)
       case SimpleType(t) => {
         val typeDeclaration = unit.getVisibleType(t).get
-        SimpleType(QualifiedNameExpression(typeDeclaration.packageDeclaration.name, typeDeclaration.name))
+        SimpleType(NameExpression(typeDeclaration.fullName))
       }
     }
   }
