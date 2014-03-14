@@ -1,11 +1,11 @@
 package joos.semantic.types.disambiguation
 
-import joos.ast.{Modifier, CompilationUnit}
-import joos.ast.declarations.{FieldDeclaration, TypeDeclaration, BodyDeclaration}
+import joos.ast.compositions.NameLike
+import joos.ast.declarations.{FieldDeclaration, TypeDeclaration}
 import joos.ast.expressions._
 import joos.ast.types.{PrimitiveType, SimpleType, ArrayType, Type}
 import joos.ast.visitor.{AstCompleteVisitor, AstEnvironmentVisitor}
-import joos.ast.compositions.NameLike
+import joos.ast.{Modifier, CompilationUnit}
 import joos.semantic.Declaration
 
 // Check the rules specified in Section 8.3.2.3 of the Java Language Specification regarding forward references. The initializer of a non-static
@@ -156,7 +156,7 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
             }
 
             val typeName = unit.getVisibleType(names.take(typeIndex)).get
-            declaration = Right(typeName)
+            declaration = getDeclarationRef(typeName)
 
             // Next name must be a static field
 
@@ -182,14 +182,20 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
     names foreach {
       name =>
         declaration match {
-          case Left(arrayType) => {
-            name match {
-              case SimpleNameExpression(token) if (token.lexeme equals "length") => declaration = Left(None)
-              case _ => throw new AmbiguousNameException(name)
+          // Arrays only have a "length" field
+          case (_: ArrayType, _) => {
+            if (name.standardName equals "length") {
+              declaration = (PrimitiveType.IntegerType, None)
+            } else {
+              throw new AmbiguousNameException(name)
             }
           }
+          // Primitives do not have any fields
+          case (_: PrimitiveType, _) => {
+            throw new AmbiguousNameException(name)
+          }
 
-          case Right(t@TypeDeclaration(_, _, _, _, _, _, _)) => {
+          case (_: SimpleType, Some(t: TypeDeclaration)) => {
             t.containedFields.get(name) match {
               case None => throw new AmbiguousNameException(name)
               case Some(field) => {
@@ -200,7 +206,6 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
               }
             }
           }
-
           case _ => throw new AmbiguousNameException(name)
         }
     }

@@ -10,10 +10,8 @@ import scala.Some
 import scala.collection.mutable
 
 package object semantic {
-  // Right => Has a field/type/method declaration
-  // Left => Some(BodyDeclaration) => Array of inner Body Declaration
-  // Left => None => Primitive declaration
-  type Declaration = Either[Option[BodyDeclaration], BodyDeclaration]
+
+  type Declaration = (Type, Option[BodyDeclaration])
 
   /**
    * You can only call this after the environment is built

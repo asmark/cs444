@@ -1,7 +1,7 @@
 package joos.semantic.types
 
 import joos.ast.CompilationUnit
-import joos.ast.declarations.BodyDeclaration
+import joos.ast.declarations.{FieldDeclaration, MethodDeclaration, TypeDeclaration, BodyDeclaration}
 import joos.ast.expressions.{QualifiedNameExpression, NameExpression, SimpleNameExpression}
 import joos.ast.types.{PrimitiveType, SimpleType, ArrayType, Type}
 import scala.language.implicitConversions
@@ -20,10 +20,22 @@ package object disambiguation {
     }
 
     t match {
-      case _: ArrayType => Left(getTypeDeclaration(t))
-      case _: PrimitiveType => Left(None)
-      case _: SimpleType => Right(getTypeDeclaration(t).get)
+      case _: ArrayType => (t, getTypeDeclaration(t))
+      case _: PrimitiveType => (t, None)
+      case _: SimpleType => (t, getTypeDeclaration(t))
     }
+  }
+
+  def getDeclarationRef(t: TypeDeclaration): Declaration = {
+    (SimpleType(t.name), Some(t))
+  }
+
+  def getDeclarationRef(m: MethodDeclaration): Declaration = {
+    (m.returnType.get, Some(m))
+  }
+
+  def getDeclarationRef(f: FieldDeclaration): Declaration = {
+    (f.variableType, Some(f))
   }
 
   implicit def fold(names: Seq[SimpleNameExpression]): NameExpression = {
