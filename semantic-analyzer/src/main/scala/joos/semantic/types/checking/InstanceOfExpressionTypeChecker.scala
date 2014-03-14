@@ -33,7 +33,7 @@ trait InstanceOfExpressionTypeChecker extends AstVisitor {
         }
       }
 
-      instanceOfExpression.declarationType = instanceOfExpression.classType
+//      instanceOfExpression.declarationType = instanceOfExpression.classType
       return
     }
 

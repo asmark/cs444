@@ -11,13 +11,13 @@ trait CastExpressionTypeChecker extends AstVisitor {
   override def apply(castExpression: CastExpression) {
     if (castExpression.castType.isNumeric &&
         castExpression.expression.declarationType.isNumeric) {
-      castExpression.declarationType = castExpression.castType
+//      castExpression.declarationType = castExpression.castType
       return
     }
 
     if (isAssignable(castExpression.castType, castExpression.expression.declarationType) ||
         isAssignable(castExpression.expression.declarationType, castExpression.castType)) {
-      castExpression.declarationType = castExpression.castType
+//      castExpression.declarationType = castExpression.castType
       return
     }
 

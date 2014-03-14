@@ -1,18 +1,28 @@
 package joos.ast.expressions
 
 import joos.ast.compositions.TypedLike
-import joos.ast.types.Type
+import joos.ast.declarations.{MethodDeclaration, FieldDeclaration, TypeDeclaration}
+import joos.ast.types.{SimpleType, ArrayType, PrimitiveType}
 import joos.ast.{AstConstructionException, AstNode}
+import joos.semantic.Declaration
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{LeafNode, TreeNode, ParseTreeNode}
-import joos.semantic.Declaration
 
 trait Expression extends AstNode with TypedLike {
-  private var _declarationType: Type = null
-  override def declarationType = _declarationType
-  def declarationType_=(newType: Type) = _declarationType = newType
+  override def declarationType = {
+    require(declarationRef != null)
+    declarationRef match {
+      case Left(None) => PrimitiveType.BooleanType // Doesn't matter what type we give?
+      case Left(Some(declaration)) => ArrayType(PrimitiveType.BooleanType) // Doesn't matter what type we give?
+      case Right(declaration) => declaration match {
+        case t:TypeDeclaration => SimpleType(NameExpression(t.fullName))
+        case f: FieldDeclaration => f.declarationType
+        case m: MethodDeclaration => m.returnType.get
+      }
+    }
+  }
 
-  private var _declarationRef: Declaration = Left(None)
+  private var _declarationRef: Declaration = null
   def declarationRef = _declarationRef
   def declarationRef_=(declarationRef: Declaration) = _declarationRef = declarationRef
 }

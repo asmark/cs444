@@ -17,7 +17,7 @@ trait AssignmentExpressionTypeChecker extends AstVisitor {
     val rightType = assignmentExpression.right.declarationType
     // TODO: Double check if the following are complete (probably not)
     if (isAssignable(leftType, rightType)) {
-      assignmentExpression.declarationType = leftType
+//      assignmentExpression.declarationType = leftType
     } else {
       throw new AssignmentExpressionException(s"${rightType.standardName} to ${leftType.standardName}")
     }

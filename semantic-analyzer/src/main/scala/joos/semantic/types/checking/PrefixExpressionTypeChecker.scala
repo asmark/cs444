@@ -17,7 +17,7 @@ trait PrefixExpressionTypeChecker extends AstVisitor {
       case Plus | Minus => {
         prefixExpression.operand.declarationType match {
           case PrimitiveType.IntegerType => {
-            prefixExpression.declarationType = prefixExpression.operand.declarationType
+//            prefixExpression.declarationType = prefixExpression.operand.declarationType
           }
           case others => throw new PrefixExpressionException(s"invalid operand type ${others.standardName}")
         }
@@ -25,7 +25,7 @@ trait PrefixExpressionTypeChecker extends AstVisitor {
       case Not => {
         prefixExpression.operand.declarationType  match {
           case PrimitiveType.BooleanType => {
-            prefixExpression.declarationType = prefixExpression.operand.declarationType
+//            prefixExpression.declarationType = prefixExpression.operand.declarationType
           }
           case others => throw new PrefixExpressionException(s"invalid operand type ${others.standardName}")
         }

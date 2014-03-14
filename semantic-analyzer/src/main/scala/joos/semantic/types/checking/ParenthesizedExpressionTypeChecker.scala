@@ -8,6 +8,6 @@ trait ParenthesizedExpressionTypeChecker extends AstVisitor {
   override def apply(parenthesizedExpression: ParenthesizedExpression) {
     parenthesizedExpression.expression.accept(this)
     require(parenthesizedExpression.expression.declarationType != null)
-    parenthesizedExpression.declarationType = parenthesizedExpression.expression.declarationType
+//    parenthesizedExpression.declarationType = parenthesizedExpression.expression.declarationType
   }
 }

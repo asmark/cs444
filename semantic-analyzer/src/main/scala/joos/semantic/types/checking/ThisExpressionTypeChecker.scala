@@ -13,7 +13,7 @@ trait ThisExpressionTypeChecker extends AstVisitor {
 
     // TODO: The code below might be incorrect
     unit.typeDeclaration match {
-      case Some(typeDeclaration) => thisExpression.declarationType = SimpleType(typeDeclaration.name)
+//      case Some(typeDeclaration) => thisExpression.declarationType = SimpleType(typeDeclaration.name)
       case _ => // TODO: exception ??
     }
   }
