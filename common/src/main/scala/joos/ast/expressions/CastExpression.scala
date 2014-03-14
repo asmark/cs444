@@ -6,7 +6,9 @@ import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.ParseTreeNode
 import joos.syntax.parsetree.TreeNode
 
-case class CastExpression(castType: Type, expression: Expression) extends Expression
+case class CastExpression(castType: Type, expression: Expression) extends Expression {
+  override def toString = s"(${castType}) ${expression}"
+}
 
 object CastExpression {
   def apply(ptn: ParseTreeNode): CastExpression = {

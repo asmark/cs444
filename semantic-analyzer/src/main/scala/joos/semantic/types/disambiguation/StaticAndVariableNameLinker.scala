@@ -18,7 +18,7 @@ class ForwardUseChecker(fieldScope: Map[SimpleNameExpression, Type]) extends Ast
 
   override def apply(expression: FieldAccessExpression) {
     expression.expression match {
-      case ThisExpression(_) => return // No uses-before-declaration can occur in a this expression
+      case t: ThisExpression => return // No uses-before-declaration can occur in a this expression
       case _ => {
         expression.expression.accept(this)
         expression.identifier.accept(this)

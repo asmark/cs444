@@ -18,6 +18,10 @@ case class VariableDeclarationExpression(
   override def declarationType = variableType
 
   override var environment: BlockEnvironment = null
+
+  override def toString = {
+    s"${variableType.standardName} ${modifiers.mkString(" ")} ${declaration}"
+  }
 }
 
 object VariableDeclarationExpression {

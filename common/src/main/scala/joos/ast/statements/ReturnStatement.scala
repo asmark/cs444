@@ -8,6 +8,15 @@ import joos.semantic.BlockEnvironment
 
 case class ReturnStatement(expression: Option[Expression]) extends Statement {
   override var environment: BlockEnvironment = null
+
+  override def toString = {
+    val suffix = expression match {
+      case None => ""
+      case Some(expression) => expression.toString
+    }
+
+    s"return ${suffix};\n"
+  }
 }
 
 object ReturnStatement {

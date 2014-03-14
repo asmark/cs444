@@ -5,7 +5,9 @@ import joos.ast.types.{Type, SimpleType}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
-case class ClassInstanceCreationExpression(classType: Type, arguments: Seq[Expression]) extends Expression
+case class ClassInstanceCreationExpression(classType: Type, arguments: Seq[Expression]) extends Expression {
+  override def toString = s"new ${classType}(${arguments.mkString(", ")}})"
+}
 
 object ClassInstanceCreationExpression {
   def apply(ptn: ParseTreeNode): ClassInstanceCreationExpression = {
