@@ -27,6 +27,8 @@ package object semantic {
   }
 
   val javaLangObject = NameExpression("java.lang.Object")
+  val javaLangCloneable = NameExpression("java.lang.Cloneable")
+  val javaIOSerializable = NameExpression("java.io.Serializable")
 
   def getSuperType(typeDeclaration: TypeDeclaration): Option[TypeDeclaration] = {
     require(typeDeclaration.compilationUnit != null)
@@ -106,11 +108,16 @@ package object semantic {
 
   // dst = src
   def isAssignable(dst: Type, src: Type)(implicit unit: CompilationUnit): Boolean = {
+    // 5.1.1 Identity Conversions
+    if (areEqual(dst, src))
+      return true
+
     (dst, src) match {
-      case (dstPrimitive: PrimitiveType, srcPrimitive: PrimitiveType) => {
-        // TODO(Shengmin):
-        false
-      }
+      // 5.1.2 Widening Primitive Conversion
+      case (PrimitiveType.ShortType | PrimitiveType.IntegerType, PrimitiveType.ByteType) => true
+      case (PrimitiveType.IntegerType, PrimitiveType.ShortType) => true
+      case (PrimitiveType.IntegerType, PrimitiveType.CharType) => true
+      // 5.1.4 Widening Reference Conversions
       case (dstArrayType: ArrayType, srcType) => {
         srcType match {
           case srcArrayType: ArrayType => isAssignable(dstArrayType.elementType, srcArrayType.elementType)
@@ -131,7 +138,9 @@ package object semantic {
         }
       }
       case (NullType, _) => false
-      case (unit.javaLangObjectType, ArrayType(_, _)) => true
+      case (unit.javaLangObjectType, ArrayType(_, _) |  SimpleType(_)) => true
+      case (unit.javaLangCloneableType, ArrayType(_, _)) => true
+      case (unit.javaIOSerializableInterface, ArrayType(_, _)) => true
       case (_, _) => false
     }
   }

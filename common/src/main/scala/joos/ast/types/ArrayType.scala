@@ -4,7 +4,9 @@ import joos.ast.AstConstructionException
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
-case class ArrayType(elementType: Type, dimensions: Int = 1) extends Type
+case class ArrayType(elementType: Type, dimensions: Int = 1) extends Type {
+  override def standardName = elementType.standardName + (0 until dimensions).map(_ => "[]").mkString
+}
 
 object ArrayType {
   def apply(ptn: ParseTreeNode): ArrayType = {
