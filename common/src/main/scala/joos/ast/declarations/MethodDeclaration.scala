@@ -77,9 +77,13 @@ case class MethodDeclaration(
     }
   }
 
-  lazy val isAbstractMethod: Boolean = {
+  lazy val isAbstract: Boolean = {
     require(typeDeclaration != null)
     (modifiers contains Modifier.Abstract) || typeDeclaration.isInterface
+  }
+
+  lazy val isStatic: Boolean = {
+    modifiers contains Modifier.Static
   }
 
   private[this] def getTypeName(t: Type): String = {

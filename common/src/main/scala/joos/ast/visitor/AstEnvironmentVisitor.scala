@@ -12,6 +12,7 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
 
   override def apply(unit: CompilationUnit) {
     typeEnvironment = unit.typeDeclaration.getOrElse(null)
+    blockEnvironment = BlockEnvironment()(typeEnvironment)
 
     super.apply(unit)
   }
@@ -77,3 +78,4 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
     blockEnvironment = expression.environment
     expression.fragment.accept(this)
   }
+}
