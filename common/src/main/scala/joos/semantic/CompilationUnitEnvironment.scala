@@ -4,6 +4,7 @@ import joos.ast.declarations.{ImportDeclaration, TypeDeclaration}
 import joos.ast.expressions.{QualifiedNameExpression, SimpleNameExpression, NameExpression}
 import joos.core.Logger
 import joos.ast.CompilationUnit
+import joos.ast.types.SimpleType
 
 trait CompilationUnitEnvironment extends Environment {
   self: CompilationUnit =>
@@ -15,6 +16,7 @@ trait CompilationUnitEnvironment extends Environment {
   implicit val that = this
   lazy val javaLangObjectClass = getTypeDeclaration(javaLangObject)
   lazy val javaLangObjectInterface = javaLangObjectClass.toInterface
+  lazy val javaLangObjectType = SimpleType(javaLangObject)
 
   private def addOnDemandImport(name: NameExpression, namespace: NamespaceTrie) {
     moduleDeclaration.namespace.getAllTypesInPackage(name) map {

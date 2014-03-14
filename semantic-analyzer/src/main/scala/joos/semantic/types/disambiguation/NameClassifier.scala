@@ -3,7 +3,8 @@ package joos.semantic.types.disambiguation
 import joos.ast.compositions.LikeName._
 import joos.ast.declarations._
 import joos.ast.expressions._
-import joos.ast.types.{PrimitiveType, ArrayType, SimpleType, Type}
+import joos.ast.types.PrimitiveType
+import joos.ast.types.{ArrayType, SimpleType, Type}
 import joos.ast.visitor.AstCompleteVisitor
 import joos.core.Logger
 
@@ -30,9 +31,9 @@ class NameClassifier extends AstCompleteVisitor {
       }
       case SimpleType(simpleName) => {
         classifyNameAs(classification, simpleName)
-    }
+      }
       case ArrayType(elementType, dimensions) => classifyTypeAs(classification, elementType)
-      case PrimitiveType(identifier) =>
+      case _: PrimitiveType =>
     }
   }
 
@@ -86,7 +87,7 @@ class NameClassifier extends AstCompleteVisitor {
     super.apply(instanceOfExpression)
   }
 
-  override def apply(classCreationExpression: ClassCreationExpression) {
+  override def apply(classCreationExpression: ClassInstanceCreationExpression) {
     classifyTypeAs(TypeName, classCreationExpression.classType)
 
     super.apply(classCreationExpression)

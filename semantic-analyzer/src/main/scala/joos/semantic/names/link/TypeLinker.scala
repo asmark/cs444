@@ -3,9 +3,10 @@ package joos.semantic.names.link
 import joos.ast._
 import joos.ast.declarations._
 import joos.ast.expressions._
+import joos.ast.types.PrimitiveType
+import joos.ast.types.{SimpleType, Type, ArrayType}
 import joos.ast.visitor.AstCompleteVisitor
 import joos.semantic.MissingTypeException
-import joos.ast.types.{SimpleType, Type, PrimitiveType, ArrayType}
 
 /**
  * TypeLinker is responsible for the following name resolution checks:
@@ -31,7 +32,7 @@ class TypeLinker(implicit module: ModuleDeclaration, unit: CompilationUnit) exte
 
   def resolveType(typed: Type) {
     typed match {
-      case PrimitiveType(x) =>
+      case _: PrimitiveType =>
       case ArrayType(typed, dimensions) => resolveType(typed)
       case SimpleType(name) => resolveType(name)
     }
@@ -82,7 +83,7 @@ class TypeLinker(implicit module: ModuleDeclaration, unit: CompilationUnit) exte
     super.apply(expression)
   }
 
-  override def apply(expression: ClassCreationExpression) {
+  override def apply(expression: ClassInstanceCreationExpression) {
     resolveType(expression.classType)
 
     super.apply(expression)

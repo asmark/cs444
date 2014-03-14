@@ -1,8 +1,9 @@
 package joos.ast.declarations
 
+import joos.ast.AstConstructionException
+import joos.ast.Modifier
 import joos.ast.compositions.LikeTypedDeclaration
 import joos.ast.types.Type
-import joos.ast.{AstConstructionException, Modifier}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 

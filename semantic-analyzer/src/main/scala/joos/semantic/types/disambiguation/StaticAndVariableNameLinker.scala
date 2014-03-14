@@ -4,7 +4,8 @@ import joos.ast.compositions.LikeName._
 import joos.ast.declarations.{FieldDeclaration, MethodDeclaration}
 import joos.ast.expressions._
 import joos.ast.statements._
-import joos.ast.types.{PrimitiveType, ArrayType, SimpleType, Type}
+import joos.ast.types.PrimitiveType
+import joos.ast.types.{ArrayType, SimpleType, Type}
 import joos.ast.visitor.AstCompleteVisitor
 import joos.ast.{Modifier, CompilationUnit}
 import joos.core.Logger
@@ -39,9 +40,9 @@ class ForwardUseChecker(fieldScope: Map[SimpleNameExpression, Type]) extends Ast
 
   override def apply(assignment: AssignmentExpression) {
     assignment.right.accept(this)
-    
+
     assignment.left match {
-      case name : SimpleNameExpression => return // No uses-before-declaration can occur as a simple name on the left hand side of an assignment
+      case name: SimpleNameExpression => return // No uses-before-declaration can occur as a simple name on the left hand side of an assignment
       case complex => complex.accept(this)
     }
   }
@@ -56,7 +57,7 @@ class StaticAndVariableNameLinker(implicit unit: CompilationUnit) extends AstCom
 
   private def fullType(typeName: Type, unit: CompilationUnit): Type = {
     typeName match {
-      case PrimitiveType(t) => PrimitiveType(t)
+      case primitive: PrimitiveType => primitive
       case ArrayType(t, dims) => ArrayType(fullType(t, unit), dims)
       case SimpleType(t) => {
         val typeDeclaration = unit.getVisibleType(t).get
@@ -85,7 +86,7 @@ class StaticAndVariableNameLinker(implicit unit: CompilationUnit) extends AstCom
         }
       }
       case ArrayType(t, dim) => None
-      case PrimitiveType(t) => None
+      case _: PrimitiveType => None
     }
   }
 
@@ -105,7 +106,7 @@ class StaticAndVariableNameLinker(implicit unit: CompilationUnit) extends AstCom
           case _ => None
         }
       }
-      case PrimitiveType(t) => None
+      case _: PrimitiveType => None
     }
   }
 
