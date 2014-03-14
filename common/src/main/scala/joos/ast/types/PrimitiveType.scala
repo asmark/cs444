@@ -17,13 +17,10 @@ object PrimitiveType extends Enumeration {
   final val ByteType = this + new PrimitiveType("byte")
   final val ShortType = this + new PrimitiveType("short")
   final val VoidType = this + new PrimitiveType("void")
+  final val NullType = this + new PrimitiveType("null")
 
-  def isNumeric(inputType: Type): Boolean = {
-    inputType match {
-      case IntegerType | ByteType | CharType | ShortType => true
-      case _ => false
-    }
-  }
+  @deprecated("Use {{Type.isNumeric}} instead", "3.0.0")
+  def isNumeric(inputType: Type): Boolean = inputType.isNumeric
 
   private[this] def extractNumericToken(numericType: ParseTreeNode) = {
     numericType.children(0).children(0).token match {

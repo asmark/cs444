@@ -27,7 +27,7 @@ case class MethodDeclaration(
 
   override def toString = {
     val returnTypeString = returnType match {
-      case None => "void"
+      case None => ""
       case Some(t) => t.standardName
     }
     val parametersString = parameters.foldLeft("") {
@@ -55,7 +55,7 @@ case class MethodDeclaration(
     this.modifiers.foreach(mod => mods += mod.name + " ")
     mods + (returnType match {
       case Some(someType) => getTypeName(someType) + " " + localSignature
-      case None => "void " + localSignature
+      case None => localSignature
     })
   }
 
@@ -119,7 +119,7 @@ object MethodDeclaration {
           children
           ) => {
             val modifiers = Modifier(children(0))
-            val returnType: Option[Type] = if (typeString.equals("Type")) Some(Type(children(1))) else None
+            val returnType: Option[Type] = if (typeString.equals("Type")) Some(Type(children(1))) else Some(PrimitiveType.VoidType)
             val methodDeclaratorNode = children(2)
 
             methodDeclaratorNode match {
@@ -198,7 +198,7 @@ object MethodDeclaration {
           children
           ) => {
             val modifiers = Modifier(children(0))
-            val returnType: Option[Type] = if (typeString.equals("Type")) Some(Type(children(1))) else None
+            val returnType: Option[Type] = if (typeString.equals("Type")) Some(Type(children(1))) else Some(PrimitiveType.VoidType)
             val methodDeclaratorNode = children(2)
 
             methodDeclaratorNode match {

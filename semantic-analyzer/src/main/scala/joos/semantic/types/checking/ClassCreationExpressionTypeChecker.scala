@@ -27,7 +27,7 @@ trait ClassCreationExpressionTypeChecker extends AstVisitor {
             if (typeDeclaration.modifiers.contains(Modifier.Abstract)) {
               throw new AbstractClassCreationException(s"Attempt to create class: ${typeDeclaration.name.standardName}")
             }
-            classCreationExpression.declarationType = SimpleType(NameExpression(fullName(typeDeclaration)))
+            classCreationExpression.declarationType = SimpleType(NameExpression(typeDeclaration.fullName))
           }
           case _ => throw new ClassCreationException(s"Attempt to create class: ${classType.standardName}")
         }
