@@ -16,7 +16,7 @@ object Joos1wCompilerBuild extends Build {
     fork in run := true,
     fork in test := false,
     testOptions in testQuick in Test += Tests.Argument("-l", "joos.test.tags.IntegrationTest"),
-    version := "2.0.0",
+    version := "3.0.0",
     scalaVersion := "2.10.3",
     scalacOptions := Seq(
       // Turn on all warnings

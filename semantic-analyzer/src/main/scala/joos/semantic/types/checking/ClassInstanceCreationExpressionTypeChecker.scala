@@ -2,11 +2,8 @@ package joos.semantic.types.checking
 
 import joos.ast.expressions.{NameExpression, ClassInstanceCreationExpression}
 import joos.ast.types.SimpleType
-import joos.ast.{Modifier}
-import joos.semantic.types.{InterfaceInstanceCreationException, ClassInstanceCreationException, AbstractOrInstanceCreationException}
 import joos.ast.visitor.AstVisitor
-import joos.semantic._
-import joos.ast.declarations.TypeDeclaration
+import joos.semantic.types.{ClassInstanceCreationException, AbstractOrInstanceCreationException}
 
 trait ClassInstanceCreationExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
@@ -23,16 +20,12 @@ trait ClassInstanceCreationExpressionTypeChecker extends AstVisitor {
 
     classType match {
       case SimpleType(className) =>
-        self.unit.getVisibleType(className) match {
-          case Some(typeDeclaration) => {
-            if (!typeDeclaration.isConcreteClass) {
-              throw new AbstractOrInstanceCreationException(s"Attempt to create abstract class instance: ${typeDeclaration.name.standardName}")
-            }
-
-            classInstanceCreationExpression.declarationType = SimpleType(NameExpression(fullName(typeDeclaration)))
-          }
-          case _ => throw new ClassInstanceCreationException(s"Attempt to create class: ${classType.standardName}")
+        val typeDeclaration = unit.getVisibleType(className).get
+        if (typeDeclaration.isConcreteClass) {
+          throw new AbstractOrInstanceCreationException(s"Attempt to create abstract class instance: ${typeDeclaration.name.standardName}")
         }
+        classInstanceCreationExpression.declarationType = SimpleType(NameExpression(typeDeclaration.fullName))
+      case _ => throw new ClassInstanceCreationException(s"Attempt to create class: ${classType.standardName}")
     }
   }
 }

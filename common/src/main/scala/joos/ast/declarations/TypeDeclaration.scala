@@ -22,6 +22,14 @@ case class TypeDeclaration(
   var packageDeclaration: PackageDeclaration = null
 
   lazy val isConcreteClass = !isInterface && !(modifiers contains Modifier.Abstract)
+  lazy val fullName = {
+    require(packageDeclaration != null)
+    if (packageDeclaration == PackageDeclaration.DefaultPackage) {
+      name.standardName
+    } else {
+      s"${packageDeclaration.name.standardName}.${name.standardName}"
+    }
+  }
 
   def toInterface: TypeDeclaration = {
     require(compilationUnit != null)

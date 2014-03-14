@@ -1,6 +1,7 @@
 package joos.ast.types
 
 import joos.ast.expressions.NameExpression
+import joos.ast.types.PrimitiveType._
 import joos.ast.{AstConstructionException, AstNode}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
@@ -12,6 +13,17 @@ trait Type extends AstNode {
       case t: PrimitiveType => t.name
       case ArrayType(baseType, dimension) => baseType.standardName + (0 until dimension).map(_ => "[]").mkString
     }
+  }
+
+  def isNumeric: Boolean = this match {
+    case IntegerType | ByteType | CharType | ShortType => true
+    case _ => false
+  }
+
+  def isReferenceType: Boolean = this match {
+    case t: ArrayType => true
+    case t: SimpleType => true
+    case _ => false
   }
 }
 
