@@ -4,6 +4,7 @@ import joos.ast._
 import joos.ast.declarations.{PackageDeclaration, TypeDeclaration}
 import joos.ast.expressions.NameExpression
 import joos.ast.types._
+import joos.ast.types.PrimitiveType._
 import joos.core.Logger
 import scala.Some
 import scala.collection.mutable
@@ -126,7 +127,7 @@ package object semantic {
       case (dstArrayType: ArrayType, srcType) => {
         srcType match {
           case srcArrayType: ArrayType => isAssignable(dstArrayType.elementType, srcArrayType.elementType)
-          case NullType() => true
+          case NullType => true
           case _ => false
         }
       }
@@ -138,11 +139,11 @@ package object semantic {
               case None => false
             }
           }
-          case NullType() => true
+          case NullType => true
           case _ => false
         }
       }
-      case (NullType(), _) => false
+      case (NullType, _) => false
       case (unit.javaLangObjectType, ArrayType(_, _)) => true
       case (_, _) => false
     }

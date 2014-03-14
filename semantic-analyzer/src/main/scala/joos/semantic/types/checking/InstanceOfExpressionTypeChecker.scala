@@ -1,10 +1,11 @@
 package joos.semantic.types.checking
 
-import joos.ast.visitor.AstVisitor
 import joos.ast.expressions.InstanceOfExpression
+import joos.ast.types.PrimitiveType._
+import joos.ast.types.{ArrayType, SimpleType}
+import joos.ast.visitor.AstVisitor
 import joos.semantic._
-import joos.semantic.types.{InstanceOfExpressionException, CastExpressionException}
-import joos.ast.types.{ArrayType, SimpleType, NullType, PrimitiveType}
+import joos.semantic.types.InstanceOfExpressionException
 
 trait InstanceOfExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
@@ -15,7 +16,7 @@ trait InstanceOfExpressionTypeChecker extends AstVisitor {
     if (isAssignable(instanceOfExpression.classType, instanceOfExpression.expression.declarationType) ||
         isAssignable(instanceOfExpression.expression.declarationType, instanceOfExpression.classType)) {
       instanceOfExpression.classType match {
-        case SimpleType(_) | ArrayType(_,_) | NullType() => {}
+        case SimpleType(_) | ArrayType(_, _) | NullType => {}
         case _ => {
           throw new InstanceOfExpressionException(
             s"${instanceOfExpression.expression.declarationType.standardName} to ${instanceOfExpression.classType.standardName}"
@@ -24,7 +25,7 @@ trait InstanceOfExpressionTypeChecker extends AstVisitor {
       }
 
       instanceOfExpression.classType match {
-        case SimpleType(_) | ArrayType(_,_) => {}
+        case SimpleType(_) | ArrayType(_, _) => {}
         case _ => {
           throw new InstanceOfExpressionException(
             s"${instanceOfExpression.expression.declarationType.standardName} to ${instanceOfExpression.classType.standardName}"
