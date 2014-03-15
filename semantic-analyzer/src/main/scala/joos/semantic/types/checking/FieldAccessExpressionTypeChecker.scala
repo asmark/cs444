@@ -50,6 +50,6 @@ trait FieldAccessExpressionTypeChecker extends AstVisitor {
       }
     }
 
-//    fieldAccessExpression.declarationType = identifierType
+    fieldAccessExpression.declarationType = identifierType
   }
 }

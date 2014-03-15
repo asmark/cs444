@@ -19,10 +19,10 @@ trait VariableDeclarationExpressionTypeChecker extends AstVisitor {
             s"attempt to assign ${initExpr.declarationType.standardName} to ${variableDeclarationExpression.variableType.standardName}"
           )
 
-//        variableDeclarationExpression.declarationType = variableDeclarationExpression.variableType
+        variableDeclarationExpression.declarationType = variableDeclarationExpression.variableType
       }
       case None => {
-//        variableDeclarationExpression.declarationType = variableDeclarationExpression.variableType
+        variableDeclarationExpression.declarationType = variableDeclarationExpression.variableType
       }
     }
   }

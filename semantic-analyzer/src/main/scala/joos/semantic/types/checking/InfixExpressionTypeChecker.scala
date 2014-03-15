@@ -18,7 +18,7 @@ trait InfixExpressionTypeChecker extends AstVisitor {
     val rightType = expression.right.declarationType
     val types = (leftType, rightType)
 
-    /*
+
     expression.declarationType = expression.operator match {
       case Plus =>
         // String concatenation if one of the types is 'String' and the other is not 'void'
@@ -53,6 +53,5 @@ trait InfixExpressionTypeChecker extends AstVisitor {
           case _ => throw new InfixExpressionException(expression)
         }
     }
-    */
   }
 }

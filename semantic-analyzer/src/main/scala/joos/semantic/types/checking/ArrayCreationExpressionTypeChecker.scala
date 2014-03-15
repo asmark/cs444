@@ -13,7 +13,7 @@ trait ArrayCreationExpressionTypeChecker extends AstVisitor {
 
     require(arrayCreationExpression.size.declarationType != null)
     if (arrayCreationExpression.size.declarationType.isNumeric) {
-//      arrayCreationExpression.declarationType = ArrayType(arrayCreationExpression.arrayType)
+      arrayCreationExpression.declarationType = ArrayType(arrayCreationExpression.arrayType)
     } else {
       throw new ArrayCreationException(s"invalid size expression in array creation: ${arrayCreationExpression.arrayType.standardName}")
     }

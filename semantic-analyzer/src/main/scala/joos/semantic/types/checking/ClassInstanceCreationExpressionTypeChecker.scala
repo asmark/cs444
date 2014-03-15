@@ -21,10 +21,10 @@ trait ClassInstanceCreationExpressionTypeChecker extends AstVisitor {
     classType match {
       case SimpleType(className) =>
         val typeDeclaration = unit.getVisibleType(className).get
-        if (typeDeclaration.isConcreteClass) {
+        if (!typeDeclaration.isConcreteClass) {
           throw new AbstractOrInstanceCreationException(s"Attempt to create abstract class instance: ${typeDeclaration.name.standardName}")
         }
-//        classInstanceCreationExpression.declarationType = SimpleType(NameExpression(typeDeclaration.fullName))
+        classInstanceCreationExpression.declarationType = SimpleType(NameExpression(typeDeclaration.fullName))
       case _ => throw new ClassInstanceCreationException(s"Attempt to create class: ${classType.standardName}")
     }
   }

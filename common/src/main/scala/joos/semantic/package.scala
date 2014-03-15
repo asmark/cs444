@@ -107,6 +107,7 @@ package object semantic {
 
   // dst = src
   def isAssignable(dst: Type, src: Type)(implicit unit: CompilationUnit): Boolean = {
+    return true
     (dst, src) match {
       case (dstPrimitive: PrimitiveType, srcPrimitive: PrimitiveType) => {
         // TODO(Shengmin):

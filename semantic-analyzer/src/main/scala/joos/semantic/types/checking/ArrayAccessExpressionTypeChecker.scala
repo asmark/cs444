@@ -18,7 +18,7 @@ trait ArrayAccessExpressionTypeChecker extends AstVisitor {
         // TODO: the index type undergoes promotion
         require(arrayAccessExpression.index.declarationType != null)
         if (arrayAccessExpression.index.declarationType.isNumeric) {
-//          arrayAccessExpression.declarationType = arrayType.elementType
+          arrayAccessExpression.declarationType = arrayType.elementType
         } else {
           throw new ArrayAccessException(
             s"invalid index type ${arrayAccessExpression.index.declarationType.standardName} in ${arrayType.elementType}[]"
