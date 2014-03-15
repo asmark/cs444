@@ -122,7 +122,12 @@ package object semantic {
       // 5.1.4 Widening Reference Conversions
       case (dstArrayType: ArrayType, srcType) => {
         srcType match {
-          case srcArrayType: ArrayType => isAssignable(dstArrayType.elementType, srcArrayType.elementType)
+          case srcArrayType: ArrayType => {
+            (dstArrayType.elementType, srcArrayType.elementType) match {
+              case (SimpleType(_), SimpleType(_)) => isAssignable(dstArrayType.elementType, srcArrayType.elementType)
+              case _ => false
+            }
+          }
           case NullType => true
           case _ => false
         }

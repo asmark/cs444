@@ -37,6 +37,16 @@ class TypeChecker(implicit val unit: CompilationUnit)
         case e: Throwable => throw e
       }
       checkImplicitThis = false
+    } else {
+      super.apply(fieldDeclaration)
+
+      fieldDeclaration.fragment.initializer match {
+        case Some(initializer) => {
+          if (!areEqual(fieldDeclaration.variableType, initializer.declarationType))
+            throw new FieldDeclarationTypeException(s"${initializer.declarationType} can not be assigned to ${fieldDeclaration.variableType}")
+        }
+        case _ =>
+      }
     }
 
   }
