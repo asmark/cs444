@@ -6,6 +6,7 @@ import joos.ast.types.PrimitiveType._
 import joos.ast.types._
 import joos.ast.visitor.AstVisitor
 import joos.semantic.types.InfixExpressionException
+import joos.semantic._
 
 trait InfixExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
@@ -44,7 +45,11 @@ trait InfixExpressionTypeChecker extends AstVisitor {
           case (BooleanType, BooleanType) => BooleanType
           case (NullType, NullType) => BooleanType
           case (leftType, rightType) if leftType.isNumeric && rightType.isNumeric => BooleanType
-          case (leftType, rightType) if leftType.isReferenceType && rightType.isReferenceType => BooleanType
+          case (leftType, rightType)
+            if leftType.isReferenceType
+                && rightType.isReferenceType
+                && (isAssignable(leftType, rightType)
+                || isAssignable(rightType, leftType)) => BooleanType
           case _ => throw new InfixExpressionException(expression)
         }
       case BitwiseAnd | BitwiseExclusiveOr | BitwiseInclusiveOr | ConditionalAnd | ConditionalOr =>
