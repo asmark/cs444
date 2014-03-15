@@ -1,10 +1,11 @@
 package joos.semantic.types
 
-import joos.ast.declarations.{FieldDeclaration, TypeDeclaration, BodyDeclaration, MethodDeclaration}
+import joos.ast.declarations._
 import joos.ast.expressions._
 import joos.ast.types.{SimpleType, ArrayType, PrimitiveType, Type}
 import joos.ast.{CompilationUnit, Modifier}
 import joos.core.Enumeration
+import scala.Some
 import scala.language.implicitConversions
 
 package object disambiguation {
@@ -56,24 +57,28 @@ package object disambiguation {
     }
   }
 
-  def checkAccess[T <: BodyDeclaration](declaration: T, owner: TypeDeclaration)(implicit unit: CompilationUnit) {
-    if (declaration.modifiers contains Modifier.Protected) {
-      val selfType = unit.typeDeclaration.get
-      if (!(selfType.packageDeclaration.declarationName equals owner.packageDeclaration.declarationName)) {
-        if (!(selfType.allAncestors contains owner)) {
-          if (owner.allAncestors contains selfType) {
-            //            declaration match {
-            //              case m: MethodDeclaration => if (!selfType.containedMethods.contains(m.name)) throw new IllegalProtectedAccessException(
-            //                declaration
-            //                    .declarationName)
-            //              case f: FieldDeclaration => if (!selfType.containedFields.contains(f.declarationName)) throw new
-            // IllegalProtectedAccessException(
-            //                declaration.declarationName)
-            //            }
-          }
-        }
-      }
-    }
+  def checkAccess[T <: BodyDeclaration](declaration: T, caller: TypeDeclaration, visibility: Visibility)(implicit unit: CompilationUnit) {
+    //    if (visibility == Visibility.Local) {
+    //      if (declaration.modifiers contains Modifier.Protected) {
+    //        val selfType = unit.typeDeclaration.get
+    //        if (!(selfType.packageDeclaration.declarationName equals caller.packageDeclaration.declarationName)) {
+    //          if (!(selfType.allAncestors contains caller)) {
+    //            throw new IllegalProtectedAccessException(declaration.declarationName)
+    //            if (caller.allAncestors contains selfType) {
+    //              //            declaration match {
+    //              //              case m: MethodDeclaration => if (!selfType.containedMethods.contains(m.name)) throw new
+    // IllegalProtectedAccessException(
+    //              //                declaration
+    //              //                    .declarationName)
+    //              //              case f: FieldDeclaration => if (!selfType.containedFields.contains(f.declarationName)) throw new
+    //              // IllegalProtectedAccessException(
+    //              //                declaration.declarationName)
+    //              //            }
+    //            }
+    //          }
+    //        }
+    //      }
+    //    }
   }
 
   def getMethodTypeFromType(t: Type, methodName: SimpleNameExpression, parameters: IndexedSeq[Expression], visibility: Visibility)
@@ -81,11 +86,11 @@ package object disambiguation {
     t match {
       case _: PrimitiveType | ArrayType(_, _) => None
       case s: SimpleType => {
-        val owner = s.declaration.get
-        findMethod(methodName, parameters, owner.containedMethods) match {
+        val caller = s.declaration.get
+        findMethod(methodName, parameters, caller.containedMethods) match {
           case None => None
           case Some(methodDeclaration) => {
-            checkAccess(methodDeclaration, owner)
+            checkAccess(methodDeclaration, caller, visibility)
             checkVisibility(methodDeclaration, visibility)
             methodDeclaration.returnType
           }
@@ -94,19 +99,19 @@ package object disambiguation {
     }
   }
 
-  //  def getMethodFromType(t: Type, methodName: SimpleNameExpression, parameters: IndexedSeq[Expression])(implicit unit: CompilationUnit):
-  // Option[MethodDeclaration] = {
-  //    t match {
-  //      case _: PrimitiveType | ArrayType(_, _) => None
-  //      case s: SimpleType => {
-  //        val containedMethods = s.declaration.get.containedMethods
-  //        findMethod(methodName, parameters, containedMethods) match {
-  //          case None => None
-  //          case Some(method) => Some(method)
-  //        }
-  //      }
-  //    }
-  //  }
+  def getMethodFromType(t: Type, methodName: SimpleNameExpression, parameters: IndexedSeq[Expression])
+      (implicit unit: CompilationUnit): Option[MethodDeclaration] = {
+    t match {
+      case _: PrimitiveType | ArrayType(_, _) => None
+      case s: SimpleType => {
+        val caller = s.declaration.get
+        findMethod(methodName, parameters, caller.containedMethods) match {
+          case None => None
+          case Some(methodDeclaration) => Some(methodDeclaration)
+        }
+      }
+    }
+  }
 
   def getFieldTypeFromType(t: Type, fieldName: SimpleNameExpression, visibility: Visibility)(implicit unit: CompilationUnit): Option[Type] = {
     t match {
@@ -115,19 +120,33 @@ package object disambiguation {
         Some(PrimitiveType.IntegerType)
       } else None
       case s: SimpleType => {
-        val owner = s.declaration.get
-        owner.containedFields.get(fieldName) match {
+        val caller = s.declaration.get
+        caller.containedFields.get(fieldName) match {
           case None => None
           case Some(fieldDeclaration) => {
-            checkAccess(fieldDeclaration, owner)
+            checkAccess(fieldDeclaration, caller, visibility)
             checkVisibility(fieldDeclaration, visibility)
             Some(fieldDeclaration.variableType)
           }
         }
       }
-
     }
+  }
 
+  def getFieldFromType(t: Type, fieldName: SimpleNameExpression)(implicit unit: CompilationUnit): Option[FieldDeclaration] = {
+    t match {
+      case _: PrimitiveType => None
+      case ArrayType(_, _) => None
+        // TODO
+      //        if (fieldName.standardName equals "length") Some(PrimitiveType.IntegerType) else None
+      case s: SimpleType => {
+        val caller = s.declaration.get
+        caller.containedFields.get(fieldName) match {
+          case None => None
+          case Some(fieldDeclaration) => Some(fieldDeclaration)
+        }
+      }
+    }
   }
 
 }
