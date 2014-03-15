@@ -1,11 +1,11 @@
 package joos.semantic.types.checking
 
 import joos.ast.declarations.{TypeDeclaration, MethodDeclaration, FieldDeclaration}
+import joos.ast.statements.{ReturnStatement, WhileStatement, IfStatement}
+import joos.ast.types.{Type, PrimitiveType}
 import joos.ast.{Modifier, CompilationUnit}
 import joos.semantic._
 import joos.semantic.types._
-import joos.ast.statements.{WhileStatement, IfStatement}
-import joos.ast.types.PrimitiveType
 
 class TypeChecker(implicit val unit: CompilationUnit)
     extends AstEnvironmentVisitor
@@ -22,7 +22,8 @@ class TypeChecker(implicit val unit: CompilationUnit)
     with VariableDeclarationExpressionTypeChecker
     with PrefixExpressionTypeChecker
     with InstanceOfExpressionTypeChecker {
-  var checkImplicitThis = false // TODO: this approach should be fine as long as the field decl checking and method decl checking are not recursive
+  protected var checkImplicitThis = false
+  protected var checkMethodReturns: Option[Type] = None
 
   override def apply(fieldDeclaration: FieldDeclaration) {
     // Check that the implicit this variable is not accessed in a static method or in the initializer of a static field.
@@ -41,6 +42,8 @@ class TypeChecker(implicit val unit: CompilationUnit)
   }
 
   override def apply(methodDeclaration: MethodDeclaration) {
+    checkMethodReturns = methodDeclaration.returnType
+
     // Check that the implicit this variable is not accessed in a static method or in the initializer of a static field.
     if (methodDeclaration.modifiers.contains(Modifier.Static)) {
       checkImplicitThis = true
@@ -55,6 +58,7 @@ class TypeChecker(implicit val unit: CompilationUnit)
     } else {
       super.apply(methodDeclaration)
     }
+    checkMethodReturns = None
   }
 
   override def apply(typeDeclaration: TypeDeclaration) {
@@ -81,7 +85,7 @@ class TypeChecker(implicit val unit: CompilationUnit)
     super.apply(statement)
 
     require(statement.condition.declarationType != null)
-    if(statement.condition.declarationType != PrimitiveType.BooleanType) {
+    if (statement.condition.declarationType != PrimitiveType.BooleanType) {
       throw new TypeCheckingException("IfStatement", s"Conditional statement was ${statement.condition.declarationType}. Expected Boolean")
     }
   }
@@ -94,4 +98,28 @@ class TypeChecker(implicit val unit: CompilationUnit)
       throw new TypeCheckingException("WhileStatement", s"Conditional statement was ${statement.condition.declarationType}. Expected Boolean")
     }
   }
+
+  override def apply(statement: ReturnStatement) {
+    super.apply(statement)
+
+    if (checkMethodReturns.isEmpty) {
+      throw new TypeCheckingException("ReturnStatement", s"Found a return statement in a constructor")
+    }
+
+    val expectedReturnType = checkMethodReturns.get
+    statement.expression match {
+      case Some(expression) =>
+        if (expectedReturnType == PrimitiveType.VoidType || !isAssignable(expectedReturnType, expression.declarationType)) {
+          throw new TypeCheckingException(
+            "ReturnStatement",
+            s"Return statement attempted to return ${expression.declarationType}. Expected ${expectedReturnType}")
+        }
+      case None => {
+        if (expectedReturnType != PrimitiveType.VoidType) {
+          throw new TypeCheckingException("ReturnStatement", s"Empty return statement but expected ${expectedReturnType}")
+        }
+      }
+    }
+  }
+
 }
