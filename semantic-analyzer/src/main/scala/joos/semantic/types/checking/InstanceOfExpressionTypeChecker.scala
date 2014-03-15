@@ -2,43 +2,35 @@ package joos.semantic.types.checking
 
 import joos.ast.expressions.InstanceOfExpression
 import joos.ast.types.PrimitiveType._
-import joos.ast.types.{ArrayType, SimpleType}
 import joos.ast.visitor.AstVisitor
 import joos.semantic._
-import joos.semantic.types.InstanceOfExpressionException
+import joos.semantic.types.TypeCheckingException
 
 trait InstanceOfExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
-  override def apply(instanceOfExpression: InstanceOfExpression) {
-    instanceOfExpression.expression.accept(this)
 
-    require(instanceOfExpression.expression.declarationType != null)
-    if (isAssignable(instanceOfExpression.classType, instanceOfExpression.expression.declarationType) ||
-        isAssignable(instanceOfExpression.expression.declarationType, instanceOfExpression.classType)) {
-      instanceOfExpression.classType match {
-        case SimpleType(_) | ArrayType(_, _) | NullType => {}
-        case _ => {
-          throw new InstanceOfExpressionException(
-            s"${instanceOfExpression.expression.declarationType.standardName} to ${instanceOfExpression.classType.standardName}"
-          )
-        }
-      }
+  override def apply(expression: InstanceOfExpression) {
+    expression.expression.accept(this)
+    require(expression.expression.declarationType != null)
 
-      instanceOfExpression.classType match {
-        case SimpleType(_) | ArrayType(_, _) => {}
-        case _ => {
-          throw new InstanceOfExpressionException(
-            s"${instanceOfExpression.expression.declarationType.standardName} to ${instanceOfExpression.classType.standardName}"
-          )
-        }
-      }
-
-      instanceOfExpression.declarationType = instanceOfExpression.classType
-      return
+    if (!expression.classType.isReferenceType || !expression.expression.declarationType.isReferenceType) {
+      throw new TypeCheckingException(
+        "instanceof",
+        s"Both operands need to be reference types instead of ${expression.classType.standardName} ${
+          expression
+              .expression
+              .declarationType
+              .standardName
+        }")
     }
 
-    throw new InstanceOfExpressionException(
-      s"${instanceOfExpression.expression.declarationType.standardName} to ${instanceOfExpression.classType.standardName}"
-    )
+    if (isAssignable(expression.classType, expression.expression.declarationType)
+        || isAssignable(expression.expression.declarationType, expression.classType)) {
+      expression.declarationType = BooleanType
+    } else {
+      throw new TypeCheckingException(
+        "instanceof",
+        s"${expression.classType.standardName} are not related types ${expression.expression.declarationType.standardName}")
+    }
   }
 }

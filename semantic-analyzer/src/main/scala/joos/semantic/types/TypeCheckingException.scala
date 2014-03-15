@@ -3,7 +3,9 @@ package joos.semantic.types
 import joos.semantic.SemanticException
 import joos.ast.expressions.InfixExpression
 
-class TypeCheckingException(msg: String) extends SemanticException(msg)
+class TypeCheckingException(msg: String) extends SemanticException(msg) {
+  def this(source: String, errorMessage: String) = this(s"${source}: ${errorMessage}")
+}
 
 // TODO: Refine the exception
 class ImplicitThisInStaticException(msg: String) extends TypeCheckingException(msg)
