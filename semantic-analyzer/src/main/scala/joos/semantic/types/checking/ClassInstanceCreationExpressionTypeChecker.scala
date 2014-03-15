@@ -1,5 +1,6 @@
 package joos.semantic.types.checking
 
+import joos.ast.Modifier
 import joos.ast.expressions.ClassInstanceCreationExpression
 import joos.ast.types.SimpleType
 import joos.ast.visitor.AstVisitor
@@ -21,11 +22,19 @@ trait ClassInstanceCreationExpressionTypeChecker extends AstVisitor {
     newExpression.declarationType = classType match {
       case classType: SimpleType =>
         val declaration = classType.declaration.get
-        if (!declaration.isConcreteClass)
+        if (!declaration.isConcreteClass) {
           throw new TypeCheckingException("new", s"${classType.standardName} is not concrete")
+        }
+
         findMethod(newExpression.arguments, declaration.constructorMap.values) match {
           case None => throw new TypeCheckingException("new", s"Cannot find constructor ${classType.name}")
-          case Some(constructor) => classType
+          case Some(constructor) => {
+            if (constructor.modifiers.contains(Modifier.Protected) &&
+                unit.packageDeclaration != constructor.typeDeclaration.packageDeclaration)
+              throw new TypeCheckingException("new", s"Cannot access protected constructor ${constructor.toString}")
+
+            classType
+          }
         }
       case _ => throw new TypeCheckingException("new", s"Cannot instantiate class ${classType.standardName}")
     }
