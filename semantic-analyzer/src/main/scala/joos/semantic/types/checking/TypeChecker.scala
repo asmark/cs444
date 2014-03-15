@@ -1,7 +1,8 @@
 package joos.semantic.types.checking
 
 import joos.ast.declarations.{TypeDeclaration, MethodDeclaration, FieldDeclaration}
-import joos.ast.statements.{ReturnStatement, WhileStatement, IfStatement}
+import joos.ast.statements.{ForStatement, ReturnStatement, WhileStatement, IfStatement}
+import joos.ast.types.PrimitiveType._
 import joos.ast.types.{Type, PrimitiveType}
 import joos.ast.{Modifier, CompilationUnit}
 import joos.semantic._
@@ -37,6 +38,16 @@ class TypeChecker(implicit val unit: CompilationUnit)
         case e: Throwable => throw e
       }
       checkImplicitThis = false
+    } else {
+      super.apply(fieldDeclaration)
+
+      fieldDeclaration.fragment.initializer match {
+        case Some(initializer) => {
+          if (!isAssignable(fieldDeclaration.variableType, initializer.declarationType))
+            throw new FieldDeclarationTypeException(s"${initializer.declarationType} can not be assigned to ${fieldDeclaration.variableType}")
+        }
+        case _ =>
+      }
     }
 
   }
@@ -122,4 +133,17 @@ class TypeChecker(implicit val unit: CompilationUnit)
     }
   }
 
+  override def apply(forStatement: ForStatement) {
+    super.apply(forStatement)
+
+    forStatement.condition match {
+      case None =>
+      case Some(condition) =>
+        // Je_6_For_NullInCondition
+        require(condition.declarationType != null)
+
+        if (condition.declarationType != BooleanType)
+          throw new TypeCheckingException("for", s"condition needs to be boolean instead of ${condition.declarationType.standardName}")
+    }
+  }
 }

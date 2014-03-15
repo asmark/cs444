@@ -1,29 +1,46 @@
 package joos.semantic.types.checking
 
-import joos.ast.visitor.AstVisitor
-import joos.ast.expressions.VariableDeclarationExpression
+import joos.ast.expressions.{QualifiedNameExpression, SimpleNameExpression, VariableDeclarationExpression}
 import joos.semantic._
-import joos.semantic.types.VariableDeclarationExpressionException
+import joos.semantic.types.{AstEnvironmentVisitor, TypeCheckingException}
 
-trait VariableDeclarationExpressionTypeChecker extends AstVisitor {
+trait VariableDeclarationExpressionTypeChecker extends AstEnvironmentVisitor {
   self: TypeChecker =>
-  override def apply(variableDeclarationExpression: VariableDeclarationExpression) {
-    variableDeclarationExpression.fragment.initializer match {
-      // TODO: verify this is the only check needed
-      case Some(initExpr) => {
-        initExpr.accept(this)
 
-        require(initExpr.declarationType != null)
-        if(!isAssignable(variableDeclarationExpression.variableType, initExpr.declarationType))
-          throw new VariableDeclarationExpressionException(
-            s"attempt to assign ${initExpr.declarationType.standardName} to ${variableDeclarationExpression.variableType.standardName}"
-          )
+  private[this] var variable: VariableDeclarationExpression = null
 
-        variableDeclarationExpression.declarationType = variableDeclarationExpression.variableType
-      }
-      case None => {
-        variableDeclarationExpression.declarationType = variableDeclarationExpression.variableType
+  override def apply(name: SimpleNameExpression) {
+    // Je_5_AmbiguousInvoke_LocalInOwnInitializer
+    if (variable != null) {
+      if (variable.declarationName == name) {
+        throw new TypeCheckingException("initializer", s"Cannot use variable ${name} itself in its initializer")
       }
     }
+  }
+
+  override def apply(name: QualifiedNameExpression) {
+    name.qualifier.accept(this)
+    name.name.accept(this)
+  }
+
+  override def apply(variable: VariableDeclarationExpression) {
+    this.variable = variable
+    this.blockEnvironment = variable.environment
+
+    variable.fragment.initializer match {
+      case None =>
+      case Some(initializer) =>
+        initializer.accept(this)
+        require(initializer.declarationType != null)
+
+        if (!isAssignable(variable.variableType, initializer.declarationType))
+          throw new TypeCheckingException(
+            "variable declaration",
+            s"Cannot assign ${initializer.declarationType.standardName} to ${variable.declarationName}")
+    }
+
+    variable.declarationType = variable.variableType
+
+    this.variable = null
   }
 }
