@@ -84,7 +84,8 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
     expression.fragment.accept(this)
   }
 
-  protected def resolveFieldAccess(name: NameExpression) {
+  protected def resolveFieldAccess(name: NameExpression):Visibility = {
+    var visibility = Local
 
     var names = name match {
       case s:SimpleNameExpression => Seq(s)
@@ -101,8 +102,10 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
       case None =>
 
         // (2) Check local field
-        getFieldTypeFromType(unit.typeDeclaration.get.asType, names.head, Local) match {
+        visibility = Local
+        getFieldTypeFromType(unit.typeDeclaration.get.asType, names.head, visibility) match {
           case Some(fieldType) => {
+            visibility = Local
             declarationType = fieldType
           }
           case None => {
@@ -120,12 +123,13 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
             declarationType = typeName.asType
 
             // Next name must be a static field
+            visibility = Static
             if (names.size > typeIndex) {
               val fieldName = names(typeIndex)
 
-              getFieldTypeFromType(declarationType, fieldName, Static) match {
+              getFieldTypeFromType(declarationType, fieldName, visibility) match {
                 case Some(fieldType) => {
-                  // TODO: Static checks
+                  visibility = Local
                   declarationType = fieldType
                   typeIndex += 1
                 }
@@ -140,13 +144,16 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
     names = names.drop(typeIndex)
     names foreach {
       name =>
-        getFieldTypeFromType(declarationType, name, Local) match {
+        visibility = Local
+        getFieldTypeFromType(declarationType, name, visibility) match {
           case Some(fieldType) => {
+            visibility = Local
             declarationType = fieldType
           }
           case None => throw new AmbiguousNameException(name)
         }
     }
     name.declarationType = declarationType
+    visibility
   }
 }
