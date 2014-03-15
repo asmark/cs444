@@ -18,7 +18,8 @@ class TypeChecker(implicit val unit: CompilationUnit)
     with ParenthesizedExpressionTypeChecker
     with ThisExpressionTypeChecker
     with VariableDeclarationExpressionTypeChecker
-    with PrefixExpressionTypeChecker {
+    with PrefixExpressionTypeChecker
+    with InstanceOfExpressionTypeChecker {
   var checkImplicitThis = false // TODO: this approach should be fine as long as the field decl checking and method decl checking are not recursive
 
   override def apply(fieldDeclaration: FieldDeclaration) {

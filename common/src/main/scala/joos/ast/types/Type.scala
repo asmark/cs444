@@ -23,6 +23,7 @@ trait Type extends AstNode {
   def isReferenceType: Boolean = this match {
     case t: ArrayType => true
     case t: SimpleType => true
+    case t: PrimitiveType if t == NullType => true
     case _ => false
   }
 }
