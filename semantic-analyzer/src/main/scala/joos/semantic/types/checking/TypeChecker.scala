@@ -4,7 +4,7 @@ import joos.ast.declarations.{TypeDeclaration, MethodDeclaration, FieldDeclarati
 import joos.ast.{Modifier, CompilationUnit}
 import joos.semantic._
 import joos.semantic.types._
-import joos.ast.statements.IfStatement
+import joos.ast.statements.{WhileStatement, IfStatement}
 import joos.ast.types.PrimitiveType
 
 class TypeChecker(implicit val unit: CompilationUnit)
@@ -82,7 +82,16 @@ class TypeChecker(implicit val unit: CompilationUnit)
 
     require(statement.condition.declarationType != null)
     if(statement.condition.declarationType != PrimitiveType.BooleanType) {
-      throw new TypeCheckingException("IfStatement", s"${statement.condition.declarationType} was not a Boolean")
+      throw new TypeCheckingException("IfStatement", s"Conditional statement was ${statement.condition.declarationType}. Expected Boolean")
+    }
+  }
+
+  override def apply(statement: WhileStatement) {
+    super.apply(statement)
+
+    require(statement.condition.declarationType != null)
+    if (statement.condition.declarationType != PrimitiveType.BooleanType) {
+      throw new TypeCheckingException("WhileStatement", s"Conditional statement was ${statement.condition.declarationType}. Expected Boolean")
     }
   }
 }
