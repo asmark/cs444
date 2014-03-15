@@ -104,9 +104,11 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
           throw new AmbiguousNameException(name)
         }
         // (2) Check local field
-        getFieldTypeFromType(unit.typeDeclaration.get.asType, name, visibility) match {
-          case Some(fieldType) => {
-            declarationType = fieldType
+        getFieldFromType(unit.typeDeclaration.get.asType, name) match {
+          case Some(field) => {
+            checkVisibility(field, visibility)
+            checkSimpleAccess(field)
+            declarationType = field.variableType
           }
           case None => {
 

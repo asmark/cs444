@@ -57,6 +57,29 @@ package object disambiguation {
     }
   }
 
+  def checkSimpleAccess(field: FieldDeclaration)(implicit unit: CompilationUnit) {
+    if (field.modifiers contains Modifier.Protected) {
+      val selfType = unit.typeDeclaration.get
+      if (!(selfType.packageDeclaration.declarationName equals field.typeDeclaration.packageDeclaration.declarationName)) {
+        if (!(selfType.allAncestors contains field.typeDeclaration)) {
+          throw new IllegalProtectedAccessException(field.declarationName)
+        }
+      }
+    }
+  }
+
+  def checkQualifiedAccess(field: FieldDeclaration, prefixType: Type)(implicit unit: CompilationUnit) {
+    checkSimpleAccess(field)
+    if ((field.modifiers contains Modifier.Protected) && (!(field.modifiers contains Modifier.Static))) {
+      val selfType = unit.typeDeclaration.get
+      if (!(prefixType.declaration.get equals selfType)) {
+        if (!(prefixType.declaration.get.allAncestors contains selfType)) {
+          throw new IllegalProtectedAccessException(field.declarationName)
+        }
+      }
+    }
+  }
+
   def checkSimpleAccess(method: MethodDeclaration)(implicit unit: CompilationUnit) {
     if (method.modifiers contains Modifier.Protected) {
       val selfType = unit.typeDeclaration.get
@@ -133,8 +156,12 @@ package object disambiguation {
   def getFieldFromType(t: Type, fieldName: SimpleNameExpression)(implicit unit: CompilationUnit): Option[FieldDeclaration] = {
     t match {
       case _: PrimitiveType => None
-        // IMPORTANT: has no type declaration attached
-      case ArrayType(_, _) => Some(FieldDeclaration(Seq(Modifier.Final), PrimitiveType.IntegerType, VariableDeclarationFragment(SimpleNameExpression("length"), None)))
+      // IMPORTANT: has no type declaration attached
+      case ArrayType(_, _) => Some(
+        FieldDeclaration(
+          Seq(Modifier.Final),
+          PrimitiveType.IntegerType,
+          VariableDeclarationFragment(SimpleNameExpression("length"), None)))
       case s: SimpleType => {
         val caller = s.declaration.get
         caller.containedFields.get(fieldName) match {

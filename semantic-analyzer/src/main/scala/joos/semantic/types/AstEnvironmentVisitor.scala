@@ -6,8 +6,8 @@ import joos.ast.expressions._
 import joos.ast.statements._
 import joos.ast.types.Type
 import joos.ast.visitor.AstCompleteVisitor
-import joos.semantic.types.disambiguation._
 import joos.semantic.types.disambiguation.Visibility._
+import joos.semantic.types.disambiguation._
 import joos.semantic.{BlockEnvironment, TypeEnvironment}
 import scala.Some
 
@@ -84,12 +84,12 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
     expression.fragment.accept(this)
   }
 
-  protected def resolveFieldAccess(name: NameExpression):Visibility = {
+  protected def resolveFieldAccess(name: NameExpression): Visibility = {
     var visibility = Local
 
     var names = name match {
-      case s:SimpleNameExpression => Seq(s)
-      case q:QualifiedNameExpression => q.unfold
+      case s: SimpleNameExpression => Seq(s)
+      case q: QualifiedNameExpression => q.unfold
     }
     var typeIndex = 1
     var declarationType: Type = null
@@ -103,10 +103,12 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
 
         // (2) Check local field
         visibility = Local
-        getFieldTypeFromType(unit.typeDeclaration.get.asType, names.head, visibility) match {
-          case Some(fieldType) => {
+        getFieldFromType(unit.typeDeclaration.get.asType, names.head) match {
+          case Some(field) => {
+            checkVisibility(field, visibility)
+            checkSimpleAccess(field)
             visibility = Local
-            declarationType = fieldType
+            declarationType = field.variableType
           }
           case None => {
 
@@ -127,11 +129,13 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
             if (names.size > typeIndex) {
               val fieldName = names(typeIndex)
 
-              getFieldTypeFromType(declarationType, fieldName, visibility) match {
-                case Some(fieldType) => {
+              getFieldFromType(declarationType, fieldName) match {
+                case Some(field) => {
+                  checkVisibility(field, visibility)
+                  checkQualifiedAccess(field, declarationType)
                   visibility = Local
-                  declarationType = fieldType
                   typeIndex += 1
+                  declarationType = field.variableType
                 }
                 case None => throw new AmbiguousNameException(name)
               }
@@ -144,11 +148,13 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
     names = names.drop(typeIndex)
     names foreach {
       name =>
-          visibility
-        getFieldTypeFromType(declarationType, name, visibility) match {
-          case Some(fieldType) => {
+
+        getFieldFromType(declarationType, name) match {
+          case Some(field) => {
+            checkVisibility(field, visibility)
+            checkQualifiedAccess(field, declarationType)
             visibility = Local
-            declarationType = fieldType
+            declarationType = field.variableType
           }
           case None => throw new AmbiguousNameException(name)
         }
