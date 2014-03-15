@@ -3,9 +3,10 @@ package joos.semantic.types.disambiguation
 import joos.ast.compositions.NameLike
 import joos.ast.declarations.FieldDeclaration
 import joos.ast.expressions._
-import joos.ast.types.{PrimitiveType, SimpleType, ArrayType, Type}
-import joos.ast.visitor.{AstCompleteVisitor, AstEnvironmentVisitor}
+import joos.ast.types.Type
+import joos.ast.visitor.AstCompleteVisitor
 import joos.ast.{Modifier, CompilationUnit}
+import joos.semantic.types.AstEnvironmentVisitor
 
 // Check the rules specified in Section 8.3.2.3 of the Java Language Specification regarding forward references. The initializer of a non-static
 // field must not use (i.e. read) by simple name (i.e. without an explicit this) itself or a non-static field declared later in the same class.
@@ -129,92 +130,7 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
     }
 
   override def apply(name: QualifiedNameExpression) {
-    var names = name.unfold
-    var typeIndex = 1
-    var declarationType: Type = null
-
-
-    // (1) Check local variable
-    require(blockEnvironment != null)
-    blockEnvironment.getVariable(names.head) match {
-      case Some(localVariable) => declarationType = localVariable.declarationType
-      case None =>
-
-        // (2) Check local field
-        typeEnvironment.containedFields.get(names.head) match {
-          case Some(field) => {
-            declarationType = field.declarationType
-            if (field.isStatic) {
-              throw new InvalidStaticUseException(name)
-            }
-          }
-          case None => {
-
-            // (3) Check static accesses
-
-            // Must have a prefix that is a valid type
-            while (unit.getVisibleType(names.take(typeIndex)).isEmpty) {
-              typeIndex += 1
-              if (typeIndex > names.length) {
-                throw new AmbiguousNameException(name)
-              }
-            }
-
-            val typeName = unit.getVisibleType(names.take(typeIndex)).get
-            declarationType = typeName.asType
-
-            // Next name must be a static field
-
-            if (names.size > typeIndex) {
-              val fieldName = names(typeIndex)
-              typeName.containedFields.get(fieldName) match {
-                case Some(field) => {
-                  if (!field.isStatic) {
-                    throw new InvalidStaticUseException(name)
-                  }
-                  declarationType = field.variableType
-                  typeIndex += 1
-                }
-                case None => throw new AmbiguousNameException(name)
-              }
-            }
-
-          }
-        }
-    }
-    // All remaining names must be instance field accesses
-    names = names.drop(typeIndex)
-    names foreach {
-      name =>
-        declarationType match {
-          // Arrays only have a "length" field
-          case _: ArrayType => {
-            if (name.standardName equals "length") {
-              declarationType = PrimitiveType.BooleanType
-            } else {
-              throw new AmbiguousNameException(name)
-            }
-          }
-          // Primitives do not have any fields
-          case _: PrimitiveType => {
-            throw new AmbiguousNameException(name)
-          }
-
-          case simpleType: SimpleType => {
-            simpleType.declaration.get.containedFields.get(name) match {
-              case None => throw new AmbiguousNameException(name)
-              case Some(field) => {
-                if (field.isStatic) {
-                  throw new InvalidStaticUseException(name)
-                }
-                declarationType = field.variableType
-              }
-            }
-          }
-          case _ => throw new AmbiguousNameException(name)
-        }
-    }
-    name.declarationType = declarationType
+    resolveStaticFieldAccess(name)
   }
 
 }

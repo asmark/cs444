@@ -1,7 +1,7 @@
 package joos.semantic.types.checking
 
 import joos.ast.declarations.{TypeDeclaration, MethodDeclaration, FieldDeclaration}
-import joos.ast.visitor.{AstEnvironmentVisitor, AstCompleteVisitor}
+import joos.ast.visitor.AstCompleteVisitor
 import joos.ast.{Modifier, CompilationUnit}
 import joos.semantic._
 import joos.semantic.types._
