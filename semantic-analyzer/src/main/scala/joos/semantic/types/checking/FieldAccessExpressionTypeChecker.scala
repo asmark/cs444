@@ -1,10 +1,10 @@
 package joos.semantic.types.checking
 
+import joos.ast.Modifier
 import joos.ast.expressions.FieldAccessExpression
 import joos.ast.types.{ArrayType, PrimitiveType, SimpleType}
 import joos.ast.visitor.AstVisitor
-import joos.semantic.types.{IllegalProtectedFieldAccessException, FieldAccessExpressionException}
-import joos.ast.Modifier
+import joos.semantic.types.{IllegalProtectedAccessException, FieldAccessExpressionException}
 
 trait FieldAccessExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
@@ -34,9 +34,7 @@ trait FieldAccessExpressionTypeChecker extends AstVisitor {
               // in a subtype of the type declaring the entity being accessed, or in the same package as that type.
               if (!unit.typeDeclaration.get.allAncestors.contains(declaration.typeDeclaration) &&
                   unit.packageDeclaration != declaration.typeDeclaration.packageDeclaration) {
-                throw new IllegalProtectedFieldAccessException(
-                  s"${fieldAccessExpression.toString} pointing to ${declaration.declarationName.standardName}"
-                )
+                throw new IllegalProtectedAccessException(declaration.declarationName)
               }
             }
             declaration.variableType

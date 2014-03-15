@@ -58,79 +58,47 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
 
   override def apply(fieldAccess: FieldAccessExpression) {
     fieldAccess.expression.accept(this)
-
-    // Can't resolve simple name of a field access yet
   }
 
   override def apply(invocation: MethodInvocationExpression) {
     invocation.expression foreach (_.accept(this))
     invocation.arguments foreach (_.accept(this))
-
-    // Can't resolve method names yet
-    //    invocation.methodName match {
-    //      case QualifiedNameExpression(qualifier, methodName) => {
-    //        qualifier.accept(this)
-    //
-    //        qualifier.declarationRef match {
-    //          case Right(t@TypeDeclaration(_, _, _, _, _, _, _)) => {
-    //            t.containedMethods.get(methodName) match {
-    //              case Some(method) => {
-    //                // TODO: Find correct method and ensure static
-    //                invocation.methodName.declarationRef = Right(method.head)
-    //              }
-    //              case None => throw new AmbiguousNameException(invocation.methodName)
-    //            }
-    //          }
-    //          case _ => throw new AmbiguousNameException(invocation.methodName)
-    //        }
-    //      }
-
-    //      case methodName: SimpleNameExpression => {
-    //        typeEnvironment.containedMethods.get(methodName) match {
-    //          case Some(method) => {
-    //            // TODO: Find correct method and ensure static
-    //            invocation.methodName.declarationRef = Right(method.head)
-    //          }
-    //          case None => throw new AmbiguousNameException(invocation.methodName)
-    //        }
-    //
-    //      }
   }
 
-    override def apply(name: SimpleNameExpression) {
-      var declarationType: Type = null
+  override def apply(name: SimpleNameExpression) {
+    var declarationType: Type = null
 
-      // (1) Check local variable
-      require(blockEnvironment != null)
-      blockEnvironment.getVariable(name) match {
-        case Some(localVariable) => declarationType = localVariable.declarationType
-        case None =>
+    // (1) Check local variable
+    require(blockEnvironment != null)
+    blockEnvironment.getVariable(name) match {
+      case Some(localVariable) => declarationType = localVariable.declarationType
+      case None =>
 
-          // (2) Check local field
-          typeEnvironment.containedFields.get(name) match {
-            case Some(field) => {
-              declarationType = field.variableType
-              if (field.isStatic) {
-                throw new InvalidStaticUseException(name)
-              }
-            }
-            case None => {
-
-              // (3) Check Static access
-              unit.getVisibleType(name) match {
-                case Some(typeName) => {
-                  declarationType = typeName.asType
-                }
-                case None => throw new AmbiguousNameException(name)
-              }
+        // (2) Check local field
+        typeEnvironment.containedFields.get(name) match {
+          case Some(field) => {
+            declarationType = field.variableType
+            if (field.isStatic) {
+              throw new InvalidStaticUseException(name)
             }
           }
-      }
-      name.declarationType = declarationType
+          case None => {
+
+            // (3) Check Static access
+            unit.getVisibleType(name) match {
+              case Some(typeName) => {
+                declarationType = typeName.asType
+              }
+              case None => throw new AmbiguousNameException(name)
+            }
+          }
+        }
     }
+    name.declarationType = declarationType
+  }
 
   override def apply(name: QualifiedNameExpression) {
-    resolveStaticFieldAccess(name)
+    resolveFieldAccess(name)
   }
 
 }
