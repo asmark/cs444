@@ -15,7 +15,7 @@ trait PrefixExpressionTypeChecker extends AstVisitor {
 
     prefix.declarationType = prefix.operator match {
       case Plus | Minus =>
-        if (prefix.operand.declarationType.isNumeric)
+        if (!prefix.operand.declarationType.isNumeric)
           throw new TypeCheckingException("prefix", s"${prefix.operator} ${prefix.operand.declarationType.standardName}")
         IntegerType
       case Not =>

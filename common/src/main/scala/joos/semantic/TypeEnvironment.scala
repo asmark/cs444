@@ -60,8 +60,8 @@ trait TypeEnvironment extends Environment {
   }
 
   lazy val allAncestors: Set[TypeDeclaration] = {
-    val allAncestors = this.supers.map(
-      superType => superType.allAncestors
+    val allAncestors = supers.map(
+      superType => Set(superType) ++ superType.allAncestors
     )
     val ret = allAncestors.foldLeft(Set[TypeDeclaration]())(
       (left, right) => left ++ right
@@ -71,7 +71,7 @@ trait TypeEnvironment extends Environment {
 
   private def isAllAbstract(method: MethodDeclaration): Boolean = {
     var ret = true
-    this.supers.foreach(
+    supers.foreach(
       superType => {
         val superTypeContained = superType.containedMethods
         superTypeContained.values.flatten.foreach {
