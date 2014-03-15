@@ -8,6 +8,7 @@ import joos.ast.types._
 import joos.core.Logger
 import scala.Some
 import scala.collection.mutable
+import joos.semantic._
 
 package object semantic {
 
@@ -126,6 +127,9 @@ package object semantic {
           case _ => false
         }
       }
+      case (dst, ArrayType(_, _) |  SimpleType(_)) if dst.declaration.get.fullName == javaLangObject.standardName => true
+      case (dst, ArrayType(_, _)) if dst.declaration.get.fullName == javaLangCloneable.standardName => true
+      case (dst, ArrayType(_, _)) if dst.declaration.get.fullName == javaIOSerializable.standardName => true
       case (dstSimpleType: SimpleType, srcType) => {
         srcType match {
           case SimpleType(_) => {
@@ -139,9 +143,6 @@ package object semantic {
         }
       }
       case (NullType, _) => false
-      case (unit.javaLangObjectType, ArrayType(_, _) |  SimpleType(_)) => true
-      case (unit.javaLangCloneableType, ArrayType(_, _)) => true
-      case (unit.javaIOSerializableInterface, ArrayType(_, _)) => true
       case (_, _) => false
     }
   }
