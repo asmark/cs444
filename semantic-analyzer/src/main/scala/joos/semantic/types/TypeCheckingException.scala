@@ -38,6 +38,8 @@ class MissingConstructorException(msg: String) extends TypeCheckingException(msg
 
 class InvalidConstructorException(msg: String) extends TypeCheckingException(msg)
 
+class FieldDeclarationTypeException(msg: String) extends TypeCheckingException(msg)
+
 class InfixExpressionException(expression: InfixExpression)
     extends TypeCheckingException(
       "Cannot type check "
