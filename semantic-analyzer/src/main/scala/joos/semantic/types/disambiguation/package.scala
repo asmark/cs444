@@ -1,12 +1,12 @@
 package joos.semantic.types
 
 import joos.ast.declarations.MethodDeclaration
-import joos.ast.expressions.{QualifiedNameExpression, NameExpression, SimpleNameExpression}
+import joos.ast.expressions.{MethodInvocationExpression, QualifiedNameExpression, NameExpression, SimpleNameExpression}
 import scala.language.implicitConversions
 
 package object disambiguation {
 
-  def matchMethod(invocation: MethodDeclaration, declarations: Seq[MethodDeclaration]): Option[MethodDeclaration] = {
+  def matchMethod(invocation: MethodInvocationExpression, declarations: Seq[MethodDeclaration]): Option[MethodDeclaration] = {
     None
   }
 
