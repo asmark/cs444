@@ -96,10 +96,6 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
     require(blockEnvironment != null)
     blockEnvironment.getLocalVariable(name) match {
       case Some(localVariable) => {
-//        visibility match {
-//          case Static => if (!localVariable.modifiers.contains(Modifier.Static)) throw new InvalidStaticUseException(name)
-//          case Local => if (localVariable.modifiers.contains(Modifier.Static)) throw new InvalidStaticUseException(name)
-//        }
         declarationType = localVariable.declarationType
       }
       case None =>
@@ -109,7 +105,6 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
         }
         // (2) Check local field
         getFieldTypeFromType(unit.typeDeclaration.get.asType, name, visibility) match {
-          //        typeEnvironment.containedFields.get(name) match {
           case Some(fieldType) => {
             declarationType = fieldType
           }

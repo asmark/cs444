@@ -56,6 +56,7 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
     methodName match {
       // Must be a local method declaration
       case methodName: SimpleNameExpression => {
+        if (inStaticMethod) throw new InvalidStaticUseException(methodName)
         getMethodTypeFromType(unit.typeDeclaration.get.asType, methodName, parameters, Local) match {
           case None => throw new AmbiguousNameException(methodName)
           case Some(returnType) => methodName.declarationType = returnType

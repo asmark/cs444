@@ -25,6 +25,7 @@ class TypeChecker(implicit val unit: CompilationUnit)
     with InstanceOfExpressionTypeChecker {
   protected var checkExplicitThis = false
   protected var checkMethodReturns: Option[Type] = None
+  protected var inStaticMethod = false
 
   override def apply(fieldDeclaration: FieldDeclaration) {
     // Check that the implicit this variable is not accessed in a static method or in the initializer of a static field.
@@ -42,11 +43,13 @@ class TypeChecker(implicit val unit: CompilationUnit)
   override def apply(methodDeclaration: MethodDeclaration) {
     checkMethodReturns = methodDeclaration.returnType
     checkExplicitThis = methodDeclaration.modifiers.contains(Modifier.Static)
+    inStaticMethod = methodDeclaration.isStatic
 
     super.apply(methodDeclaration)
 
     checkExplicitThis = false
     checkMethodReturns = None
+    inStaticMethod = false
   }
 
   override def apply(typeDeclaration: TypeDeclaration) {
@@ -87,6 +90,19 @@ class TypeChecker(implicit val unit: CompilationUnit)
     }
   }
 
+  override def apply(forStatement: ForStatement) {
+    super.apply(forStatement)
+
+    forStatement.condition match {
+      case None =>
+      case Some(condition) =>
+        require(condition.declarationType != null)
+
+        if (condition.declarationType != BooleanType)
+          throw new TypeCheckingException("for", s"condition needs to be boolean instead of ${condition.declarationType.standardName}")
+    }
+  }
+
   override def apply(statement: ReturnStatement) {
     super.apply(statement)
 
@@ -107,20 +123,6 @@ class TypeChecker(implicit val unit: CompilationUnit)
           throw new TypeCheckingException("ReturnStatement", s"Empty return statement but expected ${expectedReturnType}")
         }
       }
-    }
-  }
-
-  override def apply(forStatement: ForStatement) {
-    super.apply(forStatement)
-
-    forStatement.condition match {
-      case None =>
-      case Some(condition) =>
-        // Je_6_For_NullInCondition
-        require(condition.declarationType != null)
-
-        if (condition.declarationType != BooleanType)
-          throw new TypeCheckingException("for", s"condition needs to be boolean instead of ${condition.declarationType.standardName}")
     }
   }
 }
