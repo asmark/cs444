@@ -10,22 +10,23 @@ package object disambiguation {
 
   def findMethod(
       targetMethod: SimpleNameExpression,
-      parameters: Seq[Expression],
+      parameters: IndexedSeq[Expression],
       methods: Map[SimpleNameExpression, Set[MethodDeclaration]]): Option[MethodDeclaration] = {
     methods.get(targetMethod) match {
       case None => None
-      case Some(ms) => findMethod(targetMethod, parameters, ms)
+      case Some(ms) => findMethod(parameters, ms)
     }
   }
 
-  def findMethod(targetMethod: SimpleNameExpression, parameters: Seq[Expression], methods: Set[MethodDeclaration]): Option[MethodDeclaration] = {
-    methods.find(method => isMatch(method, (targetMethod, parameters)))
+  def findMethod(parameters: IndexedSeq[Expression], methods: Iterable[MethodDeclaration]): Option[MethodDeclaration] = {
+    methods.find(method => isMatch(method, parameters))
   }
 
-  private[this] def isMatch(methodA: MethodDeclaration, targetMethod: (SimpleNameExpression, Seq[Expression])): Boolean = {
-    if (methodA.parameters.length != targetMethod._2.length) return false
-    for (i <- 0 until methodA.parameters.length) {
-      if (methodA.parameters(i).variableType != targetMethod._2(i).declarationType) return false
+
+  private[this] def isMatch(method: MethodDeclaration, parameters: IndexedSeq[Expression]): Boolean = {
+    if (method.parameters.length != parameters.length) return false
+    for (i <- 0 until parameters.length) {
+      if (method.parameters(i).variableType != parameters(i).declarationType) return false
     }
     true
   }
@@ -37,7 +38,7 @@ package object disambiguation {
     }
   }
 
-  def getMethodFromType(t: Type, methodName: SimpleNameExpression, parameters: Seq[Expression]): Option[Type] = {
+  def getMethodFromType(t: Type, methodName: SimpleNameExpression, parameters: IndexedSeq[Expression]): Option[Type] = {
     t match {
       case _: PrimitiveType | ArrayType(_, _) => None
       case s: SimpleType => {
@@ -64,7 +65,6 @@ package object disambiguation {
       }
     }
   }
-
 
 
 }
