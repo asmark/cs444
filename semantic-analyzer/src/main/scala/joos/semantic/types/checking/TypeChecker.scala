@@ -23,52 +23,32 @@ class TypeChecker(implicit val unit: CompilationUnit)
     with VariableDeclarationExpressionTypeChecker
     with PrefixExpressionTypeChecker
     with InstanceOfExpressionTypeChecker {
-  protected var checkImplicitThis = false
+  protected var checkExplicitThis = false
   protected var checkMethodReturns: Option[Type] = None
 
   override def apply(fieldDeclaration: FieldDeclaration) {
     // Check that the implicit this variable is not accessed in a static method or in the initializer of a static field.
-    if (fieldDeclaration.modifiers.contains(Modifier.Static)) {
-      checkImplicitThis = true
-      try {
-        super.apply(fieldDeclaration)
-      } catch {
-        case e: ImplicitThisInStaticException =>
-          throw new ImplicitThisInStaticException(s"In ${fieldDeclaration.variableType.standardName}")
-        case e: Throwable => throw e
-      }
-      checkImplicitThis = false
-    } else {
-      super.apply(fieldDeclaration)
+    checkExplicitThis = fieldDeclaration.modifiers.contains(Modifier.Static)
+    super.apply(fieldDeclaration)
+    checkExplicitThis = false
 
-      fieldDeclaration.fragment.initializer match {
-        case Some(initializer) => {
-          if (!isAssignable(fieldDeclaration.variableType, initializer.declarationType))
-            throw new FieldDeclarationTypeException(s"${initializer.declarationType} can not be assigned to ${fieldDeclaration.variableType}")
-        }
-        case _ =>
+    fieldDeclaration.fragment.initializer match {
+      case Some(initializer) => {
+        if (!isAssignable(fieldDeclaration.variableType, initializer.declarationType))
+          throw new FieldDeclarationTypeException(s"${initializer.declarationType} can not be assigned to ${fieldDeclaration.variableType}")
       }
+      case _ =>
     }
 
   }
 
   override def apply(methodDeclaration: MethodDeclaration) {
     checkMethodReturns = methodDeclaration.returnType
+    checkExplicitThis = methodDeclaration.modifiers.contains(Modifier.Static)
 
-    // Check that the implicit this variable is not accessed in a static method or in the initializer of a static field.
-    if (methodDeclaration.modifiers.contains(Modifier.Static)) {
-      checkImplicitThis = true
-      try {
-        super.apply(methodDeclaration)
-      } catch {
-        case e: ImplicitThisInStaticException =>
-          throw new ImplicitThisInStaticException(s"In ${methodDeclaration.localSignature}")
-        case e: Throwable => throw e
-      }
-      checkImplicitThis = false
-    } else {
-      super.apply(methodDeclaration)
-    }
+    super.apply(methodDeclaration)
+
+    checkExplicitThis = false
     checkMethodReturns = None
   }
 

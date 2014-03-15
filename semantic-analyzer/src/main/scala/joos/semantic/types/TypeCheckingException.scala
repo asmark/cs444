@@ -7,8 +7,7 @@ class TypeCheckingException(msg: String) extends SemanticException(msg) {
   def this(source: String, errorMessage: String) = this(s"${source}: ${errorMessage}")
 }
 
-// TODO: Refine the exception
-class ImplicitThisInStaticException(msg: String) extends TypeCheckingException(msg)
+class ExplicitThisInStaticException(msg: String) extends TypeCheckingException(msg)
 
 class AbstractOrInstanceCreationException(msg: String) extends TypeCheckingException(msg)
 

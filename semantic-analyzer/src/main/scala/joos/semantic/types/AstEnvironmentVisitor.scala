@@ -144,7 +144,7 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
     names = names.drop(typeIndex)
     names foreach {
       name =>
-        visibility = Local
+          visibility
         getFieldTypeFromType(declarationType, name, visibility) match {
           case Some(fieldType) => {
             visibility = Local
