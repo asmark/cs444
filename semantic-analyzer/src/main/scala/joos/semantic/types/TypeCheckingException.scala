@@ -1,7 +1,7 @@
 package joos.semantic.types
 
 import joos.semantic.SemanticException
-import joos.ast.expressions.InfixExpression
+import joos.ast.expressions.{NameExpression, InfixExpression}
 
 class TypeCheckingException(msg: String) extends SemanticException(msg) {
   def this(source: String, errorMessage: String) = this(s"${source}: ${errorMessage}")
@@ -49,8 +49,4 @@ class InfixExpressionException(expression: InfixExpression)
       + ' '
       + expression.right.declarationType.standardName)
 
-class IllegalProtectedFieldAccessException(msg: String) extends TypeCheckingException(msg)
-
-class IllegalProtectedMethodAccessException(msg: String) extends TypeCheckingException(msg)
-
-class QualifiedNameExpressionException(msg: String) extends TypeCheckingException(msg)
+class IllegalProtectedAccessException(name: NameExpression) extends TypeCheckingException(s"Attempted to access non-visible ${name}")

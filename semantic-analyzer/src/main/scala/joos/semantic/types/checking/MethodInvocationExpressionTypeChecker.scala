@@ -1,46 +1,32 @@
 package joos.semantic.types.checking
 
 import joos.ast.expressions._
-import joos.ast.visitor.AstVisitor
-import joos.semantic.types.disambiguation._
 import joos.ast.types.Type
-import joos.ast.Modifier
-import joos.semantic.types.IllegalProtectedMethodAccessException
+import joos.ast.visitor.AstVisitor
+import joos.semantic.types.disambiguation.Visibility._
+import joos.semantic.types.disambiguation._
 
 trait MethodInvocationExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
 
-  private def getStaticAccessMethod(methodAccess: QualifiedNameExpression, parameters: IndexedSeq[Expression]) {
+  private def getQualifiedMethod(methodAccess: QualifiedNameExpression, parameters: IndexedSeq[Expression]) {
 
     val unfolded = methodAccess.unfold
 
     val (fieldPrefix, methodName) = (fold(unfolded.dropRight(1)), unfolded.last)
 
-    resolveStaticFieldAccess(fieldPrefix)
+    resolveFieldAccess(fieldPrefix)
 
-    getMethodFromType(fieldPrefix.declarationType, methodName, parameters) match {
-      case Some(method) => {
-        if (method.modifiers.contains(Modifier.Protected) && method.typeDeclaration != unit.typeDeclaration.get) {
-          if (!unit.typeDeclaration.get.allAncestors.contains(method.typeDeclaration) &&
-              unit.packageDeclaration != method.typeDeclaration.packageDeclaration) {
-            throw new IllegalProtectedMethodAccessException(
-              s"${fieldPrefix.toString} pointing to ${method.declarationName.standardName}"
-            )
-          }
-        }
-        method.returnType match {
-          case Some(returnType) => methodAccess.declarationType = returnType
-          case None => throw new AmbiguousNameException(methodAccess)
-        }
-      }
-      case _ => // TODO: exception?
+    getMethodTypeFromType(fieldPrefix.declarationType, methodName, parameters, Local) match {
+      case Some(returnType) => methodAccess.declarationType = returnType
+      case None => throw new AmbiguousNameException(methodAccess)
     }
   }
 
   private def linkMethod(left: Type, methodName: NameExpression, parameters: IndexedSeq[Expression]) {
     methodName match {
       case methodName: SimpleNameExpression => {
-        getMethodTypeFromType(left, methodName, parameters) match {
+        getMethodTypeFromType(left, methodName, parameters, Local) match {
           case None => throw new AmbiguousNameException(methodName)
           case Some(returnType) => methodName.declarationType = returnType
         }
@@ -50,13 +36,13 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
         var leftType = left
         methodName.unfold.dropRight(1) foreach {
           name =>
-            getFieldFromType(leftType, name) match {
+            getFieldTypeFromType(leftType, name, Local) match {
               case None => throw new AmbiguousNameException(methodName)
               case Some(returnType) => {
                 leftType = returnType
               }
             }
-            getMethodTypeFromType(leftType, methodName.unfold.last, parameters) match {
+            getMethodTypeFromType(leftType, methodName.unfold.last, parameters, Local) match {
               case Some(returnType) => methodName.declarationType = returnType
               case None => throw new AmbiguousNameException(methodName)
             }
@@ -70,12 +56,12 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
     methodName match {
       // Must be a local method declaration
       case methodName: SimpleNameExpression => {
-        getMethodTypeFromType(unit.typeDeclaration.get.asType, methodName, parameters) match {
+        getMethodTypeFromType(unit.typeDeclaration.get.asType, methodName, parameters, Local) match {
           case None => throw new AmbiguousNameException(methodName)
           case Some(returnType) => methodName.declarationType = returnType
         }
       }
-      case methodName: QualifiedNameExpression => getStaticAccessMethod(methodName, parameters)
+      case methodName: QualifiedNameExpression => getQualifiedMethod(methodName, parameters)
     }
   }
 
