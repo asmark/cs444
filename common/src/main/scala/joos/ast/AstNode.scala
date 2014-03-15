@@ -11,15 +11,15 @@ trait AstNode {
       case node: FieldDeclaration => visitor(node)
       case node: ImportDeclaration => visitor(node)
       case node: MethodDeclaration => visitor(node)
-//      case node: ModuleDeclaration => visitor(node)
+      //      case node: ModuleDeclaration => visitor(node)
       case node: PackageDeclaration => visitor(node)
       case node: SingleVariableDeclaration => visitor(node)
       case node: TypeDeclaration => visitor(node)
       case node: ArrayAccessExpression => visitor(node)
       case node: ArrayCreationExpression => visitor(node)
-//      case node: BooleanLiteral => visitor(node)
+      //      case node: BooleanLiteral => visitor(node)
       case node: CastExpression => visitor(node)
-//      case node: CharacterLiteral => visitor(node)
+      //      case node: CharacterLiteral => visitor(node)
       case node: ClassInstanceCreationExpression => visitor(node)
       case node: FieldAccessExpression => visitor(node)
       case node: InfixExpression => visitor(node)
@@ -33,7 +33,7 @@ trait AstNode {
       case node: SimpleNameExpression => visitor(node)
       case node: AssignmentExpression => visitor(node)
       case node: StringLiteral => visitor(node)
-      //      case node: ThisExpression => visitor(node)
+      case node: ThisExpression => visitor(node)
       case node: VariableDeclarationExpression => visitor(node)
       case node: VariableDeclarationFragment => visitor(node)
       case node: Block => visitor(node)
@@ -44,7 +44,7 @@ trait AstNode {
       case node: WhileStatement => visitor(node)
       case node: CompilationUnit => visitor(node)
       case node =>
-        //Logger.logInformation(s"Uncaptured visitor ${node}")
+      //Logger.logInformation(s"Uncaptured visitor ${node}")
     }
   }
 }
