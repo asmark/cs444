@@ -15,9 +15,9 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
 
     val (fieldPrefix, methodName) = (fold(unfolded.dropRight(1)), unfolded.last)
 
-    resolveFieldAccess(fieldPrefix)
+    val visibility = resolveFieldAccess(fieldPrefix)
 
-    getMethodTypeFromType(fieldPrefix.declarationType, methodName, parameters, Local) match {
+    getMethodTypeFromType(fieldPrefix.declarationType, methodName, parameters, visibility) match {
       case Some(returnType) => methodAccess.declarationType = returnType
       case None => throw new AmbiguousNameException(methodAccess)
     }
