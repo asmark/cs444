@@ -50,9 +50,9 @@ package object disambiguation {
   def checkVisibility[T <: BodyDeclaration](declaration: T, visibility: Visibility) {
     visibility match {
       case Visibility.Local => if (declaration.modifiers contains Modifier.Static) visibility
-      //        throw new InvalidStaticUseException(declaration.declarationName)
-      case Visibility.Static => if (!(declaration.modifiers contains Modifier.Static)) visibility
-      //        throw new InvalidStaticUseException(declaration.declarationName)
+//              throw new InvalidStaticUseException(declaration.declarationName)
+      case Visibility.Static => if (!(declaration.modifiers contains Modifier.Static))
+              throw new InvalidStaticUseException(declaration.declarationName)
     }
   }
 
