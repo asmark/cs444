@@ -19,11 +19,14 @@ trait FieldAccessExpressionTypeChecker extends AstVisitor {
     * then the field access is undefined and a compile-time error occurs.
     */
     fieldAccessExpression.declarationType = prefixType match {
-      case _: PrimitiveType | ArrayType =>
-        throw new FieldAccessExpressionException(s"Primary expression is not of a reference type ${prefixType.standardName}")
+      case _: PrimitiveType =>
+        throw new FieldAccessExpressionException(s"field ${fieldName} does not exist in ${prefixType.standardName}")
+      case _: ArrayType =>
+        if (fieldName.standardName == "length") PrimitiveType.IntegerType
+        else throw new FieldAccessExpressionException(s"field ${fieldName} does not exist in ${prefixType.standardName}")
       case prefixType: SimpleType => {
         prefixType.declaration.get.containedFields.get(fieldName) match {
-          case None => throw new FieldAccessExpressionException(s"Cannot locate field ${fieldName}")
+          case None => throw new FieldAccessExpressionException(s"field ${fieldName} does not exist in ${prefixType.standardName}")
           case Some(declaration) => declaration.variableType
         }
       }
