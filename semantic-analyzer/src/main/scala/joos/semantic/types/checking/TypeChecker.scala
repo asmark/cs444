@@ -42,7 +42,7 @@ class TypeChecker(implicit val unit: CompilationUnit)
 
       fieldDeclaration.fragment.initializer match {
         case Some(initializer) => {
-          if (!areEqual(fieldDeclaration.variableType, initializer.declarationType))
+          if (!isAssignable(fieldDeclaration.variableType, initializer.declarationType))
             throw new FieldDeclarationTypeException(s"${initializer.declarationType} can not be assigned to ${fieldDeclaration.variableType}")
         }
         case _ =>

@@ -132,7 +132,7 @@ package object semantic {
           case _ => false
         }
       }
-      case (dst: SimpleType, ArrayType(_, _) |  SimpleType(_)) if dst.declaration.get.fullName == javaLangObject.standardName => true
+      case (dst: SimpleType, ArrayType(_, _) |  SimpleType(_) | NullType) if dst.declaration.get.fullName == javaLangObject.standardName => true
       case (dst: SimpleType, ArrayType(_, _)) if dst.declaration.get.fullName == javaLangCloneable.standardName => true
       case (dst: SimpleType, ArrayType(_, _)) if dst.declaration.get.fullName == javaIOSerializable.standardName => true
       case (dstSimpleType: SimpleType, srcType) => {
