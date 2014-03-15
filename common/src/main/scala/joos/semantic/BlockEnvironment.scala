@@ -1,6 +1,6 @@
 package joos.semantic
 
-import joos.ast.compositions.LikeTypedDeclaration
+import joos.ast.compositions.TypedDeclarationLike
 import joos.ast.expressions.{SimpleNameExpression, NameExpression}
 
 /**
@@ -10,16 +10,16 @@ import joos.ast.expressions.{SimpleNameExpression, NameExpression}
  */
 class BlockEnvironment private(
     val typeEnvironment: TypeEnvironment,
-    val variables: Map[NameExpression, LikeTypedDeclaration]) {
+    val variables: Map[NameExpression, TypedDeclarationLike]) {
 
-  def add(variable: LikeTypedDeclaration) = {
+  def add(variable: TypedDeclarationLike) = {
     variables.contains(variable.declarationName) match {
       case true => None
       case false => Some(new BlockEnvironment(typeEnvironment, variables + ((variable.declarationName, variable))))
     }
   }
 
-  def getVariable(name: SimpleNameExpression): Option[LikeTypedDeclaration] = {
+  def getVariable(name: SimpleNameExpression): Option[TypedDeclarationLike] = {
     variables.get(name) match {
       case None => typeEnvironment.containedFields.get(name)
       case x => x

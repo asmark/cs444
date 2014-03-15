@@ -30,7 +30,7 @@ trait AstVisitor {
   def apply(expression: PrefixExpression) {}
   def apply(expression: QualifiedNameExpression) {}
   def apply(expression: SimpleNameExpression) {}
-//  def apply(expression: StringLiteral) {}
+  def apply(expression: StringLiteral) {}
   def apply(expression: ThisExpression) {}
   def apply(expression: VariableDeclarationExpression) {}
   def apply(expression: VariableDeclarationFragment) {}

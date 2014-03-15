@@ -2,7 +2,6 @@ package joos.semantic.types.checking
 
 import joos.ast.expressions.CastExpression
 import joos.ast.visitor.AstVisitor
-import joos.ast.types.PrimitiveType
 import joos.semantic._
 import joos.semantic.types.CastExpressionException
 
@@ -13,8 +12,8 @@ trait CastExpressionTypeChecker extends AstVisitor {
 
     require(castExpression.expression.declarationType != null)
 
-    if (PrimitiveType.isNumeric(castExpression.castType) &&
-        PrimitiveType.isNumeric(castExpression.expression.declarationType)) {
+    if (castExpression.castType.isNumeric &&
+        castExpression.expression.declarationType.isNumeric) {
       castExpression.declarationType = castExpression.castType
       return
     }

@@ -1,12 +1,16 @@
 package joos.ast.types
 
 import joos.ast.AstConstructionException
+import joos.ast.declarations.TypeDeclaration
 import joos.core.Enumeration
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 import joos.syntax.tokens.TerminalToken
 
-class PrimitiveType(val name: String) extends Type with PrimitiveType.Value
+class PrimitiveType(val name: String) extends Type with PrimitiveType.Value {
+  override var declaration: Option[TypeDeclaration] = None
+  override def standardName = name
+}
 
 object PrimitiveType extends Enumeration {
   type T = PrimitiveType
@@ -18,9 +22,6 @@ object PrimitiveType extends Enumeration {
   final val ShortType = this + new PrimitiveType("short")
   final val VoidType = this + new PrimitiveType("void")
   final val NullType = this + new PrimitiveType("null")
-
-  @deprecated("Use {{Type.isNumeric}} instead", "3.0.0")
-  def isNumeric(inputType: Type): Boolean = inputType.isNumeric
 
   private[this] def extractNumericToken(numericType: ParseTreeNode) = {
     numericType.children(0).children(0).token match {

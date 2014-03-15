@@ -32,16 +32,16 @@ class TypeLinker(implicit module: ModuleDeclaration, unit: CompilationUnit) exte
 
   def resolveType(typed: Type) {
     typed match {
-      case _: PrimitiveType =>
-      case ArrayType(typed, dimensions) => resolveType(typed)
-      case SimpleType(name) => resolveType(name)
+      case _: PrimitiveType => typed.declaration = None
+      case ArrayType(typed, dimensions) => typed.declaration = None; resolveType(typed)
+      case SimpleType(name) => typed.declaration = Some(resolveType(name))
     }
   }
 
-  def resolveType(name: NameExpression) {
-    val typeDeclaration = unit.getVisibleType(name)
-    if (typeDeclaration.isEmpty) {
-      throw new MissingTypeException(name)
+  def resolveType(name: NameExpression) = {
+    unit.getVisibleType(name) match {
+      case None => throw new MissingTypeException(name)
+      case Some(typeDeclaration) => typeDeclaration
     }
   }
 
@@ -105,5 +105,9 @@ class TypeLinker(implicit module: ModuleDeclaration, unit: CompilationUnit) exte
     resolveType(expression.variableType)
 
     super.apply(expression)
+  }
+
+  override def apply(literal: StringLiteral) {
+    resolveType(literal.declarationType)
   }
 }

@@ -1,7 +1,7 @@
 package joos.semantic.types.disambiguation
 
 import joos.ast.CompilationUnit
-import joos.ast.compositions.LikeName._
+import joos.ast.compositions.NameLike._
 import joos.ast.declarations.MethodDeclaration
 import joos.ast.expressions.{VariableDeclarationExpression, QualifiedNameExpression, SimpleNameExpression}
 import joos.ast.visitor.AstCompleteVisitor
@@ -77,7 +77,7 @@ class NameDisambiguator(implicit unit: CompilationUnit) extends AstCompleteVisit
 
   override def apply(expression: VariableDeclarationExpression) {
     blockEnvironment = expression.environment
-    expression.declaration.accept(this)
+    expression.fragment.accept(this)
   }
 
   // If the AmbiguousName is a simple name, consisting of a single Identifier:

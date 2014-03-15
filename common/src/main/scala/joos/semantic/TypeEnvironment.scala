@@ -10,7 +10,6 @@ trait TypeEnvironment extends Environment {
   val methodMap = mutable.HashMap.empty[String, MethodDeclaration]
   val fieldMap = mutable.HashMap.empty[SimpleNameExpression, FieldDeclaration]
 
-
   lazy val inheritedFields: Map[SimpleNameExpression, FieldDeclaration] = {
     getSuperType(this) match {
       case Some(superType) => superType.containedFields
@@ -61,8 +60,8 @@ trait TypeEnvironment extends Environment {
   }
 
   lazy val allAncestors: Set[TypeDeclaration] = {
-    val allAncestors = this.supers.map(
-      superType => superType.allAncestors
+    val allAncestors = supers.map(
+      superType => Set(superType) ++ superType.allAncestors
     )
     val ret = allAncestors.foldLeft(Set[TypeDeclaration]())(
       (left, right) => left ++ right
@@ -72,12 +71,12 @@ trait TypeEnvironment extends Environment {
 
   private def isAllAbstract(method: MethodDeclaration): Boolean = {
     var ret = true
-    this.supers.foreach(
+    supers.foreach(
       superType => {
         val superTypeContained = superType.containedMethods
         superTypeContained.values.flatten.foreach {
           contained =>
-            if ((contained.returnTypeLocalSignature equals method.returnTypeLocalSignature) && !contained.isAbstractMethod &&
+            if ((contained.returnTypeLocalSignature equals method.returnTypeLocalSignature) && !contained.isAbstract &&
                 areEqual(contained.returnType, method.returnType))
               ret = false
         }
@@ -111,7 +110,7 @@ trait TypeEnvironment extends Environment {
         superType.containedMethods.values.flatten foreach {
           contained =>
             if (!localSignatures.contains(contained.returnTypeLocalSignature)) {
-              if (!contained.isAbstractMethod) {
+              if (!contained.isAbstract) {
                 ret = addBinding(contained, ret)
               } else {
                 // All abs
