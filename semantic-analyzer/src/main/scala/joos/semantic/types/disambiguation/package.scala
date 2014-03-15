@@ -21,7 +21,7 @@ package object disambiguation {
     if (methodA.returnType != methodB.returnType) return false
     if (methodA.parameters.length != methodB.parameters.length) return false
     for (i <- 0 until methodA.parameters.length) {
-      if (methodA.parameters(i) != methodB.parameters(i)) return false
+      if (methodA.parameters(i).variableType != methodB.parameters(i).variableType) return false
     }
     true
   }
