@@ -9,28 +9,28 @@ import joos.semantic.types.TypeCheckingException
 trait InstanceOfExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
 
-  override def apply(expression: InstanceOfExpression) {
-    expression.expression.accept(this)
-    require(expression.expression.declarationType != null)
+  override def apply(instanceOf: InstanceOfExpression) {
+    instanceOf.expression.accept(this)
+    require(instanceOf.expression.declarationType != null)
 
-    if (!expression.classType.isReferenceType || !expression.expression.declarationType.isReferenceType) {
+    if (!instanceOf.classType.isReferenceType || !instanceOf.expression.declarationType.isReferenceType) {
       throw new TypeCheckingException(
         "instanceof",
-        s"Both operands need to be reference types instead of ${expression.classType.standardName} ${
-          expression
+        s"Both operands need to be reference types instead of ${instanceOf.classType.standardName} ${
+          instanceOf
               .expression
               .declarationType
               .standardName
         }")
     }
 
-    if (isAssignable(expression.classType, expression.expression.declarationType)
-        || isAssignable(expression.expression.declarationType, expression.classType)) {
-      expression.declarationType = BooleanType
+    if (isAssignable(instanceOf.classType, instanceOf.expression.declarationType)
+        || isAssignable(instanceOf.expression.declarationType, instanceOf.classType)) {
+      instanceOf.declarationType = BooleanType
     } else {
       throw new TypeCheckingException(
         "instanceof",
-        s"${expression.classType.standardName} are not related types ${expression.expression.declarationType.standardName}")
+        s"${instanceOf.classType.standardName} are not related types ${instanceOf.expression.declarationType.standardName}")
     }
   }
 }
