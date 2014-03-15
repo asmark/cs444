@@ -6,6 +6,13 @@ import joos.ast.declarations.TypeDeclaration
 
 case class SimpleType(name: NameExpression) extends Type{
   override var declaration: Option[TypeDeclaration] = _
+
+  override def equals(that: Any) = {
+    that match {
+      case that: SimpleType => that.declaration == declaration
+      case _ => false
+    }
+  }
 }
 
 object SimpleType {

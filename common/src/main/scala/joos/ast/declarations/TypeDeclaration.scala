@@ -38,6 +38,13 @@ case class TypeDeclaration(
     simple
   }
 
+  override def equals(that: Any) = {
+    that match {
+      case that: TypeDeclaration => that.fullName == fullName
+      case _ => false
+    }
+  }
+
   def toInterface: TypeDeclaration = {
     require(compilationUnit != null)
     require(packageDeclaration != null)

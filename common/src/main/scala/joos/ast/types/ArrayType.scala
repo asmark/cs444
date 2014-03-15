@@ -7,6 +7,13 @@ import joos.ast.declarations.TypeDeclaration
 
 case class ArrayType(elementType: Type, dimensions: Int = 1) extends Type{
   override var declaration: Option[TypeDeclaration] = _
+
+  override def equals(that: Any) = {
+    that match {
+      case ArrayType(thatElementType, _) => thatElementType == elementType
+      case _ => false
+    }
+  }
 }
 
 object ArrayType {
