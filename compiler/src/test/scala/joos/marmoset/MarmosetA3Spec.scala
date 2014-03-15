@@ -25,7 +25,7 @@ class MarmosetA3Spec extends FlatSpec with Matchers {
   behavior of "Name resolution of invalid joos"
   getInvalidTestCases(assignmentNumber).foreach {
     testCase => it should s"reject ${testCase.getName}" taggedAs IntegrationTest in {
-//      if (testCase.getName.equals("Je_6_Assignable_Condition")) {
+//    if (testCase.getName.equals("Je_AccessToStaticFieldWithImplicitThis")) {
       val files = getJavaFiles(testCase) ++ standardLibrary
       Logger.logInformation(
         intercept[CompilationException] {
