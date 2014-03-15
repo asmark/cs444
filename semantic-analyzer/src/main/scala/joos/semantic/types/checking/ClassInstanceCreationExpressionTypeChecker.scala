@@ -5,6 +5,7 @@ import joos.ast.types.SimpleType
 import joos.ast.visitor.AstVisitor
 import joos.semantic.types.TypeCheckingException
 import joos.semantic.types.disambiguation._
+import joos.ast.Modifier
 
 trait ClassInstanceCreationExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
@@ -25,7 +26,13 @@ trait ClassInstanceCreationExpressionTypeChecker extends AstVisitor {
           throw new TypeCheckingException("new", s"${classType.standardName} is not concrete")
         findMethod(newExpression.arguments, declaration.constructorMap.values) match {
           case None => throw new TypeCheckingException("new", s"Cannot find constructor ${classType.name}")
-          case Some(constructor) => classType
+          case Some(constructor) => {
+            if (constructor.modifiers.contains(Modifier.Protected) &&
+                unit.packageDeclaration != constructor.typeDeclaration.packageDeclaration)
+              throw new TypeCheckingException("new", s"Cannot access protected constructor ${constructor.toString}")
+
+            classType
+          }
         }
       case _ => throw new TypeCheckingException("new", s"Cannot instantiate class ${classType.standardName}")
     }
