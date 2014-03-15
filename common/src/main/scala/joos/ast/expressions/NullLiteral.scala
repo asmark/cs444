@@ -6,7 +6,7 @@ import joos.syntax.parsetree.{LeafNode, ParseTreeNode}
 import joos.syntax.tokens.TokenKind
 
 class NullLiteral extends LiteralExpression {
-  override def declarationType = NullType
+  declarationType = NullType
 
   override def toString = NullType.name
 }
