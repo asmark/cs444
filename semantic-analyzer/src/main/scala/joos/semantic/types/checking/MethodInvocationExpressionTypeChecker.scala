@@ -1,99 +1,32 @@
 package joos.semantic.types.checking
 
 import joos.ast.expressions._
-import joos.ast.visitor.AstVisitor
-import joos.semantic.types.disambiguation._
 import joos.ast.types.Type
+import joos.ast.visitor.AstVisitor
+import joos.semantic.types.disambiguation.Visibility._
+import joos.semantic.types.disambiguation._
 
 trait MethodInvocationExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
 
-  private def getStaticAccessMethod(methodAccess: QualifiedNameExpression, parameters: IndexedSeq[Expression]) {
+  private def getQualifiedMethod(methodAccess: QualifiedNameExpression, parameters: IndexedSeq[Expression]) {
 
     val unfolded = methodAccess.unfold
 
     val (fieldPrefix, methodName) = (fold(unfolded.dropRight(1)), unfolded.last)
 
-    resolveStaticFieldAccess(fieldPrefix)
+    val visibility = resolveFieldAccess(fieldPrefix)
 
-    getMethodFromType(fieldPrefix.declarationType, methodName, parameters) match {
+    getMethodTypeFromType(fieldPrefix.declarationType, methodName, parameters, visibility) match {
       case Some(returnType) => methodAccess.declarationType = returnType
       case None => throw new AmbiguousNameException(methodAccess)
     }
-    //
-    //    var typeIndex = 1
-    //    var declarationType: Type = null
-    //
-    //    // (1) Check local variable
-    //    require(blockEnvironment != null)
-    //    blockEnvironment.getVariable(names.head) match {
-    //      case Some(localVariable) => declarationType = localVariable.declarationType
-    //      case None =>
-    //
-    //        // (2) Check local field
-    //        typeEnvironment.containedFields.get(names.head) match {
-    //          case Some(field) => {
-    //            declarationType = field.declarationType
-    //            if (field.isStatic) {
-    //              throw new InvalidStaticUseException(methodName)
-    //            }
-    //          }
-    //          case None => {
-    //
-    //            // (3) Check static accesses
-    //
-    //            // Must have a prefix that is a valid type
-    //            while (unit.getVisibleType(names.take(typeIndex)).isEmpty) {
-    //              typeIndex += 1
-    //              if (typeIndex > names.length) {
-    //                throw new AmbiguousNameException(methodName)
-    //              }
-    //            }
-    //
-    //            val typeName = unit.getVisibleType(names.take(typeIndex)).get
-    //            declarationType = typeName.asType
-    //            // Next name must be a static field
-    //
-    //            if (names.size > typeIndex) {
-    //              val fieldName = names(typeIndex)
-    //              typeName.containedFields.get(fieldName) match {
-    //                case Some(field) =>
-    //                  if (!field.isStatic) {
-    //                    throw new InvalidStaticUseException(methodName)
-    //                  }
-    //                  declarationType = field.variableType
-    //                  typeIndex += 1
-    //              }
-    //            }
-    //          }
-    //        }
-    //    }
-    //
-    //    // All remaining names must be instance field acceses
-    //    names = names.drop(typeIndex)
-    //    names foreach {
-    //      name =>
-    //        declarationType match {
-    //          case _: ArrayType | PrimitiveType =>
-    //            throw new AmbiguousNameException(methodName)
-    //          case simpleType: SimpleType => {
-    //            simpleType.declaration.get.containedFields.get(name) match {
-    //              case None => throw new AmbiguousNameException(name)
-    //              case Some(field) => {
-    //                if (field.isStatic) {
-    //                  throw new InvalidStaticUseException(name)
-    //                }
-    //                declarationType = field.variableType
-    //              }
-    //            }
-    //          }
-    //        }
   }
 
   private def linkMethod(left: Type, methodName: NameExpression, parameters: IndexedSeq[Expression]) {
     methodName match {
       case methodName: SimpleNameExpression => {
-        getMethodFromType(left, methodName, parameters) match {
+        getMethodTypeFromType(left, methodName, parameters, Local) match {
           case None => throw new AmbiguousNameException(methodName)
           case Some(returnType) => methodName.declarationType = returnType
         }
@@ -103,13 +36,13 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
         var leftType = left
         methodName.unfold.dropRight(1) foreach {
           name =>
-            getFieldFromType(leftType, name) match {
+            getFieldTypeFromType(leftType, name, Local) match {
               case None => throw new AmbiguousNameException(methodName)
               case Some(returnType) => {
                 leftType = returnType
               }
             }
-            getMethodFromType(leftType, methodName.unfold.last, parameters) match {
+            getMethodTypeFromType(leftType, methodName.unfold.last, parameters, Local) match {
               case Some(returnType) => methodName.declarationType = returnType
               case None => throw new AmbiguousNameException(methodName)
             }
@@ -123,12 +56,12 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
     methodName match {
       // Must be a local method declaration
       case methodName: SimpleNameExpression => {
-        getMethodFromType(unit.typeDeclaration.get.asType, methodName, parameters) match {
+        getMethodTypeFromType(unit.typeDeclaration.get.asType, methodName, parameters, Local) match {
           case None => throw new AmbiguousNameException(methodName)
           case Some(returnType) => methodName.declarationType = returnType
         }
       }
-      case methodName: QualifiedNameExpression => getStaticAccessMethod(methodName, parameters)
+      case methodName: QualifiedNameExpression => getQualifiedMethod(methodName, parameters)
     }
   }
 
