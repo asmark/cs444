@@ -25,6 +25,10 @@ class BlockEnvironment private(
       case x => x
     }
   }
+
+  def contains(name: SimpleNameExpression): Boolean = {
+    variables.contains(name)
+  }
 }
 
 object BlockEnvironment {
