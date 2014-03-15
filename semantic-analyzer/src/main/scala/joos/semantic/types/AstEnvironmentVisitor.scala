@@ -4,11 +4,12 @@ import joos.semantic.{BlockEnvironment, TypeEnvironment}
 import joos.ast.CompilationUnit
 import joos.ast.declarations.MethodDeclaration
 import joos.ast.statements._
-import joos.ast.expressions.{SimpleNameExpression, Expression, QualifiedNameExpression, VariableDeclarationExpression}
+import joos.ast.expressions._
 import joos.ast.types.{SimpleType, PrimitiveType, ArrayType, Type}
 import joos.semantic.types.disambiguation.{AmbiguousNameException, InvalidStaticUseException}
 import joos.ast.visitor.AstCompleteVisitor
 import joos.semantic.types.disambiguation._
+import scala.Some
 
 class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteVisitor {
   protected var typeEnvironment: TypeEnvironment = null
@@ -99,8 +100,12 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
   }
 
 
-  protected def resolveStaticFieldAccess(name: QualifiedNameExpression) {
-    var names = name.unfold
+  protected def resolveStaticFieldAccess(name: NameExpression) {
+
+    var names = name match {
+      case s:SimpleNameExpression => Seq(s)
+      case q:QualifiedNameExpression => q.unfold
+    }
     var typeIndex = 1
     var declarationType: Type = null
 

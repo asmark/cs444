@@ -1,14 +1,15 @@
 package joos.ast.expressions
 
 import joos.ast.AstConstructionException
-import joos.ast.types.{Type, StringType}
+import joos.ast.types.StringType
 import joos.syntax.parsetree.{LeafNode, ParseTreeNode}
 import joos.syntax.tokens.{TokenKind, TerminalToken}
 
 case class StringLiteral(token: TerminalToken) extends LiteralExpression {
-  override def declarationType: Type = StringType
-
   override def toString = s""""${token.lexeme}""""
+
+  declarationType = StringType
+
 }
 
 object StringLiteral {

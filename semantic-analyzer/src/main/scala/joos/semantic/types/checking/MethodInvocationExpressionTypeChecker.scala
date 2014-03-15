@@ -3,6 +3,7 @@ package joos.semantic.types.checking
 import joos.ast.expressions._
 import joos.ast.visitor.AstVisitor
 import joos.semantic.types.disambiguation._
+import joos.ast.types.Type
 
 trait MethodInvocationExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
@@ -13,7 +14,7 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
 
     val (fieldPrefix, methodName) = (fold(unfolded.dropRight(1)), unfolded.last)
 
-    resolveStaticFieldAccess(fieldPrefix.asInstanceOf[QualifiedNameExpression])
+    resolveStaticFieldAccess(fieldPrefix)
 
     getMethodFromType(fieldPrefix.declarationType, methodName, parameters) match {
       case Some(returnType) => methodAccess.declarationType = returnType
@@ -89,18 +90,17 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
     //        }
   }
 
-  private def linkMethod(left: Expression, methodName: NameExpression, parameters: IndexedSeq[Expression]) {
-    require(left.declarationType != null)
+  private def linkMethod(left: Type, methodName: NameExpression, parameters: IndexedSeq[Expression]) {
     methodName match {
       case methodName: SimpleNameExpression => {
-        getMethodFromType(left.declarationType, methodName, parameters) match {
+        getMethodFromType(left, methodName, parameters) match {
           case None => throw new AmbiguousNameException(methodName)
           case Some(returnType) => methodName.declarationType = returnType
         }
       }
 
       case methodName: QualifiedNameExpression => {
-        var leftType = left.declarationType
+        var leftType = left
         methodName.unfold.dropRight(1) foreach {
           name =>
             getFieldFromType(leftType, name) match {
@@ -148,8 +148,9 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
 
     invocation.expression match {
       case None => linkMethod(invocation.methodName, invocation.arguments)
-      case Some(expression) => linkMethod(expression, invocation.methodName, invocation.arguments)
+      case Some(expression) => linkMethod(expression.declarationType, invocation.methodName, invocation.arguments)
     }
+    invocation.declarationType = invocation.methodName.declarationType
   }
 
 
