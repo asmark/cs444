@@ -111,7 +111,7 @@ package object semantic {
   // dst = src
   def isAssignable(dst: Type, src: Type)(implicit unit: CompilationUnit): Boolean = {
     // 5.1.1 Identity Conversions
-    if (areEqual(dst, src))
+    if (dst equals src)
       return true
 
     (dst, src) match {
@@ -127,9 +127,9 @@ package object semantic {
           case _ => false
         }
       }
-      case (dst, ArrayType(_, _) |  SimpleType(_)) if dst.declaration.get.fullName == javaLangObject.standardName => true
-      case (dst, ArrayType(_, _)) if dst.declaration.get.fullName == javaLangCloneable.standardName => true
-      case (dst, ArrayType(_, _)) if dst.declaration.get.fullName == javaIOSerializable.standardName => true
+      case (dst: SimpleType, ArrayType(_, _) |  SimpleType(_)) if dst.declaration.get.fullName == javaLangObject.standardName => true
+      case (dst: SimpleType, ArrayType(_, _)) if dst.declaration.get.fullName == javaLangCloneable.standardName => true
+      case (dst: SimpleType, ArrayType(_, _)) if dst.declaration.get.fullName == javaIOSerializable.standardName => true
       case (dstSimpleType: SimpleType, srcType) => {
         srcType match {
           case SimpleType(_) => {
