@@ -1,10 +1,10 @@
 package joos.ast.compositions
 
-import joos.ast.compositions.LikeName._
+import joos.ast.compositions.NameLike._
 import joos.ast.types.Type
 import joos.ast.declarations.TypeDeclaration
 
-object LikeName {
+object NameLike {
   type NameClassification = Int
   val Ambiguous = 1
   val PackageName = 2
@@ -14,7 +14,7 @@ object LikeName {
   val PackageOrTypeName = 6
 }
 
-trait LikeName {
+trait NameLike {
 
   /**
    * Gets the standard name separated by .
@@ -33,7 +33,7 @@ trait LikeName {
   override def hashCode = standardName.hashCode
 
   override def equals(that: Any) = that match {
-    case that: LikeName => that.standardName == standardName
+    case that: NameLike => that.standardName == standardName
     case _ => false
   }
 }

@@ -1,7 +1,7 @@
 package joos.semantic.types.checking
 
 import joos.ast.expressions.{ArrayCreationExpression, ArrayAccessExpression}
-import joos.ast.types.{PrimitiveType, ArrayType}
+import joos.ast.types.{Type, PrimitiveType, ArrayType}
 import joos.syntax.tokens.{TokenKind, TerminalToken}
 import joos.semantic.types.ArrayAccessException
 import joos.ast.visitor.AstVisitor
@@ -17,7 +17,7 @@ trait ArrayAccessExpressionTypeChecker extends AstVisitor {
       case arrayType: ArrayType => {
         // TODO: the index type undergoes promotion
         require(arrayAccessExpression.index.declarationType != null)
-        if (PrimitiveType.isNumeric(arrayAccessExpression.index.declarationType)) {
+        if (arrayAccessExpression.index.declarationType.isNumeric) {
           arrayAccessExpression.declarationType = arrayType.elementType
         } else {
           throw new ArrayAccessException(

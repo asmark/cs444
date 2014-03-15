@@ -31,6 +31,7 @@ trait AstNode {
       case node: PrefixExpression => visitor(node)
       case node: QualifiedNameExpression => visitor(node)
       case node: SimpleNameExpression => visitor(node)
+      case node: AssignmentExpression => visitor(node)
       //      case node: StringLiteral => visitor(node)
       //      case node: ThisExpression => visitor(node)
       case node: VariableDeclarationExpression => visitor(node)
@@ -42,7 +43,6 @@ trait AstNode {
       case node: ReturnStatement => visitor(node)
       case node: WhileStatement => visitor(node)
       case node: CompilationUnit => visitor(node)
-      case node: AssignmentExpression => visitor(node)
       case node =>
         //Logger.logInformation(s"Uncaptured visitor ${node}")
     }

@@ -4,9 +4,9 @@ import joos.ast.{AstNode, AstConstructionException}
 import joos.ast.expressions.NameExpression
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
-import joos.ast.compositions.LikeDeclaration
+import joos.ast.compositions.DeclarationLike
 
-case class ImportDeclaration(name: NameExpression, isOnDemand: Boolean) extends AstNode with LikeDeclaration {
+case class ImportDeclaration(name: NameExpression, isOnDemand: Boolean) extends AstNode with DeclarationLike {
   def declarationName = name
 }
 

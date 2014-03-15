@@ -1,23 +1,23 @@
 package joos.semantic.types.checking
 
+import joos.ast.declarations.{TypeDeclaration, MethodDeclaration, FieldDeclaration}
 import joos.ast.visitor.AstCompleteVisitor
 import joos.ast.{Modifier, CompilationUnit}
-import joos.ast.declarations.{TypeDeclaration, MethodDeclaration, FieldDeclaration}
-import joos.semantic.types._
 import joos.semantic._
+import joos.semantic.types._
 
-class TypeChecker(implicit val unit: CompilationUnit) extends AstCompleteVisitor
-  with AssignmentExpressionTypeChecker
-  with ArrayAccessExpressionTypeChecker
-  with ArrayCreationExpressionTypeChecker
-  with CastExpressionTypeChecker
-  with ClassInstanceCreationExpressionTypeChecker
-  with FieldAccessExpressionTypeChecker
-  with InfixExpressionTypeChecker
-  with MethodInvocationExpressionTypeChecker
-  with ParenthesizedExpressionTypeChecker
-  with ThisExpressionTypeChecker
-  with VariableDeclarationExpressionTypeChecker {
+class TypeChecker(implicit val unit: CompilationUnit) extends AstEnvironmentVisitor
+with AssignmentExpressionTypeChecker
+with ArrayAccessExpressionTypeChecker
+with ArrayCreationExpressionTypeChecker
+with CastExpressionTypeChecker
+with ClassInstanceCreationExpressionTypeChecker
+with FieldAccessExpressionTypeChecker
+with InfixExpressionTypeChecker
+with MethodInvocationExpressionTypeChecker
+with ParenthesizedExpressionTypeChecker
+with ThisExpressionTypeChecker
+with VariableDeclarationExpressionTypeChecker {
   var checkImplicitThis = false // TODO: this approach should be fine as long as the field decl checking and method decl checking are not recursive
 
   override def apply(fieldDeclaration: FieldDeclaration) {
@@ -26,7 +26,7 @@ class TypeChecker(implicit val unit: CompilationUnit) extends AstCompleteVisitor
       checkImplicitThis = true
       try {
         super.apply(fieldDeclaration)
-      } catch  {
+      } catch {
         case e: ImplicitThisInStaticException =>
           throw new ImplicitThisInStaticException(s"In ${fieldDeclaration.variableType.standardName}")
         case e: Throwable => throw e
@@ -42,7 +42,7 @@ class TypeChecker(implicit val unit: CompilationUnit) extends AstCompleteVisitor
       checkImplicitThis = true
       try {
         super.apply(methodDeclaration)
-      } catch  {
+      } catch {
         case e: ImplicitThisInStaticException =>
           throw new ImplicitThisInStaticException(s"In ${methodDeclaration.localSignature}")
         case e: Throwable => throw e
@@ -64,12 +64,12 @@ class TypeChecker(implicit val unit: CompilationUnit) extends AstCompleteVisitor
       }
     }
 
-    typeDeclaration.constructorMap.values.foreach(
-      constructor => {
+    typeDeclaration.constructorMap.values.foreach {
+      constructor =>
         if (!(constructor.name equals typeDeclaration.name)) {
           throw new InvalidConstructorException(s"Mismatched constructor and type declaration ${typeDeclaration.declarationName.standardName}")
         }
-      }
-    )
+    }
+    super.apply(typeDeclaration)
   }
 }

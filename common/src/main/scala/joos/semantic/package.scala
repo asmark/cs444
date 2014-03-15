@@ -1,15 +1,16 @@
 package joos
 
 import joos.ast._
-import joos.ast.declarations.{PackageDeclaration, TypeDeclaration}
+import joos.ast.declarations.{BodyDeclaration, TypeDeclaration}
 import joos.ast.expressions.NameExpression
-import joos.ast.types._
 import joos.ast.types.PrimitiveType._
+import joos.ast.types._
 import joos.core.Logger
 import scala.Some
 import scala.collection.mutable
 
 package object semantic {
+
   /**
    * You can only call this after the environment is built
    */
@@ -106,6 +107,7 @@ package object semantic {
 
   // dst = src
   def isAssignable(dst: Type, src: Type)(implicit unit: CompilationUnit): Boolean = {
+    return true
     (dst, src) match {
       case (dstPrimitive: PrimitiveType, srcPrimitive: PrimitiveType) => {
         // TODO(Shengmin):

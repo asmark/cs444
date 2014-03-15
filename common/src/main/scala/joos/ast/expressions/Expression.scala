@@ -1,15 +1,17 @@
 package joos.ast.expressions
 
+import joos.ast.compositions.TypedLike
 import joos.ast.{AstConstructionException, AstNode}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{LeafNode, TreeNode, ParseTreeNode}
-import joos.ast.compositions.{LikeTyped}
 import joos.ast.types.Type
 
-trait Expression extends AstNode with LikeTyped {
+trait Expression extends AstNode with TypedLike {
   private var _declarationType: Type = null
-  override def declarationType = _declarationType
-  def declarationType_=(newType: Type) = _declarationType = newType
+  def declarationType_=(declarationType: Type) = _declarationType = declarationType
+  override def declarationType = {
+    _declarationType
+  }
 }
 
 object Expression {
@@ -99,10 +101,10 @@ object Expression {
     }
   }
 
-  def argList(ptn: ParseTreeNode): Seq[Expression] = {
+  def argList(ptn: ParseTreeNode): IndexedSeq[Expression] = {
     ptn match {
       case TreeNode(ProductionRule("ArgumentList", Seq("Expression")), _, children) =>
-        Seq(Expression(children(0)))
+        IndexedSeq(Expression(children(0)))
       case TreeNode(ProductionRule("ArgumentList", _), _, children) =>
         argList(children(0)) :+ Expression(children(2))
       case _ => throw new AstConstructionException("No valid production rule to make an ArgumentList")

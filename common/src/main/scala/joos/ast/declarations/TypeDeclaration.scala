@@ -1,12 +1,13 @@
 package joos.ast.declarations
 
 import joos.ast.Modifier
-import joos.ast.compositions.LikeDeclaration
+import joos.ast.compositions.DeclarationLike
 import joos.ast.expressions.{SimpleNameExpression, NameExpression}
 import joos.ast.{AstConstructionException, CompilationUnit}
 import joos.semantic.TypeEnvironment
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
+import joos.ast.types.SimpleType
 
 case class TypeDeclaration(
     modifiers: Seq[Modifier],
@@ -17,7 +18,7 @@ case class TypeDeclaration(
     fields: Seq[FieldDeclaration],
     methods: Seq[MethodDeclaration])
     extends BodyDeclaration
-    with TypeEnvironment with LikeDeclaration {
+    with TypeEnvironment with DeclarationLike {
   implicit var compilationUnit: CompilationUnit = null
   var packageDeclaration: PackageDeclaration = null
 
@@ -28,6 +29,19 @@ case class TypeDeclaration(
       name.standardName
     } else {
       s"${packageDeclaration.name.standardName}.${name.standardName}"
+    }
+  }
+
+  lazy val asType = {
+    val simple = SimpleType(NameExpression(fullName))
+    simple.declaration = Some(this)
+    simple
+  }
+
+  override def equals(that: Any) = {
+    that match {
+      case that: TypeDeclaration => that.fullName == fullName
+      case _ => false
     }
   }
 

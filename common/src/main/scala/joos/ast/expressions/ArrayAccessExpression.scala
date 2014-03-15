@@ -5,7 +5,7 @@ import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
 case class ArrayAccessExpression(reference: Expression, index: Expression) extends Expression {
-  override def toString = s"${reference}[${index}}]"
+  override def toString = s"${reference}[${index}]"
 }
 
 object ArrayAccessExpression {
