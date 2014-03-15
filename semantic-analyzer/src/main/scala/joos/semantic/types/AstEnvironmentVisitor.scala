@@ -97,7 +97,7 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
 
     // (1) Check local variable
     require(blockEnvironment != null)
-    blockEnvironment.getVariable(names.head) match {
+    blockEnvironment.getLocalVariable(names.head) match {
       case Some(localVariable) => declarationType = localVariable.declarationType
       case None =>
 

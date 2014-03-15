@@ -49,6 +49,7 @@ class ForwardUseChecker(fieldScope: Map[SimpleNameExpression, Type]) extends Ast
 class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVisitor {
   private var localFields = Map.empty[SimpleNameExpression, Type]
   private var visibility = Local
+  private var inStaticMethod = false
 
   override def apply(fieldDeclaration: FieldDeclaration) {
     fieldDeclaration.fragment.initializer foreach (_.accept(new ForwardUseChecker(localFields)))
@@ -66,13 +67,17 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
   }
 
   override def apply(methodDeclaration: MethodDeclaration) {
-//    val oldVisibility = visibility
-//    methodDeclaration.isStatic match {
-//      case true => visibility = Static
-//      case false => visibility = Local
-//    }
+    val oldVisibility = visibility
+    inStaticMethod = methodDeclaration.isStatic
+    methodDeclaration.isStatic match {
+      case true => visibility = Static
+      case false => visibility = Local
+    }
+
     super.apply(methodDeclaration)
-//    visibility = oldVisibility
+
+    visibility = oldVisibility
+    inStaticMethod = false
   }
 
   override def apply(fieldAccess: FieldAccessExpression) {
@@ -89,16 +94,19 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
 
     // (1) Check local variable
     require(blockEnvironment != null)
-    blockEnvironment.getVariable(name) match {
+    blockEnvironment.getLocalVariable(name) match {
       case Some(localVariable) => {
-        visibility match {
-          case Static => if (!localVariable.modifiers.contains(Modifier.Static)) throw new InvalidStaticUseException(name)
-          case Local => if (localVariable.modifiers.contains(Modifier.Static)) throw new InvalidStaticUseException(name)
-        }
+//        visibility match {
+//          case Static => if (!localVariable.modifiers.contains(Modifier.Static)) throw new InvalidStaticUseException(name)
+//          case Local => if (localVariable.modifiers.contains(Modifier.Static)) throw new InvalidStaticUseException(name)
+//        }
         declarationType = localVariable.declarationType
       }
       case None =>
 
+        if (inStaticMethod) {
+          throw new AmbiguousNameException(name)
+        }
         // (2) Check local field
         getFieldTypeFromType(unit.typeDeclaration.get.asType, name, visibility) match {
           //        typeEnvironment.containedFields.get(name) match {

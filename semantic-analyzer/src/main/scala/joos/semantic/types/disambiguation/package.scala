@@ -52,7 +52,7 @@ package object disambiguation {
       case Visibility.Local => if (declaration.modifiers contains Modifier.Static)
         throw new InvalidStaticUseException(declaration.declarationName)
       case Visibility.Static => if (!(declaration.modifiers contains Modifier.Static))
-              throw new InvalidStaticUseException(declaration.declarationName)
+        throw new InvalidStaticUseException(declaration.declarationName)
     }
   }
 
@@ -62,13 +62,14 @@ package object disambiguation {
       if (!(selfType.packageDeclaration.declarationName equals owner.packageDeclaration.declarationName)) {
         if (!(selfType.allAncestors contains owner)) {
           if (owner.allAncestors contains selfType) {
-//            declaration match {
-//              case m: MethodDeclaration => if (!selfType.containedMethods.contains(m.name)) throw new IllegalProtectedAccessException(
-//                declaration
-//                    .declarationName)
-//              case f: FieldDeclaration => if (!selfType.containedFields.contains(f.declarationName)) throw new IllegalProtectedAccessException(
-//                declaration.declarationName)
-//            }
+            //            declaration match {
+            //              case m: MethodDeclaration => if (!selfType.containedMethods.contains(m.name)) throw new IllegalProtectedAccessException(
+            //                declaration
+            //                    .declarationName)
+            //              case f: FieldDeclaration => if (!selfType.containedFields.contains(f.declarationName)) throw new
+            // IllegalProtectedAccessException(
+            //                declaration.declarationName)
+            //            }
           }
         }
       }
