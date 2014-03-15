@@ -38,14 +38,21 @@ package object disambiguation {
     }
   }
 
-  def getMethodFromType(t: Type, methodName: SimpleNameExpression, parameters: IndexedSeq[Expression]): Option[Type] = {
+  def getMethodTypeFromType(t: Type, methodName: SimpleNameExpression, parameters: IndexedSeq[Expression]): Option[Type] = {
+    getMethodFromType(t, methodName, parameters) match {
+      case None => None
+      case Some(method) => method.returnType
+    }
+  }
+
+  def getMethodFromType(t: Type, methodName: SimpleNameExpression, parameters: IndexedSeq[Expression]): Option[MethodDeclaration] = {
     t match {
       case _: PrimitiveType | ArrayType(_, _) => None
       case s: SimpleType => {
         val containedMethods = s.declaration.get.containedMethods
         findMethod(methodName, parameters, containedMethods) match {
           case None => None
-          case Some(method) => method.returnType
+          case Some(method) => Some(method)
         }
       }
     }

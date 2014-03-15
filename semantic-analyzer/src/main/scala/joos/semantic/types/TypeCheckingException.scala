@@ -48,3 +48,9 @@ class InfixExpressionException(expression: InfixExpression)
       + expression.operator.name
       + ' '
       + expression.right.declarationType.standardName)
+
+class IllegalProtectedFieldAccessException(msg: String) extends TypeCheckingException(msg)
+
+class IllegalProtectedMethodAccessException(msg: String) extends TypeCheckingException(msg)
+
+class QualifiedNameExpressionException(msg: String) extends TypeCheckingException(msg)
