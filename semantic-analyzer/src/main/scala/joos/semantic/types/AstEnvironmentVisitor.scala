@@ -75,9 +75,6 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
   override def apply(statement: ReturnStatement) {
     val oldBlock = blockEnvironment
     blockEnvironment = statement.environment
-    if (unit.typeDeclaration.get.declarationName.standardName.contains("Main")) {
-      println()
-    }
     statement.expression.map(_.accept(this))
     blockEnvironment = oldBlock
   }
