@@ -8,13 +8,8 @@ import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 import joos.ast.declarations.TypeDeclaration
 
 trait Type extends AstNode {
-  def standardName: String = {
-    this match {
-      case SimpleType(name) => name.standardName
-      case t: PrimitiveType => t.name
-      case ArrayType(baseType, dimension) => baseType.standardName + (0 until dimension).map(_ => "[]").mkString
-    }
-  }
+
+  def standardName: String
 
   var declaration: Option[TypeDeclaration]
 
@@ -28,6 +23,7 @@ trait Type extends AstNode {
   def isReferenceType: Boolean = this match {
     case t: ArrayType => true
     case t: SimpleType => true
+    case t: PrimitiveType if t == NullType => true
     case _ => false
   }
 }

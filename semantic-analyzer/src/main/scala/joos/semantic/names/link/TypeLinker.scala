@@ -106,4 +106,8 @@ class TypeLinker(implicit module: ModuleDeclaration, unit: CompilationUnit) exte
 
     super.apply(expression)
   }
+
+  override def apply(literal: StringLiteral) {
+    resolveType(literal.declarationType)
+  }
 }

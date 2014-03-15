@@ -13,6 +13,8 @@ case class SimpleType(name: NameExpression) extends Type{
       case _ => false
     }
   }
+
+  override def standardName = name.standardName
 }
 
 object SimpleType {
