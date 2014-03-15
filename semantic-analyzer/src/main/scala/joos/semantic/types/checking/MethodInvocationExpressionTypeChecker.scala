@@ -1,9 +1,7 @@
 package joos.semantic.types.checking
 
 import joos.ast.expressions._
-import joos.ast.types._
 import joos.ast.visitor.AstVisitor
-import joos.core.Logger
 import joos.semantic.types.disambiguation._
 
 trait MethodInvocationExpressionTypeChecker extends AstVisitor {
@@ -91,9 +89,31 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
   }
 
   private def linkMethod(left: Expression, methodName: NameExpression, parameters: Seq[Expression]) {
+    require(left.declarationType != null)
     methodName match {
-      case methodName: SimpleNameExpression => getMethodFromType(left.declarationType, methodName, parameters)
-      case methodName: QualifiedNameExpression =>
+      case methodName: SimpleNameExpression => {
+        getMethodFromType(left.declarationType, methodName, parameters) match {
+          case None => throw new AmbiguousNameException(methodName)
+          case Some(returnType) => methodName.declarationType = returnType
+        }
+      }
+
+      case methodName: QualifiedNameExpression => {
+        var leftType = left.declarationType
+        methodName.unfold.dropRight(1) foreach {
+          name =>
+            getFieldFromType(leftType, name) match {
+              case None => throw new AmbiguousNameException(methodName)
+              case Some(returnType) => {
+                leftType = returnType
+              }
+            }
+            getMethodFromType(leftType, methodName.unfold.last, parameters) match {
+              case Some(returnType) => methodName.declarationType = returnType
+              case None => throw new AmbiguousNameException(methodName)
+            }
+        }
+      }
     }
   }
 
@@ -101,30 +121,33 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
   private def linkMethod(methodName: NameExpression, parameters: Seq[Expression]) {
     methodName match {
       // Must be a local method declaration
-      case methodName: SimpleNameExpression => getMethodFromType(unit.typeDeclaration.get.asType, methodName, parameters)
+      case methodName: SimpleNameExpression => {
+        getMethodFromType(unit.typeDeclaration.get.asType, methodName, parameters) match {
+          case None => throw new AmbiguousNameException(methodName)
+          case Some(returnType) => methodName.declarationType = returnType
+        }
+      }
       case methodName: QualifiedNameExpression => getStaticAccessMethod(methodName, parameters)
     }
   }
 
-  override def apply(methodInvocationExpression: MethodInvocationExpression) {
-    methodInvocationExpression.arguments.foreach(
+  override def apply(invocation: MethodInvocationExpression) {
+    invocation.arguments.foreach(
       expr => {
         expr.accept(this)
         require(expr.declarationType != null)
       }
     )
-    methodInvocationExpression.expression.foreach(
+    invocation.expression.foreach(
       expr => {
         expr.accept(this)
         require(expr.declarationType != null)
       }
     )
 
-    methodInvocationExpression.expression match {
-      case None => linkMethod(methodInvocationExpression.methodName, methodInvocationExpression.arguments)
-      case Some(expression) => {
-        Logger.logInformation("TODO: Link method accesses that have a left type")
-      }
+    invocation.expression match {
+      case None => linkMethod(invocation.methodName, invocation.arguments)
+      case Some(expression) => linkMethod(expression, invocation.methodName, invocation.arguments)
     }
   }
 
