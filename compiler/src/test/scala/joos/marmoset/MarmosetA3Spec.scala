@@ -15,17 +15,16 @@ class MarmosetA3Spec extends FlatSpec with Matchers {
   behavior of "Name resolution of valid joos"
   getValidTestCases(assignmentNumber).foreach {
     testCase => it should s"accept ${testCase.getName}" taggedAs IntegrationTest in {
-        val files = getJavaFiles(testCase) ++ standardLibrary
-        val asts = files map SyntaxCheck.apply
-        NameResolution(asts)
-        TypeChecking(asts)
+      val files = getJavaFiles(testCase) ++ standardLibrary
+      val asts = files map SyntaxCheck.apply
+      NameResolution(asts)
+      TypeChecking(asts)
     }
   }
 
   behavior of "Name resolution of invalid joos"
   getInvalidTestCases(assignmentNumber).foreach {
     testCase => it should s"reject ${testCase.getName}" taggedAs IntegrationTest in {
-//    if (testCase.getName.equals("Je_AccessToStaticFieldWithImplicitThis")) {
       val files = getJavaFiles(testCase) ++ standardLibrary
       Logger.logInformation(
         intercept[CompilationException] {
@@ -33,7 +32,6 @@ class MarmosetA3Spec extends FlatSpec with Matchers {
           NameResolution(asts)
           TypeChecking(asts)
         }.getMessage)
-//      }
     }
   }
 }
