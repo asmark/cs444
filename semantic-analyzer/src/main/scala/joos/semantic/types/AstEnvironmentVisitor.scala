@@ -4,7 +4,7 @@ import joos.semantic.{BlockEnvironment, TypeEnvironment}
 import joos.ast.CompilationUnit
 import joos.ast.declarations.MethodDeclaration
 import joos.ast.statements._
-import joos.ast.expressions.{QualifiedNameExpression, VariableDeclarationExpression}
+import joos.ast.expressions.{SimpleNameExpression, Expression, QualifiedNameExpression, VariableDeclarationExpression}
 import joos.ast.types.{SimpleType, PrimitiveType, ArrayType, Type}
 import joos.semantic.types.disambiguation.{AmbiguousNameException, InvalidStaticUseException}
 import joos.ast.visitor.AstCompleteVisitor
@@ -83,6 +83,22 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
     expression.fragment.accept(this)
   }
 
+  protected def resolveMethodAccess(base: Type, methodAccess: QualifiedNameExpression) {
+    require(base.declaration.get != null)
+    val unfolded = methodAccess.unfold
+    var (names, method) = (unfolded.dropRight(1), unfolded.tail)
+
+    var declarationType = base.declaration.get
+    names foreach {
+      name =>
+        declarationType.containedFields.get(name) match {
+          case None => throw new AmbiguousNameException(name)
+          case Some(field) => declarationType = field.declarationType.declaration.get
+        }
+    }
+  }
+
+
   protected def resolveStaticFieldAccess(name: QualifiedNameExpression) {
     var names = name.unfold
     var typeIndex = 1
@@ -96,12 +112,11 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
       case None =>
 
         // (2) Check local field
-        typeEnvironment.containedFields.get(names.head) match {
-          case Some(field) => {
-            declarationType = field.declarationType
-            if (field.isStatic) {
-              throw new InvalidStaticUseException(name)
-            }
+//        typeEnvironment.containedFields.get(names.head) match {
+        getFieldFromType(unit.typeDeclaration.get.asType, names.head) match {
+          case Some(fieldType) => {
+            // TODO: Static checks
+            declarationType = fieldType
           }
           case None => {
 
@@ -122,12 +137,11 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
 
             if (names.size > typeIndex) {
               val fieldName = names(typeIndex)
-              typeName.containedFields.get(fieldName) match {
-                case Some(field) => {
-                  if (!field.isStatic) {
-                    throw new InvalidStaticUseException(name)
-                  }
-                  declarationType = field.variableType
+
+              getFieldFromType(declarationType, fieldName) match {
+                case Some(fieldType) => {
+                  // TODO: Static checks
+                  declarationType = fieldType
                   typeIndex += 1
                 }
                 case None => throw new AmbiguousNameException(name)
@@ -141,32 +155,11 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
     names = names.drop(typeIndex)
     names foreach {
       name =>
-        declarationType match {
-          // Arrays only have a "length" field
-          case _: ArrayType => {
-            if (name.standardName equals "length") {
-              declarationType = PrimitiveType.BooleanType
-            } else {
-              throw new AmbiguousNameException(name)
-            }
+        getFieldFromType(declarationType, name) match {
+          case Some(fieldType) => {
+            declarationType = fieldType
           }
-          // Primitives do not have any fields
-          case _: PrimitiveType => {
-            throw new AmbiguousNameException(name)
-          }
-
-          case simpleType: SimpleType => {
-            simpleType.declaration.get.containedFields.get(name) match {
-              case None => throw new AmbiguousNameException(name)
-              case Some(field) => {
-                if (field.isStatic) {
-                  throw new InvalidStaticUseException(name)
-                }
-                declarationType = field.variableType
-              }
-            }
-          }
-          case _ => throw new AmbiguousNameException(name)
+          case None => throw new AmbiguousNameException(name)
         }
     }
     name.declarationType = declarationType

@@ -9,19 +9,6 @@ import joos.semantic.types.disambiguation._
 trait MethodInvocationExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
 
-  def getMethodFromType(t: Type, methodName: SimpleNameExpression, parameters: Seq[Expression]): Type = {
-    t match {
-      case _: PrimitiveType | ArrayType(_,_) => throw new AmbiguousNameException(methodName)
-      case s: SimpleType => {
-        val containedMethods = s.declaration.get.containedMethods
-        findMethod(methodName, parameters, containedMethods) match {
-          case None => throw new AmbiguousNameException(methodName)
-          case Some(method) => method.returnType.get
-        }
-      }
-    }
-  }
-
   private def getStaticAccessMethod(methodAccess: QualifiedNameExpression, parameters: Seq[Expression]) {
     val unfolded = methodAccess.unfold
 
@@ -29,7 +16,10 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
 
     resolveStaticFieldAccess(fieldPrefix.asInstanceOf[QualifiedNameExpression])
 
-    methodAccess.declarationType = getMethodFromType(fieldPrefix.declarationType, methodName, parameters)
+    getMethodFromType(fieldPrefix.declarationType, methodName, parameters) match {
+      case Some(returnType) => methodAccess.declarationType = returnType
+      case None => throw new AmbiguousNameException(methodAccess)
+    }
     //
     //    var typeIndex = 1
     //    var declarationType: Type = null
@@ -100,6 +90,12 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
     //        }
   }
 
+  private def linkMethod(left: Expression, methodName: NameExpression, parameters: Seq[Expression]) {
+    methodName match {
+      case methodName: SimpleNameExpression => getMethodFromType(left.declarationType, methodName, parameters)
+      case methodName: QualifiedNameExpression =>
+    }
+  }
 
   // Link a method that is called as an isolated expression
   private def linkMethod(methodName: NameExpression, parameters: Seq[Expression]) {
