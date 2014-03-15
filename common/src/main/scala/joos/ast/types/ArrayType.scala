@@ -14,6 +14,8 @@ case class ArrayType(elementType: Type, dimensions: Int = 1) extends Type{
       case _ => false
     }
   }
+
+  override def standardName = elementType.standardName + (0 until dimensions).map(_ => "[]").mkString
 }
 
 object ArrayType {

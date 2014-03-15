@@ -9,6 +9,7 @@ import joos.syntax.tokens.TerminalToken
 
 class PrimitiveType(val name: String) extends Type with PrimitiveType.Value {
   override var declaration: Option[TypeDeclaration] = None
+  override def standardName = name
 }
 
 object PrimitiveType extends Enumeration {
