@@ -91,7 +91,7 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
     //        }
   }
 
-  private def linkMethod(left: Expression, methodName: NameExpression, parameters: Seq[Expression]) {
+  private def linkMethod(left: Expression, methodName: NameExpression, parameters: IndexedSeq[Expression]) {
     methodName match {
       case methodName: SimpleNameExpression => getMethodFromType(left.declarationType, methodName, parameters)
       case methodName: QualifiedNameExpression =>
