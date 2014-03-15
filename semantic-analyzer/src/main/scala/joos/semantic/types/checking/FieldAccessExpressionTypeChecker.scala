@@ -15,10 +15,6 @@ trait FieldAccessExpressionTypeChecker extends AstVisitor {
     val prefixType = fieldAccessExpression.expression.declarationType
     val fieldName = fieldAccessExpression.identifier
 
-//    if (fieldName.standardName.contains("bar")) {
-//      println("bar")
-//    }
-
     /*
     * If the identifier does not name an accessible member field of type T,
     * then the field access is undefined and a compile-time error occurs.
@@ -33,10 +29,6 @@ trait FieldAccessExpressionTypeChecker extends AstVisitor {
         prefixType.declaration.get.containedFields.get(fieldName) match {
           case None => throw new FieldAccessExpressionException(s"field ${fieldName} does not exist in ${prefixType.standardName}")
           case Some(declaration) => {
-//            println(declaration.fragment.identifier.standardName)
-//            if (declaration.fragment.identifier.standardName.contains("bar")) {
-//              println("bar")
-//            }
             if (declaration.modifiers.contains(Modifier.Protected) && declaration.typeDeclaration != unit.typeDeclaration.get) {
               // Check that all accesses of protected fields, methods and constructors are
               // in a subtype of the type declaring the entity being accessed, or in the same package as that type.
