@@ -45,9 +45,9 @@ trait TypeEnvironment extends Environment {
   private lazy val supers = {
     var ret: Seq[TypeDeclaration] = Seq()
 
-    getSuperType(this) match {
-      case Some(superType) => ret = ret :+ superType
-      case None => {}
+    getSuperType(this) foreach {
+      superType =>
+        ret = ret :+ superType
     }
 
     this.superInterfaces.foreach(
@@ -55,34 +55,30 @@ trait TypeEnvironment extends Environment {
         ret = ret :+ getTypeDeclaration(superInterface)
       }
     )
-
     ret
   }
 
   lazy val allAncestors: Set[TypeDeclaration] = {
-    val allAncestors = supers.map(
-      superType => Set(superType) ++ superType.allAncestors
-    )
-    val ret = allAncestors.foldLeft(Set[TypeDeclaration]())(
+    val allAncestors = supers.map {
+      superType => superType.allAncestors + superType
+    }
+    allAncestors.foldLeft(Set.empty[TypeDeclaration]) {
       (left, right) => left ++ right
-    )
-    ret
+    }
   }
 
   private def isAllAbstract(method: MethodDeclaration): Boolean = {
-    var ret = true
-    supers.foreach(
-      superType => {
+    supers.foreach {
+      superType =>
         val superTypeContained = superType.containedMethods
         superTypeContained.values.flatten.foreach {
           contained =>
             if ((contained.returnTypeLocalSignature equals method.returnTypeLocalSignature) && !contained.isAbstract &&
                 areEqual(contained.returnType, method.returnType))
-              ret = false
+              return false
         }
-      }
-    )
-    ret
+    }
+    return true
   }
 
   private def addBinding(method: MethodDeclaration, map: Map[SimpleNameExpression, Set[MethodDeclaration]]) = {
@@ -94,11 +90,11 @@ trait TypeEnvironment extends Environment {
     }
   }
 
-  lazy val containedMethods: Map[SimpleNameExpression, Set[MethodDeclaration]]= {
+  lazy val containedMethods: Map[SimpleNameExpression, Set[MethodDeclaration]] = {
     (methodMap.values ++ inheritedMethods.values.flatten).foldRight(Map.empty[SimpleNameExpression, Set[MethodDeclaration]]) {
       (method: MethodDeclaration, map: Map[SimpleNameExpression, Set[MethodDeclaration]]) =>
         addBinding(method, map)
-     }
+    }
   }
 
   lazy val inheritedMethods: Map[SimpleNameExpression, Set[MethodDeclaration]] = {

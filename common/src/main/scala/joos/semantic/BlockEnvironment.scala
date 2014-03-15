@@ -26,8 +26,12 @@ class BlockEnvironment private(
     }
   }
 
+  def getLocalVariable(name: SimpleNameExpression): Option[TypedDeclarationLike] = {
+    variables.get(name)
+  }
+
   def contains(name: SimpleNameExpression): Boolean = {
-    variables.contains(name)
+    variables.contains(name) || typeEnvironment.containedFields.contains(name)
   }
 }
 

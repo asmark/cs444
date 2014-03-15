@@ -1,9 +1,10 @@
 package joos.semantic.types.checking
 
+import joos.ast.Modifier
 import joos.ast.expressions.FieldAccessExpression
 import joos.ast.types.{ArrayType, PrimitiveType, SimpleType}
 import joos.ast.visitor.AstVisitor
-import joos.semantic.types.FieldAccessExpressionException
+import joos.semantic.types.{IllegalProtectedAccessException, FieldAccessExpressionException}
 
 trait FieldAccessExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
@@ -27,7 +28,17 @@ trait FieldAccessExpressionTypeChecker extends AstVisitor {
       case prefixType: SimpleType => {
         prefixType.declaration.get.containedFields.get(fieldName) match {
           case None => throw new FieldAccessExpressionException(s"field ${fieldName} does not exist in ${prefixType.standardName}")
-          case Some(declaration) => declaration.variableType
+          case Some(declaration) => {
+            if (declaration.modifiers.contains(Modifier.Protected) && declaration.typeDeclaration != unit.typeDeclaration.get) {
+              // Check that all accesses of protected fields, methods and constructors are
+              // in a subtype of the type declaring the entity being accessed, or in the same package as that type.
+              if (!unit.typeDeclaration.get.allAncestors.contains(declaration.typeDeclaration) &&
+                  unit.packageDeclaration != declaration.typeDeclaration.packageDeclaration) {
+                throw new IllegalProtectedAccessException(declaration.declarationName)
+              }
+            }
+            declaration.variableType
+          }
         }
       }
     }

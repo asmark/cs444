@@ -93,21 +93,6 @@ package object semantic {
     None
   }
 
-  private def getUpperTypeDeclarations(aType: Type)(implicit unit: CompilationUnit): Set[TypeDeclaration] = {
-    aType match {
-      case _: PrimitiveType => Set()
-      case ArrayType(_, _) => Set()
-      case SimpleType(typeName) => {
-        unit.getVisibleType(typeName) match {
-          case Some(typeDeclaration) => {
-            typeDeclaration.allAncestors
-          }
-          case _ => Set()
-        }
-      }
-    }
-  }
-
   // dst = src
   def isAssignable(dst: Type, src: Type)(implicit unit: CompilationUnit): Boolean = {
     // 5.1.1 Identity Conversions
@@ -137,9 +122,9 @@ package object semantic {
       case (dst: SimpleType, ArrayType(_, _)) if dst.declaration.get.fullName == javaIOSerializable.standardName => true
       case (dstSimpleType: SimpleType, srcType) => {
         srcType match {
-          case SimpleType(_) => {
+          case srcType: SimpleType => {
             unit.getVisibleType(dstSimpleType.name) match {
-              case Some(typeDeclaration) => getUpperTypeDeclarations(srcType).contains(typeDeclaration)
+              case Some(typeDeclaration) => srcType.declaration.get.allAncestors.contains(typeDeclaration)
               case None => false
             }
           }

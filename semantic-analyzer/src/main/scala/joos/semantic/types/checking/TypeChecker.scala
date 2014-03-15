@@ -23,59 +23,39 @@ class TypeChecker(implicit val unit: CompilationUnit)
     with VariableDeclarationExpressionTypeChecker
     with PrefixExpressionTypeChecker
     with InstanceOfExpressionTypeChecker {
-  protected var checkImplicitThis = false
+  protected var checkExplicitThis = false
   protected var checkMethodReturns: Option[Type] = None
+  protected var inStaticMethod = false
 
   override def apply(fieldDeclaration: FieldDeclaration) {
     // Check that the implicit this variable is not accessed in a static method or in the initializer of a static field.
-    if (fieldDeclaration.modifiers.contains(Modifier.Static)) {
-      checkImplicitThis = true
-      try {
-        super.apply(fieldDeclaration)
-      } catch {
-        case e: ImplicitThisInStaticException =>
-          throw new ImplicitThisInStaticException(s"In ${fieldDeclaration.variableType.standardName}")
-        case e: Throwable => throw e
-      }
-      checkImplicitThis = false
-    } else {
-      super.apply(fieldDeclaration)
+    checkExplicitThis = fieldDeclaration.modifiers.contains(Modifier.Static)
+    super.apply(fieldDeclaration)
+    checkExplicitThis = false
 
-      fieldDeclaration.fragment.initializer match {
-        case Some(initializer) => {
-          if (!isAssignable(fieldDeclaration.variableType, initializer.declarationType))
-            throw new FieldDeclarationTypeException(s"${initializer.declarationType} can not be assigned to ${fieldDeclaration.variableType}")
-        }
-        case _ =>
-      }
+    fieldDeclaration.fragment.initializer foreach {
+      initializer =>
+        if (!isAssignable(fieldDeclaration.variableType, initializer.declarationType))
+          throw new FieldDeclarationTypeException(s"${initializer.declarationType} can not be assigned to ${fieldDeclaration.variableType}")
     }
-
   }
 
   override def apply(methodDeclaration: MethodDeclaration) {
     checkMethodReturns = methodDeclaration.returnType
+    checkExplicitThis = methodDeclaration.modifiers.contains(Modifier.Static)
+    inStaticMethod = methodDeclaration.isStatic
 
-    // Check that the implicit this variable is not accessed in a static method or in the initializer of a static field.
-    if (methodDeclaration.modifiers.contains(Modifier.Static)) {
-      checkImplicitThis = true
-      try {
-        super.apply(methodDeclaration)
-      } catch {
-        case e: ImplicitThisInStaticException =>
-          throw new ImplicitThisInStaticException(s"In ${methodDeclaration.localSignature}")
-        case e: Throwable => throw e
-      }
-      checkImplicitThis = false
-    } else {
-      super.apply(methodDeclaration)
-    }
+    super.apply(methodDeclaration)
+
+    checkExplicitThis = false
     checkMethodReturns = None
+    inStaticMethod = false
   }
 
   override def apply(typeDeclaration: TypeDeclaration) {
     // A constructor in a class other than java.lang.Object implicitly calls the zero-argument constructor of its superclass.
     // Check that this zero-argument constructor exists.
-    getSuperType(typeDeclaration) map {
+    getSuperType(typeDeclaration) foreach {
       superType => {
         val zeroArgConstructor = superType.constructorMap.values.find(_.parameters.size == 0)
         if (zeroArgConstructor.isEmpty)
@@ -110,6 +90,19 @@ class TypeChecker(implicit val unit: CompilationUnit)
     }
   }
 
+  override def apply(forStatement: ForStatement) {
+    super.apply(forStatement)
+
+    forStatement.condition match {
+      case None =>
+      case Some(condition) =>
+        require(condition.declarationType != null)
+
+        if (condition.declarationType != BooleanType)
+          throw new TypeCheckingException("for", s"condition needs to be boolean instead of ${condition.declarationType.standardName}")
+    }
+  }
+
   override def apply(statement: ReturnStatement) {
     super.apply(statement)
 
@@ -130,20 +123,6 @@ class TypeChecker(implicit val unit: CompilationUnit)
           throw new TypeCheckingException("ReturnStatement", s"Empty return statement but expected ${expectedReturnType}")
         }
       }
-    }
-  }
-
-  override def apply(forStatement: ForStatement) {
-    super.apply(forStatement)
-
-    forStatement.condition match {
-      case None =>
-      case Some(condition) =>
-        // Je_6_For_NullInCondition
-        require(condition.declarationType != null)
-
-        if (condition.declarationType != BooleanType)
-          throw new TypeCheckingException("for", s"condition needs to be boolean instead of ${condition.declarationType.standardName}")
     }
   }
 }
