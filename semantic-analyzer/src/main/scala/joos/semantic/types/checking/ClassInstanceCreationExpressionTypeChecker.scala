@@ -1,31 +1,33 @@
 package joos.semantic.types.checking
 
-import joos.ast.expressions.{NameExpression, ClassInstanceCreationExpression}
+import joos.ast.expressions.ClassInstanceCreationExpression
 import joos.ast.types.SimpleType
 import joos.ast.visitor.AstVisitor
-import joos.semantic.types.{ClassInstanceCreationException, AbstractOrInstanceCreationException}
+import joos.semantic.types.TypeCheckingException
+import joos.semantic.types.disambiguation._
 
 trait ClassInstanceCreationExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
-  override def apply(classInstanceCreationExpression: ClassInstanceCreationExpression) {
-    classInstanceCreationExpression.arguments.foreach(
-      expr => {
-        expr.accept(this)
-        require(expr.declarationType != null)
-      }
-    )
 
-    // Check that no objects of abstract classes are created
-    val classType = classInstanceCreationExpression.classType
+  override def apply(newExpression: ClassInstanceCreationExpression) {
+    newExpression.arguments.foreach {
+      argument =>
+        argument.accept(this)
+        require(argument.declarationType != null)
+    }
 
-    classType match {
-      case SimpleType(className) =>
-        val typeDeclaration = unit.getVisibleType(className).get
-        if (!typeDeclaration.isConcreteClass) {
-          throw new AbstractOrInstanceCreationException(s"Attempt to create abstract class instance: ${typeDeclaration.name.standardName}")
+    val classType = newExpression.classType
+
+    newExpression.declarationType = classType match {
+      case classType: SimpleType =>
+        val declaration = classType.declaration.get
+        if (!declaration.isConcreteClass)
+          throw new TypeCheckingException("new", s"${classType.standardName} is not concrete")
+        findMethod(newExpression.arguments, declaration.constructorMap.values) match {
+          case None => throw new TypeCheckingException("new", s"Cannot find constructor ${classType.name}")
+          case Some(constructor) => classType
         }
-        classInstanceCreationExpression.declarationType = SimpleType(NameExpression(typeDeclaration.fullName))
-      case _ => throw new ClassInstanceCreationException(s"Attempt to create class: ${classType.standardName}")
+      case _ => throw new TypeCheckingException("new", s"Cannot instantiate class ${classType.standardName}")
     }
   }
 }

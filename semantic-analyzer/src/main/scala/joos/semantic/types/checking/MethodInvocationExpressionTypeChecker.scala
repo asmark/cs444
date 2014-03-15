@@ -9,7 +9,8 @@ import joos.semantic.types.disambiguation._
 trait MethodInvocationExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
 
-  private def getStaticAccessMethod(methodAccess: QualifiedNameExpression, parameters: Seq[Expression]) {
+  private def getStaticAccessMethod(methodAccess: QualifiedNameExpression, parameters: IndexedSeq[Expression]) {
+
     val unfolded = methodAccess.unfold
 
     val (fieldPrefix, methodName) = (fold(unfolded.dropRight(1)), unfolded.last)
@@ -90,7 +91,7 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
     //        }
   }
 
-  private def linkMethod(left: Expression, methodName: NameExpression, parameters: Seq[Expression]) {
+  private def linkMethod(left: Expression, methodName: NameExpression, parameters: IndexedSeq[Expression]) {
     methodName match {
       case methodName: SimpleNameExpression => getMethodFromType(left.declarationType, methodName, parameters)
       case methodName: QualifiedNameExpression =>
@@ -98,7 +99,7 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
   }
 
   // Link a method that is called as an isolated expression
-  private def linkMethod(methodName: NameExpression, parameters: Seq[Expression]) {
+  private def linkMethod(methodName: NameExpression, parameters: IndexedSeq[Expression]) {
     methodName match {
       // Must be a local method declaration
       case methodName: SimpleNameExpression => getMethodFromType(unit.typeDeclaration.get.asType, methodName, parameters)

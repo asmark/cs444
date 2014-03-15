@@ -10,7 +10,6 @@ trait TypeEnvironment extends Environment {
   val methodMap = mutable.HashMap.empty[String, MethodDeclaration]
   val fieldMap = mutable.HashMap.empty[SimpleNameExpression, FieldDeclaration]
 
-
   lazy val inheritedFields: Map[SimpleNameExpression, FieldDeclaration] = {
     getSuperType(this) match {
       case Some(superType) => superType.containedFields

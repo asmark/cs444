@@ -101,10 +101,10 @@ object Expression {
     }
   }
 
-  def argList(ptn: ParseTreeNode): Seq[Expression] = {
+  def argList(ptn: ParseTreeNode): IndexedSeq[Expression] = {
     ptn match {
       case TreeNode(ProductionRule("ArgumentList", Seq("Expression")), _, children) =>
-        Seq(Expression(children(0)))
+        IndexedSeq(Expression(children(0)))
       case TreeNode(ProductionRule("ArgumentList", _), _, children) =>
         argList(children(0)) :+ Expression(children(2))
       case _ => throw new AstConstructionException("No valid production rule to make an ArgumentList")
