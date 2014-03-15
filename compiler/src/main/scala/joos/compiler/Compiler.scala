@@ -1,7 +1,7 @@
 package joos.compiler
 
 import joos.core.Logger
-import joos.semantic.{NameResolution, SemanticException}
+import joos.semantic.{TypeChecking, NameResolution, SemanticException}
 import joos.syntax.{JoosSyntaxException, SyntaxCheck}
 
 object Compiler {
@@ -13,15 +13,10 @@ object Compiler {
     try {
       val asts = files map SyntaxCheck.apply
       NameResolution(asts)
+      TypeChecking(asts)
       0
     } catch {
-      case e: JoosSyntaxException => {
-        Logger.logWarning(s"${files} failed syntax check")
-        Logger.logWarning(e.getMessage)
-        42
-      }
-      case e: SemanticException => {
-        Logger.logWarning(s"${files} failed semantic check")
+      case e: CompilationException => {
         Logger.logWarning(e.getMessage)
         42
       }
