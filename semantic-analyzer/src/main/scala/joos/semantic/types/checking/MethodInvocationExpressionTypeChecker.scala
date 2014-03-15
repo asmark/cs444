@@ -12,29 +12,6 @@ import joos.semantic.types.disambiguation._
 trait MethodInvocationExpressionTypeChecker extends AstVisitor {
   self: TypeChecker =>
 
-  private def checkSimpleAccess(method: MethodDeclaration)(implicit unit: CompilationUnit) {
-    if (method.modifiers contains Modifier.Protected) {
-      val selfType = unit.typeDeclaration.get
-      if (!(selfType.packageDeclaration.declarationName equals method.typeDeclaration.packageDeclaration.declarationName)) {
-        if (!(selfType.allAncestors contains method.typeDeclaration)) {
-          throw new IllegalProtectedAccessException(method.declarationName)
-        }
-      }
-    }
-  }
-
-  private def checkQualifiedAccess(method: MethodDeclaration, prefixType: Type)(implicit unit: CompilationUnit) {
-      checkSimpleAccess(method)
-    if ((method.modifiers contains Modifier.Protected) && (!(method.modifiers contains Modifier.Static))) {
-      val selfType = unit.typeDeclaration.get
-      if (!(prefixType.declaration.get equals selfType)) {
-        if (!(prefixType.declaration.get.allAncestors contains selfType)) {
-          throw new IllegalProtectedAccessException(method.declarationName)
-        }
-      }
-    }
-  }
-
   private def getQualifiedMethod(methodAccess: QualifiedNameExpression, parameters: IndexedSeq[Expression]) {
 
     val unfolded = methodAccess.unfold

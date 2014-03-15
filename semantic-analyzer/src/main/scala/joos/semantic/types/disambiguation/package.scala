@@ -57,28 +57,27 @@ package object disambiguation {
     }
   }
 
-  def checkAccess[T <: BodyDeclaration](declaration: T, caller: TypeDeclaration, visibility: Visibility)(implicit unit: CompilationUnit) {
-    //    if (visibility == Visibility.Local) {
-    //      if (declaration.modifiers contains Modifier.Protected) {
-    //        val selfType = unit.typeDeclaration.get
-    //        if (!(selfType.packageDeclaration.declarationName equals caller.packageDeclaration.declarationName)) {
-    //          if (!(selfType.allAncestors contains caller)) {
-    //            throw new IllegalProtectedAccessException(declaration.declarationName)
-    //            if (caller.allAncestors contains selfType) {
-    //              //            declaration match {
-    //              //              case m: MethodDeclaration => if (!selfType.containedMethods.contains(m.name)) throw new
-    // IllegalProtectedAccessException(
-    //              //                declaration
-    //              //                    .declarationName)
-    //              //              case f: FieldDeclaration => if (!selfType.containedFields.contains(f.declarationName)) throw new
-    //              // IllegalProtectedAccessException(
-    //              //                declaration.declarationName)
-    //              //            }
-    //            }
-    //          }
-    //        }
-    //      }
-    //    }
+  def checkSimpleAccess(method: MethodDeclaration)(implicit unit: CompilationUnit) {
+    if (method.modifiers contains Modifier.Protected) {
+      val selfType = unit.typeDeclaration.get
+      if (!(selfType.packageDeclaration.declarationName equals method.typeDeclaration.packageDeclaration.declarationName)) {
+        if (!(selfType.allAncestors contains method.typeDeclaration)) {
+          throw new IllegalProtectedAccessException(method.declarationName)
+        }
+      }
+    }
+  }
+
+  def checkQualifiedAccess(method: MethodDeclaration, prefixType: Type)(implicit unit: CompilationUnit) {
+    checkSimpleAccess(method)
+    if ((method.modifiers contains Modifier.Protected) && (!(method.modifiers contains Modifier.Static))) {
+      val selfType = unit.typeDeclaration.get
+      if (!(prefixType.declaration.get equals selfType)) {
+        if (!(prefixType.declaration.get.allAncestors contains selfType)) {
+          throw new IllegalProtectedAccessException(method.declarationName)
+        }
+      }
+    }
   }
 
   def getMethodTypeFromType(t: Type, methodName: SimpleNameExpression, parameters: IndexedSeq[Expression], visibility: Visibility)
@@ -90,7 +89,6 @@ package object disambiguation {
         findMethod(methodName, parameters, caller.containedMethods) match {
           case None => None
           case Some(methodDeclaration) => {
-            checkAccess(methodDeclaration, caller, visibility)
             checkVisibility(methodDeclaration, visibility)
             methodDeclaration.returnType
           }
@@ -124,7 +122,6 @@ package object disambiguation {
         caller.containedFields.get(fieldName) match {
           case None => None
           case Some(fieldDeclaration) => {
-            checkAccess(fieldDeclaration, caller, visibility)
             checkVisibility(fieldDeclaration, visibility)
             Some(fieldDeclaration.variableType)
           }
@@ -136,9 +133,8 @@ package object disambiguation {
   def getFieldFromType(t: Type, fieldName: SimpleNameExpression)(implicit unit: CompilationUnit): Option[FieldDeclaration] = {
     t match {
       case _: PrimitiveType => None
-      case ArrayType(_, _) => None
-        // TODO
-      //        if (fieldName.standardName equals "length") Some(PrimitiveType.IntegerType) else None
+        // IMPORTANT: has no type declaration attached
+      case ArrayType(_, _) => Some(FieldDeclaration(Seq(Modifier.Final), PrimitiveType.IntegerType, VariableDeclarationFragment(SimpleNameExpression("length"), None)))
       case s: SimpleType => {
         val caller = s.declaration.get
         caller.containedFields.get(fieldName) match {
