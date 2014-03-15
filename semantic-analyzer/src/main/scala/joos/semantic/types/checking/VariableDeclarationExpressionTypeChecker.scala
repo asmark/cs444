@@ -15,7 +15,7 @@ trait VariableDeclarationExpressionTypeChecker extends AstEnvironmentVisitor {
       case Some(initializer) =>
         initializer.accept(this)
         require(initializer.declarationType != null)
-        initializer.accept(new InitializerTypeChecker(variable))
+        initializer.accept(new InitializerTypeChecker(variable)(typeEnvironment, blockEnvironment))
 
         if (!isAssignable(variable.variableType, initializer.declarationType))
           throw new TypeCheckingException(
