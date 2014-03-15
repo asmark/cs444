@@ -1,19 +1,18 @@
 package joos.semantic.types
 
-import joos.semantic.{BlockEnvironment, TypeEnvironment}
 import joos.ast.CompilationUnit
 import joos.ast.declarations.MethodDeclaration
-import joos.ast.statements._
 import joos.ast.expressions._
-import joos.ast.types.{SimpleType, PrimitiveType, ArrayType, Type}
-import joos.semantic.types.disambiguation.{AmbiguousNameException, InvalidStaticUseException}
+import joos.ast.statements._
+import joos.ast.types.Type
 import joos.ast.visitor.AstCompleteVisitor
 import joos.semantic.types.disambiguation._
+import joos.semantic.{BlockEnvironment, TypeEnvironment}
 import scala.Some
 
 class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteVisitor {
-  protected var typeEnvironment: TypeEnvironment = null
-  protected var blockEnvironment: BlockEnvironment = null
+  implicit protected var typeEnvironment: TypeEnvironment = null
+  implicit protected var blockEnvironment: BlockEnvironment = null
 
   override def apply(unit: CompilationUnit) {
     typeEnvironment = unit.typeDeclaration.getOrElse(null)
@@ -103,8 +102,8 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
   protected def resolveStaticFieldAccess(name: NameExpression) {
 
     var names = name match {
-      case s:SimpleNameExpression => Seq(s)
-      case q:QualifiedNameExpression => q.unfold
+      case s: SimpleNameExpression => Seq(s)
+      case q: QualifiedNameExpression => q.unfold
     }
     var typeIndex = 1
     var declarationType: Type = null
@@ -117,7 +116,7 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
       case None =>
 
         // (2) Check local field
-//        typeEnvironment.containedFields.get(names.head) match {
+        //        typeEnvironment.containedFields.get(names.head) match {
         getFieldFromType(unit.typeDeclaration.get.asType, names.head) match {
           case Some(fieldType) => {
             // TODO: Static checks

@@ -1,29 +1,28 @@
 package joos.semantic.types.checking
 
-import joos.ast.visitor.AstVisitor
 import joos.ast.expressions.VariableDeclarationExpression
 import joos.semantic._
-import joos.semantic.types.VariableDeclarationExpressionException
+import joos.semantic.types.{AstEnvironmentVisitor, TypeCheckingException}
 
-trait VariableDeclarationExpressionTypeChecker extends AstVisitor {
+trait VariableDeclarationExpressionTypeChecker extends AstEnvironmentVisitor {
   self: TypeChecker =>
-  override def apply(variableDeclarationExpression: VariableDeclarationExpression) {
-    variableDeclarationExpression.fragment.initializer match {
-      // TODO: verify this is the only check needed
-      case Some(initExpr) => {
-        initExpr.accept(this)
 
-        require(initExpr.declarationType != null)
-        if(!isAssignable(variableDeclarationExpression.variableType, initExpr.declarationType))
-          throw new VariableDeclarationExpressionException(
-            s"attempt to assign ${initExpr.declarationType.standardName} to ${variableDeclarationExpression.variableType.standardName}"
-          )
+  override def apply(variable: VariableDeclarationExpression) {
+    super.apply(variable)
 
-        variableDeclarationExpression.declarationType = variableDeclarationExpression.variableType
-      }
-      case None => {
-        variableDeclarationExpression.declarationType = variableDeclarationExpression.variableType
-      }
+    variable.fragment.initializer match {
+      case None =>
+      case Some(initializer) =>
+        initializer.accept(this)
+        require(initializer.declarationType != null)
+        initializer.accept(new InitializerTypeChecker(variable))
+
+        if (!isAssignable(variable.variableType, initializer.declarationType))
+          throw new TypeCheckingException(
+            "variable declaration",
+            s"Cannot assign ${initializer.declarationType.standardName} to ${variable.declarationName}")
     }
+
+    variable.declarationType = variable.variableType
   }
 }
