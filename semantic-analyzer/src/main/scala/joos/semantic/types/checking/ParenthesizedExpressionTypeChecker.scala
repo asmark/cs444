@@ -18,6 +18,7 @@ trait ParenthesizedExpressionTypeChecker extends AstVisitor {
         if (!blockEnvironment.contains(name) && !typeEnvironment.containedFields.contains(name)) {
           throw new TypeCheckingException("parenthesis", s"${name} needs to be a local variable or instance field")
         }
+      case _ =>
     }
 
     parenthesis.declarationType = parenthesis.expression.declarationType
