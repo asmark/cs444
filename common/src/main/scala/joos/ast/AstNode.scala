@@ -32,7 +32,7 @@ trait AstNode {
       case node: QualifiedNameExpression => visitor(node)
       case node: SimpleNameExpression => visitor(node)
       case node: AssignmentExpression => visitor(node)
-      //      case node: StringLiteral => visitor(node)
+      case node: StringLiteral => visitor(node)
       //      case node: ThisExpression => visitor(node)
       case node: VariableDeclarationExpression => visitor(node)
       case node: VariableDeclarationFragment => visitor(node)

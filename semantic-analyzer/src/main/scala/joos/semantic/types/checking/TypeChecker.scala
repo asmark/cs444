@@ -17,7 +17,8 @@ with InfixExpressionTypeChecker
 with MethodInvocationExpressionTypeChecker
 with ParenthesizedExpressionTypeChecker
 with ThisExpressionTypeChecker
-with VariableDeclarationExpressionTypeChecker {
+with VariableDeclarationExpressionTypeChecker
+with PrefixExpressionTypeChecker {
   var checkImplicitThis = false // TODO: this approach should be fine as long as the field decl checking and method decl checking are not recursive
 
   override def apply(fieldDeclaration: FieldDeclaration) {
