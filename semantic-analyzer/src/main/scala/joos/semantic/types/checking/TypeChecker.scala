@@ -32,14 +32,11 @@ class TypeChecker(implicit val unit: CompilationUnit)
     super.apply(fieldDeclaration)
     checkExplicitThis = false
 
-    fieldDeclaration.fragment.initializer match {
-      case Some(initializer) => {
+    fieldDeclaration.fragment.initializer foreach {
+      initializer =>
         if (!isAssignable(fieldDeclaration.variableType, initializer.declarationType))
           throw new FieldDeclarationTypeException(s"${initializer.declarationType} can not be assigned to ${fieldDeclaration.variableType}")
-      }
-      case _ =>
     }
-
   }
 
   override def apply(methodDeclaration: MethodDeclaration) {
@@ -55,7 +52,7 @@ class TypeChecker(implicit val unit: CompilationUnit)
   override def apply(typeDeclaration: TypeDeclaration) {
     // A constructor in a class other than java.lang.Object implicitly calls the zero-argument constructor of its superclass.
     // Check that this zero-argument constructor exists.
-    getSuperType(typeDeclaration) map {
+    getSuperType(typeDeclaration) foreach {
       superType => {
         val zeroArgConstructor = superType.constructorMap.values.find(_.parameters.size == 0)
         if (zeroArgConstructor.isEmpty)
