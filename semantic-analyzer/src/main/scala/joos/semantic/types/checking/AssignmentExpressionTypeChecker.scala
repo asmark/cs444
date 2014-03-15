@@ -13,6 +13,7 @@ trait AssignmentExpressionTypeChecker extends AstVisitor {
 
     require(assignmentExpression.left.declarationType != null)
     require(assignmentExpression.right.declarationType != null)
+
     val leftType = assignmentExpression.left.declarationType
     val rightType = assignmentExpression.right.declarationType
     // TODO: Double check if the following are complete (probably not)

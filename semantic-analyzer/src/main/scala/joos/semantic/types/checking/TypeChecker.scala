@@ -4,6 +4,8 @@ import joos.ast.declarations.{TypeDeclaration, MethodDeclaration, FieldDeclarati
 import joos.ast.{Modifier, CompilationUnit}
 import joos.semantic._
 import joos.semantic.types._
+import joos.ast.statements.IfStatement
+import joos.ast.types.PrimitiveType
 
 class TypeChecker(implicit val unit: CompilationUnit)
     extends AstEnvironmentVisitor
@@ -73,5 +75,14 @@ class TypeChecker(implicit val unit: CompilationUnit)
         }
     }
     super.apply(typeDeclaration)
+  }
+
+  override def apply(statement: IfStatement) {
+    super.apply(statement)
+
+    require(statement.condition.declarationType != null)
+    if(statement.condition.declarationType != PrimitiveType.BooleanType) {
+      throw new TypeCheckingException("IfStatement", s"${statement.condition.declarationType} was not a Boolean")
+    }
   }
 }
