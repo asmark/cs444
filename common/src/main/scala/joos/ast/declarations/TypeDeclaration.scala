@@ -3,11 +3,12 @@ package joos.ast.declarations
 import joos.ast.Modifier
 import joos.ast.compositions.DeclarationLike
 import joos.ast.expressions.{SimpleNameExpression, NameExpression}
+import joos.ast.types.SimpleType
 import joos.ast.{AstConstructionException, CompilationUnit}
+import joos.core.Logger
 import joos.semantic.TypeEnvironment
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
-import joos.ast.types.SimpleType
 
 case class TypeDeclaration(
     modifiers: Seq[Modifier],
@@ -24,11 +25,15 @@ case class TypeDeclaration(
 
   lazy val isConcreteClass = !isInterface && !(modifiers contains Modifier.Abstract)
   lazy val fullName = {
-    require(packageDeclaration != null)
-    if (packageDeclaration == PackageDeclaration.DefaultPackage) {
+    if (packageDeclaration == null) {
+      Logger.logWarning("Attempting to find FullName of a TypeDeclaration without a linked package declaration")
       name.standardName
     } else {
-      s"${packageDeclaration.name.standardName}.${name.standardName}"
+      if (packageDeclaration == PackageDeclaration.DefaultPackage) {
+        name.standardName
+      } else {
+        s"${packageDeclaration.name.standardName}.${name.standardName}"
+      }
     }
   }
 

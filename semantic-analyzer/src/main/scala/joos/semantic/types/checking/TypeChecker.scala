@@ -107,20 +107,22 @@ class TypeChecker(implicit val unit: CompilationUnit)
     super.apply(statement)
 
     if (checkMethodReturns.isEmpty) {
-      throw new TypeCheckingException("ReturnStatement", s"Found a return statement in a constructor")
-    }
-
-    val expectedReturnType = checkMethodReturns.get
-    statement.expression match {
-      case Some(expression) =>
-        if (expectedReturnType == PrimitiveType.VoidType || !isAssignable(expectedReturnType, expression.declarationType)) {
-          throw new TypeCheckingException(
-            "ReturnStatement",
-            s"Return statement attempted to return ${expression.declarationType}. Expected ${expectedReturnType}")
-        }
-      case None => {
-        if (expectedReturnType != PrimitiveType.VoidType) {
-          throw new TypeCheckingException("ReturnStatement", s"Empty return statement but expected ${expectedReturnType}")
+      if (statement.expression.isDefined) {
+        throw new TypeCheckingException("ReturnStatement", s"Found a non-empty return statement in a constructor")
+      }
+    } else {
+      val expectedReturnType = checkMethodReturns.get
+      statement.expression match {
+        case Some(expression) =>
+          if (expectedReturnType == PrimitiveType.VoidType || !isAssignable(expectedReturnType, expression.declarationType)) {
+            throw new TypeCheckingException(
+              "ReturnStatement",
+              s"Return statement attempted to return ${expression.declarationType}. Expected ${expectedReturnType}")
+          }
+        case None => {
+          if (expectedReturnType != PrimitiveType.VoidType) {
+            throw new TypeCheckingException("ReturnStatement", s"Empty return statement but expected ${expectedReturnType}")
+          }
         }
       }
     }
