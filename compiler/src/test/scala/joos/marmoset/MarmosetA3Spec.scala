@@ -12,7 +12,7 @@ class MarmosetA3Spec extends FlatSpec with Matchers {
   val assignmentNumber = 3
   val standardLibrary = getStandardLibrary(assignmentNumber).flatMap(getJavaFiles)
 
-  behavior of "Name resolution of valid joos"
+  behavior of "Type checking of valid joos"
   getValidTestCases(assignmentNumber).foreach {
     testCase => it should s"accept ${testCase.getName}" taggedAs IntegrationTest in {
       val files = getJavaFiles(testCase) ++ standardLibrary
@@ -22,7 +22,7 @@ class MarmosetA3Spec extends FlatSpec with Matchers {
     }
   }
 
-  behavior of "Name resolution of invalid joos"
+  behavior of "Type checking of invalid joos"
   getInvalidTestCases(assignmentNumber).foreach {
     testCase => it should s"reject ${testCase.getName}" taggedAs IntegrationTest in {
       val files = getJavaFiles(testCase) ++ standardLibrary

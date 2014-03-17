@@ -35,6 +35,10 @@ package object semanticspec {
     }
   }
 
+  def MockCompilationUnit(pkg: PackageDeclaration, imports: Seq[ImportDeclaration], typed: Option[TypeDeclaration]) = {
+    CompilationUnit(pkg, imports, typed)
+  }
+
   def MockStdLib = CompilationUnit(PackageDeclaration("java.lang"), Seq.empty, None)
 
   // Links the compilation units
@@ -49,7 +53,7 @@ package object semanticspec {
     }
     compilationUnits foreach {
       unit =>
-        unit.importDeclarations foreach unit.add
+        unit.importDeclarations foreach (unit.add(_))
         unit.addSelfPackage()
     }
     mock

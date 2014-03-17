@@ -1,8 +1,8 @@
 package joos.compiler
 
 import joos.core.Logger
-import joos.semantic.{TypeChecking, NameResolution, SemanticException}
-import joos.syntax.{JoosSyntaxException, SyntaxCheck}
+import joos.semantic.{CodeGeneration, StaticAnalysis, TypeChecking, NameResolution}
+import joos.syntax.SyntaxCheck
 
 object Compiler {
   def main(args: Array[String]) {
@@ -14,6 +14,8 @@ object Compiler {
       val asts = files map SyntaxCheck.apply
       NameResolution(asts)
       TypeChecking(asts)
+      StaticAnalysis(asts)
+      CodeGeneration(asts)
       0
     } catch {
       case e: CompilationException => {
