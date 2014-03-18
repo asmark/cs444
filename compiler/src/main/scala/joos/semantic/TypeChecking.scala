@@ -3,29 +3,26 @@ package joos.semantic
 import joos.ast.AbstractSyntaxTree
 import joos.ast.declarations.ModuleDeclaration
 import joos.semantic.types.checking.TypeChecker
-import joos.semantic.types.disambiguation.{StaticNameLinker, NameDisambiguator, NameClassifier}
+import joos.semantic.types.disambiguation.{DeclarationReferenceLinker, StaticNameLinker, NameDisambiguator, NameClassifier}
 
 object TypeChecking {
 
-  def getAnalyzers(ast: AbstractSyntaxTree)(implicit module: ModuleDeclaration) = {
-    implicit val unit = ast.root
-    Seq(
-      new NameClassifier,
-      new NameDisambiguator,
-      new StaticNameLinker,
-      new TypeChecker
-    )
-  }
+  private[this] final val analyzerBuilders = List(
+    DeclarationReferenceLinker,
+    NameClassifier,
+    NameDisambiguator,
+    StaticNameLinker,
+    TypeChecker
+  )
 
   def apply(asts: Seq[AbstractSyntaxTree]) {
     implicit val module = new ModuleDeclaration
 
-    val analyzers = 4
-    for (i <- Range(0, analyzers)) {
+    for (builder <- analyzerBuilders) {
       for (ast <- asts) {
-        ast dispatch getAnalyzers(ast).apply(i)
+        implicit val unit = ast.root
+        ast dispatch builder.build
       }
     }
   }
-
 }

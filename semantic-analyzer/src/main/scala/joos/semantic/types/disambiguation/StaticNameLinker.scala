@@ -4,7 +4,7 @@ import joos.ast.compositions.NameLike
 import joos.ast.declarations.{MethodDeclaration, FieldDeclaration}
 import joos.ast.expressions._
 import joos.ast.types.Type
-import joos.ast.visitor.AstCompleteVisitor
+import joos.ast.visitor.{AbstractSyntaxTreeVisitorBuilder, AstCompleteVisitor}
 import joos.ast.{Modifier, CompilationUnit}
 import joos.semantic.types.AstEnvironmentVisitor
 import joos.semantic.types.disambiguation.Visibility._
@@ -129,4 +129,8 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
     resolveFieldAccess(name)
   }
 
+}
+
+object StaticNameLinker extends AbstractSyntaxTreeVisitorBuilder[StaticNameLinker] {
+  override def build(implicit unit: CompilationUnit) = new StaticNameLinker
 }

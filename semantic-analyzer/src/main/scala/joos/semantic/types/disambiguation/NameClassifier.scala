@@ -5,8 +5,9 @@ import joos.ast.declarations._
 import joos.ast.expressions._
 import joos.ast.types.PrimitiveType
 import joos.ast.types.{ArrayType, SimpleType, Type}
-import joos.ast.visitor.AstCompleteVisitor
+import joos.ast.visitor.{AbstractSyntaxTreeVisitorBuilder, AstCompleteVisitor}
 import joos.core.Logger
+import joos.ast.CompilationUnit
 
 class NameClassifier extends AstCompleteVisitor {
 
@@ -120,4 +121,8 @@ class NameClassifier extends AstCompleteVisitor {
     super.apply(invocation)
   }
 
+}
+
+object NameClassifier extends AbstractSyntaxTreeVisitorBuilder[NameClassifier] {
+  override def build(implicit unit: CompilationUnit) = new NameClassifier
 }

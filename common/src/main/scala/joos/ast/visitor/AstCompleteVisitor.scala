@@ -5,8 +5,7 @@ import joos.ast.declarations._
 import joos.ast.expressions._
 import joos.ast.statements._
 
-abstract class AstCompleteVisitor extends AstVisitor {
-
+trait AstCompleteVisitor extends AstVisitor {
 
   override def apply(field: FieldDeclaration) {
     field.fragment.accept(this)

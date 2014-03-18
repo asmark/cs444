@@ -4,7 +4,7 @@ import joos.ast.CompilationUnit
 import joos.ast.compositions.NameLike._
 import joos.ast.declarations.MethodDeclaration
 import joos.ast.expressions.{VariableDeclarationExpression, QualifiedNameExpression, SimpleNameExpression}
-import joos.ast.visitor.AstCompleteVisitor
+import joos.ast.visitor.{AbstractSyntaxTreeVisitorBuilder, AstCompleteVisitor}
 import joos.semantic.{BlockEnvironment, TypeEnvironment}
 import joos.ast.statements._
 
@@ -161,4 +161,8 @@ class NameDisambiguator(implicit unit: CompilationUnit) extends AstCompleteVisit
     }
 
   }
+}
+
+object NameDisambiguator extends AbstractSyntaxTreeVisitorBuilder[NameDisambiguator] {
+  override def build(implicit unit: CompilationUnit) = new NameDisambiguator
 }

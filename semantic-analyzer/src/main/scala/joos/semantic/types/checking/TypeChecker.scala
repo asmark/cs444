@@ -4,6 +4,7 @@ import joos.ast.declarations.{TypeDeclaration, MethodDeclaration, FieldDeclarati
 import joos.ast.statements.{ForStatement, ReturnStatement, WhileStatement, IfStatement}
 import joos.ast.types.PrimitiveType._
 import joos.ast.types.{Type, PrimitiveType}
+import joos.ast.visitor.AbstractSyntaxTreeVisitorBuilder
 import joos.ast.{Modifier, CompilationUnit}
 import joos.semantic._
 import joos.semantic.types._
@@ -127,4 +128,8 @@ class TypeChecker(implicit val unit: CompilationUnit)
       }
     }
   }
+}
+
+object TypeChecker extends AbstractSyntaxTreeVisitorBuilder[TypeChecker] {
+  override def build(implicit unit: CompilationUnit) = new TypeChecker
 }
