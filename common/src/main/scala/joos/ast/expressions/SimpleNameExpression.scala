@@ -1,12 +1,18 @@
 package joos.ast.expressions
 
-import joos.ast.AstConstructionException
+import joos.ast.compositions.DeclarationLike
+import joos.ast.{DeclarationReference, AstConstructionException}
+import joos.core.MutableLink
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, LeafNode, ParseTreeNode}
 import joos.syntax.tokens.{TokenKind, TerminalToken}
 
-case class SimpleNameExpression(identifier: TerminalToken) extends NameExpression {
+case class SimpleNameExpression(identifier: TerminalToken)
+    extends NameExpression
+    with DeclarationReference[DeclarationLike] {
   override def standardName = identifier.lexeme
+
+  override val declarationLink = new MutableLink[DeclarationLike]
 }
 
 object SimpleNameExpression {
