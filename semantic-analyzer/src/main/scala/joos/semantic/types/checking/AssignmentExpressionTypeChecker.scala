@@ -1,10 +1,9 @@
 package joos.semantic.types.checking
 
-import joos.ast.DeclarationReference
-import joos.ast.declarations.{SingleVariableDeclaration, FieldDeclaration}
-import joos.ast.expressions.{ArrayAccessExpression, VariableDeclarationExpression, AssignmentExpression}
-import joos.ast.types.ArrayType
+import joos.ast.compositions.TypedDeclarationLike
+import joos.ast.expressions.{ArrayAccessExpression, AssignmentExpression}
 import joos.ast.visitor.AstVisitor
+import joos.ast.{Modifier, DeclarationReference}
 import joos.semantic._
 import joos.semantic.types.AssignmentExpressionException
 
@@ -22,7 +21,6 @@ trait AssignmentExpressionTypeChecker extends AstVisitor {
 
     val leftType = left.expressionType
     val rightType = right.expressionType
-    // TODO: Double check if the following are complete (probably not)
     if (isAssignable(leftType, rightType)) {
       assignment.expressionType = leftType
     } else {
@@ -33,11 +31,9 @@ trait AssignmentExpressionTypeChecker extends AstVisitor {
     left match {
       case reference: DeclarationReference[_] =>
         reference.declaration match {
-          case variable: FieldDeclaration =>
-            if (variable eq ArrayType.Length)
+          case variable: TypedDeclarationLike =>
+            if (variable.modifiers.contains(Modifier.Final))
               throw new AssignmentExpressionException(left, right)
-          case _: SingleVariableDeclaration =>
-          case _: VariableDeclarationExpression =>
           case _ => throw new AssignmentExpressionException(left, right)
         }
       case _: ArrayAccessExpression =>

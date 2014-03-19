@@ -1,8 +1,7 @@
 package joos
 
 import joos.syntax.parser.{JoosParseException, ParseTreeBuilder, LrOneReader}
-import joos.syntax.tokens.{TerminalToken, Token}
-import joos.syntax.tokens.TokenKind.TokenKindValue
+import joos.syntax.tokens.{TokenKind, TerminalToken}
 import org.scalatest.{Matchers, FlatSpec}
 
 class ParseTreeBuilderSpec extends FlatSpec with Matchers {
@@ -10,7 +9,7 @@ class ParseTreeBuilderSpec extends FlatSpec with Matchers {
   final val sampleFileName = "/sample.lr1"
   final val actionTable = LrOneReader(getClass.getResourceAsStream(sampleFileName)).actionTable
 
-  def newToken(lexeme: String) = TerminalToken(lexeme, new TokenKindValue(lexeme, () => null))
+  def newToken(lexeme: String) = TerminalToken(lexeme, TokenKind.fromName(lexeme))
 
 
   "A valid sequence of tokens" should "result in a left-deep parse tree" in {

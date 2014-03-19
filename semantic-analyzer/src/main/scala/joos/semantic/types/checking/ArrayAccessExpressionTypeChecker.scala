@@ -15,7 +15,6 @@ trait ArrayAccessExpressionTypeChecker extends AstVisitor {
     require(arrayAccessExpression.reference.expressionType != null)
     arrayAccessExpression.reference.expressionType match {
       case arrayType: ArrayType => {
-        // TODO: the index type undergoes promotion
         require(arrayAccessExpression.index.expressionType != null)
         if (arrayAccessExpression.index.expressionType.isNumeric) {
           arrayAccessExpression.expressionType = arrayType.elementType

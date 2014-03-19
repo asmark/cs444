@@ -41,10 +41,4 @@ trait AstVisitor {
   def apply(statement: WhileStatement) {}
   def apply(compilationUnit: CompilationUnit) {}
   def apply(node: Block) {}
-  def apply(name: NameExpression) {
-    name match {
-      case name: SimpleNameExpression => this(name)
-      case name: QualifiedNameExpression => this(name)
-    }
-  }
 }

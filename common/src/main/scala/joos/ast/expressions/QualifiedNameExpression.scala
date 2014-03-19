@@ -1,8 +1,6 @@
 package joos.ast.expressions
 
 import joos.ast.AstConstructionException
-import joos.ast.compositions.DeclarationLike
-import joos.core.MutableLink
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
