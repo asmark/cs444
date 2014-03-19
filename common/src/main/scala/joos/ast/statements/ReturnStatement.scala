@@ -7,7 +7,6 @@ import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 import joos.semantic.BlockEnvironment
 
 case class ReturnStatement(expression: Option[Expression]) extends Statement {
-  override var environment: BlockEnvironment = null
 
   override def toString = {
     val suffix = expression match {

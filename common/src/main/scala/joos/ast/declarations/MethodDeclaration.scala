@@ -21,8 +21,6 @@ case class MethodDeclaration(
     extends BodyDeclaration with DeclarationLike with BlockLike {
   var compilationUnit: CompilationUnit = null
   var typeDeclaration: TypeDeclaration = null
-  var environment: BlockEnvironment = null
-
 
   override def toString = {
     val returnTypeString = returnType match {

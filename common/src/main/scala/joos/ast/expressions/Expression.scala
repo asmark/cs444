@@ -1,17 +1,12 @@
 package joos.ast.expressions
 
-import joos.ast.compositions.TypedLike
+import joos.ast.types.Type
 import joos.ast.{AstConstructionException, AstNode}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{LeafNode, TreeNode, ParseTreeNode}
-import joos.ast.types.Type
 
-trait Expression extends AstNode with TypedLike {
-  private var _declarationType: Type = null
-  def declarationType_=(declarationType: Type) = _declarationType = declarationType
-  override def declarationType = {
-    _declarationType
-  }
+trait Expression extends AstNode {
+  var expressionType: Type = _
 }
 
 object Expression {

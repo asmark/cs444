@@ -1,123 +1,118 @@
 package joos.semantic.types.disambiguation
 
-import joos.ast.compositions.NameLike._
-import joos.ast.declarations._
+import joos.ast.NameClassification._
 import joos.ast.expressions._
-import joos.ast.types.PrimitiveType
-import joos.ast.types.{ArrayType, SimpleType, Type}
-import joos.ast.visitor.AstCompleteVisitor
-import joos.core.Logger
+import joos.ast.visitor.AbstractSyntaxTreeVisitorBuilder
+import joos.ast.{AbstractSyntaxTreeVisitorWithEnvironment, CompilationUnit}
+import joos.semantic.BlockEnvironment
+import joos.semantic.types.TypeCheckingException
 
-class NameClassifier extends AstCompleteVisitor {
+/**
+ * - Classifies all names
+ * - Links all type names to its declaration
+ * - Links all local variable names to its declarations
+ */
+class NameClassifier(implicit val unit: CompilationUnit)
+    extends AbstractSyntaxTreeVisitorWithEnvironment {
 
-  private def classifyNameAs(classification: NameClassification, nameExpression: NameExpression) {
-    nameExpression match {
-      case QualifiedNameExpression(qualifier, name) => {
-        name.classifyContext(classification)
-        nameExpression.classifyContext(classification)
-        classifyNameAs(classification, qualifier)
+  private[this] class Classifier(block: BlockEnvironment) {
+    def apply(name: NameExpression) {
+      name match {
+        case name: SimpleNameExpression => this(name)
+        case name: QualifiedNameExpression => this(name)
       }
-      case name: SimpleNameExpression => {
-        name.classifyContext(classification)
+    }
+
+    private[this] def apply(name: QualifiedNameExpression) {
+      this(name.qualifier)
+      name.qualifier.nameClassification match {
+        case TypeName =>
+          name.nameClassification = StaticFieldName
+        case StaticFieldName | InstanceFieldName | LocalVariableName =>
+          name.nameClassification = InstanceFieldName
+        case PackageName =>
+          unit.getVisibleType(name) match {
+            case Some(tipe) =>
+              name.nameClassification = TypeName
+              name.declaration = tipe
+              name.expressionType = tipe.asType
+            case None =>
+              name.nameClassification = PackageName
+          }
+        case _ => throw new AmbiguousNameException(name)
+      }
+
+    }
+
+    private[this] def apply(name: SimpleNameExpression) {
+      this.block.getLocalVariable(name) match {
+        case Some(variable) =>
+          name.nameClassification = LocalVariableName
+          name.declaration = variable
+          name.expressionType = variable.declarationType
+          return
+        case None =>
+      }
+
+      unit.typeDeclaration.get.containedFields.get(name) match {
+        case Some(field) => name.nameClassification = InstanceFieldName; return
+        case None =>
+      }
+
+      unit.getVisibleType(name) match {
+        case Some(tipe) =>
+          name.nameClassification = TypeName
+          name.declaration = tipe
+          name.expressionType = tipe.asType
+        case None => name.nameClassification = PackageName
       }
     }
   }
 
-  private def classifyTypeAs(classification: NameClassification = TypeName, typed: Type) {
-    typed match {
-      case SimpleType(QualifiedNameExpression(qualifier, name)) => {
-        classifyNameAs(PackageOrTypeName, qualifier)
-        classifyNameAs(classification, name)
-      }
-      case SimpleType(simpleName) => {
-        classifyNameAs(classification, simpleName)
-      }
-      case ArrayType(elementType, dimensions) => classifyTypeAs(classification, elementType)
-      case _: PrimitiveType =>
-    }
-  }
+  override def apply(parenthesis: ParenthesizedExpression) {
+    super.apply(parenthesis)
 
-
-  override def apply(packageDeclaration: PackageDeclaration) {
-    classifyNameAs(PackageName, packageDeclaration.name)
-  }
-
-  override def apply(importDeclaration: ImportDeclaration) {
-    if (!importDeclaration.isOnDemand) {
-      classifyNameAs(TypeName, importDeclaration.name)
-    } else {
-      classifyNameAs(PackageOrTypeName, importDeclaration.name)
-    }
-  }
-
-  override def apply(typeDeclaration: TypeDeclaration) {
-    typeDeclaration.superInterfaces foreach (classifyNameAs(TypeName, _))
-    typeDeclaration.superType foreach (classifyNameAs(TypeName, _))
-
-    super.apply(typeDeclaration)
-  }
-
-  override def apply(fieldDeclaration: FieldDeclaration) {
-    classifyTypeAs(TypeName, fieldDeclaration.variableType)
-
-    super.apply(fieldDeclaration)
-  }
-
-  override def apply(methodDeclaration: MethodDeclaration) {
-    methodDeclaration.returnType foreach (classifyTypeAs(TypeName, _))
-
-    super.apply(methodDeclaration)
-  }
-
-  override def apply(variableDeclaration: SingleVariableDeclaration) {
-    classifyTypeAs(TypeName, variableDeclaration.declarationType)
-
-    super.apply(variableDeclaration)
-  }
-
-  override def apply(castExpression: CastExpression) {
-    classifyTypeAs(TypeName, castExpression.castType)
-
-    super.apply(castExpression)
-  }
-
-  override def apply(instanceOfExpression: InstanceOfExpression) {
-    classifyTypeAs(TypeName, instanceOfExpression.classType)
-
-    super.apply(instanceOfExpression)
-  }
-
-  override def apply(classCreationExpression: ClassInstanceCreationExpression) {
-    classifyTypeAs(TypeName, classCreationExpression.classType)
-
-    super.apply(classCreationExpression)
-  }
-
-  override def apply(arrayAccess: ArrayAccessExpression) {
-    arrayAccess.reference match {
-      case reference: NameExpression => classifyNameAs(ExpressionName, reference)
-      case _ => {
-        Logger.logWarning(s"This array reference was given a ${arrayAccess.reference} instead of a NameExpression")
-      }
+    parenthesis.expression match {
+      case name: NameExpression =>
+        name.nameClassification match {
+          case TypeName | PackageName => throw new TypeCheckingException("()", s"${name} cannot be a type or package inside ()")
+          case _ =>
+        }
+      case _ =>
     }
   }
 
   override def apply(fieldAccess: FieldAccessExpression) {
-    classifyNameAs(ExpressionName, fieldAccess.identifier)
-
+    fieldAccess.identifier.nameClassification = InstanceFieldName
     super.apply(fieldAccess)
   }
 
   override def apply(invocation: MethodInvocationExpression) {
     invocation.methodName match {
-      case QualifiedNameExpression(qualifier, name) => {
-        classifyNameAs(Ambiguous, qualifier)
-        classifyNameAs(MethodName, name)
-      }
-      case name: SimpleNameExpression => classifyNameAs(MethodName, name)
+      case name: SimpleNameExpression => name.nameClassification = InstanceMethodName
+      case name: QualifiedNameExpression =>
+        new Classifier(block)(name.qualifier)
+        name.qualifier.nameClassification match {
+          case TypeName =>
+            name.nameClassification = StaticMethodName
+          case InstanceFieldName | StaticFieldName | LocalVariableName =>
+            name.nameClassification = InstanceMethodName
+          case _ => throw new AmbiguousNameException(name)
+        }
     }
 
     super.apply(invocation)
   }
 
+  override def apply(name: QualifiedNameExpression) {
+    new Classifier(block)(name)
+  }
+
+  override def apply(name: SimpleNameExpression) {
+    new Classifier(block)(name)
+  }
+}
+
+object NameClassifier extends AbstractSyntaxTreeVisitorBuilder[NameClassifier] {
+  override def build(implicit unit: CompilationUnit) = new NameClassifier
 }

@@ -5,7 +5,6 @@ import joos.ast.Modifier
 import joos.ast.compositions.{BlockLike, TypedDeclarationLike}
 import joos.ast.declarations.VariableDeclarationFragment
 import joos.ast.types.Type
-import joos.semantic.BlockEnvironment
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
@@ -16,8 +15,6 @@ case class VariableDeclarationExpression(
   override def declarationName = fragment.identifier
 
   override def declarationType = variableType
-
-  override var environment: BlockEnvironment = null
 
   override def toString = {
     s"${variableType.standardName} ${modifiers.mkString(" ")} ${fragment}"

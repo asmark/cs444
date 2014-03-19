@@ -4,8 +4,7 @@ import joos.ast.declarations.MethodDeclaration
 import joos.ast.expressions._
 import joos.ast.types.Type
 import joos.ast.visitor.AstVisitor
-import joos.ast.{Modifier, CompilationUnit}
-import joos.semantic.types.IllegalProtectedAccessException
+import joos.ast.Modifier
 import joos.semantic.types.disambiguation.Visibility._
 import joos.semantic.types.disambiguation._
 
@@ -20,11 +19,12 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
 
     val visibility = resolveFieldAccess(fieldPrefix)
 
-    getMethodFromType(fieldPrefix.declarationType, methodName, parameters) match {
+    getMethodFromType(fieldPrefix.expressionType, methodName, parameters) match {
       case Some(methodDeclaration) => {
         checkVisibility(methodDeclaration, visibility)
-        checkQualifiedAccess(methodDeclaration, fieldPrefix.declarationType)
-        methodAccess.declarationType = methodDeclaration.returnType.get
+        checkQualifiedAccess(methodDeclaration, fieldPrefix.expressionType)
+        methodAccess.declaration = methodDeclaration
+        methodAccess.expressionType = methodDeclaration.returnType.get
       }
       case None => throw new AmbiguousNameException(methodAccess)
     }
@@ -43,7 +43,8 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
           case Some(method) => {
             checkVisibility(method, Local)
             checkSimpleAccess(method)
-            methodName.declarationType = method.returnType.get
+            methodName.declaration = method
+            methodName.expressionType = method.returnType.get
           }
         }
 
@@ -61,7 +62,8 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
           case Some(method) => {
             checkVisibility(method, Local)
             checkQualifiedAccess(method, left)
-            methodName.declarationType = method.returnType.get
+            methodName.declaration = method
+            methodName.expressionType = method.returnType.get
           }
         }
       }
@@ -82,7 +84,8 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
               case Some(method) => {
                 checkVisibility(method, Local)
                 checkQualifiedAccess(method, leftType)
-                methodName.declarationType = method.returnType.get
+                methodName.declaration = method
+                methodName.expressionType = method.returnType.get
               }
             }
         }
@@ -94,22 +97,29 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
     invocation.arguments.foreach(
       expr => {
         expr.accept(this)
-        require(expr.declarationType != null)
+        require(expr.expressionType != null)
       }
     )
     invocation.expression.foreach(
       expr => {
         expr.accept(this)
-        require(expr.declarationType != null)
+        require(expr.expressionType != null)
       }
     )
 
     invocation.expression match {
       case None => linkMethod(invocation.methodName, invocation.arguments)
-      case Some(expression) => linkMethod(expression.declarationType, invocation.methodName, invocation.arguments)
+      case Some(expression) => linkMethod(expression.expressionType, invocation.methodName, invocation.arguments)
     }
-    invocation.declarationType = invocation.methodName.declarationType
+
+    invocation.methodName match {
+      case name: SimpleNameExpression =>
+      case name: QualifiedNameExpression =>
+        val linker = new FieldNameLinker(invocation.expression, name.qualifier)
+        linker()
+    }
+
+    invocation.expressionType = invocation.methodName.expressionType
+    invocation.declaration = invocation.methodName.declaration.asInstanceOf[MethodDeclaration]
   }
-
-
 }

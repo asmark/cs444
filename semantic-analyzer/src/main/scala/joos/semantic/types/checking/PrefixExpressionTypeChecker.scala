@@ -11,16 +11,16 @@ trait PrefixExpressionTypeChecker extends AstVisitor {
 
   override def apply(prefix: PrefixExpression) {
     prefix.operand.accept(this)
-    require(prefix.operand.declarationType != null)
+    require(prefix.operand.expressionType != null)
 
-    prefix.declarationType = prefix.operator match {
+    prefix.expressionType = prefix.operator match {
       case Plus | Minus =>
-        if (!prefix.operand.declarationType.isNumeric)
-          throw new TypeCheckingException("prefix", s"${prefix.operator} ${prefix.operand.declarationType.standardName}")
+        if (!prefix.operand.expressionType.isNumeric)
+          throw new TypeCheckingException("prefix", s"${prefix.operator} ${prefix.operand.expressionType.standardName}")
         IntegerType
       case Not =>
-        if (prefix.operand.declarationType != BooleanType)
-          throw new TypeCheckingException("prefix", s"${prefix.operator} ${prefix.operand.declarationType.standardName}")
+        if (prefix.operand.expressionType != BooleanType)
+          throw new TypeCheckingException("prefix", s"${prefix.operator} ${prefix.operand.expressionType.standardName}")
         BooleanType
     }
   }

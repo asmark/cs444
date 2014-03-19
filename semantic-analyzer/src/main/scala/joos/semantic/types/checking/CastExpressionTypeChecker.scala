@@ -10,20 +10,20 @@ trait CastExpressionTypeChecker extends AstVisitor {
   override def apply(castExpression: CastExpression) {
     castExpression.expression.accept(this)
 
-    require(castExpression.expression.declarationType != null)
+    require(castExpression.expression.expressionType != null)
 
     if (castExpression.castType.isNumeric &&
-        castExpression.expression.declarationType.isNumeric) {
-      castExpression.declarationType = castExpression.castType
+        castExpression.expression.expressionType.isNumeric) {
+      castExpression.expressionType = castExpression.castType
       return
     }
 
-    if (isAssignable(castExpression.castType, castExpression.expression.declarationType) ||
-        isAssignable(castExpression.expression.declarationType, castExpression.castType)) {
-      castExpression.declarationType = castExpression.castType
+    if (isAssignable(castExpression.castType, castExpression.expression.expressionType) ||
+        isAssignable(castExpression.expression.expressionType, castExpression.castType)) {
+      castExpression.expressionType = castExpression.castType
       return
     }
 
-    throw new CastExpressionException(s"${castExpression.expression.declarationType.standardName} to ${castExpression.castType.standardName}")
+    throw new CastExpressionException(s"${castExpression.expression.expressionType.standardName} to ${castExpression.castType.standardName}")
   }
 }

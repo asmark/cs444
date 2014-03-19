@@ -16,7 +16,7 @@ case class FieldDeclaration(
   def declarationName = fragment.identifier
 
   var typeDeclaration: TypeDeclaration = null
-  
+
   lazy val isStatic = {
     require(typeDeclaration != null)
     typeDeclaration.isInterface || (modifiers contains Modifier.Static)

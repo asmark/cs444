@@ -8,7 +8,6 @@ import joos.syntax.parsetree.TreeNode
 import joos.semantic.BlockEnvironment
 
 case class ExpressionStatement(expression: Expression) extends Statement{
-  override var environment: BlockEnvironment = null
 
   override def toString = s"${expression};\n"
 }

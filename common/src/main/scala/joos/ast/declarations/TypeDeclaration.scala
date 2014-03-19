@@ -1,12 +1,12 @@
 package joos.ast.declarations
 
 import joos.ast.Modifier
-import joos.ast.compositions.DeclarationLike
+import joos.ast.compositions.{BlockLike, DeclarationLike}
 import joos.ast.expressions.{SimpleNameExpression, NameExpression}
 import joos.ast.types.SimpleType
 import joos.ast.{AstConstructionException, CompilationUnit}
 import joos.core.Logger
-import joos.semantic.TypeEnvironment
+import joos.semantic.{BlockEnvironment, TypeEnvironment}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
@@ -19,9 +19,11 @@ case class TypeDeclaration(
     fields: Seq[FieldDeclaration],
     methods: Seq[MethodDeclaration])
     extends BodyDeclaration
-    with TypeEnvironment with DeclarationLike {
+    with TypeEnvironment with DeclarationLike with BlockLike {
   implicit var compilationUnit: CompilationUnit = null
   var packageDeclaration: PackageDeclaration = null
+
+  blockEnvironment = BlockEnvironment()(this)
 
   lazy val isConcreteClass = !isInterface && !(modifiers contains Modifier.Abstract)
   lazy val fullName = {
@@ -39,7 +41,7 @@ case class TypeDeclaration(
 
   lazy val asType = {
     val simple = SimpleType(NameExpression(fullName))
-    simple.declaration = Some(this)
+    simple.declaration = this
     simple
   }
 

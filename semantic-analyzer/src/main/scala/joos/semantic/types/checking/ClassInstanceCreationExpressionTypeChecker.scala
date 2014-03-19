@@ -14,14 +14,14 @@ trait ClassInstanceCreationExpressionTypeChecker extends AstVisitor {
     newExpression.arguments.foreach {
       argument =>
         argument.accept(this)
-        require(argument.declarationType != null)
+        require(argument.expressionType != null)
     }
 
     val classType = newExpression.classType
 
-    newExpression.declarationType = classType match {
+    newExpression.expressionType = classType match {
       case classType: SimpleType =>
-        val declaration = classType.declaration.get
+        val declaration = classType.declaration
         if (!declaration.isConcreteClass) {
           throw new TypeCheckingException("new", s"${classType.standardName} is not concrete")
         }

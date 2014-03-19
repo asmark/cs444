@@ -4,9 +4,12 @@ import joos.ast.declarations.{TypeDeclaration, MethodDeclaration, FieldDeclarati
 import joos.ast.statements.{ForStatement, ReturnStatement, WhileStatement, IfStatement}
 import joos.ast.types.PrimitiveType._
 import joos.ast.types.{Type, PrimitiveType}
+import joos.ast.visitor.AbstractSyntaxTreeVisitorBuilder
 import joos.ast.{Modifier, CompilationUnit}
 import joos.semantic._
 import joos.semantic.types._
+import joos.ast.expressions.{SimpleNameExpression, QualifiedNameExpression}
+import joos.semantic.types.disambiguation.FieldNameLinker
 
 class TypeChecker(implicit val unit: CompilationUnit)
     extends AstEnvironmentVisitor
@@ -35,8 +38,8 @@ class TypeChecker(implicit val unit: CompilationUnit)
 
     fieldDeclaration.fragment.initializer foreach {
       initializer =>
-        if (!isAssignable(fieldDeclaration.variableType, initializer.declarationType))
-          throw new FieldDeclarationTypeException(s"${initializer.declarationType} can not be assigned to ${fieldDeclaration.variableType}")
+        if (!isAssignable(fieldDeclaration.variableType, initializer.expressionType))
+          throw new FieldDeclarationTypeException(s"${initializer.expressionType} can not be assigned to ${fieldDeclaration.variableType}")
     }
   }
 
@@ -75,18 +78,18 @@ class TypeChecker(implicit val unit: CompilationUnit)
   override def apply(statement: IfStatement) {
     super.apply(statement)
 
-    require(statement.condition.declarationType != null)
-    if (statement.condition.declarationType != PrimitiveType.BooleanType) {
-      throw new TypeCheckingException("IfStatement", s"Conditional statement was ${statement.condition.declarationType}. Expected Boolean")
+    require(statement.condition.expressionType != null)
+    if (statement.condition.expressionType != PrimitiveType.BooleanType) {
+      throw new TypeCheckingException("IfStatement", s"Conditional statement was ${statement.condition.expressionType}. Expected Boolean")
     }
   }
 
   override def apply(statement: WhileStatement) {
     super.apply(statement)
 
-    require(statement.condition.declarationType != null)
-    if (statement.condition.declarationType != PrimitiveType.BooleanType) {
-      throw new TypeCheckingException("WhileStatement", s"Conditional statement was ${statement.condition.declarationType}. Expected Boolean")
+    require(statement.condition.expressionType != null)
+    if (statement.condition.expressionType != PrimitiveType.BooleanType) {
+      throw new TypeCheckingException("WhileStatement", s"Conditional statement was ${statement.condition.expressionType}. Expected Boolean")
     }
   }
 
@@ -96,10 +99,10 @@ class TypeChecker(implicit val unit: CompilationUnit)
     forStatement.condition match {
       case None =>
       case Some(condition) =>
-        require(condition.declarationType != null)
+        require(condition.expressionType != null)
 
-        if (condition.declarationType != BooleanType)
-          throw new TypeCheckingException("for", s"condition needs to be boolean instead of ${condition.declarationType.standardName}")
+        if (condition.expressionType != BooleanType)
+          throw new TypeCheckingException("for", s"condition needs to be boolean instead of ${condition.expressionType.standardName}")
     }
   }
 
@@ -114,10 +117,10 @@ class TypeChecker(implicit val unit: CompilationUnit)
       val expectedReturnType = checkMethodReturns.get
       statement.expression match {
         case Some(expression) =>
-          if (expectedReturnType == PrimitiveType.VoidType || !isAssignable(expectedReturnType, expression.declarationType)) {
+          if (expectedReturnType == PrimitiveType.VoidType || !isAssignable(expectedReturnType, expression.expressionType)) {
             throw new TypeCheckingException(
               "ReturnStatement",
-              s"Return statement attempted to return ${expression.declarationType}. Expected ${expectedReturnType}")
+              s"Return statement attempted to return ${expression.expressionType}. Expected ${expectedReturnType}")
           }
         case None => {
           if (expectedReturnType != PrimitiveType.VoidType) {
@@ -127,4 +130,18 @@ class TypeChecker(implicit val unit: CompilationUnit)
       }
     }
   }
+
+  override def apply(name: QualifiedNameExpression) {
+    val linker = new FieldNameLinker(None, name)
+    linker()
+  }
+
+  override def apply(name: SimpleNameExpression) {
+    val linker = new FieldNameLinker(None, name)
+    linker()
+  }
+}
+
+object TypeChecker extends AbstractSyntaxTreeVisitorBuilder[TypeChecker] {
+  override def build(implicit unit: CompilationUnit) = new TypeChecker
 }

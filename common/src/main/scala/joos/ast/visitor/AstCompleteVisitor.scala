@@ -5,8 +5,7 @@ import joos.ast.declarations._
 import joos.ast.expressions._
 import joos.ast.statements._
 
-abstract class AstCompleteVisitor extends AstVisitor {
-
+trait AstCompleteVisitor extends AstVisitor {
 
   override def apply(field: FieldDeclaration) {
     field.fragment.accept(this)
@@ -18,7 +17,6 @@ abstract class AstCompleteVisitor extends AstVisitor {
   }
 
   override def apply(variable: SingleVariableDeclaration) {
-    variable.identifier.accept(this)
     variable.initializer foreach (_.accept(this))
   }
 
@@ -51,7 +49,6 @@ abstract class AstCompleteVisitor extends AstVisitor {
 
   override def apply(expression: FieldAccessExpression) {
     expression.expression.accept(this)
-    expression.identifier.accept(this)
   }
 
   override def apply(expression: InfixExpression) {
@@ -82,7 +79,6 @@ abstract class AstCompleteVisitor extends AstVisitor {
   }
 
   override def apply(expression: VariableDeclarationFragment) {
-    expression.identifier.accept(this)
     expression.initializer foreach (_.accept(this))
   }
 

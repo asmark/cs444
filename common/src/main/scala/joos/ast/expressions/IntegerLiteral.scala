@@ -6,7 +6,7 @@ import joos.syntax.tokens.{TokenKind, TerminalToken}
 import joos.ast.types.PrimitiveType
 
 case class IntegerLiteral(token: TerminalToken) extends LiteralExpression {
-  declarationType = PrimitiveType.IntegerType
+  expressionType = PrimitiveType.IntegerType
 
   override def toString = token.lexeme
 }
