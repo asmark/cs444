@@ -112,6 +112,12 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
       case None => linkMethod(invocation.methodName, invocation.arguments)
       case Some(expression) => linkMethod(expression.expressionType, invocation.methodName, invocation.arguments)
     }
+
+    invocation.methodName match {
+      case name: SimpleNameExpression =>
+      case name: QualifiedNameExpression => this(name.qualifier)
+    }
+
     invocation.expressionType = invocation.methodName.expressionType
   }
 

@@ -9,7 +9,8 @@ import joos.semantic.types.TypeCheckingException
 
 /**
  * - Classifies all names
- * - Links type declarations
+ * - Links all type names to its declaration
+ * - Links all local variable names to its declarations
  */
 class NameClassifier(implicit val unit: CompilationUnit)
     extends AbstractSyntaxTreeVisitorWithEnvironment {
@@ -45,7 +46,11 @@ class NameClassifier(implicit val unit: CompilationUnit)
 
     private[this] def apply(name: SimpleNameExpression) {
       this.block.getLocalVariable(name) match {
-        case Some(variable) => name.nameClassification = LocalVariableName; return
+        case Some(variable) =>
+          name.nameClassification = LocalVariableName
+          name.declaration = variable
+          name.expressionType = variable.declarationType
+          return
         case None =>
       }
 

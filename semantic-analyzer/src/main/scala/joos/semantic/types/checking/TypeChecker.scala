@@ -8,6 +8,8 @@ import joos.ast.visitor.AbstractSyntaxTreeVisitorBuilder
 import joos.ast.{Modifier, CompilationUnit}
 import joos.semantic._
 import joos.semantic.types._
+import joos.ast.expressions.{SimpleNameExpression, QualifiedNameExpression}
+import joos.semantic.types.disambiguation.FieldNameLinker
 
 class TypeChecker(implicit val unit: CompilationUnit)
     extends AstEnvironmentVisitor
@@ -127,6 +129,16 @@ class TypeChecker(implicit val unit: CompilationUnit)
         }
       }
     }
+  }
+
+  override def apply(name: QualifiedNameExpression) {
+    val linker = new FieldNameLinker(None, name)
+    linker()
+  }
+
+  override def apply(name: SimpleNameExpression) {
+    val linker = new FieldNameLinker(None, name)
+    linker()
   }
 }
 
