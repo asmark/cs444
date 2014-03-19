@@ -25,7 +25,7 @@ class MarmosetA3Spec extends FlatSpec with Matchers {
   behavior of "Type checking of invalid joos"
   getInvalidTestCases(assignmentNumber).foreach {
     testCase => it should s"reject ${testCase.getName}" taggedAs IntegrationTest in {
-//      if (testCase.getName.contains("Je_5_AmbiguousName")) {
+//      if (testCase.getName.contains("Je_5_ForwardReference_ArrayLength")) {
       val files = getJavaFiles(testCase) ++ standardLibrary
       Logger.logInformation(
         intercept[CompilationException] {

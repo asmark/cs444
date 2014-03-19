@@ -1,17 +1,15 @@
 package joos.ast.types
 
+import joos.ast.declarations.TypeDeclaration
 import joos.ast.expressions.NameExpression
 import joos.ast.types.PrimitiveType._
-import joos.ast.{AstConstructionException, AstNode}
+import joos.ast.{DeclarationReference, AstConstructionException, AstNode}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
-import joos.ast.declarations.TypeDeclaration
 
-trait Type extends AstNode {
+trait Type extends AstNode with DeclarationReference[TypeDeclaration] {
 
   def standardName: String
-
-  var declaration: Option[TypeDeclaration]
 
   override def toString = standardName
 

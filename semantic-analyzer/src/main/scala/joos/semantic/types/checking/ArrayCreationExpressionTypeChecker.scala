@@ -11,12 +11,12 @@ trait ArrayCreationExpressionTypeChecker extends AstVisitor {
   override def apply(expression: ArrayCreationExpression) {
     expression.size.accept(this)
 
-    require(expression.size.declarationType != null)
+    require(expression.size.expressionType != null)
 
-    if (!expression.size.declarationType.isNumeric) {
-      throw new ArrayCreationException(s"Invalid size for array creation: ${expression.size.declarationType.standardName}")
+    if (!expression.size.expressionType.isNumeric) {
+      throw new ArrayCreationException(s"Invalid size for array creation: ${expression.size.expressionType.standardName}")
     }
 
-    expression.declarationType = ArrayType(expression.arrayType)
+    expression.expressionType = ArrayType(expression.arrayType)
   }
 }

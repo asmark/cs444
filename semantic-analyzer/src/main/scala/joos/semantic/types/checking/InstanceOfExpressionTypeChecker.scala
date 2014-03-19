@@ -11,26 +11,26 @@ trait InstanceOfExpressionTypeChecker extends AstVisitor {
 
   override def apply(instanceOf: InstanceOfExpression) {
     instanceOf.expression.accept(this)
-    require(instanceOf.expression.declarationType != null)
+    require(instanceOf.expression.expressionType != null)
 
-    if (!instanceOf.classType.isReferenceType || !instanceOf.expression.declarationType.isReferenceType) {
+    if (!instanceOf.classType.isReferenceType || !instanceOf.expression.expressionType.isReferenceType) {
       throw new TypeCheckingException(
         "instanceof",
         s"Both operands need to be reference types instead of ${instanceOf.classType.standardName} ${
           instanceOf
               .expression
-              .declarationType
+              .expressionType
               .standardName
         }")
     }
 
-    if (isAssignable(instanceOf.classType, instanceOf.expression.declarationType)
-        || isAssignable(instanceOf.expression.declarationType, instanceOf.classType)) {
-      instanceOf.declarationType = BooleanType
+    if (isAssignable(instanceOf.classType, instanceOf.expression.expressionType)
+        || isAssignable(instanceOf.expression.expressionType, instanceOf.classType)) {
+      instanceOf.expressionType = BooleanType
     } else {
       throw new TypeCheckingException(
         "instanceof",
-        s"${instanceOf.classType.standardName} are not related types ${instanceOf.expression.declarationType.standardName}")
+        s"${instanceOf.classType.standardName} are not related types ${instanceOf.expression.expressionType.standardName}")
     }
   }
 }

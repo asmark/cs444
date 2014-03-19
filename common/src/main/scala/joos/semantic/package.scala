@@ -117,14 +117,14 @@ package object semantic {
           case _ => false
         }
       }
-      case (dst: SimpleType, ArrayType(_, _) |  SimpleType(_) | NullType) if dst.declaration.get.fullName == javaLangObject.standardName => true
-      case (dst: SimpleType, ArrayType(_, _)) if dst.declaration.get.fullName == javaLangCloneable.standardName => true
-      case (dst: SimpleType, ArrayType(_, _)) if dst.declaration.get.fullName == javaIOSerializable.standardName => true
+      case (dst: SimpleType, ArrayType(_, _) |  SimpleType(_) | NullType) if dst.declaration.fullName == javaLangObject.standardName => true
+      case (dst: SimpleType, ArrayType(_, _)) if dst.declaration.fullName == javaLangCloneable.standardName => true
+      case (dst: SimpleType, ArrayType(_, _)) if dst.declaration.fullName == javaIOSerializable.standardName => true
       case (dstSimpleType: SimpleType, srcType) => {
         srcType match {
           case srcType: SimpleType => {
             unit.getVisibleType(dstSimpleType.name) match {
-              case Some(typeDeclaration) => srcType.declaration.get.allAncestors.contains(typeDeclaration)
+              case Some(typeDeclaration) => srcType.declaration.allAncestors.contains(typeDeclaration)
               case None => false
             }
           }

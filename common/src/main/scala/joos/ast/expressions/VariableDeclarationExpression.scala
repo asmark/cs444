@@ -5,7 +5,6 @@ import joos.ast.Modifier
 import joos.ast.compositions.{BlockLike, TypedDeclarationLike}
 import joos.ast.declarations.VariableDeclarationFragment
 import joos.ast.types.Type
-import joos.semantic.BlockEnvironment
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 

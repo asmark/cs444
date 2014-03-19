@@ -123,7 +123,7 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
           }
         }
     }
-    name.declarationType = declarationType
+    name.expressionType = declarationType
   }
 
   override def apply(name: QualifiedNameExpression) {

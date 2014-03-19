@@ -11,14 +11,14 @@ trait AssignmentExpressionTypeChecker extends AstVisitor {
     assignmentExpression.left.accept(this)
     assignmentExpression.right.accept(this)
 
-    require(assignmentExpression.left.declarationType != null)
-    require(assignmentExpression.right.declarationType != null)
+    require(assignmentExpression.left.expressionType != null)
+    require(assignmentExpression.right.expressionType != null)
 
-    val leftType = assignmentExpression.left.declarationType
-    val rightType = assignmentExpression.right.declarationType
+    val leftType = assignmentExpression.left.expressionType
+    val rightType = assignmentExpression.right.expressionType
     // TODO: Double check if the following are complete (probably not)
     if (isAssignable(leftType, rightType)) {
-      assignmentExpression.declarationType = leftType
+      assignmentExpression.expressionType = leftType
     } else {
       throw new AssignmentExpressionException(s"${rightType.standardName} to ${leftType.standardName}")
     }

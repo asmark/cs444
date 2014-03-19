@@ -10,3 +10,5 @@ class ForwardFieldUseException(name: NameExpression) extends DisambiguationExcep
 class AmbiguousNameException(name: NameExpression) extends DisambiguationException(s"${name.standardName} could not be classified")
 
 class InvalidStaticUseException(name: NameExpression) extends DisambiguationException(s"Attempted to reference static ${name.standardName} non-statically")
+
+class MemberNotFoundException(name: NameExpression) extends DisambiguationException(s"${name} does not exist")

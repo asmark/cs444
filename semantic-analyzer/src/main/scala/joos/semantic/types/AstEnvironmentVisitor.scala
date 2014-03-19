@@ -108,6 +108,7 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
             checkVisibility(field, visibility)
             checkSimpleAccess(field)
             visibility = Local
+
             declarationType = field.variableType
           }
           case None => {
@@ -159,7 +160,7 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
           case None => throw new AmbiguousNameException(name)
         }
     }
-    name.declarationType = declarationType
+    name.expressionType = declarationType
     visibility
   }
 }

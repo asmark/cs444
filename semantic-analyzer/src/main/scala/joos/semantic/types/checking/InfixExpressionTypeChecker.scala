@@ -14,13 +14,13 @@ trait InfixExpressionTypeChecker extends AstVisitor {
   override def apply(expression: InfixExpression) {
     expression.left.accept(this)
     expression.right.accept(this)
-    require(expression.left.declarationType != null && expression.right.declarationType != null)
-    val leftType = expression.left.declarationType
-    val rightType = expression.right.declarationType
+    require(expression.left.expressionType != null && expression.right.expressionType != null)
+    val leftType = expression.left.expressionType
+    val rightType = expression.right.expressionType
     val types = (leftType, rightType)
 
 
-    expression.declarationType = expression.operator match {
+    expression.expressionType = expression.operator match {
       case Plus =>
         // String concatenation if one of the types is 'String' and the other is not 'void'
         types match {

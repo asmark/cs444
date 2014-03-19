@@ -32,9 +32,9 @@ class TypeLinker(implicit module: ModuleDeclaration, unit: CompilationUnit) exte
 
   def resolveType(typed: Type) {
     typed match {
-      case _: PrimitiveType => typed.declaration = None
-      case ArrayType(typed, dimensions) => typed.declaration = None; resolveType(typed)
-      case SimpleType(name) => typed.declaration = Some(resolveType(name))
+      case _: PrimitiveType =>
+      case ArrayType(typed, dimensions) => resolveType(typed)
+      case SimpleType(name) => typed.declaration = resolveType(name)
     }
   }
 
@@ -108,6 +108,6 @@ class TypeLinker(implicit module: ModuleDeclaration, unit: CompilationUnit) exte
   }
 
   override def apply(literal: StringLiteral) {
-    resolveType(literal.declarationType)
+    resolveType(literal.expressionType)
   }
 }

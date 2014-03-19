@@ -36,8 +36,8 @@ class TypeChecker(implicit val unit: CompilationUnit)
 
     fieldDeclaration.fragment.initializer foreach {
       initializer =>
-        if (!isAssignable(fieldDeclaration.variableType, initializer.declarationType))
-          throw new FieldDeclarationTypeException(s"${initializer.declarationType} can not be assigned to ${fieldDeclaration.variableType}")
+        if (!isAssignable(fieldDeclaration.variableType, initializer.expressionType))
+          throw new FieldDeclarationTypeException(s"${initializer.expressionType} can not be assigned to ${fieldDeclaration.variableType}")
     }
   }
 
@@ -76,18 +76,18 @@ class TypeChecker(implicit val unit: CompilationUnit)
   override def apply(statement: IfStatement) {
     super.apply(statement)
 
-    require(statement.condition.declarationType != null)
-    if (statement.condition.declarationType != PrimitiveType.BooleanType) {
-      throw new TypeCheckingException("IfStatement", s"Conditional statement was ${statement.condition.declarationType}. Expected Boolean")
+    require(statement.condition.expressionType != null)
+    if (statement.condition.expressionType != PrimitiveType.BooleanType) {
+      throw new TypeCheckingException("IfStatement", s"Conditional statement was ${statement.condition.expressionType}. Expected Boolean")
     }
   }
 
   override def apply(statement: WhileStatement) {
     super.apply(statement)
 
-    require(statement.condition.declarationType != null)
-    if (statement.condition.declarationType != PrimitiveType.BooleanType) {
-      throw new TypeCheckingException("WhileStatement", s"Conditional statement was ${statement.condition.declarationType}. Expected Boolean")
+    require(statement.condition.expressionType != null)
+    if (statement.condition.expressionType != PrimitiveType.BooleanType) {
+      throw new TypeCheckingException("WhileStatement", s"Conditional statement was ${statement.condition.expressionType}. Expected Boolean")
     }
   }
 
@@ -97,10 +97,10 @@ class TypeChecker(implicit val unit: CompilationUnit)
     forStatement.condition match {
       case None =>
       case Some(condition) =>
-        require(condition.declarationType != null)
+        require(condition.expressionType != null)
 
-        if (condition.declarationType != BooleanType)
-          throw new TypeCheckingException("for", s"condition needs to be boolean instead of ${condition.declarationType.standardName}")
+        if (condition.expressionType != BooleanType)
+          throw new TypeCheckingException("for", s"condition needs to be boolean instead of ${condition.expressionType.standardName}")
     }
   }
 
@@ -115,10 +115,10 @@ class TypeChecker(implicit val unit: CompilationUnit)
       val expectedReturnType = checkMethodReturns.get
       statement.expression match {
         case Some(expression) =>
-          if (expectedReturnType == PrimitiveType.VoidType || !isAssignable(expectedReturnType, expression.declarationType)) {
+          if (expectedReturnType == PrimitiveType.VoidType || !isAssignable(expectedReturnType, expression.expressionType)) {
             throw new TypeCheckingException(
               "ReturnStatement",
-              s"Return statement attempted to return ${expression.declarationType}. Expected ${expectedReturnType}")
+              s"Return statement attempted to return ${expression.expressionType}. Expected ${expectedReturnType}")
           }
         case None => {
           if (expectedReturnType != PrimitiveType.VoidType) {

@@ -41,7 +41,7 @@ case class TypeDeclaration(
 
   lazy val asType = {
     val simple = SimpleType(NameExpression(fullName))
-    simple.declaration = Some(this)
+    simple.declaration = this
     simple
   }
 

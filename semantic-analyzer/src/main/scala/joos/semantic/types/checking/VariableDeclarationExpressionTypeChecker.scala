@@ -31,15 +31,15 @@ trait VariableDeclarationExpressionTypeChecker extends AstEnvironmentVisitor {
       case None =>
       case Some(initializer) =>
         initializer.accept(this)
-        require(initializer.declarationType != null)
+        require(initializer.expressionType != null)
 
-        if (!isAssignable(variable.variableType, initializer.declarationType))
+        if (!isAssignable(variable.variableType, initializer.expressionType))
           throw new TypeCheckingException(
             "variable declaration",
-            s"Cannot assign ${initializer.declarationType.standardName} to ${variable.declarationName}")
+            s"Cannot assign ${initializer.expressionType.standardName} to ${variable.declarationName}")
     }
 
-    variable.declarationType = variable.variableType
+    variable.expressionType = variable.variableType
 
     this.variable = null
   }

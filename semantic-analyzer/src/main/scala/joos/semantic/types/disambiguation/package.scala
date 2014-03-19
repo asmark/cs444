@@ -27,7 +27,7 @@ package object disambiguation {
   private[this] def isMatch(method: MethodDeclaration, parameters: IndexedSeq[Expression]): Boolean = {
     if (method.parameters.length != parameters.length) return false
     for (i <- 0 until parameters.length) {
-      if (method.parameters(i).variableType != parameters(i).declarationType) return false
+      if (method.parameters(i).variableType != parameters(i).expressionType) return false
     }
     true
   }
@@ -72,8 +72,8 @@ package object disambiguation {
     checkSimpleAccess(field)
     if ((field.modifiers contains Modifier.Protected) && (!(field.modifiers contains Modifier.Static))) {
       val selfType = unit.typeDeclaration.get
-      if (!(prefixType.declaration.get equals selfType)) {
-        if (!(prefixType.declaration.get.allAncestors contains selfType)) {
+      if (!(prefixType.declaration equals selfType)) {
+        if (!(prefixType.declaration.allAncestors contains selfType)) {
           throw new IllegalProtectedAccessException(field.declarationName)
         }
       }
@@ -95,8 +95,8 @@ package object disambiguation {
     checkSimpleAccess(method)
     if ((method.modifiers contains Modifier.Protected) && (!(method.modifiers contains Modifier.Static))) {
       val selfType = unit.typeDeclaration.get
-      if (!(prefixType.declaration.get equals selfType)) {
-        if (!(prefixType.declaration.get.allAncestors contains selfType)) {
+      if (!(prefixType.declaration equals selfType)) {
+        if (!(prefixType.declaration.allAncestors contains selfType)) {
           throw new IllegalProtectedAccessException(method.declarationName)
         }
       }
@@ -108,7 +108,7 @@ package object disambiguation {
     t match {
       case _: PrimitiveType | ArrayType(_, _) => None
       case s: SimpleType => {
-        val caller = s.declaration.get
+        val caller = s.declaration
         findMethod(methodName, parameters, caller.containedMethods) match {
           case None => None
           case Some(methodDeclaration) => {
@@ -125,7 +125,7 @@ package object disambiguation {
     t match {
       case _: PrimitiveType | ArrayType(_, _) => None
       case s: SimpleType => {
-        val caller = s.declaration.get
+        val caller = s.declaration
         findMethod(methodName, parameters, caller.containedMethods) match {
           case None => None
           case Some(methodDeclaration) => Some(methodDeclaration)
@@ -141,7 +141,7 @@ package object disambiguation {
         Some(PrimitiveType.IntegerType)
       } else None
       case s: SimpleType => {
-        val caller = s.declaration.get
+        val caller = s.declaration
         caller.containedFields.get(fieldName) match {
           case None => None
           case Some(fieldDeclaration) => {
@@ -163,7 +163,7 @@ package object disambiguation {
           PrimitiveType.IntegerType,
           VariableDeclarationFragment(SimpleNameExpression("length"), None)))
       case s: SimpleType => {
-        val caller = s.declaration.get
+        val caller = s.declaration
         caller.containedFields.get(fieldName) match {
           case None => None
           case Some(fieldDeclaration) => Some(fieldDeclaration)

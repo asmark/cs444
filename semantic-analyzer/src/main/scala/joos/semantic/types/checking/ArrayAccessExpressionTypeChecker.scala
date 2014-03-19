@@ -12,20 +12,20 @@ trait ArrayAccessExpressionTypeChecker extends AstVisitor {
     arrayAccessExpression.reference.accept(this)
     arrayAccessExpression.index.accept(this)
 
-    require(arrayAccessExpression.reference.declarationType != null)
-    arrayAccessExpression.reference.declarationType match {
+    require(arrayAccessExpression.reference.expressionType != null)
+    arrayAccessExpression.reference.expressionType match {
       case arrayType: ArrayType => {
         // TODO: the index type undergoes promotion
-        require(arrayAccessExpression.index.declarationType != null)
-        if (arrayAccessExpression.index.declarationType.isNumeric) {
-          arrayAccessExpression.declarationType = arrayType.elementType
+        require(arrayAccessExpression.index.expressionType != null)
+        if (arrayAccessExpression.index.expressionType.isNumeric) {
+          arrayAccessExpression.expressionType = arrayType.elementType
         } else {
           throw new ArrayAccessException(
-            s"invalid index type ${arrayAccessExpression.index.declarationType.standardName} in ${arrayType.elementType}[]"
+            s"invalid index type ${arrayAccessExpression.index.expressionType.standardName} in ${arrayType.elementType}[]"
           )
         }
       }
-      case _ => throw new ArrayAccessException(s"invalid reference type ${arrayAccessExpression.reference.declarationType.standardName}")
+      case _ => throw new ArrayAccessException(s"invalid reference type ${arrayAccessExpression.reference.expressionType.standardName}")
     }
   }
 }

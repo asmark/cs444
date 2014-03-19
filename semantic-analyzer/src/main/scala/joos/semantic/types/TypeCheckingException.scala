@@ -42,10 +42,10 @@ class FieldDeclarationTypeException(msg: String) extends TypeCheckingException(m
 class InfixExpressionException(expression: InfixExpression)
     extends TypeCheckingException(
       "Cannot type check "
-      + expression.left.declarationType.standardName
+      + expression.left.expressionType.standardName
       + ' '
       + expression.operator.name
       + ' '
-      + expression.right.declarationType.standardName)
+      + expression.right.expressionType.standardName)
 
 class IllegalProtectedAccessException(name: NameExpression) extends TypeCheckingException(s"Attempted to access non-visible ${name}")

@@ -9,7 +9,7 @@ trait VariableDeclarationFragmentTypeChecker extends AstVisitor {
     variableDeclarationFragment.initializer match {
       case Some(initializer) => {
         initializer.accept(this)
-        require(variableDeclarationFragment.initializer.get.declarationType != null)
+        require(variableDeclarationFragment.initializer.get.expressionType != null)
       }
       case _ =>
     }

@@ -5,6 +5,7 @@ import joos.ast.expressions._
 import joos.ast.visitor.AbstractSyntaxTreeVisitorBuilder
 import joos.ast.{AbstractSyntaxTreeVisitorWithEnvironment, CompilationUnit}
 import joos.semantic.BlockEnvironment
+import joos.semantic.types.TypeCheckingException
 
 /**
  * - Classifies all names
@@ -13,7 +14,7 @@ import joos.semantic.BlockEnvironment
 class NameClassifier(implicit val unit: CompilationUnit)
     extends AbstractSyntaxTreeVisitorWithEnvironment {
 
-  private[this] class NameExpressionClassifier(block: BlockEnvironment) {
+  private[this] class Classifier(block: BlockEnvironment) {
     def apply(name: NameExpression) {
       name match {
         case name: SimpleNameExpression => this(name)
@@ -25,23 +26,21 @@ class NameClassifier(implicit val unit: CompilationUnit)
       this(name.qualifier)
       name.qualifier.nameClassification match {
         case TypeName =>
-//          name.name.nameClassification = StaticFieldName
           name.nameClassification = StaticFieldName
         case StaticFieldName | InstanceFieldName | LocalVariableName =>
-//          name.name.nameClassification = InstanceFieldName
           name.nameClassification = InstanceFieldName
         case PackageName =>
           unit.getVisibleType(name) match {
             case Some(tipe) =>
-//              name.name.nameClassification = TypeName
               name.nameClassification = TypeName
               name.declaration = tipe
+              name.expressionType = tipe.asType
             case None =>
-//              name.name.nameClassification = PackageName
               name.nameClassification = PackageName
           }
         case _ => throw new AmbiguousNameException(name)
       }
+
     }
 
     private[this] def apply(name: SimpleNameExpression) {
@@ -59,8 +58,22 @@ class NameClassifier(implicit val unit: CompilationUnit)
         case Some(tipe) =>
           name.nameClassification = TypeName
           name.declaration = tipe
+          name.expressionType = tipe.asType
         case None => name.nameClassification = PackageName
       }
+    }
+  }
+
+  override def apply(parenthesis: ParenthesizedExpression) {
+    super.apply(parenthesis)
+
+    parenthesis.expression match {
+      case name: NameExpression =>
+        name.nameClassification match {
+          case TypeName | PackageName => throw new TypeCheckingException("()", s"${name} cannot be a type or package inside ()")
+          case _ =>
+        }
+      case _ =>
     }
   }
 
@@ -73,19 +86,25 @@ class NameClassifier(implicit val unit: CompilationUnit)
     invocation.methodName match {
       case name: SimpleNameExpression => name.nameClassification = InstanceMethodName
       case name: QualifiedNameExpression =>
-        new NameExpressionClassifier(block)(name.qualifier)
+        new Classifier(block)(name.qualifier)
         name.qualifier.nameClassification match {
           case TypeName =>
-//            name.name.nameClassification = StaticMethodName
             name.nameClassification = StaticMethodName
           case InstanceFieldName | StaticFieldName | LocalVariableName =>
-//            name.name.nameClassification = InstanceMethodName
             name.nameClassification = InstanceMethodName
           case _ => throw new AmbiguousNameException(name)
         }
     }
 
     super.apply(invocation)
+  }
+
+  override def apply(name: QualifiedNameExpression) {
+    new Classifier(block)(name)
+  }
+
+  override def apply(name: SimpleNameExpression) {
+    new Classifier(block)(name)
   }
 }
 

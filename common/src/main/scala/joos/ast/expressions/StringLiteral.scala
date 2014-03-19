@@ -8,7 +8,7 @@ import joos.syntax.tokens.{TokenKind, TerminalToken}
 case class StringLiteral(token: TerminalToken) extends LiteralExpression {
   override def toString = s""""${token.lexeme}""""
 
-  declarationType = StringType
+  expressionType = StringType
 
 }
 

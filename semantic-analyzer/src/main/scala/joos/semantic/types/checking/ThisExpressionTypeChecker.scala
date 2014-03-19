@@ -11,6 +11,6 @@ trait ThisExpressionTypeChecker extends AstVisitor {
     if (checkExplicitThis)
       throw new ExplicitThisInStaticException("Found an explicit this call in a static method or field")
 
-    thisExpression.declarationType = unit.typeDeclaration.get.asType
+    thisExpression.expressionType = unit.typeDeclaration.get.asType
   }
 }
