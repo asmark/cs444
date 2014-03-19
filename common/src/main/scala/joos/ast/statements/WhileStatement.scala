@@ -7,7 +7,6 @@ import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 import joos.semantic.BlockEnvironment
 
 case class WhileStatement(condition: Expression, body: Statement) extends Statement {
-  override var environment: BlockEnvironment = null
 
   override def toString = {
     s"while (${condition}) {\n${body}\n}\n"

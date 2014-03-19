@@ -11,7 +11,6 @@ case class ForStatement(
   condition: Option[Expression],
   update: Option[Expression],
   body: Statement) extends Statement {
-  override var environment: BlockEnvironment = null
 
   override def toString = {
     val header = (List(initialization, condition, update) map {

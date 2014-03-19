@@ -6,8 +6,6 @@ import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 import joos.semantic.BlockEnvironment
 
 case class Block(statements: Seq[Statement]) extends Statement {
-  override var environment: BlockEnvironment = null
-
   override def toString = s"{\n${statements.mkString(";\n")}}\n"
 }
 

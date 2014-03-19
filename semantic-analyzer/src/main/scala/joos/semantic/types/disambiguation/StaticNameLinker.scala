@@ -1,6 +1,6 @@
 package joos.semantic.types.disambiguation
 
-import joos.ast.compositions.NameLike
+import joos.ast.NameClassification._
 import joos.ast.declarations.{MethodDeclaration, FieldDeclaration}
 import joos.ast.expressions._
 import joos.ast.types.Type
@@ -30,8 +30,9 @@ class ForwardUseChecker(fieldScope: Map[SimpleNameExpression, Type]) extends Ast
   }
 
   override def apply(fieldAccess: QualifiedNameExpression) {
-    if (fieldAccess.qualifier.classification == NameLike.ExpressionName) {
-      fieldAccess.qualifier.accept(this)
+    fieldAccess.qualifier.nameClassification match {
+      case StaticFieldName | InstanceFieldName => fieldAccess.qualifier.accept(this)
+      case _ =>
     }
   }
 

@@ -24,6 +24,7 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
       case Some(methodDeclaration) => {
         checkVisibility(methodDeclaration, visibility)
         checkQualifiedAccess(methodDeclaration, fieldPrefix.declarationType)
+        methodAccess.declaration = methodDeclaration
         methodAccess.declarationType = methodDeclaration.returnType.get
       }
       case None => throw new AmbiguousNameException(methodAccess)
@@ -43,6 +44,7 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
           case Some(method) => {
             checkVisibility(method, Local)
             checkSimpleAccess(method)
+            methodName.declaration = method
             methodName.declarationType = method.returnType.get
           }
         }
@@ -61,6 +63,7 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
           case Some(method) => {
             checkVisibility(method, Local)
             checkQualifiedAccess(method, left)
+            methodName.declaration = method
             methodName.declarationType = method.returnType.get
           }
         }
@@ -82,6 +85,7 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
               case Some(method) => {
                 checkVisibility(method, Local)
                 checkQualifiedAccess(method, leftType)
+                methodName.declaration = method
                 methodName.declarationType = method.returnType.get
               }
             }

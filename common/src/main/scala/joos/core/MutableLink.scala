@@ -10,7 +10,7 @@ class MutableLink[T] {
   /**
    * Returns the target
    */
-  def apply(): Option[T] = target
+  def apply(): T = target.get
 
   /**
    * Links to the given {{target}}

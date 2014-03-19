@@ -1,11 +1,19 @@
 package joos.ast.expressions
 
-import joos.ast.AstConstructionException
-import joos.ast.compositions.NameLike
+import joos.ast._
+import joos.ast.compositions.{DeclarationLike, NameLike}
 import joos.syntax.language.ProductionRule
-import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
+import joos.syntax.parsetree.ParseTreeNode
+import joos.syntax.parsetree.TreeNode
+import joos.ast.NameClassification._
 
-trait NameExpression extends Expression with NameLike
+trait NameExpression
+    extends Expression
+    with NameLike
+    with DeclarationReference[DeclarationLike] {
+
+  var nameClassification: NameClassification = Ambiguous
+}
 
 object NameExpression {
   def apply(ptn: ParseTreeNode): NameExpression = {

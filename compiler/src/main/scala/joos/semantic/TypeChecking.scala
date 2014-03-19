@@ -3,14 +3,12 @@ package joos.semantic
 import joos.ast.AbstractSyntaxTree
 import joos.ast.declarations.ModuleDeclaration
 import joos.semantic.types.checking.TypeChecker
-import joos.semantic.types.disambiguation.{DeclarationReferenceLinker, StaticNameLinker, NameDisambiguator, NameClassifier}
+import joos.semantic.types.disambiguation.{NameLinker, StaticNameLinker, NameDisambiguator, NameClassifier}
 
 object TypeChecking {
 
   private[this] final val analyzerBuilders = List(
-    DeclarationReferenceLinker,
     NameClassifier,
-    NameDisambiguator,
     StaticNameLinker,
     TypeChecker
   )

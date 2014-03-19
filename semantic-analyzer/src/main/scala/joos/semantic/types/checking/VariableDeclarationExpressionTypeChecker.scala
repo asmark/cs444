@@ -25,7 +25,7 @@ trait VariableDeclarationExpressionTypeChecker extends AstEnvironmentVisitor {
 
   override def apply(variable: VariableDeclarationExpression) {
     this.variable = variable
-    this.blockEnvironment = variable.environment
+    this.blockEnvironment = variable.blockEnvironment
 
     variable.fragment.initializer match {
       case None =>

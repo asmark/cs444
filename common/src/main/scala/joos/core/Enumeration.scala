@@ -30,7 +30,7 @@ trait Enumeration {
 
   protected def +(value: T): T = {
     _values += value
-    nameMap.put(value.name, value)
+    assert(nameMap.put(value.name, value).isEmpty)
     value
   }
 

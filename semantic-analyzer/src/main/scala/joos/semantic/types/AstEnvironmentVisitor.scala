@@ -24,39 +24,39 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
 
   override def apply(methodDeclaration: MethodDeclaration) {
     val oldBlock = blockEnvironment
-    blockEnvironment = methodDeclaration.environment
+    blockEnvironment = methodDeclaration.blockEnvironment
     super.apply(methodDeclaration)
     blockEnvironment = oldBlock
   }
 
   override def apply(block: Block) {
     val oldBlock = blockEnvironment
-    blockEnvironment = block.environment
+    blockEnvironment = block.blockEnvironment
     block.statements foreach (_.accept(this))
     blockEnvironment = oldBlock
   }
 
   override def apply(statement: IfStatement) {
     val oldBlock = blockEnvironment
-    blockEnvironment = statement.environment
+    blockEnvironment = statement.blockEnvironment
     statement.condition.accept(this)
-    blockEnvironment = statement.environment
+    blockEnvironment = statement.blockEnvironment
     statement.trueStatement.accept(this)
-    blockEnvironment = statement.environment
+    blockEnvironment = statement.blockEnvironment
     statement.falseStatement.map(_.accept(this))
     blockEnvironment = oldBlock
   }
 
   override def apply(statement: ExpressionStatement) {
     val oldBlock = blockEnvironment
-    blockEnvironment = statement.environment
+    blockEnvironment = statement.blockEnvironment
     statement.expression.accept(this)
     blockEnvironment = oldBlock
   }
 
   override def apply(statement: WhileStatement) {
     val oldBlock = blockEnvironment
-    blockEnvironment = statement.environment
+    blockEnvironment = statement.blockEnvironment
     statement.condition.accept(this)
     statement.body.accept(this)
     blockEnvironment = oldBlock
@@ -64,7 +64,7 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
 
   override def apply(statement: ForStatement) {
     val oldBlock = blockEnvironment
-    blockEnvironment = statement.environment
+    blockEnvironment = statement.blockEnvironment
     statement.initialization.map(_.accept(this))
     statement.condition.map(_.accept(this))
     statement.update.map(_.accept(this))
@@ -74,13 +74,13 @@ class AstEnvironmentVisitor(implicit unit: CompilationUnit) extends AstCompleteV
 
   override def apply(statement: ReturnStatement) {
     val oldBlock = blockEnvironment
-    blockEnvironment = statement.environment
+    blockEnvironment = statement.blockEnvironment
     statement.expression.map(_.accept(this))
     blockEnvironment = oldBlock
   }
 
   override def apply(expression: VariableDeclarationExpression) {
-    blockEnvironment = expression.environment
+    blockEnvironment = expression.blockEnvironment
     expression.fragment.accept(this)
   }
 

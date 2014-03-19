@@ -49,7 +49,7 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
   }
 
   override def apply(method: MethodDeclaration) {
-    method.environment = method.parameters.foldRight(BlockEnvironment()) {
+    method.blockEnvironment = method.parameters.foldRight(BlockEnvironment()) {
       (variable, environment) =>
         environment.add(variable) match {
           case Some(blockEnvironment) => blockEnvironment
@@ -58,20 +58,20 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
     }
     method.compilationUnit = unit
     method.typeDeclaration = typed
-    block = method.environment
+    block = method.blockEnvironment
 
     method.body.map(_.accept(this))
   }
 
   override def apply(block: Block) {
 //    val oldEnvironment = this.block
-    block.environment = this.block
+    block.blockEnvironment = this.block
     block.statements.foreach(_.accept(this))
-    this.block = block.environment
+    this.block = block.blockEnvironment
   }
 
   override def apply(statement: IfStatement) {
-    statement.environment = this.block
+    statement.blockEnvironment = this.block
     statement.condition.accept(this)
     val oldBlock = block
     statement.trueStatement.accept(this)
@@ -81,12 +81,12 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
   }
 
   override def apply(statement: ExpressionStatement) {
-    statement.environment = this.block
+    statement.blockEnvironment = this.block
     statement.expression.accept(this)
   }
 
   override def apply(statement: WhileStatement) {
-    statement.environment = this.block
+    statement.blockEnvironment = this.block
     val oldBlock = block
     statement.condition.accept(this)
     statement.body.accept(this)
@@ -99,11 +99,11 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
       case Some(blockEnvironment) => blockEnvironment
       case None => throw new DuplicatedVariableException(expression.declarationName)
     }
-    expression.environment = block
+    expression.blockEnvironment = block
   }
 
   override def apply(statement: ForStatement) {
-    statement.environment = this.block
+    statement.blockEnvironment = this.block
     val oldBlock = block
     statement.initialization.map(_.accept(this))
     statement.condition.map(_.accept(this))
@@ -113,7 +113,7 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
   }
 
   override def apply(statement: ReturnStatement) {
-    statement.environment = this.block
+    statement.blockEnvironment = this.block
     val oldBlock = block
     statement.expression.map(_.accept(this))
     block = oldBlock
