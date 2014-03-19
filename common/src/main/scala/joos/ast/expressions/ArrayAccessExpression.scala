@@ -4,7 +4,8 @@ import joos.ast.AstConstructionException
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
-case class ArrayAccessExpression(reference: Expression, index: Expression) extends Expression {
+case class ArrayAccessExpression(reference: Expression, index: Expression)
+    extends Expression {
   override def toString = s"${reference}[${index}]"
 }
 

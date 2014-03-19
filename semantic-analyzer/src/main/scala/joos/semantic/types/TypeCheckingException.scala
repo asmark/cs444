@@ -1,7 +1,7 @@
 package joos.semantic.types
 
+import joos.ast.expressions.{Expression, NameExpression, InfixExpression}
 import joos.semantic.SemanticException
-import joos.ast.expressions.{NameExpression, InfixExpression}
 
 class TypeCheckingException(msg: String) extends SemanticException(msg) {
   def this(source: String, errorMessage: String) = this(s"${source}: ${errorMessage}")
@@ -25,7 +25,9 @@ class InstanceOfExpressionException(msg: String) extends TypeCheckingException(m
 
 class VariableDeclarationExpressionException(msg: String) extends TypeCheckingException(msg)
 
-class AssignmentExpressionException(msg: String) extends TypeCheckingException(msg)
+class AssignmentExpressionException(msg: String) extends TypeCheckingException(msg) {
+  def this(left: Expression, right: Expression) = this(s"Cannot assign ${right} to ${left}")
+}
 
 class FieldAccessExpressionException(msg: String) extends TypeCheckingException(msg)
 
@@ -42,10 +44,10 @@ class FieldDeclarationTypeException(msg: String) extends TypeCheckingException(m
 class InfixExpressionException(expression: InfixExpression)
     extends TypeCheckingException(
       "Cannot type check "
-      + expression.left.expressionType.standardName
-      + ' '
-      + expression.operator.name
-      + ' '
-      + expression.right.expressionType.standardName)
+          + expression.left.expressionType.standardName
+          + ' '
+          + expression.operator.name
+          + ' '
+          + expression.right.expressionType.standardName)
 
 class IllegalProtectedAccessException(name: NameExpression) extends TypeCheckingException(s"Attempted to access non-visible ${name}")

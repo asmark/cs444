@@ -19,11 +19,11 @@ trait FieldAccessExpressionTypeChecker extends AstVisitor {
     * If the identifier does not name an accessible member field of type T,
     * then the field access is undefined and a compile-time error occurs.
     */
-    fieldAccessExpression.expressionType = prefixType match {
+    val field = prefixType match {
       case _: PrimitiveType =>
         throw new FieldAccessExpressionException(s"field ${fieldName} does not exist in ${prefixType.standardName}")
       case _: ArrayType =>
-        if (fieldName.standardName == "length") PrimitiveType.IntegerType
+        if (fieldName.standardName == "length") ArrayType.Length
         else throw new FieldAccessExpressionException(s"field ${fieldName} does not exist in ${prefixType.standardName}")
       case prefixType: SimpleType => {
         prefixType.declaration.containedFields.get(fieldName) match {
@@ -37,11 +37,13 @@ trait FieldAccessExpressionTypeChecker extends AstVisitor {
                 throw new IllegalProtectedAccessException(declaration.declarationName)
               }
             }
-            fieldName.declaration = declaration
-            declaration.variableType
+            declaration
           }
         }
       }
     }
+
+    fieldAccessExpression.declaration = field
+    fieldAccessExpression.expressionType = field.variableType
   }
 }

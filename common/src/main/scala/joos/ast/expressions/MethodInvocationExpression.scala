@@ -1,13 +1,14 @@
 package joos.ast.expressions
 
-import joos.ast.AstConstructionException
+import joos.ast.declarations.MethodDeclaration
+import joos.ast.{DeclarationReference, AstConstructionException}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
 case class MethodInvocationExpression(
     expression: Option[Expression],
     methodName: NameExpression,
-    arguments: IndexedSeq[Expression]) extends Expression {
+    arguments: IndexedSeq[Expression]) extends Expression with DeclarationReference[MethodDeclaration] {
 
   override def toString = {
     val prefix = expression match {

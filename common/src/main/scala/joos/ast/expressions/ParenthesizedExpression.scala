@@ -1,10 +1,13 @@
 package joos.ast.expressions
 
-import joos.ast.AstConstructionException
+import joos.ast.compositions.DeclarationLike
+import joos.ast.{DeclarationReference, AstConstructionException}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
-case class ParenthesizedExpression(expression: Expression) extends Expression {
+case class ParenthesizedExpression(expression: Expression)
+    extends Expression
+    with DeclarationReference[DeclarationLike] {
   override def toString = s"(${expression})"
 }
 

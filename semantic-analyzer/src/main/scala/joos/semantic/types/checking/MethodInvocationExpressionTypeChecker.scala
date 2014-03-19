@@ -4,8 +4,7 @@ import joos.ast.declarations.MethodDeclaration
 import joos.ast.expressions._
 import joos.ast.types.Type
 import joos.ast.visitor.AstVisitor
-import joos.ast.{Modifier, CompilationUnit}
-import joos.semantic.types.IllegalProtectedAccessException
+import joos.ast.Modifier
 import joos.semantic.types.disambiguation.Visibility._
 import joos.semantic.types.disambiguation._
 
@@ -115,11 +114,12 @@ trait MethodInvocationExpressionTypeChecker extends AstVisitor {
 
     invocation.methodName match {
       case name: SimpleNameExpression =>
-      case name: QualifiedNameExpression => this(name.qualifier)
+      case name: QualifiedNameExpression =>
+        val linker = new FieldNameLinker(invocation.expression, name.qualifier)
+        linker()
     }
 
     invocation.expressionType = invocation.methodName.expressionType
+    invocation.declaration = invocation.methodName.declaration.asInstanceOf[MethodDeclaration]
   }
-
-
 }
