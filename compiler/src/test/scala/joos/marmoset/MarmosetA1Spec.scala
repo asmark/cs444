@@ -4,31 +4,33 @@ import joos.syntax.{JoosSyntaxException, SyntaxCheck}
 import joos.test.tags.IntegrationTest
 import org.scalatest.{Matchers, FlatSpec}
 import scala.io.Source
+import joos.semantic.{TypeChecking, NameResolution}
+import joos.core.Logger
+import joos.compiler.CompilationException
 
 class MarmosetA1Spec extends FlatSpec with Matchers {
 
-  final val validJoos = "/a1/marmoset/valid"
-  final val invalidJoos = "/a1/marmoset/invalid"
-
-  def getSource(dir: String) = Source.fromURL(getClass.getResource(dir))
+  val assignmentNumber = 1
+  val standardLibrary = getStandardLibrary(assignmentNumber).flatMap(getJavaFiles)
 
   behavior of "Parsing valid joos"
-  getSource(validJoos).getLines().foreach {
-    file =>
-      it should s"accept ${file}" taggedAs IntegrationTest in {
-        val filePath = getClass.getResource(validJoos + "/" + file).getPath
-        SyntaxCheck(filePath)
-      }
+  getValidTestCases(assignmentNumber).foreach {
+    testCase => it should s"accept ${testCase.getName}" taggedAs IntegrationTest in {
+      val files = getJavaFiles(testCase) ++ standardLibrary
+      val asts = files map SyntaxCheck.apply
+      NameResolution(asts)
+      TypeChecking(asts)
+    }
   }
 
   behavior of "Parsing invalid joos"
-  getSource(invalidJoos).getLines().foreach {
-    file =>
-      it should s"reject ${file}" taggedAs IntegrationTest in {
-        val filePath = getClass.getResource(invalidJoos + "/" + file).getPath
-        intercept[JoosSyntaxException] {
-          SyntaxCheck(filePath)
-        }
-      }
+  getInvalidTestCases(assignmentNumber).foreach {
+    testCase => it should s"reject ${testCase.getName}" taggedAs IntegrationTest in {
+      val files = getJavaFiles(testCase) ++ standardLibrary
+
+      Logger.logInformation(intercept[CompilationException] {
+        files map SyntaxCheck.apply
+      }.getMessage)
+    }
   }
 }

@@ -72,9 +72,11 @@ package object disambiguation {
     checkSimpleAccess(field)
     if ((field.modifiers contains Modifier.Protected) && (!(field.modifiers contains Modifier.Static))) {
       val selfType = unit.typeDeclaration.get
-      if (!(prefixType.declaration equals selfType)) {
-        if (!(prefixType.declaration.allAncestors contains selfType)) {
-          throw new IllegalProtectedAccessException(field.declarationName)
+      if (!(selfType.packageDeclaration.declarationName equals field.typeDeclaration.packageDeclaration.declarationName)) {
+        if (!(prefixType.declaration equals selfType)) {
+          if (!(prefixType.declaration.allAncestors contains selfType)) {
+            throw new IllegalProtectedAccessException(field.declarationName)
+          }
         }
       }
     }
@@ -95,9 +97,11 @@ package object disambiguation {
     checkSimpleAccess(method)
     if ((method.modifiers contains Modifier.Protected) && (!(method.modifiers contains Modifier.Static))) {
       val selfType = unit.typeDeclaration.get
-      if (!(prefixType.declaration equals selfType)) {
-        if (!(prefixType.declaration.allAncestors contains selfType)) {
-          throw new IllegalProtectedAccessException(method.declarationName)
+      if (!(selfType.packageDeclaration.declarationName equals method.typeDeclaration.packageDeclaration.declarationName)) {
+        if (!(prefixType.declaration equals selfType)) {
+          if (!(prefixType.declaration.allAncestors contains selfType)) {
+            throw new IllegalProtectedAccessException(method.declarationName)
+          }
         }
       }
     }
