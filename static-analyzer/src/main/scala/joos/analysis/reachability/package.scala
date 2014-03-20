@@ -1,6 +1,6 @@
 package joos.analysis
 
-import joos.ast.statements.{ReturnStatement, IfStatement, Block, Statement}
+import joos.ast.statements._
 import scala.language.implicitConversions
 
 package object reachability {
@@ -17,6 +17,8 @@ package object reachability {
       case statement: Block => new ReachableBlock(statement)
       case statement: IfStatement => new ReachableIf(statement)
       case statement: ReturnStatement => new ReachableReturn(statement)
+      case statement: WhileStatement => new ReachableWhile(statement)
+      case statement: ForStatement => new ReachableFor(statement)
       case _ => new ReachableStatement(statement)
     }
   }
