@@ -1,6 +1,6 @@
 package joos.marmoset
 
-import joos.semantic.{TypeChecking, NameResolution}
+import joos.semantic.{StaticAnalysis, TypeChecking, NameResolution}
 import joos.syntax.SyntaxCheck
 import joos.test.tags.IntegrationTest
 import org.scalatest.{Matchers, FlatSpec}
@@ -19,6 +19,7 @@ class MarmosetA2Spec extends FlatSpec with Matchers {
       val asts = files map SyntaxCheck.apply
       NameResolution(asts)
       TypeChecking(asts)
+      StaticAnalysis(asts)
     }
   }
 
