@@ -23,6 +23,7 @@ class integrationSpec extends FlatSpec with Matchers {
         TypeChecking(asts)
         StaticAnalysis(asts)
         CodeGeneration(asts)
+        Logger.logInformation(s"${testCase.getName} passed")
       }
   }
 
@@ -33,6 +34,7 @@ class integrationSpec extends FlatSpec with Matchers {
         val files = getJavaFiles(testCase) ++ standardLibrary
 
         Logger.logInformation(
+        s"${testCase.getName}: " +
           intercept[CompilationException] {
             val asts = files map SyntaxCheck.apply
             NameResolution(asts)
