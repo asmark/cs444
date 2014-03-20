@@ -14,7 +14,7 @@ object Logger {
     original.split("[\\r\\n]").foldLeft(Seq.empty[String]) {
       (lines : Seq[String], line: String) =>
           lines :+ s"${prefix} ${line}"
-    }.mkString("%%n")
+    }.mkString("\r\n")
   }
 
   def logError(text: String): this.type = {
