@@ -4,7 +4,7 @@ import joos.syntax.{JoosSyntaxException, SyntaxCheck}
 import joos.test.tags.IntegrationTest
 import org.scalatest.{Matchers, FlatSpec}
 import scala.io.Source
-import joos.semantic.{TypeChecking, NameResolution}
+import joos.semantic.{StaticAnalysis, TypeChecking, NameResolution}
 import joos.core.Logger
 import joos.compiler.CompilationException
 
@@ -20,6 +20,7 @@ class MarmosetA1Spec extends FlatSpec with Matchers {
       val asts = files map SyntaxCheck.apply
       NameResolution(asts)
       TypeChecking(asts)
+      StaticAnalysis(asts)
     }
   }
 
