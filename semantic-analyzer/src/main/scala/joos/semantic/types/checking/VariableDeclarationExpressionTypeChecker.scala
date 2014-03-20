@@ -1,22 +1,12 @@
 package joos.semantic.types.checking
 
-import joos.ast.expressions.{QualifiedNameExpression, SimpleNameExpression, VariableDeclarationExpression}
+import joos.analysis.LocalVariableInitializerChecker
+import joos.ast.expressions.{QualifiedNameExpression, VariableDeclarationExpression}
 import joos.semantic._
 import joos.semantic.types.{AstEnvironmentVisitor, TypeCheckingException}
 
 trait VariableDeclarationExpressionTypeChecker extends AstEnvironmentVisitor {
   self: TypeChecker =>
-
-  private[this] var variable: VariableDeclarationExpression = null
-
-  override def apply(name: SimpleNameExpression) {
-    // Je_5_AmbiguousInvoke_LocalInOwnInitializer
-    if (variable != null) {
-      if (variable.declarationName == name) {
-        throw new TypeCheckingException("initializer", s"Cannot use variable ${name} itself in its initializer")
-      }
-    }
-  }
 
   override def apply(name: QualifiedNameExpression) {
     name.qualifier.accept(this)
@@ -24,7 +14,6 @@ trait VariableDeclarationExpressionTypeChecker extends AstEnvironmentVisitor {
   }
 
   override def apply(variable: VariableDeclarationExpression) {
-    this.variable = variable
     this.blockEnvironment = variable.blockEnvironment
 
     variable.fragment.initializer match {
@@ -39,10 +28,10 @@ trait VariableDeclarationExpressionTypeChecker extends AstEnvironmentVisitor {
           throw new TypeCheckingException(
             "variable declaration",
             s"Cannot assign ${initializer.expressionType.standardName} to ${variable.declarationName}")
+
+        new LocalVariableInitializerChecker(variable)(initializer)
     }
 
     variable.expressionType = variable.variableType
-
-    this.variable = null
   }
 }

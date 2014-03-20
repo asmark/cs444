@@ -2,11 +2,11 @@ package joos.analysis.reachability
 
 import joos.analysis.exceptions.MissingReturnException
 import joos.ast.CompilationUnit
+import joos.ast.types.PrimitiveType._
 import joos.ast.visitor.CompilationUnitUserBuilder
 import joos.core.TernaryBoolean._
-import joos.ast.types.PrimitiveType._
 
-class ReachabilityVerifier(unit: CompilationUnit) extends (() => Unit) {
+class ReachabilityChecker(unit: CompilationUnit) extends (() => Unit) {
   override def apply() {
     unit.typeDeclaration.foreach {
       tipe =>
@@ -29,6 +29,6 @@ class ReachabilityVerifier(unit: CompilationUnit) extends (() => Unit) {
   }
 }
 
-object ReachabilityVerifier extends CompilationUnitUserBuilder[ReachabilityVerifier] {
-  override def build(unit: CompilationUnit) = new ReachabilityVerifier(unit)
+object ReachabilityChecker extends CompilationUnitUserBuilder[ReachabilityChecker] {
+  override def build(unit: CompilationUnit) = new ReachabilityChecker(unit)
 }

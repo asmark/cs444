@@ -1,12 +1,12 @@
 package joos.semantic
 
-import joos.analysis.reachability.ReachabilityVerifier
+import joos.analysis.reachability.ReachabilityChecker
 import joos.ast.AbstractSyntaxTree
 
 object StaticAnalysis {
 
   private[this] val builders = List(
-    ReachabilityVerifier
+    ReachabilityChecker
   )
 
   def apply(asts: Seq[AbstractSyntaxTree]) {
