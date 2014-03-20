@@ -6,7 +6,10 @@ import joos.syntax.parsetree.{LeafNode, ParseTreeNode}
 import joos.syntax.tokens.{TokenKind, TerminalToken}
 
 case class StringLiteral(token: TerminalToken) extends LiteralExpression {
-  override def toString = s""""${token.lexeme}""""
+
+  lazy val text = token.lexeme.substring(1, token.lexeme.length - 1)
+
+  override def toString = token.lexeme
 
   expressionType = StringType
 
