@@ -1,9 +1,10 @@
 package joos.marmoset
 
-import joos.semantic.{CodeGeneration, StaticAnalysis, TypeChecking, NameResolution}
+import joos.semantic.{StaticAnalysis, TypeChecking, NameResolution}
 import joos.syntax.SyntaxCheck
 import joos.test.tags.IntegrationTest
 import org.scalatest.{Matchers, FlatSpec}
+import joos.codegen.CodeGeneration
 
 class MarmosetA5Spec extends FlatSpec with Matchers {
 

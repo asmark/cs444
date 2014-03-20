@@ -1,8 +1,7 @@
-package joos.semantic
+package joos.codegen
 
 import joos.ast.AbstractSyntaxTree
 import joos.ast.declarations.ModuleDeclaration
-import joos.semantic.names.heirarchy.AdvancedHierarchyChecker
 
 object CodeGeneration {
 
