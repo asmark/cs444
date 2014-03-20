@@ -1,13 +1,12 @@
 package joos.analysis.reachability
 
-import joos.analysis.exceptions.UnreachableException
 import joos.ast.statements.Block
-import joos.core.TernaryBoolean._
 
 class ReachableBlock(block: Block) extends Reachable {
+  override def statement = block
+
   override def verify() {
-    if (this.canStart == False)
-      throw new UnreachableException(block)
+    super.verify()
 
     if (block.statements.length == 0) {
       this.canFinish = this.canStart
