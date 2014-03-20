@@ -1,29 +1,19 @@
 package joos.semantic
 
+import joos.analysis.reachability.ReachabilityVerifier
 import joos.ast.AbstractSyntaxTree
-import joos.ast.declarations.ModuleDeclaration
-import joos.semantic.names.heirarchy.AdvancedHierarchyChecker
-import joos.semantic.reachability.ReachabilityChecker
 
 object StaticAnalysis {
 
-  def getAnalyzers(ast: AbstractSyntaxTree)(implicit module: ModuleDeclaration) = {
-    implicit val unit = ast.root
-    Seq(
-      new ReachabilityChecker
-    )
-  }
-
+  private[this] val builders = List(
+    ReachabilityVerifier
+  )
 
   def apply(asts: Seq[AbstractSyntaxTree]) {
-    implicit val module = new ModuleDeclaration
-
-    val analyzers = 1
-    for (i <- Range(0, analyzers)) {
+    for (builder <- builders) {
       for (ast <- asts) {
-        ast dispatch getAnalyzers(ast).apply(i)
+        builder.build(ast.root)()
       }
     }
   }
-
 }

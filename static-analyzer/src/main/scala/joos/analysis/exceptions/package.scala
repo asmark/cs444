@@ -2,6 +2,7 @@ package joos.analysis
 
 import joos.ast.statements.Statement
 import joos.compiler.CompilationException
+import joos.ast.declarations.MethodDeclaration
 
 package object exceptions {
 
@@ -11,4 +12,7 @@ package object exceptions {
     def this(statement: Statement) = this(s"${statement} is unreachable")
   }
 
+  class MissingReturnException private(errorMessage: String) extends StaticAnalysisException(errorMessage) {
+    def this(method: MethodDeclaration) = this(s"Not all execution path in method ${method.name} have return statement")
+  }
 }

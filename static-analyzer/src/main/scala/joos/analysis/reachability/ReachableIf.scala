@@ -2,7 +2,7 @@ package joos.analysis.reachability
 
 import joos.ast.statements.IfStatement
 
-class ReachableIfStatement(val statement: IfStatement) extends Reachable {
+class ReachableIf(val statement: IfStatement) extends Reachable {
   override def verify() {
     super.verify()
 

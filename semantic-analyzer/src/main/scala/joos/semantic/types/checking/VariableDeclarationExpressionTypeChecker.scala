@@ -29,6 +29,8 @@ trait VariableDeclarationExpressionTypeChecker extends AstEnvironmentVisitor {
 
     variable.fragment.initializer match {
       case None =>
+        // Local variables must have initializer
+        throw new TypeCheckingException("local variable declaration", "must have initializer")
       case Some(initializer) =>
         initializer.accept(this)
         require(initializer.expressionType != null)
