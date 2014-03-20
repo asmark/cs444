@@ -1,8 +1,9 @@
 package joos.compiler
 
 import joos.core.Logger
-import joos.semantic.{CodeGeneration, StaticAnalysis, TypeChecking, NameResolution}
+import joos.semantic.{StaticAnalysis, TypeChecking, NameResolution}
 import joos.syntax.SyntaxCheck
+import joos.codegen.CodeGeneration
 
 object Compiler {
   def main(args: Array[String]) {
