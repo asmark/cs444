@@ -4,7 +4,7 @@ all:
 zip:
 	sbt clean
 	rm -f *.zip
-	zip -r -q cs-444 common scanner preprocessor parser semantic-analyzer project compiler Makefile joosc
+	zip -r -q cs-444 common scanner preprocessor parser semantic-analyzer static-analyzer project compiler Makefile joosc
 clean:
 	sbt clean
 	rm -f *.jar *.zip

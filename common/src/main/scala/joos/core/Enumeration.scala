@@ -9,7 +9,7 @@ trait Enumeration {
    */
   type T <: Value
 
-  trait Value {
+  trait Value extends Ordered[Value] {
     val id = _values.length
 
     /** Name of this value */
@@ -23,6 +23,9 @@ trait Enumeration {
     }
 
     override def toString: String = name
+
+    override def compare(that: Value): Int = id - that.id
+
   }
 
   private[this] val _values = ArrayBuffer.empty[T]
