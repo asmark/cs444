@@ -31,7 +31,7 @@ object Joos1wCompilerBuild extends Build {
     )
   ) ++ assemblySettings ++ Seq(
     test in assembly := {}
-  )
+  ) ++ ScoverageSbtPlugin.instrumentSettings
 
   // Codes shared across multiple components
   lazy val common = Project(
