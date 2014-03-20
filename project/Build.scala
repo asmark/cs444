@@ -16,7 +16,7 @@ object Joos1wCompilerBuild extends Build {
     fork in run := true,
     fork in test := false,
     testOptions in testQuick in Test += Tests.Argument("-l", "joos.test.tags.IntegrationTest"),
-    version := "3.0.0",
+    version := "4.0.0",
     scalaVersion := "2.10.3",
     scalacOptions := Seq(
       // Turn on all warnings
@@ -87,6 +87,12 @@ object Joos1wCompilerBuild extends Build {
     settings = commonSettings
   ) dependsOn(common, parser)
 
+  lazy val staticAnalyzer = Project(
+    id = "static-analyzer",
+    base = file("static-analyzer"),
+    settings = commonSettings
+  ) dependsOn(common)
+
   lazy val compiler = Project(
     id = "compiler",
     base = file("compiler"),
@@ -95,11 +101,11 @@ object Joos1wCompilerBuild extends Build {
       jarName in assembly := "compiler.jar",
       mainClass in assembly := Some("joos.compiler.Compiler")
     )
-  ) dependsOn(common, preprocessor, scanner, parser, semanticAnalyzer)
+  ) dependsOn(common, preprocessor, scanner, parser, semanticAnalyzer, staticAnalyzer)
 
   lazy val project = Project(
     id = "cs-444",
     base = file("."),
     settings = commonSettings
-  ) aggregate(compiler, common, preprocessor, scanner, parser, semanticAnalyzer)
+  ) aggregate(compiler, common, preprocessor, scanner, parser, semanticAnalyzer, staticAnalyzer)
 }
