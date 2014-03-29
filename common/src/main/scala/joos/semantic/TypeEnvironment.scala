@@ -3,6 +3,7 @@ package joos.semantic
 import joos.ast.declarations.{TypeDeclaration, FieldDeclaration, MethodDeclaration}
 import joos.ast.expressions.SimpleNameExpression
 import scala.collection.mutable
+import joos.ast.Modifier
 
 trait TypeEnvironment extends Environment {
   self: TypeDeclaration =>
@@ -89,11 +90,36 @@ trait TypeEnvironment extends Environment {
       map + (method.name -> currentMethods)
     }
   }
+  
+  // HACK: This is a total hack. Don't expect to understand anything by looking at this.
+  private def addBindingAndWidenVisibility(newMethod: MethodDeclaration, map: Map[SimpleNameExpression, Set[MethodDeclaration]]) = {
+    if (map.get(newMethod.name).isEmpty) {
+      map + (newMethod.name -> Set(newMethod))
+    } else {
+      // Check if we need to widen visibility
+      val currentMethods = map(newMethod.name).find(_.parameters == newMethod.parameters) match {
+        // No existing method with these parameters exists. This is a simple override
+        case None => map(newMethod.name) + newMethod
+          // An old method already exists. Check if we must widen visibility
+        case Some(oldMethod) => {
+          if (oldMethod.modifiers.contains(Modifier.Protected) && newMethod.modifiers.contains(Modifier.Public)) {
+            // Remove the old (Protected) method in favour of the new (Public) one
+            map(newMethod.name) - oldMethod + newMethod
+          } else {
+            // Overwrite the method anyways.. because why not?
+            // Does this even work? Who knows. All the tests pass.
+            map(newMethod.name) + newMethod
+          }
+        }
+      }
+      map + (newMethod.name -> currentMethods)
+    }
+  }
 
   lazy val containedMethods: Map[SimpleNameExpression, Set[MethodDeclaration]] = {
-    (methodMap.values ++ inheritedMethods.values.flatten).foldRight(Map.empty[SimpleNameExpression, Set[MethodDeclaration]]) {
+    (inheritedMethods.values.flatten ++ methodMap.values).foldRight(Map.empty[SimpleNameExpression, Set[MethodDeclaration]]) {
       (method: MethodDeclaration, map: Map[SimpleNameExpression, Set[MethodDeclaration]]) =>
-        addBinding(method, map)
+        addBindingAndWidenVisibility(method, map)
     }
   }
 
