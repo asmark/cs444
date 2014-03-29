@@ -5,6 +5,10 @@ import scala.language.implicitConversions
 
 package object assembly {
 
+  private[this] final val EmptyLine = new AbstractAssemblyLine {
+    override protected def writeContent(writer: PrintWriter) {}
+  }
+
   private[this] abstract class AbstractAssemblyLine extends AssemblyLine
 
   private[this] abstract class AbstractAssemblyExpression extends AssemblyExpression
@@ -14,6 +18,7 @@ package object assembly {
       extends AssemblyLine {
 
     protected override def writeContent(writer: PrintWriter) {
+      writer.print("    ")
       writer.print(instruction)
       writer.print(' ')
 
@@ -41,7 +46,7 @@ package object assembly {
   /**
    * Writes a comment line
    */
-  def /:(comment: String, indentation: Int = 4): AssemblyLine = {
+  def comment(comment: String, indentation: Int = 4): AssemblyLine = {
     new AbstractAssemblyLine {
       override protected def writeContent(writer: PrintWriter) {
         for (i <- 0 until indentation) {
@@ -246,6 +251,28 @@ package object assembly {
     new AbstractAssemblyLine {
       override protected def writeContent(writer: PrintWriter) {
         writer.print(line)
+      }
+    }
+  }
+
+  /**
+   * Writes an empty line
+   */
+  def emptyLine(): AssemblyLine = {
+    EmptyLine
+  }
+
+  /**
+   * Defines a section
+   */
+  def section(section: AssemblySection): AssemblyLine = {
+    new AbstractAssemblyLine {
+      /**
+       * Writes the content of this line to the writer
+       */
+      override protected def writeContent(writer: PrintWriter) {
+        writer.print("section ")
+        section.write(writer)
       }
     }
   }

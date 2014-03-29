@@ -5,6 +5,7 @@
 # General
 *.log
 *.zip
+*.out
 
 # SBT
 dist/

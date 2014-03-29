@@ -7,8 +7,6 @@ import java.io.PrintWriter
  */
 class LabelReference(val name: String) extends AssemblyExpression {
   override def write(writer: PrintWriter) {
-    writer.print(' ')
     writer.print(name)
-    writer.print(' ')
   }
 }

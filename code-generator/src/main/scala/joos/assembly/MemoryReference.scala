@@ -7,8 +7,8 @@ import java.io.PrintWriter
  */
 class MemoryReference(address: AssemblyExpression) extends AssemblyExpression {
   override def write(writer: PrintWriter) {
-    writer.print(" [")
+    writer.print('[')
     address.write(writer)
-    writer.print("] ")
+    writer.print(']')
   }
 }

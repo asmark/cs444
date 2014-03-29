@@ -8,9 +8,7 @@ class Register(val name: String)
     with AssemblyExpression {
 
   override def write(writer: PrintWriter) {
-    writer.print(' ')
     writer.print(name)
-    writer.print(' ')
   }
 }
 
