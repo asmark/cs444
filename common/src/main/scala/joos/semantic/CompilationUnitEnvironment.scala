@@ -122,7 +122,9 @@ trait CompilationUnitEnvironment extends Environment {
   def addSelfPackage() {
     typeDeclaration map (addConcreteImport(packageDeclaration.name, _, enclosingClass))
     addOnDemandImport(packageDeclaration.name, enclosingPackage)
-    addOnDemandImport(NameExpression("java.lang"), onDemandImports)
+    if (!packageDeclaration.name.equals("java.lang")) {
+      addOnDemandImport(NameExpression("java.lang"), onDemandImports)
+    }
     importDeclarations foreach add
   }
 

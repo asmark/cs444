@@ -14,8 +14,9 @@ object Joos1wCompilerBuild extends Build {
 
   val commonSettings = Defaults.defaultSettings ++ Seq(
     crossPaths := false,
-    fork in run := true,
+    fork in run := false,
     fork in test := false,
+    parallelExecution in Test := false,
     testOptions in testQuick in Test += Tests.Argument("-l", "joos.test.tags.IntegrationTest"),
     version := "5.0.0",
     scalaVersion := "2.10.3",
