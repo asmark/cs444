@@ -1,14 +1,14 @@
 package joos.assembly
 
+import java.io.PrintWriter
 import joos.core.Enumeration
 
-class Register(val name: String, description: String = "") extends Register.Value {
-  override def toString = {
-    if (description.isEmpty) {
-      name
-    } else {
-      s"${name}: ${description}"
-    }
+class Register(val name: String)
+    extends Register.Value
+    with AssemblyExpression {
+
+  override def write(writer: PrintWriter) {
+    writer.print(name)
   }
 }
 
@@ -21,6 +21,12 @@ object Register extends Enumeration {
   final val Edx = this + new Register("edx")
   final val Exi = this + new Register("exi")
   final val Edi = this + new Register("edi")
-  final val Esp = this + new Register("esp", "Stack pointer")
-  final val Ebp = this + new Register("ebp", "Frame pointer")
+  /**
+   * Stack pointer
+   */
+  final val Esp = this + new Register("esp")
+  /**
+   * Frame pointer
+   */
+  final val Ebp = this + new Register("ebp")
 }
