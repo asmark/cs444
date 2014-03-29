@@ -24,8 +24,10 @@ class ForwardUseChecker(fieldScope: Map[SimpleNameExpression, Type]) extends Ast
   }
 
   override def apply(fieldName: SimpleNameExpression) {
-    if (!(fieldScope contains fieldName)) {
-      throw new ForwardFieldUseException(fieldName)
+    if (fieldName.nameClassification == InstanceFieldName) {
+      if (!(fieldScope contains fieldName)) {
+        throw new ForwardFieldUseException(fieldName)
+      }
     }
   }
 
