@@ -2,6 +2,7 @@ import sbt._
 import sbt.Keys._
 import sbtassembly.Plugin._
 import AssemblyKeys._
+import ScoverageSbtPlugin._
 
 object Dependencies {
   val scalaTest = "org.scalatest" % "scalatest_2.10" % "2.0" % "test"
@@ -9,21 +10,21 @@ object Dependencies {
 
 object Joos1wCompilerBuild extends Build {
 
-  val generatedResourceDirectory = "generated-resources";
+  val generatedResourceDirectory = "generated-resources"
 
   val commonSettings = Defaults.defaultSettings ++ Seq(
     crossPaths := false,
     fork in run := true,
     fork in test := false,
     testOptions in testQuick in Test += Tests.Argument("-l", "joos.test.tags.IntegrationTest"),
-    version := "4.0.0",
+    version := "5.0.0",
     scalaVersion := "2.10.3",
     scalacOptions := Seq(
       // Turn on all warnings
       "-feature",
       "-deprecation",
       "-unchecked",
-      "-target:jvm-1.7",
+      "-target:jvm-1.6",
       "-encoding", "utf8"
     ),
     libraryDependencies ++= Seq(
@@ -31,7 +32,7 @@ object Joos1wCompilerBuild extends Build {
     )
   ) ++ assemblySettings ++ Seq(
     test in assembly := {}
-  ) ++ ScoverageSbtPlugin.instrumentSettings
+  ) ++ instrumentSettings
 
   // Codes shared across multiple components
   lazy val common = Project(
@@ -93,6 +94,12 @@ object Joos1wCompilerBuild extends Build {
     settings = commonSettings
   ) dependsOn(common)
 
+  lazy val codeGenerator = Project(
+    id = "code-generator",
+    base = file("code-generator"),
+    settings = commonSettings
+  ) dependsOn(common)
+
   lazy val compiler = Project(
     id = "compiler",
     base = file("compiler"),
@@ -101,11 +108,11 @@ object Joos1wCompilerBuild extends Build {
       jarName in assembly := "compiler.jar",
       mainClass in assembly := Some("joos.compiler.Compiler")
     )
-  ) dependsOn(common, preprocessor, scanner, parser, semanticAnalyzer, staticAnalyzer)
+  ) dependsOn(common, preprocessor, scanner, parser, semanticAnalyzer, staticAnalyzer, codeGenerator)
 
   lazy val project = Project(
     id = "cs-444",
     base = file("."),
     settings = commonSettings
-  ) aggregate(compiler, common, preprocessor, scanner, parser, semanticAnalyzer, staticAnalyzer)
+  ) aggregate(compiler, common, preprocessor, scanner, parser, semanticAnalyzer, staticAnalyzer, codeGenerator)
 }
