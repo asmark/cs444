@@ -5,7 +5,7 @@ import joos.ast.declarations.ModuleDeclaration
 
 object CodeGeneration {
 
-  def getAnalyzers(ast: AbstractSyntaxTree)(implicit module: ModuleDeclaration) = {
+  def getCodeGenerator(ast: AbstractSyntaxTree)(implicit module: ModuleDeclaration) = {
     implicit val unit = ast.root
     Seq(
     )
@@ -15,10 +15,10 @@ object CodeGeneration {
   def apply(asts: Seq[AbstractSyntaxTree]) {
     implicit val module = new ModuleDeclaration
 
-    val analyzers = 0
-    for (i <- Range(0, analyzers)) {
+    val numCodeGenerators = 0
+    for (i <- Range(0, numCodeGenerators)) {
       for (ast <- asts) {
-        ast dispatch getAnalyzers(ast).apply(i)
+        ast dispatch getCodeGenerator(ast).apply(i)
       }
     }
   }
