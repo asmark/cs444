@@ -99,7 +99,7 @@ object Joos1wCompilerBuild extends Build {
     id = "code-generator",
     base = file("code-generator"),
     settings = commonSettings
-  ) dependsOn(common)
+  ) dependsOn(common, semanticAnalyzer)
 
   lazy val compiler = Project(
     id = "compiler",
