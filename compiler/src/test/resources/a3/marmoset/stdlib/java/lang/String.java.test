@@ -120,6 +120,7 @@ public class String {
             if(i >= other.chars.length) return 1;
             if(chars[i] < other.chars[i])  return -1;
             if(chars[i] > other.chars[i])  return 1;
+            i = i + 1;
         }
         return 0;
     }
