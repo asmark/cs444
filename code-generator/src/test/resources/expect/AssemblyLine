@@ -1,0 +1,21 @@
+section .data
+str:
+    db "Hello world!"
+
+section .text
+extern label.2
+global _start
+_start:
+    ; this is comment
+label.1:
+    jmp label.1
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, str
+    int 128
+    push eax
+    pop eax
+    add ecx, eax
+    idiv edx
+    mov ecx, [1]
+    mov ebx, [eax]

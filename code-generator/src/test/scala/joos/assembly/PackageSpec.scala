@@ -5,13 +5,12 @@ import joos.assembly._
 import joos.assembly.Register._
 import joos.assembly.AssemblySection._
 import java.io.{FileWriter, BufferedWriter, PrintWriter}
+import scala.io.Source
 
 class PackageSpec extends FlatSpec with Matchers {
 
   "Each instruction" should "be correctly formatted" in {
-    val writer = new PrintWriter(new BufferedWriter(new FileWriter("instruction.out")))
-
-    val instructions = Seq(
+    val instructions : Seq[AssemblyLine] = Seq(
       section(Data),
       label("str"),
       db("Hello world!"),
@@ -30,14 +29,17 @@ class PackageSpec extends FlatSpec with Matchers {
       push(Eax),
       pop(Eax),
       add(Ecx, Eax),
-      idiv(Edx)
+      idiv(Edx),
+      mov(Ecx, at(1)),
+      mov(Ebx, at(Eax))
     )
 
-    for (instruction <- instructions) {
-      instruction.write(writer)
-    }
+    val output = instructions.foldLeft(new StringBuilder) {
+      (buffer, instruction) =>
+        buffer.append(instruction.toString)
+    }.mkString
 
-    writer.flush()
-    writer.close()
+    output shouldEqual Source.fromURL(getClass.getResource("/expect/AssemblyLine")).mkString
+
   }
 }

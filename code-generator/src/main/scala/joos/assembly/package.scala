@@ -308,7 +308,7 @@ package object assembly {
     new AbstractAssemblyLine {
       override def writeContent(writer: PrintWriter) {
         writer.print(name)
-        writer.print(": ")
+        writer.print(':')
       }
     }
   }

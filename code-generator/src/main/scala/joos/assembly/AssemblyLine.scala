@@ -10,7 +10,7 @@ trait AssemblyLine extends Writable {
   override def toString = {
     val stream = new ByteArrayOutputStream()
     val writer = new PrintWriter(stream)
-    writeContent(writer)
+    write(writer)
     writer.flush()
     stream.toString
   }
