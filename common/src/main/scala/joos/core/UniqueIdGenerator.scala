@@ -1,7 +1,7 @@
 package joos.core
 
 object UniqueIdGenerator {
-  private var counter = -1
+  private var counter = 1000
 
   def genId() = {
     counter += 1
