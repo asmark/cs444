@@ -1,6 +1,8 @@
 package joos
 
 import java.io.PrintWriter
+import joos.ast.declarations.{TypeDeclaration, FieldDeclaration, MethodDeclaration}
+import joos.ast.expressions.StringLiteral
 import scala.language.implicitConversions
 
 package object assemgen {
@@ -42,6 +44,51 @@ package object assemgen {
     }
   }
 
+  implicit class RichMethodDeclaration(val method: MethodDeclaration) extends AnyVal {
+    def uniqueName: String = {
+      require(method.typeDeclaration != null)
+
+      if (method.isNative) {
+        "NATIVE" + method.typeDeclaration.fullName + '.' + method.name
+      } else if (method.isConstructor) {
+        s"constructor.${method.typeDeclaration.fullName}.${method.id}"
+      } else {
+        s"method.${method.typeDeclaration.fullName}.${method.name}.${method.id}"
+      }
+    }
+  }
+
+  implicit class RichFieldDeclaration(val field: FieldDeclaration) extends AnyVal {
+    def uniqueName: String = {
+      require(field.typeDeclaration != null)
+
+      s"field.${field.typeDeclaration.fullName}.${field.declarationName}.${field.id}"
+    }
+  }
+
+  implicit class RichStringLiteral(val literal: StringLiteral) extends AnyVal {
+    def uniqueName: String = {
+      s"string.${literal.id}"
+    }
+  }
+
+  implicit class RichTypeDeclaration(val tipe: TypeDeclaration) extends AnyVal {
+    def uniqueName: String = {
+      s"type.${tipe.fullName}.${tipe.id}"
+    }
+  }
+
+
+  /**
+   * Writes any arbitrary expression
+   */
+  def anyExpression(expression: String): AssemblyExpression = {
+    new AbstractAssemblyExpression {
+      override def write(writer: PrintWriter) {
+        writer.print(expression)
+      }
+    }
+  }
 
   /**
    * Writes a comment line
@@ -247,7 +294,7 @@ package object assemgen {
   /**
    * Writes any arbitrary line
    */
-  def line(line: String): AssemblyLine = {
+  def anyLine(line: String): AssemblyLine = {
     new AbstractAssemblyLine {
       override protected def writeContent(writer: PrintWriter) {
         writer.print(line)
