@@ -1,8 +1,8 @@
 package joos.codegen
 
+import java.io.{File, PrintWriter}
 import joos.ast.AbstractSyntaxTree
 import joos.ast.declarations.ModuleDeclaration
-import java.io.{File, PrintWriter}
 
 object CodeGeneration {
 
@@ -13,20 +13,17 @@ object CodeGeneration {
   def getCodeGenerator(ast: AbstractSyntaxTree)(implicit module: ModuleDeclaration) = {
     implicit val unit = ast.root
     implicit val codeStream = getAssemblyManager(ast)
-    Seq(
-      new CodeGenerationVisitor
-    )
+    new CodeGenerationVisitor
   }
 
 
   def apply(asts: Seq[AbstractSyntaxTree]) {
     implicit val module = new ModuleDeclaration
 
-    val numCodeGenerators = 1
-    for (i <- Range(0, numCodeGenerators)) {
-      for (ast <- asts) {
-        ast dispatch getCodeGenerator(ast).apply(i)
-      }
+    for (ast <- asts) {
+      val codeGenerator = getCodeGenerator(ast)
+      ast dispatch codeGenerator
+      codeGenerator.assemblyManager.print
     }
   }
 

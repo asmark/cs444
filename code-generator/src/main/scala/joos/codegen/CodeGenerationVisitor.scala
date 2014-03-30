@@ -8,7 +8,7 @@ import joos.codegen.assembler._
 import joos.semantic.types.AstEnvironmentVisitor
 import scala.language.implicitConversions
 
-class CodeGenerationVisitor(implicit val unit: CompilationUnit, assemblyManager: AssemblyFileManager) extends AstEnvironmentVisitor {
+class CodeGenerationVisitor(implicit val unit: CompilationUnit, val assemblyManager: AssemblyFileManager) extends AstEnvironmentVisitor {
   override def apply(field: FieldDeclaration) {
     super.apply(field)
     field.generateAssembly()
@@ -49,7 +49,7 @@ class CodeGenerationVisitor(implicit val unit: CompilationUnit, assemblyManager:
     expression.generateAssembly()
   }
 
-  def apply(literal: BooleanLiteral) {
+  override def apply(literal: BooleanLiteral) {
     literal.generateAssembly()
   }
 
@@ -58,7 +58,7 @@ class CodeGenerationVisitor(implicit val unit: CompilationUnit, assemblyManager:
     expression.generateAssembly()
   }
 
-  def apply(literal: CharacterLiteral) {
+  override def apply(literal: CharacterLiteral) {
     literal.generateAssembly()
   }
 
@@ -82,7 +82,7 @@ class CodeGenerationVisitor(implicit val unit: CompilationUnit, assemblyManager:
     expression.generateAssembly()
   }
 
-  def apply(literal: IntegerLiteral) {
+  override def apply(literal: IntegerLiteral) {
     literal.generateAssembly()
   }
 
@@ -91,9 +91,9 @@ class CodeGenerationVisitor(implicit val unit: CompilationUnit, assemblyManager:
     expression.generateAssembly()
   }
 
-  def apply(expression: NullLiteral) {
-
-  }
+//  override def apply(expression: NullLiteral) {
+//
+//  }
 
   override def apply(expression: ParenthesizedExpression) {
     super.apply(expression)

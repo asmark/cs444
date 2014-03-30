@@ -16,14 +16,14 @@ trait AstVisitor {
   def apply(expression: ArrayAccessExpression) {}
   def apply(expression: ArrayCreationExpression) {}
   def apply(expression: AssignmentExpression) {}
-//  def apply(expression: BooleanLiteral) {}
+  def apply(expression: BooleanLiteral) {}
   def apply(expression: CastExpression) {}
-//  def apply(expression: CharacterLiteral) {}
+  def apply(expression: CharacterLiteral) {}
   def apply(expression: ClassInstanceCreationExpression) {}
   def apply(expression: FieldAccessExpression) {}
   def apply(expression: InfixExpression) {}
   def apply(expression: InstanceOfExpression) {}
-//  def apply(expression: IntegerLiteral) {}
+  def apply(expression: IntegerLiteral) {}
   def apply(expression: MethodInvocationExpression) {}
 //  def apply(expression: NullLiteral) {}
   def apply(expression: ParenthesizedExpression) {}
