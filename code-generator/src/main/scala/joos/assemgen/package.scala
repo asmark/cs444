@@ -62,6 +62,10 @@ package object assemgen {
     new InstructionLine("mov", Seq(destination, source))
   }
 
+  def mov(destination: AssemblyExpression, source: AssemblyExpression, comment: String): AssemblyLine = {
+    new InstructionLine("mov", Seq(destination, source), Some(comment))
+  }
+
   /**
    * eax += ebx
    */
