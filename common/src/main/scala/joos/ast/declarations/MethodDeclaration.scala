@@ -10,6 +10,7 @@ import joos.semantic.BlockEnvironment
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.ParseTreeNode
 import joos.syntax.parsetree.TreeNode
+import joos.core.Identifiable
 
 case class MethodDeclaration(
     modifiers: Seq[Modifier],
@@ -18,7 +19,7 @@ case class MethodDeclaration(
     parameters: IndexedSeq[SingleVariableDeclaration],
     body: Option[Block],
     isConstructor: Boolean)
-    extends BodyDeclaration with DeclarationLike with BlockLike {
+    extends BodyDeclaration with DeclarationLike with BlockLike with Identifiable {
   var compilationUnit: CompilationUnit = null
   var typeDeclaration: TypeDeclaration = null
 
