@@ -12,3 +12,7 @@ class MemoryReference(address: AssemblyExpression) extends AssemblyExpression {
     writer.print(']')
   }
 }
+
+object MemoryReference {
+  def apply(address: AssemblyExpression) = new MemoryReference(address)
+}
