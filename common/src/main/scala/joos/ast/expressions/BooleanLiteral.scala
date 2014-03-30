@@ -8,6 +8,9 @@ import joos.syntax.tokens.TokenKind
 
 class BooleanLiteral(val name: String) extends LiteralExpression with BooleanLiteral.Value {
   expressionType = BooleanType
+
+  val value = if (this == BooleanLiteral.TrueLiteral) 1 else 0
+
 }
 
 object BooleanLiteral extends Enumeration {

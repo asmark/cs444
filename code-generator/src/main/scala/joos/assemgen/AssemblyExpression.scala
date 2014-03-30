@@ -1,4 +1,4 @@
-package joos.assembly
+package joos.assemgen
 
 import joos.core.Writable
 

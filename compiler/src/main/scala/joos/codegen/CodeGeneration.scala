@@ -2,12 +2,19 @@ package joos.codegen
 
 import joos.ast.AbstractSyntaxTree
 import joos.ast.declarations.ModuleDeclaration
+import java.io.{File, PrintWriter}
 
 object CodeGeneration {
 
-  def getAnalyzers(ast: AbstractSyntaxTree)(implicit module: ModuleDeclaration) = {
+  final val OutputDirectory = "output"
+
+  def getAssemblyManager(ast: AbstractSyntaxTree) = AssemblyFileManager(new PrintWriter(new File(s"${OutputDirectory}/${ast.name}.s")))
+
+  def getCodeGenerator(ast: AbstractSyntaxTree)(implicit module: ModuleDeclaration) = {
     implicit val unit = ast.root
+    implicit val codeStream = getAssemblyManager(ast)
     Seq(
+      new CodeGenerationVisitor
     )
   }
 
@@ -15,10 +22,10 @@ object CodeGeneration {
   def apply(asts: Seq[AbstractSyntaxTree]) {
     implicit val module = new ModuleDeclaration
 
-    val analyzers = 0
-    for (i <- Range(0, analyzers)) {
+    val numCodeGenerators = 1
+    for (i <- Range(0, numCodeGenerators)) {
       for (ast <- asts) {
-        ast dispatch getAnalyzers(ast).apply(i)
+        ast dispatch getCodeGenerator(ast).apply(i)
       }
     }
   }

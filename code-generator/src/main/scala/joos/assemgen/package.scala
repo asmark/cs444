@@ -3,7 +3,7 @@ package joos
 import java.io.PrintWriter
 import scala.language.implicitConversions
 
-package object assembly {
+package object assemgen {
 
   private[this] final val EmptyLine = new AbstractAssemblyLine {
     override protected def writeContent(writer: PrintWriter) {}
@@ -324,6 +324,14 @@ package object assembly {
   }
 
   implicit def toExpression(value: Int): AssemblyExpression = {
+    new AbstractAssemblyExpression {
+      override def write(writer: PrintWriter) {
+        writer.print(value)
+      }
+    }
+  }
+
+  implicit def toExpression(value: Long): AssemblyExpression = {
     new AbstractAssemblyExpression {
       override def write(writer: PrintWriter) {
         writer.print(value)
