@@ -9,18 +9,21 @@ trait TypeEnvironment extends Environment {
   self: TypeDeclaration =>
   val constructorMap = mutable.HashMap.empty[String, MethodDeclaration]
   val methodMap = mutable.HashMap.empty[String, MethodDeclaration]
-  val fieldMap = mutable.HashMap.empty[SimpleNameExpression, FieldDeclaration]
+  val fieldMap = mutable.LinkedHashMap.empty[SimpleNameExpression, FieldDeclaration]
 
-  lazy val inheritedFields: Map[SimpleNameExpression, FieldDeclaration] = {
+  lazy val inheritedFields: mutable.LinkedHashMap[SimpleNameExpression, FieldDeclaration] = {
     getSuperType(this) match {
       case Some(superType) => superType.containedFields
-      case None => Map.empty
+      case None => mutable.LinkedHashMap.empty
     }
   }
 
-  lazy val containedFields: Map[SimpleNameExpression, FieldDeclaration] = {
+  lazy val containedFields: mutable.LinkedHashMap[SimpleNameExpression, FieldDeclaration] = {
     // By adding top-level classes first, we replace older overridden methods with new ones
-    inheritedFields ++ fieldMap
+    val contained = mutable.LinkedHashMap[SimpleNameExpression, FieldDeclaration]()
+    inheritedFields.foreach (x => contained.put(x._1, x._2))
+    fieldMap.foreach (x => contained.put(x._1, x._2))
+    contained
   }
 
   /**
