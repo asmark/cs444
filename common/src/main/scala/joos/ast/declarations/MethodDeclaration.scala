@@ -85,7 +85,7 @@ case class MethodDeclaration(
     modifiers contains Modifier.Static
   }
 
-  def isNative: Boolean = modifiers.contains(Modifier.Native)
+  lazy val isNative: Boolean = modifiers.contains(Modifier.Native)
 
   private[this] def getTypeName(t: Type): String = {
     t match {

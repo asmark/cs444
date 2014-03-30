@@ -49,7 +49,7 @@ package object assemgen {
       require(method.typeDeclaration != null)
 
       if (method.isNative) {
-        "NATIVE" + method.typeDeclaration.fullName + '.' + method.name
+        s"NATIVE${method.typeDeclaration.fullName}.${method.name}"
       } else if (method.isConstructor) {
         s"constructor.${method.typeDeclaration.fullName}.${method.id}"
       } else {
@@ -68,7 +68,7 @@ package object assemgen {
 
   implicit class RichStringLiteral(val literal: StringLiteral) extends AnyVal {
     def uniqueName: String = {
-      s"string.${literal.id}"
+      s"literal.string.${literal.id}"
     }
   }
 
