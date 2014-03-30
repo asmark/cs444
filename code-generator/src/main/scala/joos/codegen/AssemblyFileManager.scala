@@ -1,6 +1,5 @@
 package joos.codegen
 
-import joos.ast.CompilationUnit
 import java.io.PrintWriter
 import joos.assemgen._
 import collection.mutable
@@ -12,19 +11,26 @@ class AssemblyFileManager(val writer: PrintWriter) {
   val functions = mutable.HashSet[List[AssemblyLine]]()
   val classes = mutable.HashSet[List[AssemblyLine]]()
 
+  val sectionFormatString = "--- %s ---"
+
   def print = {
+    writer.print(comment(sectionFormatString.format("Data")))
     writer.print(section(AssemblySection.Data).toString)
     writer.print(emptyLine().toString)
 
+    writer.print(comment(sectionFormatString.format("Text")))
     writer.print(section(AssemblySection.Text).toString)
     writer.print(emptyLine().toString)
 
+    writer.print(comment(sectionFormatString.format("Exported Symbols")))
     globals.foreach(global => writer.print(global.toString))
     writer.print(emptyLine().toString)
 
+    writer.print(comment(sectionFormatString.format("Imported Symbols")))
     externs.foreach(extern => writer.print(extern.toString))
     writer.print(emptyLine().toString)
 
+    writer.print(comment(sectionFormatString.format("Functions")))
     functions.foreach(lines => {
       lines.foreach(
         line => writer.print(line.toString)
@@ -32,6 +38,7 @@ class AssemblyFileManager(val writer: PrintWriter) {
       writer.print(emptyLine().toString)
     })
 
+    writer.print(comment(sectionFormatString.format("Classes")))
     classes.foreach(classDef => {
       classDef.foreach(
         line => writer.print(line.toString)
