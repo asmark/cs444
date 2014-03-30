@@ -51,8 +51,8 @@ class CodeGenerationVisitor(implicit val unit: CompilationUnit, codeStream: Prin
     expression.generateAssembly()
   }
 
-  def apply(expression: BooleanLiteral) {
-    //TODO: Finish the code here
+  def apply(literal: BooleanLiteral) {
+    literal.generateAssembly()
   }
 
   override def apply(expression: CastExpression) {
@@ -60,8 +60,8 @@ class CodeGenerationVisitor(implicit val unit: CompilationUnit, codeStream: Prin
     expression.generateAssembly()
   }
 
-  def apply(expression: CharacterLiteral) {
-
+  def apply(literal: CharacterLiteral) {
+    literal.generateAssembly()
   }
 
   override def apply(expression: ClassInstanceCreationExpression) {
@@ -83,8 +83,8 @@ class CodeGenerationVisitor(implicit val unit: CompilationUnit, codeStream: Prin
     expression.generateAssembly()
   }
 
-  def apply(expression: IntegerLiteral) {
-
+  def apply(literal: IntegerLiteral) {
+    literal.generateAssembly()
   }
 
   override def apply(expression: MethodInvocationExpression) {
@@ -115,8 +115,8 @@ class CodeGenerationVisitor(implicit val unit: CompilationUnit, codeStream: Prin
     expression.generateAssembly()
   }
 
-  override def apply(expression: StringLiteral) {
-
+  override def apply(literal: StringLiteral) {
+    literal.generateAssembly()
   }
 
   override def apply(expression: ThisExpression) {
@@ -224,4 +224,9 @@ object CodeGenerationVisitor {
     new WhileStatementAssembler(statement)
   implicit def toCompilationUnitAssembler(unit: CompilationUnit): CompilationUnitAssembler = new CompilationUnitAssembler(unit)
   implicit def toBlockAssembler(block: Block): BlockAssembler = new BlockAssembler(block)
+
+  implicit def toBooleanLiteralAssembler(literal: BooleanLiteral) : BooleanLiteralAssembler = new BooleanLiteralAssembler(literal)
+  implicit def toIntegerLiteralAssembler(literal: IntegerLiteral) : IntegerLiteralAssembler = new IntegerLiteralAssembler(literal)
+  implicit def toStringLiteralAssembler(literal: StringLiteral) : StringLiteralAssembler = new StringLiteralAssembler(literal)
+  implicit def toCharacterLiteralAssembler(literal: CharacterLiteral) : CharacterLiteralAssembler = new CharacterLiteralAssembler(literal)
 }

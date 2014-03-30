@@ -6,6 +6,7 @@ import ScoverageSbtPlugin._
 
 object Dependencies {
   val scalaTest = "org.scalatest" % "scalatest_2.10" % "2.0" % "test"
+  val apacheCommon = "commons-lang" % "commons-lang" % "2.6"
 }
 
 object Joos1wCompilerBuild extends Build {
@@ -29,7 +30,8 @@ object Joos1wCompilerBuild extends Build {
       "-encoding", "utf8"
     ),
     libraryDependencies ++= Seq(
-      Dependencies.scalaTest
+      Dependencies.scalaTest,
+      Dependencies.apacheCommon
     )
   ) ++ assemblySettings ++ Seq(
     test in assembly := {}
