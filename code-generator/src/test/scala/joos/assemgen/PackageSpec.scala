@@ -31,7 +31,8 @@ class PackageSpec extends FlatSpec with Matchers {
       add(Ecx, Eax),
       idiv(Edx),
       mov(Ecx, at(1)),
-      mov(Ebx, at(Eax))
+      mov(Ebx, at(Eax)),
+      mov(Ebx, at(Ebx), "with comment")
     )
 
     val output = instructions.foldLeft(new StringBuilder) {

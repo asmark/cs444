@@ -8,9 +8,7 @@ import joos.codegen.AssemblyFileManager
 class BooleanLiteralAssembler(literal: BooleanLiteral)(implicit val assemblyManager: AssemblyFileManager) extends Assembler {
 
   override def generateAssembly() {
-    Seq(
-      mov(Eax, literal.value)
-    )
+    assemblyManager.text = assemblyManager.text :+ mov(Eax, literal.value, s"Assemble Boolean literal: ${literal}")
   }
 
 }

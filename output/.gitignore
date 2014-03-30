@@ -1,2 +1,3 @@
 # Ignore everything except runtime.s
 *.s
+!runtime.s
