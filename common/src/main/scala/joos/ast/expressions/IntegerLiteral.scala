@@ -9,6 +9,8 @@ case class IntegerLiteral(token: TerminalToken) extends LiteralExpression {
   expressionType = PrimitiveType.IntegerType
 
   override def toString = token.lexeme
+
+  val value = token.lexeme.toLong
 }
 
 object IntegerLiteral {

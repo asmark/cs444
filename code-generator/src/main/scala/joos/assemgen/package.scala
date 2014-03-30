@@ -331,6 +331,14 @@ package object assemgen {
     }
   }
 
+  implicit def toExpression(value: Long): AssemblyExpression = {
+    new AbstractAssemblyExpression {
+      override def write(writer: PrintWriter) {
+        writer.print(value)
+      }
+    }
+  }
+
   /**
    * Refers to a label
    */

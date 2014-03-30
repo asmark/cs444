@@ -8,8 +8,8 @@ class AssemblyFileManager(val writer: PrintWriter) {
   val globals = mutable.HashSet[AssemblyLine]() // global
   val externs = mutable.HashSet[AssemblyLine]() // extern
   val data = mutable.HashSet[AssemblyLine]()
-  val functions = mutable.HashSet[List[AssemblyLine]]()
-  val classes = mutable.HashSet[List[AssemblyLine]]()
+  val functions = mutable.HashSet[Seq[AssemblyLine]]()
+  val classes = mutable.HashSet[Seq[AssemblyLine]]()
 
   val sectionFormatString = "--- %s ---"
 
