@@ -1,4 +1,4 @@
-package joos.codegen
+package joos.assemgen
 
 import java.io.PrintWriter
 import joos.core.Enumeration

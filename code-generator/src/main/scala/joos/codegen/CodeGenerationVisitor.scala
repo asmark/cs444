@@ -8,8 +8,9 @@ import joos.ast.statements._
 import joos.codegen.CodeGenerationVisitor._
 import joos.ast.expressions._
 import joos.codegen.assembler._
+import java.io.PrintWriter
 
-class CodeGenerationVisitor(implicit val unit: CompilationUnit) extends AstEnvironmentVisitor {
+class CodeGenerationVisitor(implicit val unit: CompilationUnit, codeStream: PrintWriter) extends AstEnvironmentVisitor {
   override def apply(field: FieldDeclaration) {
     super.apply(field)
     field.generateAssembly()

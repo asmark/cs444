@@ -5,6 +5,7 @@ import joos.syntax.parsetree.ParseTree
 import java.io.{File, PrintWriter}
 
 class AbstractSyntaxTree(val root: CompilationUnit) {
+
   lazy val name = {
     val className = root.typeDeclaration match {
       case None => ""
@@ -16,12 +17,12 @@ class AbstractSyntaxTree(val root: CompilationUnit) {
     }
   }
 
-  lazy val codeStream = new PrintWriter(new File(s"out/${name}}.s"))
-
   def dispatch(visitor: AstVisitor) = root accept visitor
 }
 
 object AbstractSyntaxTree {
+  final val OutputDirectory = "output"
+
   def apply(parseTree: ParseTree): AbstractSyntaxTree = {
     new AbstractSyntaxTree(CompilationUnit(parseTree.root))
   }
