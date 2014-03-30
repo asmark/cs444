@@ -1,10 +1,9 @@
 package joos.codegen.assembler
 
-import joos.assemgen.Register._
-import joos.assemgen._
 import joos.ast.expressions.StringLiteral
+import joos.codegen.AssemblyFileManager
 
-class StringLiteralAssembler(literal: StringLiteral) extends Assembler {
+class StringLiteralAssembler(literal: StringLiteral)(implicit val assemblyManager: AssemblyFileManager) extends Assembler {
 
   override def generateAssembly() {
     Seq(
