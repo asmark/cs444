@@ -4,8 +4,10 @@ import joos.ast.AstConstructionException
 import joos.ast.types.StringType
 import joos.syntax.parsetree.{LeafNode, ParseTreeNode}
 import joos.syntax.tokens.{TokenKind, TerminalToken}
+import joos.core.Identifiable
 
-case class StringLiteral(token: TerminalToken) extends LiteralExpression {
+case class StringLiteral(token: TerminalToken)
+    extends LiteralExpression with Identifiable {
 
   lazy val text = token.lexeme.substring(1, token.lexeme.length - 1)
 
