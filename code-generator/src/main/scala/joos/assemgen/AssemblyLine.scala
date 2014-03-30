@@ -1,4 +1,4 @@
-package joos.assembly
+package joos.assemgen
 
 import java.io.{ByteArrayOutputStream, PrintWriter}
 import joos.core.Writable

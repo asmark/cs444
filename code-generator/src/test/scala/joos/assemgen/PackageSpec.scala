@@ -1,9 +1,9 @@
-package joos.assembly
+package joos.assemgen
 
 import org.scalatest.{Matchers, FlatSpec}
-import joos.assembly._
-import joos.assembly.Register._
-import joos.assembly.AssemblySection._
+import joos.assemgen._
+import joos.assemgen.Register._
+import joos.assemgen.AssemblySection._
 import java.io.{FileWriter, BufferedWriter, PrintWriter}
 import scala.io.Source
 
