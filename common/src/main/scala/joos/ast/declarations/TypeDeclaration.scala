@@ -5,7 +5,7 @@ import joos.ast.compositions.{BlockLike, DeclarationLike}
 import joos.ast.expressions.{SimpleNameExpression, NameExpression}
 import joos.ast.types.SimpleType
 import joos.ast.{AstConstructionException, CompilationUnit}
-import joos.core.Logger
+import joos.core.{Identifiable, Logger}
 import joos.semantic.{BlockEnvironment, TypeEnvironment}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
@@ -19,7 +19,7 @@ case class TypeDeclaration(
     fields: Seq[FieldDeclaration],
     methods: Seq[MethodDeclaration])
     extends BodyDeclaration
-    with TypeEnvironment with DeclarationLike with BlockLike {
+    with TypeEnvironment with DeclarationLike with BlockLike with Identifiable {
   implicit var compilationUnit: CompilationUnit = null
   var packageDeclaration: PackageDeclaration = null
 
