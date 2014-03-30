@@ -274,6 +274,10 @@ package object assemgen {
     new InstructionLine("dd", Seq(value))
   }
 
+  def dd(labelReference: LabelReference): AssemblyLine = {
+    new InstructionLine("dd", Seq(labelReference))
+  }
+
   /**
    * 2-byte data
    */
