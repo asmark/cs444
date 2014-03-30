@@ -1,0 +1,6 @@
+public class ClassC extends ClassB {
+    public int c;
+    public void dummy() {}
+    public int c2;
+    public ClassC() {}
+}

@@ -1,0 +1,10 @@
+public class ClassB extends ClassA {
+    public int b;
+    public int b1;
+    public int b2;
+    public ClassB() {
+        b = 0;
+        b1 = 1;
+        b2 = 2;
+    }
+}

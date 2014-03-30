@@ -8,9 +8,7 @@ import joos.codegen.AssemblyFileManager
 class IntegerLiteralAssembler(literal: IntegerLiteral)(implicit val assemblyManager: AssemblyFileManager) extends Assembler {
 
   override def generateAssembly() {
-    Seq(
-      mov(Eax, literal.value)
-    )
+    assemblyManager.text = assemblyManager.text :+ mov(Eax, literal.value, s"Assemble integer literal: ${literal}")
   }
 
 }

@@ -11,6 +11,8 @@ class BooleanLiteral(val name: String) extends LiteralExpression with BooleanLit
 
   val value = if (this == BooleanLiteral.TrueLiteral) 1 else 0
 
+  override def toString = name
+
 }
 
 object BooleanLiteral extends Enumeration {
