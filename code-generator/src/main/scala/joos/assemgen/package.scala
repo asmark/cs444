@@ -58,12 +58,12 @@ package object assemgen {
     }
   }
 
-  def mov(destination: AssemblyExpression, source: AssemblyExpression): AssemblyLine = {
-    new InstructionLine("mov", Seq(destination, source))
+  def mov(destination: AssemblyExpression, source: AssemblyExpression, comment: Option[String] = None): AssemblyLine = {
+    new InstructionLine("mov", Seq(destination, source), comment)
   }
 
   def mov(destination: AssemblyExpression, source: AssemblyExpression, comment: String): AssemblyLine = {
-    new InstructionLine("mov", Seq(destination, source), Some(comment))
+    mov(destination, source, Some(comment))
   }
 
   /**
