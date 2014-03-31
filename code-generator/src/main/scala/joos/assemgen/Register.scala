@@ -19,7 +19,7 @@ object Register extends Enumeration {
   final val Ebx = this + new Register("ebx")
   final val Ecx = this + new Register("ecx")
   final val Edx = this + new Register("edx")
-  final val Exi = this + new Register("exi")
+  final val Esi = this + new Register("esi")
   final val Edi = this + new Register("edi")
   /**
    * Stack pointer

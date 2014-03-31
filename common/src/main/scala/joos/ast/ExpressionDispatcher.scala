@@ -3,7 +3,7 @@ package joos.ast
 import joos.ast.expressions._
 
 /**
- * Dispatches {{Expression}} to a more specific method
+ * Dispatches [[Expression]] to a more specific method
  */
 trait ExpressionDispatcher {
   def apply(name: NameExpression) {
@@ -22,6 +22,8 @@ trait ExpressionDispatcher {
       case literal: StringLiteral => this(literal)
     }
   }
+
+  protected def dispatchExpression(expression: Expression) = this(expression)
 
   def apply(expression: Expression) {
     expression match {

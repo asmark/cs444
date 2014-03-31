@@ -3,6 +3,7 @@ package joos
 import java.io.PrintWriter
 import joos.ast.declarations.{TypeDeclaration, FieldDeclaration, MethodDeclaration}
 import joos.ast.expressions.StringLiteral
+import joos.core.DefaultUniqueIdGenerator
 import scala.language.implicitConversions
 
 package object assemgen {
@@ -79,6 +80,10 @@ package object assemgen {
   }
 
 
+  def nextLabel(prefix: String): String = {
+    s"${prefix}.${DefaultUniqueIdGenerator.nextId()}"
+  }
+
   /**
    * Writes any arbitrary expression
    */
@@ -125,6 +130,10 @@ package object assemgen {
    */
   def sub(eax: Register, ebx: Register): AssemblyLine = {
     new InstructionLine("sub", Seq(eax, ebx))
+  }
+
+  def sub(dst: Register, source: AssemblyExpression, comment: Option[String] = None): AssemblyLine = {
+    new InstructionLine("sub", Seq(dst, source), comment)
   }
 
   /**
