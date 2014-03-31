@@ -19,19 +19,19 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
     appendGlobal(methodLabel)
 
     appendText(
-      comment("[BEGIN] Method Definition"),
+      #: ("[BEGIN] Method Definition"),
       label(methodLabel)
     )
     appendText(prologue(4): _*)
 
-    appendText(comment("[BEGIN] Function Body"))
+    appendText(#: ("[BEGIN] Function Body"))
     method.body.foreach(_.generate())
-    appendText(comment("[BEGIN] Function End"), emptyLine())
+    appendText(#: ("[BEGIN] Function End"), emptyLine())
 
     appendText(epilogue: _*)
 
     appendText(
-      comment("[END] Method Definition"),
+      #: ("[END] Method Definition"),
       emptyLine()
     )
 
@@ -44,9 +44,9 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
 
     appendText(
       label(startLabel),
-      comment("[BEGIN] Static field initializations"),
+      #: ("[BEGIN] Static field initializations"),
       // TODO: Initializations
-      comment("[END] Static field initializations"),
+      #: ("[END] Static field initializations"),
       emptyLine(),
       call(labelReference(method.uniqueName)),
       emptyLine(),

@@ -11,7 +11,7 @@ package object generators {
   def nextLabel(labelPrefix: String = "label") = labelPrefix + "_" + DefaultUniqueIdGenerator.nextId
 
   def prologue(frameSize: Int) = Seq(
-    comment("[BEGIN] Function Prologue"),
+    #: ("[BEGIN] Function Prologue"),
     push(Ebp),
     mov(Ebp, Esp),
     sub(Esp, frameSize),
@@ -20,12 +20,12 @@ package object generators {
     push(Edx),
     push(Esi),
     push(Edi),
-    comment("[END] Function Prologue"),
+    #: ("[END] Function Prologue"),
     emptyLine()
   )
 
   def epilogue = Seq(
-    comment("[BEGIN] Function Epilogue"),
+    #: ("[BEGIN] Function Epilogue"),
     pop(Edi),
     pop(Esi),
     pop(Edx),
@@ -33,7 +33,7 @@ package object generators {
     pop(Ebx),
     mov(Esp, Ebp),
     pop(Ebp),
-    ret,
-    comment("[END] Function Epilogue")
+    ret(),
+    #: ("[END] Function Epilogue")
   )
 }

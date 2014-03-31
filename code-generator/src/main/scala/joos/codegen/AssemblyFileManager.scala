@@ -1,7 +1,6 @@
 package joos.codegen
 
 import collection.mutable
-import java.io.PrintWriter
 import joos.assemgen._
 
 class AssemblyFileManager(val fileName: String) {

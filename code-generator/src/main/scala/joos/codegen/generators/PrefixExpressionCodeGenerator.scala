@@ -18,7 +18,7 @@ class PrefixExpressionCodeGenerator(prefix: PrefixExpression)
         appendText(neg(Eax))
       case Not =>
         appendText(
-          comment("[BEGIN] negation expr starts"),
+          #: ("[BEGIN] negation expr starts"),
           push(Ebx),
           xor(Ebx, Ebx),
           cmp(Eax, Ebx)
@@ -36,7 +36,7 @@ class PrefixExpressionCodeGenerator(prefix: PrefixExpression)
           label(jumpLabel),
           mov(Eax, 0),
           pop(Ebx),
-          comment("[END] negation expr ends")
+          #: ("[END] negation expr ends")
         )
     }
   }

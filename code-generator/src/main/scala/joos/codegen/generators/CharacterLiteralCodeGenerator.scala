@@ -10,7 +10,7 @@ class CharacterLiteralCodeGenerator(literal: CharacterLiteral)
 
   override def generate() {
     appendText(
-      mov(Eax, literal.value, s"Assemble character literal: ${literal}")
+      mov (Eax, literal.value) #: s"Assemble character literal: ${literal}"
     )
   }
 }

@@ -23,18 +23,18 @@ package object commonlib {
   val addIntegers = "_lib_add_int"
   private val addInts = {
     Seq(
-      comment("[BEGIN] Add Integer Library Function"),
+      #: ("[BEGIN] Add Integer Library Function"),
       label(addIntegers)) ++
         prologue(0) ++
         Seq(
-          mov(Eax, at(Ebp + 12), "put left operand in eax"),
-          mov(Ebx, at(Ebp + 8), "put right operand in ebx"),
-          add(Eax, Ebx, "add left and right and put answer in eax"),
+          mov(Eax, at(Ebp + 12)) #: "put left operand in eax",
+          mov(Ebx, at(Ebp + 8)) #: "put right operand in ebx",
+          add(Eax, Ebx) #: "add left and right and put answer in eax",
           emptyLine
         ) ++
         epilogue ++
         Seq(
-          comment("[END] Add Integer Library Function"),
+          #: ("[END] Add Integer Library Function"),
           emptyLine
         )
   }
