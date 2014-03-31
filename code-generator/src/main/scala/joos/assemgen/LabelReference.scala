@@ -10,3 +10,7 @@ class LabelReference(val name: String) extends AssemblyExpression {
     writer.print(name)
   }
 }
+
+object LabelReference {
+  def apply(name: String) = new LabelReference(name)
+}
