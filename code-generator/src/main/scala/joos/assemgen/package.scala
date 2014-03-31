@@ -7,15 +7,27 @@ import scala.language.implicitConversions
 
 package object assemgen {
 
-  private[this] final val EmptyLine = new AbstractAssemblyLine {
-    override def write(writer: PrintWriter) {
-      writer.println()
-    }
-  }
+  /**
+   * Indent the rest of the text by this amount
+   */
+  class Indentation(val amount: Int) extends PseudoAssemblyLine
+
+  /**
+   * Represents an empty line
+   */
+  class EmptyLine() extends PseudoAssemblyLine
+
+  private[this] final val EmptyLine = new EmptyLine()
 
   private[this] abstract class AbstractAssemblyLine extends AssemblyLine
 
   private[this] abstract class AbstractAssemblyExpression extends AssemblyExpression
+
+  private[this] class AnyAssembly(text: String) extends AssemblyLine with AssemblyExpression {
+    override def write(writer: PrintWriter) {
+      writer.print(text)
+    }
+  }
 
   implicit class RichMethodDeclaration(val method: MethodDeclaration) extends AnyVal {
     def uniqueName: String = {
@@ -78,6 +90,20 @@ package object assemgen {
   implicit def #:(comment: String): AssemblyComment = {
     new AssemblyComment(comment)
   }
+
+  /**
+   * Increments the indentation by the given {{amount}}
+   */
+  def #>(amount: Int): Indentation = new Indentation(amount)
+
+  def #> : Indentation = #>(4)
+
+  /**
+   * Decrements the indentation by the given {{amount}}
+   */
+  def #<(amount: Int): Indentation = new Indentation(-amount)
+
+  def #< : Indentation = #<(4)
 
   def mov(destination: AssemblyExpression, source: AssemblyExpression): AssemblyInstruction = {
     new AssemblyInstruction("mov", Seq(destination, source), None)
@@ -293,17 +319,13 @@ package object assemgen {
    * Writes any arbitrary line
    */
   def anyLine(line: String): AssemblyLine = {
-    new AbstractAssemblyLine {
-      override def write(writer: PrintWriter) {
-        writer.println(line)
-      }
-    }
+    new AnyAssembly(line)
   }
 
   /**
    * Writes an empty line
    */
-  def emptyLine(): AssemblyLine = {
+  def emptyLine: AssemblyLine = {
     EmptyLine
   }
 
@@ -311,42 +333,21 @@ package object assemgen {
    * Defines a section
    */
   def section(section: AssemblySection): AssemblyLine = {
-    new AbstractAssemblyLine {
-      /**
-       * Writes the content of this line to the writer
-       */
-      override def write(writer: PrintWriter) {
-        writer.print("section ")
-        section.write(writer)
-        writer.println()
-      }
-    }
+    new AnyAssembly("section " + section.name)
   }
 
   /**
    * Exports the {{label}}
    */
   def global(label: LabelReference): AssemblyLine = {
-    new AbstractAssemblyLine {
-      override def write(writer: PrintWriter) {
-        writer.print("global ")
-        label.write(writer)
-        writer.println()
-      }
-    }
+    new AnyAssembly("global " + label.name)
   }
 
   /**
    * Imports the {{label}}
    */
   def extern(label: LabelReference): AssemblyLine = {
-    new AbstractAssemblyLine {
-      override def write(writer: PrintWriter) {
-        writer.print("extern ")
-        label.write(writer)
-        writer.println()
-      }
-    }
+    new AnyAssembly("extern " + label.name)
   }
 
   /**
@@ -358,29 +359,15 @@ package object assemgen {
   }
 
   implicit def toExpression(value: String): AssemblyExpression = {
-    new AbstractAssemblyExpression {
-      override def write(writer: PrintWriter) {
-        writer.print('\'')
-        writer.print(value)
-        writer.print('\'')
-      }
-    }
+    new AnyAssembly('\'' + value + '\'')
   }
 
   implicit def toExpression(value: Int): AssemblyExpression = {
-    new AbstractAssemblyExpression {
-      override def write(writer: PrintWriter) {
-        writer.print(value)
-      }
-    }
+    new AnyAssembly(value.toString)
   }
 
   implicit def toExpression(value: Long): AssemblyExpression = {
-    new AbstractAssemblyExpression {
-      override def write(writer: PrintWriter) {
-        writer.print(value)
-      }
-    }
+    new AnyAssembly(value.toString)
   }
 
   /**
@@ -389,6 +376,4 @@ package object assemgen {
   implicit def labelReference(name: String): LabelReference = {
     new LabelReference(name)
   }
-
-
 }

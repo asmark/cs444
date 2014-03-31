@@ -12,7 +12,7 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
   override def generate() {
 
     if (method.name.standardName == "test") {
-      generateStartCode
+      generateStartCode()
     }
 
     val methodLabel = s"${method.uniqueName}"
@@ -24,20 +24,20 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
     )
     appendText(prologue(4): _*)
 
-    appendText(#: ("[BEGIN] Function Body"))
+    appendText(#: ("[BEGIN] Function Body"), #>)
     method.body.foreach(_.generate())
-    appendText(#: ("[BEGIN] Function End"), emptyLine())
+    appendText(#<, #: ("[BEGIN] Function End"), emptyLine)
 
     appendText(epilogue: _*)
 
     appendText(
       #: ("[END] Method Definition"),
-      emptyLine()
+      emptyLine
     )
 
   }
 
-  def generateStartCode {
+  def generateStartCode() {
     val startLabel = "_start"
 
     appendGlobal(startLabel)
@@ -47,13 +47,13 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
       #: ("[BEGIN] Static field initializations"),
       // TODO: Initializations
       #: ("[END] Static field initializations"),
-      emptyLine(),
+      emptyLine,
       call(labelReference(method.uniqueName)),
-      emptyLine(),
+      emptyLine,
       mov(Ebx, Eax),
       mov(Eax, 1),
       int(0x80),
-      emptyLine()
+      emptyLine
     )
 
   }

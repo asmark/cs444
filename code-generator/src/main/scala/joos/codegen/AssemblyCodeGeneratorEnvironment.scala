@@ -21,30 +21,29 @@ class AssemblyCodeGeneratorEnvironment(val assemblyManager: AssemblyFileManager,
   }
 
   def write {
-    val writer = new PrintWriter(new File(s"${OutputDirectory}/${assemblyManager.fileName}"))
+    val writer = new AssemblyCodeWriter(new PrintWriter(new File(s"${OutputDirectory}/${assemblyManager.fileName}")))
+    writer.write(#:(sectionFormatString.format("Text")))
+    writer.write(section(AssemblySection.Text))
 
-    writer.print(#: (sectionFormatString.format("Text")))
-    writer.print(section(AssemblySection.Text))
+    writer.write(#:("Defining Exported Symbols"))
+    assemblyManager.globals foreach (symbol => writer.write(global(symbol)))
+    writer.write(emptyLine)
 
-    writer.print(#: ("Defining Exported Symbols"))
-    assemblyManager.globals foreach (symbol => writer.print(global(symbol)))
-    writer.print(emptyLine)
-
-    writer.print(#: ("Defining Imported Symbols"))
+    writer.write(#:("Defining Imported Symbols"))
     // Do not extern things that are globalled here
-    namespace.externs -- assemblyManager.globals foreach (symbol => writer.print(extern(symbol)))
-    writer.print(emptyLine)
+    namespace.externs -- assemblyManager.globals foreach (symbol => writer.write(extern(symbol)))
+    writer.write(emptyLine)
 
-    writer.print(#: ("Defining body"))
-    writer.print(emptyLine)
+    writer.write(#:("Defining body"))
+    writer.write(emptyLine)
 
-    assemblyManager.text foreach writer.print
-    writer.print(emptyLine)
+    writer.write(assemblyManager.text: _*)
+    writer.write(emptyLine)
 
-    writer.print(#: (sectionFormatString.format("Data")))
-    writer.print(section(AssemblySection.Data))
-    assemblyManager.data foreach writer.print
-    writer.print(emptyLine)
+    writer.write(#:(sectionFormatString.format("Data")))
+    writer.write(section(AssemblySection.Data))
+    writer.write(assemblyManager.data: _*)
+    writer.write(emptyLine)
 
     writer.flush()
     writer.close()

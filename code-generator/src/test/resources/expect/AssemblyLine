@@ -20,3 +20,4 @@ label.1:
     mov ecx, [1]
     mov ebx, [eax]
     mov ebx, [ebx]    ; with comment
+    inline.label:    add eax, ebx    ; comment
