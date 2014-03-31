@@ -5,7 +5,7 @@ import java.io.PrintWriter
 import joos.assemgen._
 
 class AssemblyFileManager(val fileName: String) {
-  val globals = mutable.HashSet.empty[AssemblyLine]
+  val globals = mutable.HashSet.empty[String]
   val data = mutable.MutableList.empty[AssemblyLine]
   val text = mutable.MutableList.empty[AssemblyLine]
 
@@ -13,7 +13,7 @@ class AssemblyFileManager(val fileName: String) {
     text ++= lines
   }
 
-  def appendGlobal(lines: AssemblyLine*) {
+  def appendGlobal(lines: String*) {
     globals ++= lines
   }
 

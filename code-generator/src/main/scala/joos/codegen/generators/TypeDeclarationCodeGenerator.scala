@@ -10,9 +10,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
   override def generate() {
 
-    appendGlobal(
-      global(LabelReference(tipe.uniqueName))
-    )
+    appendGlobal(tipe.uniqueName)
 
     appendText(comment("Declaring class"))
     appendText(

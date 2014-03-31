@@ -27,22 +27,23 @@ class AssemblyCodeGeneratorEnvironment(val assemblyManager: AssemblyFileManager,
     writer.print(section(AssemblySection.Text))
 
     writer.print(comment("Defining Exported Symbols"))
-    assemblyManager.globals.foreach(global => writer.print(global))
+    assemblyManager.globals foreach (symbol => writer.print(global(symbol)))
     writer.print(emptyLine)
 
     writer.print(comment("Defining Imported Symbols"))
-    namespace.externs.foreach(extern => writer.print(extern))
+    // Do not extern things that are globalled here
+    namespace.externs -- assemblyManager.globals foreach (symbol => writer.print(extern(symbol)))
     writer.print(emptyLine)
 
     writer.print(comment("Defining body"))
     writer.print(emptyLine)
 
-    assemblyManager.text.foreach(writer.print)
+    assemblyManager.text foreach writer.print
     writer.print(emptyLine)
 
     writer.print(comment(sectionFormatString.format("Data")))
     writer.print(section(AssemblySection.Data))
-    assemblyManager.data.foreach(data => writer.print(data))
+    assemblyManager.data foreach writer.print
     writer.print(emptyLine)
 
     writer.flush()
