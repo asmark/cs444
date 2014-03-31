@@ -6,7 +6,7 @@ section .text
 extern label.2
 global _start
 _start:
-    ; this is comment
+; this is comment
 label.1:
     jmp label.1
     mov eax, 4
