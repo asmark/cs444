@@ -42,9 +42,8 @@ class AssemblyCodeGeneratorEnvironment(val assemblyManager: AssemblyFileManager,
 
     writer.print(comment(sectionFormatString.format("Data")))
     writer.print(section(AssemblySection.Data))
+    assemblyManager.data.foreach(data => writer.print(data))
     writer.print(emptyLine)
-
-    // TODO: What to print here?
 
     writer.flush()
     writer.close()
