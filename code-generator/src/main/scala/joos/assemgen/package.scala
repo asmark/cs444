@@ -101,9 +101,6 @@ package object assemgen {
   def comment(comment: String, indentation: Int = 4): AssemblyLine = {
     new AbstractAssemblyLine {
       override protected def writeContent(writer: PrintWriter) {
-        for (i <- 0 until indentation) {
-          writer.print(' ')
-        }
         writer.print("; ")
         writer.print(comment)
       }
