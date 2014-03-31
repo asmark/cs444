@@ -18,7 +18,7 @@ trait AssemblyCodeGenerator {
     environment.assemblyManager.appendText(lines: _*)
   }
 
-  def appendGlobal(lines: AssemblyLine*) {
+  def appendGlobal(lines: String*) {
     environment.assemblyManager.appendGlobal(lines: _*)
   }
 

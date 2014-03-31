@@ -1,7 +1,7 @@
 package joos.codegen
 
 import joos.ast.AbstractSyntaxTree
-import joos.codegen.commonlib.AssemblyCommonLibraryEnvironment
+import joos.codegen.generators.commonlib.AssemblyCommonLibraryEnvironment
 
 object CodeGeneration {
 
