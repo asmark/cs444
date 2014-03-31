@@ -15,13 +15,16 @@ trait AssemblyCodeGenerator {
   def environment: AssemblyCodeGeneratorEnvironment
 
   def appendText(lines: AssemblyLine*) {
-    environment.assemblyManager.appendData(lines: _*)
+    environment.assemblyManager.appendText(lines: _*)
   }
 
-  def appendGlobal(lines: AssemblyLine*) {
+  def appendGlobal(lines: String*) {
     environment.assemblyManager.appendGlobal(lines: _*)
   }
 
+  def appendData(lines: AssemblyLine*) {
+    environment.assemblyManager.appendData(lines: _*)
+  }
   implicit protected def toAssemblyCodeGenerator(node: AstNode)
       (implicit environment: AssemblyCodeGeneratorEnvironment): AssemblyCodeGenerator = {
     var generator: AssemblyCodeGenerator = null
@@ -59,6 +62,12 @@ trait AssemblyCodeGenerator {
 
       override def apply(expression: CharacterLiteral) = generator = new CharacterLiteralCodeGenerator(expression)
 
+      override def apply(expression: IntegerLiteral) = generator = new IntegerLiteralCodeGenerator(expression)
+
+      override def apply(expression: StringLiteral) = generator = new StringLiteralCodeGenerator(expression)
+
+      override def apply(expression: NullLiteral) = generator = new NullLiteralCodeGenerator(expression)
+
       override def apply(expression: ClassInstanceCreationExpression) = generator = new ClassInstanceCreationExpressionCodeGenerator(expression)
 
       override def apply(expression: FieldAccessExpression) = generator = new FieldAccessExpressionCodeGenerator(expression)
@@ -67,8 +76,6 @@ trait AssemblyCodeGenerator {
 
       override def apply(expression: InstanceOfExpression) = generator = new InstanceOfExpressionCodeGenerator(expression)
 
-      override def apply(expression: IntegerLiteral) = generator = new IntegerLiteralCodeGenerator(expression)
-
       override def apply(expression: MethodInvocationExpression) = generator = new MethodInvocationExpressionCodeGenerator(expression)
 
       override def apply(expression: PrefixExpression) = generator = new PrefixExpressionCodeGenerator(expression)
@@ -76,9 +83,14 @@ trait AssemblyCodeGenerator {
       override def apply(expression: VariableDeclarationExpression) = generator = new VariableDeclarationExpressionCodeGenerator(expression)
 
       override def apply(expression: ThisExpression) = generator = new ThisExpressionCodeGenerator(expression)
+
+      override def apply(expression: SimpleNameExpression) = generator = new SimpleNameExpressionCodeGenerator(expression)
+
+      override def apply(expression: QualifiedNameExpression) = generator = new QualifiedNameExpressionCodeGenerator(expression)
     }
 
     creator(node)
+    assert(generator != null)
     generator
   }
 }
