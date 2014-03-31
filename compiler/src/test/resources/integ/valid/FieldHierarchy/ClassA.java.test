@@ -3,6 +3,6 @@ public class ClassA {
     public int a1;
     public ClassA() {
         a = 0;
-        a1 = 1;
+        a1 = (a + 1);
     }
 }
