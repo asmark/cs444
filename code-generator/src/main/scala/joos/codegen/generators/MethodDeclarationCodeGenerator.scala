@@ -1,7 +1,6 @@
 package joos.codegen.generators
 
 import joos.ast.declarations.MethodDeclaration
-import AssemblyCodeGenerator._
 import joos.codegen.AssemblyCodeGeneratorEnvironment
 
 class MethodDeclarationCodeGenerator(method: MethodDeclaration)

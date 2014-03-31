@@ -23,6 +23,8 @@ trait ExpressionDispatcher {
     }
   }
 
+  protected def dispatchExpression(expression: Expression) = this(expression)
+
   def apply(expression: Expression) {
     expression match {
       case node: ArrayAccessExpression => this(node)

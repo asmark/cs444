@@ -27,7 +27,7 @@ class PrefixExpressionCodeGenerator(prefix: PrefixExpression)
         // if eax == 0 then eax = 1
         val jumpLabel = nextLabel("negate_jmp")
         appendText(
-          jne(LabelReference(jumpLabel)),
+          jne(jumpLabel),
           mov(Eax, 1)
         )
 

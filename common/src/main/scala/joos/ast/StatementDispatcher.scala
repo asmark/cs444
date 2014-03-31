@@ -6,6 +6,8 @@ import joos.ast.statements._
  * Dispatches to a more specific [[Statement]]
  */
 trait StatementDispatcher {
+  protected def dispatchStatement(statement: Statement) = this(statement)
+
   def apply(statement: Statement) {
     statement match {
       case node: Block => this(node)

@@ -1,9 +1,21 @@
 package joos.ast
 
 import joos.ast.declarations._
+import joos.ast.expressions.Expression
 import joos.ast.statements._
 
 trait AbstractSyntaxTreeDispatcher extends StatementDispatcher with ExpressionDispatcher {
+
+  def apply(node: AstNode) {
+    node match {
+      case expression: Expression => dispatchExpression(expression)
+      case statement: Statement => dispatchStatement(statement)
+      case field: FieldDeclaration => this(field)
+      case method: MethodDeclaration => this(method)
+      case tipe: TypeDeclaration => this(tipe)
+      case variable: SingleVariableDeclaration => this(variable)
+    }
+  }
 
   def apply(field: FieldDeclaration) {}
 
@@ -12,29 +24,29 @@ trait AbstractSyntaxTreeDispatcher extends StatementDispatcher with ExpressionDi
   def apply(variable: SingleVariableDeclaration) {}
 
   override def apply(statement: ExpressionStatement) {
-    this(statement.expression)
+    dispatchExpression(statement.expression)
   }
 
   override def apply(statement: ForStatement) {
-    statement.initialization.foreach(apply)
-    statement.condition.foreach(apply)
-    statement.update.foreach(apply)
-    this(statement.body)
+    statement.initialization.foreach(dispatchExpression)
+    statement.condition.foreach(dispatchExpression)
+    statement.update.foreach(dispatchExpression)
+    dispatchStatement(statement.body)
   }
 
   override def apply(statement: IfStatement) {
-    this(statement.condition)
-    this(statement.trueStatement)
-    statement.falseStatement.foreach(apply)
+    dispatchExpression(statement.condition)
+    dispatchStatement(statement.trueStatement)
+    statement.falseStatement.foreach(dispatchStatement)
   }
 
   override def apply(statement: ReturnStatement) {
-    statement.expression.foreach(apply)
+    statement.expression.foreach(dispatchExpression)
   }
 
   override def apply(statement: WhileStatement) {
-    this(statement.condition)
-    this(statement.body)
+    dispatchExpression(statement.condition)
+    dispatchStatement(statement.body)
   }
 
   def apply(tipe: TypeDeclaration) {
