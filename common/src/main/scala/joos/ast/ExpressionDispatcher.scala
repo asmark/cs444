@@ -3,7 +3,7 @@ package joos.ast
 import joos.ast.expressions._
 
 /**
- * Dispatches {{Expression}} to a more specific method
+ * Dispatches [[Expression]] to a more specific method
  */
 trait ExpressionDispatcher {
   def apply(name: NameExpression) {
