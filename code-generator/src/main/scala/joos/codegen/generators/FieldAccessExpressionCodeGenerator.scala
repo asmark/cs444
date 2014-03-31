@@ -8,6 +8,8 @@ import joos.ast.expressions.FieldAccessExpression
 class FieldAccessExpressionCodeGenerator(expression: FieldAccessExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
-  override def generate() {}
+  override def generate() {
+    expression.expression.generate()
+  }
 
 }

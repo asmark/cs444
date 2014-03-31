@@ -9,6 +9,9 @@ import joos.codegen.AssemblyFileManager
 class InfixExpressionCodeGenerator(expression: InfixExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
-  override def generate() {}
+  override def generate() {
+    expression.left.generate()
+    expression.right.generate()
+  }
 
 }

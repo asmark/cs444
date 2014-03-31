@@ -9,6 +9,9 @@ import joos.codegen.AssemblyCodeGeneratorEnvironment
 class WhileStatementCodeGenerator(statement: WhileStatement)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
-  override def generate() {}
+  override def generate() {
+    statement.condition.generate()
+    statement.body.generate()
+  }
 
 }

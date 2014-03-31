@@ -8,6 +8,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
   override def generate() {
+
     appendGlobal(
       global(LabelReference(tipe.uniqueName))
     )

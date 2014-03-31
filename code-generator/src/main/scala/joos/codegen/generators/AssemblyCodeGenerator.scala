@@ -17,12 +17,11 @@ trait AssemblyCodeGenerator {
   def appendGlobal(lines: AssemblyLine*) {
     environment.assemblyManager.appendGlobal(lines: _*)
   }
-}
 
-object AssemblyCodeGenerator {
-  implicit def toAssemblyCodeGenerator(element: AstNode)
+  protected implicit def toAssemblyCodeGenerator(element: AstNode)
       (implicit environment: AssemblyCodeGeneratorEnvironment): AssemblyCodeGenerator = {
     // TODO: implement
     null
   }
 }
+

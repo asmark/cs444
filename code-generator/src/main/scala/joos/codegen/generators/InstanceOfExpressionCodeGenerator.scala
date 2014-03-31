@@ -8,6 +8,8 @@ import joos.codegen.AssemblyFileManager
 class InstanceOfExpressionCodeGenerator(expression: InstanceOfExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
-  override def generate() {}
+  override def generate() {
+    expression.expression.generate()
+  }
 
 }

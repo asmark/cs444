@@ -9,6 +9,8 @@ import joos.codegen.AssemblyCodeGeneratorEnvironment
 class SingleVarDeclarationCodeGenerator(variable: SingleVariableDeclaration)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
-  override def generate() {}
+  override def generate() {
+    variable.initializer.foreach(_.generate())
+  }
 
 }

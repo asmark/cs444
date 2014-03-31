@@ -9,6 +9,9 @@ import joos.ast.expressions.BooleanLiteral
 class ArrayAccessExpressionCodeGenerator(expression: ArrayAccessExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
-  override def generate() {}
+  override def generate() {
+    expression.reference.generate()
+    expression.index.generate()
+  }
 
 }
