@@ -3,7 +3,6 @@ package joos.codegen
 import collection.mutable
 import java.io.PrintWriter
 import joos.assemgen._
-import scala.collection.immutable.Queue
 
 class AssemblyFileManager(val writer: PrintWriter) {
   private var globals = Set.empty[AssemblyLine]

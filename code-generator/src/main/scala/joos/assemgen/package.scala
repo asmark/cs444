@@ -146,6 +146,17 @@ package object assemgen {
   }
 
   /**
+   * eax = {{target}}
+   */
+  def neg(target: Register, comment: Option[String] = None): AssemblyLine = {
+    new InstructionLine("neg", Seq(target), comment)
+  }
+
+  def xor(destination: AssemblyExpression, source: AssemblyExpression, comment: Option[String] = None): AssemblyLine = {
+    new InstructionLine("xor", Seq(destination, source), comment)
+  }
+
+  /**
    * eip = {{label}}
    */
   def jmp(label: LabelReference): AssemblyLine = {
