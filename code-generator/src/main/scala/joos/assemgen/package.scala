@@ -3,7 +3,6 @@ package joos
 import java.io.PrintWriter
 import joos.ast.declarations.{TypeDeclaration, FieldDeclaration, MethodDeclaration}
 import joos.ast.expressions.StringLiteral
-import joos.core.DefaultUniqueIdGenerator
 import scala.language.implicitConversions
 
 package object assemgen {
@@ -92,10 +91,10 @@ package object assemgen {
   }
 
   /**
-   * eax -= ebx
+   * left -= right
    */
-  def sub(eax: Register, ebx: Register): AssemblyInstruction = {
-    new AssemblyInstruction("sub", Seq(eax, ebx))
+  def sub(left: Register, right: AssemblyExpression): AssemblyInstruction = {
+    new AssemblyInstruction("sub", Seq(left, right))
   }
 
   /**
@@ -290,16 +289,16 @@ package object assemgen {
     new MemoryReference(address)
   }
 
-//  /**
-//   * Writes any arbitrary line
-//   */
-//  def anyLine(line: String): AssemblyLine = {
-//    new AbstractAssemblyLine {
-//      override protected def writeContent(writer: PrintWriter) {
-//        writer.print(line)
-//      }
-//    }
-//  }
+  /**
+   * Writes any arbitrary line
+   */
+  def anyLine(line: String): AssemblyLine = {
+    new AbstractAssemblyLine {
+      override def write(writer: PrintWriter) {
+        writer.println(line)
+      }
+    }
+  }
 
   /**
    * Writes an empty line
@@ -319,6 +318,7 @@ package object assemgen {
       override def write(writer: PrintWriter) {
         writer.print("section ")
         section.write(writer)
+        writer.println()
       }
     }
   }
@@ -331,6 +331,7 @@ package object assemgen {
       override def write(writer: PrintWriter) {
         writer.print("global ")
         label.write(writer)
+        writer.println()
       }
     }
   }
@@ -343,6 +344,7 @@ package object assemgen {
       override def write(writer: PrintWriter) {
         writer.print("extern ")
         label.write(writer)
+        writer.println()
       }
     }
   }
@@ -350,24 +352,10 @@ package object assemgen {
   /**
    * Defines a label
    */
+  @deprecated("Use ::", "5.0.0")
   def label(name: String): AssemblyLabel = {
     name.::
   }
-//
-//  def inlineLabel(name: String, line: AssemblyLine): AssemblyLine = {
-//    new AbstractAssemblyLine {
-//
-//      override def write(writer: PrintWriter) {
-//        writeContent(writer)
-//      }
-//
-//      override protected def writeContent(writer: PrintWriter) {
-//        writer.print(name)
-//        writer.print(": ")
-//        line.write(writer)
-//      }
-//    }
-//  }
 
   implicit def toExpression(value: String): AssemblyExpression = {
     new AbstractAssemblyExpression {

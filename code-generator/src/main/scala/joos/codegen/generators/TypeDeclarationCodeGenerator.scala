@@ -12,7 +12,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
     appendGlobal(tipe.uniqueName)
 
-    appendText(comment("Declaring class"))
+    appendText(#: ("Declaring class"))
     appendText(
           label(tipe.uniqueName)
     )
@@ -28,7 +28,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     val indexedFields = staticFields.toIndexedSeq
     for (i <- 0 until indexedFields.size) {
       appendText(dd(0))
-      appendData(inlineLabel(indexedFields(i).uniqueName + offsetPostFix, dd(i * 4)))
+      appendData(indexedFields(i).uniqueName + offsetPostFix :: dd(i * 4))
     }
 
     // Add methods to class definition
