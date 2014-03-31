@@ -1,14 +1,15 @@
-package joos.codegen.assembler
+package joos.codegen
 
 import joos.assemgen.Register._
 import joos.assemgen._
 import joos.ast.expressions.StringLiteral
-import joos.codegen.AssemblyFileManager
 
-class StringLiteralAssembler(literal: StringLiteral)(implicit val assemblyManager: AssemblyFileManager) extends Assembler {
+class StringLiteralCodeGenerator(literal: StringLiteral)
+    (implicit val environment: AssemblyCodeGeneratorEnvironment)
+    extends AssemblyCodeGenerator {
 
-  override def generateAssembly() {
-    assemblyManager.appendText(
+  override def generate() {
+    appendText(
       emptyLine(),
       comment(s"[BEGIN] Assemble string literal: ${literal}"),
       inlineLabel(literal.uniqueName, db(literal.text)),

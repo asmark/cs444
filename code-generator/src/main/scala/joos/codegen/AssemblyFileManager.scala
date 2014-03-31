@@ -17,23 +17,23 @@ class AssemblyFileManager(val writer: PrintWriter) {
 
   private val sectionFormatString = "--- %s ---"
 
-  def appendText(assemblyLine: AssemblyLine) {
-    text += assemblyLine
+  def appendText(lines: AssemblyLine*) {
+    text ++= lines
   }
 
-  def appendGlobal(assemblyLine: AssemblyLine) {
-    globals += assemblyLine
+  def appendGlobal(lines: AssemblyLine*) {
+    globals ++= lines
   }
 
-  def appendExtern(assemblyLine: AssemblyLine) {
-    externs += assemblyLine
+  def appendExtern(lines: AssemblyLine*) {
+    externs ++= lines
   }
 
-  def appendData(assemblyLine: AssemblyLine) {
-    data += assemblyLine
+  def appendData(lines: AssemblyLine*) {
+    data ++= lines
   }
 
-  def print = {
+  def print() = {
 
     writer.print(comment(sectionFormatString.format("Text")))
     writer.print(section(AssemblySection.Text))
