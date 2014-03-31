@@ -12,15 +12,15 @@ class PackageSpec extends FlatSpec with Matchers {
   "Each instruction" should "be correctly formatted" in {
     val instructions : Seq[AssemblyLine] = Seq(
       section(Data),
-      "str".::,
+      "str"::,
       db("Hello world!"),
       emptyLine(),
       section(Text),
       extern("label.2"),
       global("_start"),
-      label("_start"),
+      "_start"::,
       #: ("this is comment"),
-      label("label.1"),
+      "label.1"::,
       jmp("label.1"),
       mov(Eax, 4),
       mov(Ebx, 1),

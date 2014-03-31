@@ -33,7 +33,7 @@ class PrefixExpressionCodeGenerator(prefix: PrefixExpression)
 
         // else eax = 0
         appendText(
-          label(jumpLabel),
+          jumpLabel::,
           mov(Eax, 0),
           pop(Ebx),
           #: ("[END] negation expr ends")

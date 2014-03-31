@@ -20,7 +20,7 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
 
     appendText(
       #: ("[BEGIN] Method Definition"),
-      label(methodLabel)
+      methodLabel::
     )
     appendText(prologue(4): _*)
 
@@ -43,7 +43,7 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
     appendGlobal(startLabel)
 
     appendText(
-      label(startLabel),
+      startLabel::,
       #: ("[BEGIN] Static field initializations"),
       // TODO: Initializations
       #: ("[END] Static field initializations"),

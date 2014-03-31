@@ -33,6 +33,7 @@ trait ClassInstanceCreationExpressionTypeChecker extends AstVisitor {
                 unit.packageDeclaration != constructor.typeDeclaration.packageDeclaration)
               throw new TypeCheckingException("new", s"Cannot access protected constructor ${constructor.toString}")
 
+            newExpression.constructor = constructor
             classType
           }
         }
