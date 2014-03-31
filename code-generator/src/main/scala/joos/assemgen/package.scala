@@ -272,6 +272,15 @@ package object assemgen {
   }
 
   /**
+   * Same as
+   * mov esp,ebp
+   * pop ebp
+   */
+  def leave(): AssemblyLine = {
+    new InstructionLine("leave", Seq())
+  }
+
+  /**
    * System call
    */
   def int(address: Int): AssemblyLine = {
