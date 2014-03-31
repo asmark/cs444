@@ -1,6 +1,6 @@
 section .data
 str:
-    db "Hello world!"
+    db 'Hello world!'
 
 section .text
 extern label.2

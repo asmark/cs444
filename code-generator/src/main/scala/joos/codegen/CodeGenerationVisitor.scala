@@ -20,8 +20,8 @@ class CodeGenerationVisitor(implicit val unit: CompilationUnit, val assemblyMana
   }
 
   override def apply(methodDeclaration: MethodDeclaration) {
-    super.apply(methodDeclaration)
     methodDeclaration.generateAssembly()
+    super.apply(methodDeclaration)
   }
 
   override def apply(packaged: PackageDeclaration) {

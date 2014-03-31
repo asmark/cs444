@@ -127,6 +127,10 @@ package object assemgen {
     new InstructionLine("sub", Seq(eax, ebx))
   }
 
+  def sub(dst: Register, source: AssemblyExpression, comment: Option[String] = None): AssemblyLine = {
+    new InstructionLine("sub", Seq(dst, source), comment)
+  }
+
   /**
    * Signed multiplication
    * eax *= ebx
