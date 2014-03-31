@@ -9,7 +9,7 @@ class BlockCodeGenerator(statement: Block)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
   override def generate() {
-    statement.generate()
+    statement.statements.foreach(_.generate())
   }
 
 }

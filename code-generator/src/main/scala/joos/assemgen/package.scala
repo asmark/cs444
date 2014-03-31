@@ -69,7 +69,7 @@ package object assemgen {
 
   implicit class RichStringLiteral(val literal: StringLiteral) extends AnyVal {
     def uniqueName: String = {
-      s"string.literal.${literal.text}.${literal.id}"
+      s"string.literal.${literal.id}"
     }
   }
 
