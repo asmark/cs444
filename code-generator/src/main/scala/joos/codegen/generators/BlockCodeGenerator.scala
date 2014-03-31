@@ -8,6 +8,8 @@ import joos.ast.statements.Block
 class BlockCodeGenerator(statement: Block)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
-  override def generate() {}
+  override def generate() {
+    statement.generate()
+  }
 
 }

@@ -8,6 +8,7 @@ import joos.codegen.AssemblyCodeGeneratorEnvironment
 class PackageDeclarationCodeGenerator(packaged: PackageDeclaration)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
-  override def generate() {}
+  override def generate() {
+  }
 
 }

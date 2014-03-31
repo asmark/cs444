@@ -9,6 +9,10 @@ import joos.codegen.AssemblyCodeGeneratorEnvironment
 class IfStatementCodeGenerator(statement: IfStatement)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
-  override def generate() {}
+  override def generate() {
+    statement.condition.generate()
+    statement.trueStatement.generate()
+    statement.falseStatement.foreach(_.generate())
+  }
 
 }

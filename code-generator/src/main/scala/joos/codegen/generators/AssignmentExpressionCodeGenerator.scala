@@ -8,6 +8,9 @@ import joos.ast.expressions.AssignmentExpression
 class AssignmentExpressionCodeGenerator(expression: AssignmentExpression)
   (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
-    override def generate() {}
+    override def generate() {
+      expression.left.generate()
+      expression.right.generate()
+    }
 
   }
