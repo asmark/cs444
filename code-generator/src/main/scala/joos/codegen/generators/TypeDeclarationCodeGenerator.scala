@@ -13,9 +13,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     appendGlobal(tipe.uniqueName)
 
     appendText(#: ("Declaring class"))
-    appendText(
-          label(tipe.uniqueName)
-    )
+    appendText(tipe.uniqueName::)
 
     // Add static fields
     val staticFields = tipe.containedFields.values.filter(

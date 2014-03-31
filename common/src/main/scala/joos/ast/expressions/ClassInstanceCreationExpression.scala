@@ -4,8 +4,13 @@ import joos.ast.AstConstructionException
 import joos.ast.types.{Type, SimpleType}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
+import joos.ast.declarations.MethodDeclaration
 
 case class ClassInstanceCreationExpression(classType: Type, arguments: IndexedSeq[Expression]) extends Expression {
+  /**
+   * Constructor it's linked to
+   */
+  var constructor: MethodDeclaration = _
   override def toString = s"new ${classType}(${arguments.mkString(", ")}})"
 }
 

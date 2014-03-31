@@ -9,7 +9,7 @@ class AssemblyLabel(val name: String, next: Option[Writable]) extends AssemblyLi
     writer.print(':')
 
     next match {
-      case None => writer.println()
+      case None =>
       case Some(next) =>
         writer.print("    ")
         next.write(writer)
