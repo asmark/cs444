@@ -68,7 +68,7 @@ package object assemgen {
 
   implicit class RichStringLiteral(val literal: StringLiteral) extends AnyVal {
     def uniqueName: String = {
-      s"literal.string.${literal.id}"
+      s"string.literal.${literal.text}.${literal.id}"
     }
   }
 
@@ -274,6 +274,10 @@ package object assemgen {
     new InstructionLine("dd", Seq(value))
   }
 
+  def dd(labelReference: LabelReference): AssemblyLine = {
+    new InstructionLine("dd", Seq(labelReference))
+  }
+
   /**
    * 2-byte data
    */
@@ -357,9 +361,24 @@ package object assemgen {
    */
   def label(name: String): AssemblyLine = {
     new AbstractAssemblyLine {
-      override def writeContent(writer: PrintWriter) {
+      override protected def writeContent(writer: PrintWriter) {
         writer.print(name)
         writer.print(':')
+      }
+    }
+  }
+
+  def inlineLabel(name: String, line: AssemblyLine): AssemblyLine = {
+    new AbstractAssemblyLine {
+
+      override def write(writer: PrintWriter) {
+        writeContent(writer)
+      }
+
+      override protected def writeContent(writer: PrintWriter) {
+        writer.print(name)
+        writer.print(": ")
+        line.write(writer)
       }
     }
   }
@@ -367,9 +386,9 @@ package object assemgen {
   implicit def toExpression(value: String): AssemblyExpression = {
     new AbstractAssemblyExpression {
       override def write(writer: PrintWriter) {
-        writer.print('"')
+        writer.print('\'')
         writer.print(value)
-        writer.print('"')
+        writer.print('\'')
       }
     }
   }
@@ -396,5 +415,6 @@ package object assemgen {
   implicit def labelReference(name: String): LabelReference = {
     new LabelReference(name)
   }
+
 
 }

@@ -3,16 +3,36 @@ package joos.codegen
 import collection.mutable
 import java.io.PrintWriter
 import joos.assemgen._
+import scala.collection.immutable.Queue
 
 class AssemblyFileManager(val writer: PrintWriter) {
-  val globals = mutable.HashSet[AssemblyLine]()
-  // global
-  val externs = mutable.HashSet[AssemblyLine]()
-  // extern
-  val data = mutable.HashSet[AssemblyLine]()
-  var text = Seq.empty[AssemblyLine]
+  private var globals = Set.empty[AssemblyLine]
+  private var externs = Set(
+    extern(new LabelReference("__malloc")),
+    extern(new LabelReference("__exception")),
+    extern(new LabelReference("NATIVEjava.io.OutputStream.nativeWrite"))
+  )
+
+  private val data = mutable.MutableList.empty[AssemblyLine]
+  private val text = mutable.MutableList.empty[AssemblyLine]
 
   private val sectionFormatString = "--- %s ---"
+
+  def appendText(assemblyLine: AssemblyLine) {
+    text += assemblyLine
+  }
+
+  def appendGlobal(assemblyLine: AssemblyLine) {
+    globals += assemblyLine
+  }
+
+  def appendExtern(assemblyLine: AssemblyLine) {
+    externs += assemblyLine
+  }
+
+  def appendData(assemblyLine: AssemblyLine) {
+    data += assemblyLine
+  }
 
   def print = {
 
@@ -36,7 +56,7 @@ class AssemblyFileManager(val writer: PrintWriter) {
     writer.print(section(AssemblySection.Data).toString)
     writer.print(emptyLine().toString)
 
-    // TODO: What do print here?
+    // TODO: What to print here?
 
     writer.flush()
     writer.close()

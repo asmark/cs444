@@ -34,6 +34,11 @@ class CodeGenerationVisitor(implicit val unit: CompilationUnit, val assemblyMana
     variable.generateAssembly()
   }
 
+  override def apply(typed: TypeDeclaration) {
+    super.apply(typed)
+    typed.generateAssembly()
+  }
+
   override def apply(expression: ArrayAccessExpression) {
     super.apply(expression)
     expression.generateAssembly()
