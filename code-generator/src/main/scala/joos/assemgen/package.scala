@@ -3,6 +3,7 @@ package joos
 import java.io.PrintWriter
 import joos.ast.declarations.{TypeDeclaration, FieldDeclaration, MethodDeclaration}
 import joos.ast.expressions.StringLiteral
+import joos.core.DefaultUniqueIdGenerator
 import scala.language.implicitConversions
 
 package object assemgen {
@@ -68,7 +69,7 @@ package object assemgen {
 
   implicit class RichStringLiteral(val literal: StringLiteral) extends AnyVal {
     def uniqueName: String = {
-      s"literal.string.${literal.id}"
+      s"string.literal.${literal.id}"
     }
   }
 
@@ -78,6 +79,10 @@ package object assemgen {
     }
   }
 
+
+  def nextLabel(prefix: String): String = {
+    s"${prefix}.${DefaultUniqueIdGenerator.nextId()}"
+  }
 
   /**
    * Writes any arbitrary expression
@@ -127,6 +132,10 @@ package object assemgen {
     new InstructionLine("sub", Seq(eax, ebx))
   }
 
+  def sub(dst: Register, source: AssemblyExpression, comment: Option[String] = None): AssemblyLine = {
+    new InstructionLine("sub", Seq(dst, source), comment)
+  }
+
   /**
    * Signed multiplication
    * eax *= ebx
@@ -143,6 +152,17 @@ package object assemgen {
    */
   def idiv(dividend: Register): AssemblyLine = {
     new InstructionLine("idiv", Seq(dividend))
+  }
+
+  /**
+   * eax = {{target}}
+   */
+  def neg(target: Register, comment: Option[String] = None): AssemblyLine = {
+    new InstructionLine("neg", Seq(target), comment)
+  }
+
+  def xor(destination: AssemblyExpression, source: AssemblyExpression, comment: Option[String] = None): AssemblyLine = {
+    new InstructionLine("xor", Seq(destination, source), comment)
   }
 
   /**
@@ -261,6 +281,15 @@ package object assemgen {
   }
 
   /**
+   * Same as
+   * mov esp,ebp
+   * pop ebp
+   */
+  def leave(): AssemblyLine = {
+    new InstructionLine("leave", Seq())
+  }
+
+  /**
    * System call
    */
   def int(address: Int): AssemblyLine = {
@@ -272,6 +301,10 @@ package object assemgen {
    */
   def dd(value: Int): AssemblyLine = {
     new InstructionLine("dd", Seq(value))
+  }
+
+  def dd(labelReference: LabelReference): AssemblyLine = {
+    new InstructionLine("dd", Seq(labelReference))
   }
 
   /**
@@ -357,9 +390,24 @@ package object assemgen {
    */
   def label(name: String): AssemblyLine = {
     new AbstractAssemblyLine {
-      override def writeContent(writer: PrintWriter) {
+      override protected def writeContent(writer: PrintWriter) {
         writer.print(name)
         writer.print(':')
+      }
+    }
+  }
+
+  def inlineLabel(name: String, line: AssemblyLine): AssemblyLine = {
+    new AbstractAssemblyLine {
+
+      override def write(writer: PrintWriter) {
+        writeContent(writer)
+      }
+
+      override protected def writeContent(writer: PrintWriter) {
+        writer.print(name)
+        writer.print(": ")
+        line.write(writer)
       }
     }
   }
@@ -367,9 +415,9 @@ package object assemgen {
   implicit def toExpression(value: String): AssemblyExpression = {
     new AbstractAssemblyExpression {
       override def write(writer: PrintWriter) {
-        writer.print('"')
+        writer.print('\'')
         writer.print(value)
-        writer.print('"')
+        writer.print('\'')
       }
     }
   }
@@ -396,5 +444,6 @@ package object assemgen {
   implicit def labelReference(name: String): LabelReference = {
     new LabelReference(name)
   }
+
 
 }

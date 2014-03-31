@@ -5,16 +5,35 @@ import java.io.PrintWriter
 import joos.assemgen._
 
 class AssemblyFileManager(val writer: PrintWriter) {
-  val globals = mutable.HashSet[AssemblyLine]()
-  // global
-  val externs = mutable.HashSet[AssemblyLine]()
-  // extern
-  val data = mutable.HashSet[AssemblyLine]()
-  var text = Seq.empty[AssemblyLine]
+  private var globals = Set.empty[AssemblyLine]
+  private var externs = Set(
+    extern(new LabelReference("__malloc")),
+    extern(new LabelReference("__exception")),
+    extern(new LabelReference("NATIVEjava.io.OutputStream.nativeWrite"))
+  )
+
+  private val data = mutable.MutableList.empty[AssemblyLine]
+  private val text = mutable.MutableList.empty[AssemblyLine]
 
   private val sectionFormatString = "--- %s ---"
 
-  def print = {
+  def appendText(lines: AssemblyLine*) {
+    text ++= lines
+  }
+
+  def appendGlobal(lines: AssemblyLine*) {
+    globals ++= lines
+  }
+
+  def appendExtern(lines: AssemblyLine*) {
+    externs ++= lines
+  }
+
+  def appendData(lines: AssemblyLine*) {
+    data ++= lines
+  }
+
+  def print() = {
 
     writer.print(comment(sectionFormatString.format("Text")))
     writer.print(section(AssemblySection.Text))
@@ -36,7 +55,7 @@ class AssemblyFileManager(val writer: PrintWriter) {
     writer.print(section(AssemblySection.Data).toString)
     writer.print(emptyLine().toString)
 
-    // TODO: What do print here?
+    // TODO: What to print here?
 
     writer.flush()
     writer.close()
