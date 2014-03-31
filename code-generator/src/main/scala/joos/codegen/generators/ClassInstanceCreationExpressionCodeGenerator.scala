@@ -17,7 +17,7 @@ class ClassInstanceCreationExpressionCodeGenerator(expression: ClassInstanceCrea
     val typeInfoLabel = typeDeclaration.uniqueName
 
     appendText(
-      comment("[BEG] Allocate memory for:" + expression.classType.toString),
+      comment("[BEG] Allocate memory for:" + expression.classType.toString)
     )
 
     appendText(
@@ -25,6 +25,20 @@ class ClassInstanceCreationExpressionCodeGenerator(expression: ClassInstanceCrea
       call(labelReference("__malloc")),
       mov(Eax, labelReference(typeInfoLabel))
     )
+
+    val instanceFields = typeDeclaration.containedFields.filter(
+      pair => if (!pair._2.isStatic) true else false
+    ).values.toIndexedSeq
+
+    val base_offset = 4
+    for (i <- 0 until instanceFields.size) {
+      appendData(
+        inlineLabel(
+          instanceFields(i).uniqueName + offsetPostFix,
+          dd(base_offset + i * 4)
+        )
+      )
+    }
 
     appendText(
       comment("[END] Allocate memory for:" + expression.classType.toString)
