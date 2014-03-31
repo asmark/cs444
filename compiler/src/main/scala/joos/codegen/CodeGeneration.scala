@@ -20,6 +20,7 @@ object CodeGeneration {
       ast =>
         implicit val environment = new AssemblyCodeGeneratorEnvironment(getAssemblyManager(ast))
         AssemblyCodeGenerator(ast)
+        environment.assemblyManager.print()
     }
   }
 

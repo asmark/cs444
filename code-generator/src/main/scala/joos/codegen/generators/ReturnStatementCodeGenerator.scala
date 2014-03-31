@@ -8,8 +8,7 @@ class ReturnStatementCodeGenerator(statement: ReturnStatement)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
   
   override def generate() {
-    appendText(
-      ret
-    )
+    statement.expression.foreach(_.generate())
+    appendText(ret)
   }
 }
