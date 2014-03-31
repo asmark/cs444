@@ -6,9 +6,9 @@ import joos.codegen.AssemblyFileManager
 
 class ReturnStatementAssembler(statement: ReturnStatement)(implicit val assemblyManager: AssemblyFileManager) extends Assembler {
   override def generateAssembly() {
-    Seq(
+    assemblyManager.appendText(
       leave,
       ret
-    ) foreach assemblyManager.appendText
+    )
   }
 }
