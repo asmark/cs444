@@ -13,18 +13,12 @@ object CodeGeneration {
   def getCodeGenerator(ast: AbstractSyntaxTree)(implicit module: ModuleDeclaration) = {
     implicit val unit = ast.root
     implicit val codeStream = getAssemblyManager(ast)
-    new CodeGenerationVisitor
   }
 
 
   def apply(asts: Seq[AbstractSyntaxTree]) {
     implicit val module = new ModuleDeclaration
 
-    for (ast <- asts) {
-      val codeGenerator = getCodeGenerator(ast)
-      ast dispatch codeGenerator
-      codeGenerator.assemblyManager.print
-    }
   }
 
 }
