@@ -80,10 +80,6 @@ package object assemgen {
   }
 
 
-  def nextLabel(prefix: String): String = {
-    s"${prefix}.${DefaultUniqueIdGenerator.nextId()}"
-  }
-
   /**
    * Writes any arbitrary expression
    */
@@ -101,9 +97,6 @@ package object assemgen {
   def comment(comment: String, indentation: Int = 4): AssemblyLine = {
     new AbstractAssemblyLine {
       override protected def writeContent(writer: PrintWriter) {
-        for (i <- 0 until indentation) {
-          writer.print(' ')
-        }
         writer.print("; ")
         writer.print(comment)
       }
@@ -121,8 +114,12 @@ package object assemgen {
   /**
    * eax += ebx
    */
-  def add(eax: Register, ebx: Register): AssemblyLine = {
-    new InstructionLine("add", Seq(eax, ebx))
+  def add(eax: Register, ebx: Register, comment: Option[String] = None): AssemblyLine = {
+    new InstructionLine("add", Seq(eax, ebx), comment)
+  }
+
+  def add(r1: Register, r2: Register, comment: String): AssemblyLine = {
+    add(r1, r2, Some(comment))
   }
 
   /**

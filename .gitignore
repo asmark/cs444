@@ -23,3 +23,6 @@ project/plugins/project/
 !.idea/scala_settings.xml
 !.idea/codeStyleSettings.xml
 out/
+
+# EXE
+main
