@@ -1,10 +1,11 @@
-package joos.codegen
+package joos.codegen.generators
 
 import joos.assemgen.Register._
 import joos.assemgen._
 import joos.ast.Operator._
 import joos.ast.expressions.PrefixExpression
 import joos.codegen.assembler._
+import joos.codegen.{AssemblyCodeGenerator, AssemblyCodeGeneratorEnvironment}
 import joos.core.Logger
 
 class PrefixExpressionCodeGenerator(prefix: PrefixExpression)

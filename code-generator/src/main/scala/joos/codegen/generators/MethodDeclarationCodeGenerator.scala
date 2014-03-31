@@ -1,7 +1,8 @@
-package joos.codegen
+package joos.codegen.generators
 
 import joos.ast.declarations.MethodDeclaration
 import joos.codegen.AssemblyCodeGenerator._
+import joos.codegen.{AssemblyCodeGenerator, AssemblyCodeGeneratorEnvironment}
 
 class MethodDeclarationCodeGenerator(method: MethodDeclaration)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {

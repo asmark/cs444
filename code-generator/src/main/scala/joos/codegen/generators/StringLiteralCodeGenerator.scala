@@ -1,8 +1,9 @@
-package joos.codegen
+package joos.codegen.generators
 
 import joos.assemgen.Register._
 import joos.assemgen._
 import joos.ast.expressions.StringLiteral
+import joos.codegen.{AssemblyCodeGenerator, AssemblyCodeGeneratorEnvironment}
 
 class StringLiteralCodeGenerator(literal: StringLiteral)
     (implicit val environment: AssemblyCodeGeneratorEnvironment)

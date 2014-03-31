@@ -1,9 +1,10 @@
-package joos.codegen
+package joos.codegen.generators
 
 import joos.ast.CompilationUnit
 import joos.ast.declarations._
 import joos.ast.expressions._
 import joos.ast.statements._
+import joos.codegen.AssemblyFileManager
 import joos.codegen.assembler._
 import joos.semantic.types.AstEnvironmentVisitor
 import scala.language.implicitConversions

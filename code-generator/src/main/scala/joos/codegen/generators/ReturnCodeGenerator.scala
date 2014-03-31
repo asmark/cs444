@@ -1,7 +1,8 @@
-package joos.codegen
+package joos.codegen.generators
 
-import joos.ast.statements.ReturnStatement
 import joos.assemgen._
+import joos.ast.statements.ReturnStatement
+import joos.codegen.{AssemblyCodeGenerator, AssemblyCodeGeneratorEnvironment}
 
 class ReturnCodeGenerator(statement: ReturnStatement)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
