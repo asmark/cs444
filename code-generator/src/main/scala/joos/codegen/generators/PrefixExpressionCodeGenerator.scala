@@ -49,6 +49,8 @@ class PrefixExpressionCodeGenerator(prefix: PrefixExpression)
   }
 
   override def generate() {
+    prefix.operand.generate()
+
     prefix.operator match {
       case Minus => integerNegation
       case Not => booleanNegation
