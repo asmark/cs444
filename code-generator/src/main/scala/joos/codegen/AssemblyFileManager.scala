@@ -35,23 +35,23 @@ class AssemblyFileManager(val writer: PrintWriter) {
 
   def print() = {
 
-    writer.print(comment(sectionFormatString.format("Text")))
+    writer.print(#: (sectionFormatString.format("Text")))
     writer.print(section(AssemblySection.Text))
 
-    writer.print(comment("Defining Exported Symbols"))
+    writer.print(#: ("Defining Exported Symbols"))
     globals.foreach(global => writer.print(global.toString))
     writer.print(emptyLine().toString)
 
-    writer.print(comment("Defining Imported Symbols"))
+    writer.print(#: ("Defining Imported Symbols"))
     externs.foreach(extern => writer.print(extern.toString))
     writer.print(emptyLine().toString)
 
-    writer.print(comment("Defining type environment"))
+    writer.print(#: ("Defining type environment"))
 
     text.foreach(writer.print)
     writer.print(emptyLine())
 
-    writer.print(comment(sectionFormatString.format("Data")))
+    writer.print(#: (sectionFormatString.format("Data")))
     writer.print(section(AssemblySection.Data).toString)
     writer.print(emptyLine().toString)
 

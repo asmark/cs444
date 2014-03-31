@@ -9,41 +9,14 @@ import scala.language.implicitConversions
 package object assemgen {
 
   private[this] final val EmptyLine = new AbstractAssemblyLine {
-    override protected def writeContent(writer: PrintWriter) {}
+    override def write(writer: PrintWriter) {
+      writer.println()
+    }
   }
 
   private[this] abstract class AbstractAssemblyLine extends AssemblyLine
 
   private[this] abstract class AbstractAssemblyExpression extends AssemblyExpression
-
-  private[this] class InstructionLine(
-      instruction: String, operands: Seq[AssemblyExpression], comment: Option[String] = None)
-      extends AssemblyLine {
-
-    protected override def writeContent(writer: PrintWriter) {
-      writer.print("    ")
-      writer.print(instruction)
-      writer.print(' ')
-
-      operands.foldLeft(true) {
-        (isFirst, operand) =>
-          if (isFirst) {
-            operand.write(writer)
-          } else {
-            writer.print(", ")
-            operand.write(writer)
-          }
-          false
-      }
-
-      comment match {
-        case None =>
-        case Some(comment) =>
-          writer.print("    ; ")
-          writer.print(comment)
-      }
-    }
-  }
 
   implicit class RichMethodDeclaration(val method: MethodDeclaration) extends AnyVal {
     def uniqueName: String = {
@@ -95,53 +68,46 @@ package object assemgen {
     }
   }
 
-  /**
-   * Writes a comment line
-   */
-  def comment(comment: String, indentation: Int = 4): AssemblyLine = {
-    new AbstractAssemblyLine {
-      override protected def writeContent(writer: PrintWriter) {
-        for (i <- 0 until indentation) {
-          writer.print(' ')
-        }
-        writer.print("; ")
-        writer.print(comment)
-      }
+  implicit class RichString(val string: String) extends AnyVal {
+    /**
+     * Creates a label
+     */
+    def :: : AssemblyLabel = {
+      new AssemblyLabel(string, None)
     }
   }
 
-  def mov(destination: AssemblyExpression, source: AssemblyExpression, comment: Option[String] = None): AssemblyLine = {
-    new InstructionLine("mov", Seq(destination, source), comment)
+  /**
+   * Writes a comment
+   */
+  implicit def #:(comment: String): AssemblyComment = {
+    new AssemblyComment(comment)
   }
 
-  def mov(destination: AssemblyExpression, source: AssemblyExpression, comment: String): AssemblyLine = {
-    mov(destination, source, Some(comment))
+  def mov(destination: AssemblyExpression, source: AssemblyExpression): AssemblyInstruction = {
+    new AssemblyInstruction("mov", Seq(destination, source), None)
   }
 
   /**
    * eax += ebx
    */
-  def add(eax: Register, ebx: Register): AssemblyLine = {
-    new InstructionLine("add", Seq(eax, ebx))
+  def add(eax: Register, ebx: Register): AssemblyInstruction = {
+    new AssemblyInstruction("add", Seq(eax, ebx))
   }
 
   /**
    * eax -= ebx
    */
-  def sub(eax: Register, ebx: Register): AssemblyLine = {
-    new InstructionLine("sub", Seq(eax, ebx))
-  }
-
-  def sub(dst: Register, source: AssemblyExpression, comment: Option[String] = None): AssemblyLine = {
-    new InstructionLine("sub", Seq(dst, source), comment)
+  def sub(eax: Register, ebx: Register): AssemblyInstruction = {
+    new AssemblyInstruction("sub", Seq(eax, ebx))
   }
 
   /**
    * Signed multiplication
    * eax *= ebx
    */
-  def imul(eax: Register, ebx: Register): AssemblyLine = {
-    new InstructionLine("imul", Seq(eax, ebx))
+  def imul(eax: Register, ebx: Register): AssemblyInstruction = {
+    new AssemblyInstruction("imul", Seq(eax, ebx))
   }
 
   /**
@@ -150,134 +116,134 @@ package object assemgen {
    * edx = edx:eax % ebx
    * Set edx to sign of {{dividend}}
    */
-  def idiv(dividend: Register): AssemblyLine = {
-    new InstructionLine("idiv", Seq(dividend))
+  def idiv(dividend: Register): AssemblyInstruction = {
+    new AssemblyInstruction("idiv", Seq(dividend))
   }
 
   /**
-   * eax = {{target}}
+   * eax = -{{target}}
    */
-  def neg(target: Register, comment: Option[String] = None): AssemblyLine = {
-    new InstructionLine("neg", Seq(target), comment)
+  def neg(target: Register): AssemblyInstruction = {
+    new AssemblyInstruction("neg", Seq(target))
   }
 
-  def xor(destination: AssemblyExpression, source: AssemblyExpression, comment: Option[String] = None): AssemblyLine = {
-    new InstructionLine("xor", Seq(destination, source), comment)
+  def xor(left: AssemblyExpression, right: AssemblyExpression): AssemblyInstruction = {
+    new AssemblyInstruction("xor", Seq(left, right))
   }
 
   /**
    * eip = {{label}}
    */
-  def jmp(label: LabelReference): AssemblyLine = {
-    new InstructionLine("jmp", Seq(label))
+  def jmp(label: LabelReference): AssemblyInstruction = {
+    new AssemblyInstruction("jmp", Seq(label))
   }
 
   /**
    * Prepares {{eax}} and {{ebx}} for conditional jumps
    */
-  def cmp(eax: Register, ebx: Register): AssemblyLine = {
-    new InstructionLine("cmp", Seq(eax, ebx))
+  def cmp(eax: Register, ebx: Register): AssemblyInstruction = {
+    new AssemblyInstruction("cmp", Seq(eax, ebx))
   }
 
   /**
    * {{ == }}
    */
-  def je(label: LabelReference): AssemblyLine = {
-    new InstructionLine("je", Seq(label))
+  def je(label: LabelReference): AssemblyInstruction = {
+    new AssemblyInstruction("je", Seq(label))
   }
 
   /**
    * {{ != }}
    */
-  def jne(label: LabelReference): AssemblyLine = {
-    new InstructionLine("jne", Seq(label))
+  def jne(label: LabelReference): AssemblyInstruction = {
+    new AssemblyInstruction("jne", Seq(label))
   }
 
   /**
    * Signed {{ > }}
    */
-  def jg(label: LabelReference): AssemblyLine = {
-    new InstructionLine("jg", Seq(label))
+  def jg(label: LabelReference): AssemblyInstruction = {
+    new AssemblyInstruction("jg", Seq(label))
   }
 
   /**
    * Signed {{ < }}
    */
-  def jl(label: LabelReference): AssemblyLine = {
-    new InstructionLine("jl", Seq(label))
+  def jl(label: LabelReference): AssemblyInstruction = {
+    new AssemblyInstruction("jl", Seq(label))
   }
 
   /**
    * Signed {{ >= }}
    */
-  def jge(label: LabelReference): AssemblyLine = {
-    new InstructionLine("jge", Seq(label))
+  def jge(label: LabelReference): AssemblyInstruction = {
+    new AssemblyInstruction("jge", Seq(label))
   }
 
   /**
    * Signed {{ <= }}
    */
-  def jle(label: LabelReference): AssemblyLine = {
-    new InstructionLine("jle", Seq(label))
+  def jle(label: LabelReference): AssemblyInstruction = {
+    new AssemblyInstruction("jle", Seq(label))
   }
 
   /**
    * Unsigned {{ > }}
    */
-  def ja(label: LabelReference): AssemblyLine = {
-    new InstructionLine("ja", Seq(label))
+  def ja(label: LabelReference): AssemblyInstruction = {
+    new AssemblyInstruction("ja", Seq(label))
   }
 
   /**
    * Unsigned {{ < }}
    */
-  def jb(label: LabelReference): AssemblyLine = {
-    new InstructionLine("jb", Seq(label))
+  def jb(label: LabelReference): AssemblyInstruction = {
+    new AssemblyInstruction("jb", Seq(label))
   }
 
   /**
    * Unsigned {{ >= }}
    */
-  def jae(label: LabelReference): AssemblyLine = {
-    new InstructionLine("jae", Seq(label))
+  def jae(label: LabelReference): AssemblyInstruction = {
+    new AssemblyInstruction("jae", Seq(label))
   }
 
   /**
    * Unsigned {{ <= }}
    */
-  def jbe(label: LabelReference): AssemblyLine = {
-    new InstructionLine("jbe", Seq(label))
+  def jbe(label: LabelReference): AssemblyInstruction = {
+    new AssemblyInstruction("jbe", Seq(label))
   }
 
   /**
    * Copies the value of {{eax}} to stack pointer
    * Increments the stack pointer
    */
-  def push(eax: Register): AssemblyLine = {
-    new InstructionLine("push", Seq(eax))
+  def push(eax: Register): AssemblyInstruction = {
+    new AssemblyInstruction("push", Seq(eax))
   }
 
   /**
    * Copies the value pointed by stack pointer to {{eax}}
    * Decrements the stack pointer
    */
-  def pop(eax: Register): AssemblyLine = {
-    new InstructionLine("pop", Seq(eax))
+  def pop(eax: Register): AssemblyInstruction = {
+    new AssemblyInstruction("pop", Seq(eax))
   }
 
   /**
    * Pushes program counter onto the stack
    * Jumps to the label
    */
-  def call(label: LabelReference): AssemblyLine = {
-    new InstructionLine("call", Seq(label))
+  def call(label: LabelReference): AssemblyInstruction = {
+    new AssemblyInstruction("call", Seq(label))
   }
 
   /**
    * Pops the program counter from the stack
    */
-  def ret(): AssemblyLine = {
-    new InstructionLine("ret", Seq())
+  def ret(): AssemblyInstruction = {
+    new AssemblyInstruction("ret", Seq())
   }
 
   /**
@@ -285,40 +251,40 @@ package object assemgen {
    * mov esp,ebp
    * pop ebp
    */
-  def leave(): AssemblyLine = {
-    new InstructionLine("leave", Seq())
+  def leave(): AssemblyInstruction = {
+    new AssemblyInstruction("leave")
   }
 
   /**
    * System call
    */
-  def int(address: Int): AssemblyLine = {
-    new InstructionLine("int", Seq(address))
+  def int(address: Int): AssemblyInstruction = {
+    new AssemblyInstruction("int", Seq(address))
   }
 
   /**
    * 4-byte data
    */
-  def dd(value: Int): AssemblyLine = {
-    new InstructionLine("dd", Seq(value))
+  def dd(value: Int): AssemblyInstruction = {
+    new AssemblyInstruction("dd", Seq(value))
   }
 
-  def dd(labelReference: LabelReference): AssemblyLine = {
-    new InstructionLine("dd", Seq(labelReference))
+  def dd(label: LabelReference): AssemblyInstruction = {
+    new AssemblyInstruction("dd", Seq(label))
   }
 
   /**
    * 2-byte data
    */
-  def dw(value: String): AssemblyLine = {
-    new InstructionLine("dw", Seq(toExpression(value)))
+  def dw(value: String): AssemblyInstruction = {
+    new AssemblyInstruction("dw", Seq(toExpression(value)))
   }
 
   /**
    * 1-byte data
    */
-  def db(value: String): AssemblyLine = {
-    new InstructionLine("db", Seq(toExpression(value)))
+  def db(value: String): AssemblyInstruction = {
+    new AssemblyInstruction("db", Seq(toExpression(value)))
   }
 
   /**
@@ -328,16 +294,16 @@ package object assemgen {
     new MemoryReference(address)
   }
 
-  /**
-   * Writes any arbitrary line
-   */
-  def anyLine(line: String): AssemblyLine = {
-    new AbstractAssemblyLine {
-      override protected def writeContent(writer: PrintWriter) {
-        writer.print(line)
-      }
-    }
-  }
+//  /**
+//   * Writes any arbitrary line
+//   */
+//  def anyLine(line: String): AssemblyLine = {
+//    new AbstractAssemblyLine {
+//      override protected def writeContent(writer: PrintWriter) {
+//        writer.print(line)
+//      }
+//    }
+//  }
 
   /**
    * Writes an empty line
@@ -354,7 +320,7 @@ package object assemgen {
       /**
        * Writes the content of this line to the writer
        */
-      override protected def writeContent(writer: PrintWriter) {
+      override def write(writer: PrintWriter) {
         writer.print("section ")
         section.write(writer)
       }
@@ -366,7 +332,7 @@ package object assemgen {
    */
   def global(label: LabelReference): AssemblyLine = {
     new AbstractAssemblyLine {
-      override protected def writeContent(writer: PrintWriter) {
+      override def write(writer: PrintWriter) {
         writer.print("global ")
         label.write(writer)
       }
@@ -378,7 +344,7 @@ package object assemgen {
    */
   def extern(label: LabelReference): AssemblyLine = {
     new AbstractAssemblyLine {
-      override protected def writeContent(writer: PrintWriter) {
+      override def write(writer: PrintWriter) {
         writer.print("extern ")
         label.write(writer)
       }
@@ -388,29 +354,24 @@ package object assemgen {
   /**
    * Defines a label
    */
-  def label(name: String): AssemblyLine = {
-    new AbstractAssemblyLine {
-      override protected def writeContent(writer: PrintWriter) {
-        writer.print(name)
-        writer.print(':')
-      }
-    }
+  def label(name: String): AssemblyLabel = {
+    name.::
   }
-
-  def inlineLabel(name: String, line: AssemblyLine): AssemblyLine = {
-    new AbstractAssemblyLine {
-
-      override def write(writer: PrintWriter) {
-        writeContent(writer)
-      }
-
-      override protected def writeContent(writer: PrintWriter) {
-        writer.print(name)
-        writer.print(": ")
-        line.write(writer)
-      }
-    }
-  }
+//
+//  def inlineLabel(name: String, line: AssemblyLine): AssemblyLine = {
+//    new AbstractAssemblyLine {
+//
+//      override def write(writer: PrintWriter) {
+//        writeContent(writer)
+//      }
+//
+//      override protected def writeContent(writer: PrintWriter) {
+//        writer.print(name)
+//        writer.print(": ")
+//        line.write(writer)
+//      }
+//    }
+//  }
 
   implicit def toExpression(value: String): AssemblyExpression = {
     new AbstractAssemblyExpression {

@@ -10,7 +10,7 @@ class BooleanLiteralCodeGenerator(literal: BooleanLiteral)
 
   override def generate() {
     appendText(
-      mov(Eax, literal.value, s"Assemble Boolean literal: ${literal}")
+      mov (Eax, literal.value) #: s"Assemble Boolean literal: ${literal}"
     )
   }
 }
