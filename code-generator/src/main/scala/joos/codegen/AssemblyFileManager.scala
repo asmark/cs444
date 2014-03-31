@@ -53,6 +53,7 @@ class AssemblyFileManager(val writer: PrintWriter) {
 
     writer.print(comment(sectionFormatString.format("Data")))
     writer.print(section(AssemblySection.Data).toString)
+    data.foreach(writer.print)
     writer.print(emptyLine().toString)
 
     // TODO: What to print here?

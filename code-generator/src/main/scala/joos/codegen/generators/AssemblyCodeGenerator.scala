@@ -22,6 +22,9 @@ trait AssemblyCodeGenerator {
     environment.assemblyManager.appendGlobal(lines: _*)
   }
 
+  def appendData(lines: AssemblyLine*) {
+    environment.assemblyManager.appendData(lines: _*)
+  }
   implicit protected def toAssemblyCodeGenerator(node: AstNode)
       (implicit environment: AssemblyCodeGeneratorEnvironment): AssemblyCodeGenerator = {
     var generator: AssemblyCodeGenerator = null
