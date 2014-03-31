@@ -1,7 +1,7 @@
 package joos.codegen.generators
 
 import joos.assemgen.AssemblyLine
-import joos.ast.AstNode
+import joos.ast.{AbstractSyntaxTree, CompilationUnit, AstNode}
 import joos.codegen.AssemblyCodeGeneratorEnvironment
 import scala.language.implicitConversions
 
@@ -22,6 +22,15 @@ trait AssemblyCodeGenerator {
       (implicit environment: AssemblyCodeGeneratorEnvironment): AssemblyCodeGenerator = {
     // TODO: implement
     null
+  }
+}
+
+object AssemblyCodeGenerator {
+  def apply(ast: AbstractSyntaxTree)(implicit environment: AssemblyCodeGeneratorEnvironment) {
+    ast.root.typeDeclaration match {
+      case None =>
+      case Some(typeDeclaration) => new TypeDeclarationCodeGenerator(typeDeclaration).generate
+    }
   }
 }
 
