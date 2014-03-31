@@ -9,6 +9,11 @@ package object commonlib {
   def AssemblyCommonLibraryEnvironment(namespace: AssemblyNamespace): AssemblyCodeGeneratorEnvironment = {
 
     val assemblyManager = new AssemblyFileManager("_lib.s")
+
+    // Extern all library functions
+    namespace.externs += extern(addIntegers)
+
+    // Define all library functions
     assemblyManager.appendGlobal(global(addIntegers))
     assemblyManager.appendText(addInts: _*)
 
