@@ -3,7 +3,7 @@ public class HelloWorld {
   public HelloWorld() {}
 
   public static int test() {
-    return 123;
+    return ((1 + 120 + 2) * 2) / 2 % 157;
   }
 
 }
