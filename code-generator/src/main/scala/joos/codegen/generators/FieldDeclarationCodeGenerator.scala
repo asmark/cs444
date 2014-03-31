@@ -2,10 +2,12 @@ package joos.codegen.generators
 
 import joos.assemgen.Register._
 import joos.assemgen._
-import joos.codegen.{AssemblyCodeGenerator, AssemblyCodeGeneratorEnvironment}
+import joos.codegen.AssemblyCodeGeneratorEnvironment
+import joos.ast.declarations.FieldDeclaration
 
-class FieldDeclarationCodeGenerator(field: FieldDeclaration)(implicit val assemblyManager: AssemblyFileManager) extends Assembler {
-  override def generateAssembly(): Unit = {
+class FieldDeclarationCodeGenerator(field: FieldDeclaration)
+    (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
-  }
+  override def generate() {}
+
 }

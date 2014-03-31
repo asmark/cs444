@@ -4,8 +4,11 @@ import joos.ast.expressions.SimpleNameExpression
 import joos.codegen.AssemblyFileManager
 import joos.assemgen.Register._
 import joos.assemgen._
-import joos.codegen.{AssemblyCodeGenerator, AssemblyCodeGeneratorEnvironment}
+import joos.codegen.AssemblyCodeGeneratorEnvironment
 
-class SimpleNameExpressionCodeGenerator(expression: SimpleNameExpression)(implicit val assemblyManager: AssemblyFileManager) extends Assembler {
-  override def generateAssembly(): Unit = {}
+class SimpleNameExpressionCodeGenerator(expression: SimpleNameExpression)
+    (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
+
+  override def generate() {}
+
 }

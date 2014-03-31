@@ -1,7 +1,8 @@
-package joos.codegen
+package joos.codegen.generators
 
 import joos.assemgen.AssemblyLine
 import joos.ast.AstNode
+import joos.codegen.AssemblyCodeGeneratorEnvironment
 import scala.language.implicitConversions
 
 trait AssemblyCodeGenerator {

@@ -3,7 +3,6 @@ package joos.codegen
 import java.io.{File, PrintWriter}
 import joos.ast.AbstractSyntaxTree
 import joos.ast.declarations.ModuleDeclaration
-import joos.codegen.generators.CodeGenerationVisitor
 
 object CodeGeneration {
 

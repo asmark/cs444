@@ -4,7 +4,7 @@ package joos.codegen.generators
 import joos.assemgen.Register._
 import joos.assemgen._
 import joos.ast.expressions.IntegerLiteral
-import joos.codegen.{AssemblyCodeGenerator, AssemblyCodeGeneratorEnvironment}
+import joos.codegen.AssemblyCodeGeneratorEnvironment
 
 class IntegerLiteralCodeGenerator(literal: IntegerLiteral)
     (implicit val environment: AssemblyCodeGeneratorEnvironment)

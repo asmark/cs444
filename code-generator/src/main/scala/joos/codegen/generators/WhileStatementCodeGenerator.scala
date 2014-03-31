@@ -5,8 +5,11 @@ import joos.codegen.AssemblyFileManager
 import joos.codegen.assembler.Assembler
 import joos.assemgen.Register._
 import joos.assemgen._
-import joos.codegen.{AssemblyCodeGenerator, AssemblyCodeGeneratorEnvironment}
+import joos.codegen.AssemblyCodeGeneratorEnvironment
 
-class WhileStatementCodeGenerator(statement: WhileStatement)(implicit val assemblyManager: AssemblyFileManager) extends Assembler{
-  override def generateAssembly(): Unit = {}
+class WhileStatementCodeGenerator(statement: WhileStatement)
+    (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
+
+  override def generate() {}
+
 }

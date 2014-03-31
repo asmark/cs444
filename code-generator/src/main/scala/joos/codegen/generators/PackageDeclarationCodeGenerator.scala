@@ -3,8 +3,11 @@ package joos.codegen.generators
 import joos.ast.declarations.PackageDeclaration
 import joos.assemgen.Register._
 import joos.assemgen._
-import joos.codegen.{AssemblyCodeGenerator, AssemblyCodeGeneratorEnvironment}
+import joos.codegen.AssemblyCodeGeneratorEnvironment
 
-class PackageDeclarationCodeGenerator(packaged: PackageDeclaration) extends Assembler {
-  override def generateAssembly(): Unit = {}
+class PackageDeclarationCodeGenerator(packaged: PackageDeclaration)
+    (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
+
+  override def generate() {}
+
 }
