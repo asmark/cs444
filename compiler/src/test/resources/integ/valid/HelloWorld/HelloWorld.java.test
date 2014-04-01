@@ -1,9 +1,0 @@
-public class HelloWorld {
-
-  public HelloWorld() {}
-
-  public static int test() {
-    return 123;
-  }
-
-}

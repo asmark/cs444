@@ -4,6 +4,7 @@ import joos.assemgen.Register._
 import joos.assemgen._
 import joos.ast.declarations.MethodDeclaration
 import joos.codegen.AssemblyCodeGeneratorEnvironment
+import joos.ast.Modifier
 
 class MethodDeclarationCodeGenerator(method: MethodDeclaration)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
@@ -11,8 +12,13 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
   // TODO: Constructors should return "this"
   override def generate() {
 
+    if (method.modifiers contains Modifier.Native) {
+      // TODO: Not sure what to do here?
+      return
+    }
+
     if (method.name.standardName == "test") {
-      generateStartCode
+      generateStartCode()
     }
 
     val methodLabel = s"${method.uniqueName}"
@@ -20,40 +26,40 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
 
     appendText(
       #: ("[BEGIN] Method Definition"),
-      label(methodLabel)
+      methodLabel::
     )
-    appendText(prologue(4): _*)
+    appendText(prologue(0): _*)
 
-    appendText(#: ("[BEGIN] Function Body"))
+    appendText(#: ("[BEGIN] Function Body"), #>)
     method.body.foreach(_.generate())
-    appendText(#: ("[BEGIN] Function End"), emptyLine())
+    appendText(#<, #: ("[BEGIN] Function End"), emptyLine)
 
     appendText(epilogue: _*)
 
     appendText(
       #: ("[END] Method Definition"),
-      emptyLine()
+      emptyLine
     )
 
   }
 
-  def generateStartCode {
+  def generateStartCode() {
     val startLabel = "_start"
 
     appendGlobal(startLabel)
 
     appendText(
-      label(startLabel),
+      startLabel::,
       #: ("[BEGIN] Static field initializations"),
       // TODO: Initializations
       #: ("[END] Static field initializations"),
-      emptyLine(),
+      emptyLine,
       call(labelReference(method.uniqueName)),
-      emptyLine(),
+      emptyLine,
       mov(Ebx, Eax),
       mov(Eax, 1),
       int(0x80),
-      emptyLine()
+      emptyLine
     )
 
   }

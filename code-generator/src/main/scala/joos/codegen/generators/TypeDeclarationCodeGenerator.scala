@@ -13,9 +13,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     appendGlobal(tipe.uniqueName)
 
     appendText(#: ("Declaring class"))
-    appendText(
-          label(tipe.uniqueName)
-    )
+    appendText(tipe.uniqueName::)
 
     // Add static fields
     val staticFields = tipe.containedFields.values.filter(
@@ -32,14 +30,15 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     }
 
     // Add methods to class definition
-    val methods = tipe.containedMethods.values.flatten
-    methods.foreach {
+    val containedMethods = tipe.containedMethods.values.flatten
+    containedMethods.foreach {
       methodDeclaration =>
         appendText(dd(labelReference(methodDeclaration.uniqueName)))
-    }
-    appendText(emptyLine())
 
-    methods.foreach(_.generate())
-    appendText(emptyLine())
+    }
+    appendText(emptyLine)
+
+    tipe.methodMap.values.foreach(_.generate())
+    appendText(emptyLine)
   }
 }

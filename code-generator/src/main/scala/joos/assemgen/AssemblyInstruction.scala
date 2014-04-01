@@ -31,7 +31,7 @@ class AssemblyInstruction(
     }
 
     comment match {
-      case None => writer.println()
+      case None =>
       case Some(comment) =>
         writer.print("    ")
         comment.write(writer)

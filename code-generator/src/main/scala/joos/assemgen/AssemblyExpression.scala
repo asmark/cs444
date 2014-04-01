@@ -4,12 +4,12 @@ import java.io.PrintWriter
 import joos.core.Writable
 
 trait AssemblyExpression extends Writable {
-  
+  self =>
+
   def +(other: AssemblyExpression) = {
-    val that = this
     new AssemblyExpression {
       override def write(writer: PrintWriter) {
-        that.write(writer)
+        self.write(writer)
         writer.write(" + ")
         other.write(writer)
       }
@@ -17,10 +17,9 @@ trait AssemblyExpression extends Writable {
   }
 
   def -(other: AssemblyExpression) = {
-    val that = this
     new AssemblyExpression {
       override def write(writer: PrintWriter) {
-        that.write(writer)
+        self.write(writer)
         writer.write(" - ")
         other.write(writer)
       }

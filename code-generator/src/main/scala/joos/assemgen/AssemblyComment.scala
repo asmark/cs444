@@ -13,6 +13,6 @@ class AssemblyComment(val text: String) extends AssemblyLine {
 
   override def write(writer: PrintWriter) {
     writer.print("; ")
-    writer.println(text)
+    writer.print(text)
   }
 }
