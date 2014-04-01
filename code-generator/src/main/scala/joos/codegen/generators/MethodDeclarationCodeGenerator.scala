@@ -22,7 +22,7 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
       #: ("[BEGIN] Method Definition"),
       methodLabel::
     )
-    appendText(prologue(4): _*)
+    appendText(prologue(0): _*)
 
     appendText(#: ("[BEGIN] Function Body"), #>)
     method.body.foreach(_.generate())
