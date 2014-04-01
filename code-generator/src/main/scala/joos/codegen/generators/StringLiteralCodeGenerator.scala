@@ -11,12 +11,12 @@ class StringLiteralCodeGenerator(literal: StringLiteral)
 
   override def generate() {
     appendText(
-      emptyLine(),
+      emptyLine,
       #: (s"[BEGIN] Assemble string literal: ${literal}"),
       literal.uniqueName :: db(literal.text),
       mov(Eax, labelReference(literal.uniqueName)),
       #: (s"[END] Assemble string literal: ${literal}"),
-      emptyLine()
+      emptyLine
     )
   }
 }

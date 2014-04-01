@@ -9,6 +9,6 @@ class ReturnStatementCodeGenerator(statement: ReturnStatement)
   
   override def generate() {
     statement.expression.foreach(_.generate())
-    appendText(emptyLine())
+    appendText(emptyLine)
   }
 }
