@@ -33,9 +33,10 @@ class WhileStatementCodeGenerator(statement: WhileStatement)
       #>
     )
     statement.body.generate()
+
     appendText(
       #<,
-      jmp(whileStart) #: "Jump to loop beginning",
+      jmp(whileStart) #: "Jump to while condition",
       whileEnd ::,
       #:("[END] While Statement"),
       emptyLine
