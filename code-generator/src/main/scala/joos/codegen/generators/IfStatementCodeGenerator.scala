@@ -49,7 +49,8 @@ class IfStatementCodeGenerator(statement: IfStatement)
     appendText(
       #<,
       statementEnd ::,
-      #:("[END] If Statement")
+      #:("[END] If Statement"),
+      emptyLine
     )
   }
 
