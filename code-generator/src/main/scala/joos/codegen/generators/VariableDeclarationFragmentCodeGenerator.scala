@@ -10,6 +10,7 @@ class VariableDeclarationFragmentCodeGenerator(expression: VariableDeclarationFr
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
   override def generate() {
+    require(expression.initializer.isDefined)
     expression.initializer.foreach(_.generate())
   }
 

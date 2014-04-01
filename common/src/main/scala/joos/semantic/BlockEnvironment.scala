@@ -1,7 +1,8 @@
 package joos.semantic
 
 import joos.ast.compositions.TypedDeclarationLike
-import joos.ast.expressions.{SimpleNameExpression, NameExpression}
+import joos.ast.declarations.SingleVariableDeclaration
+import joos.ast.expressions.{VariableDeclarationExpression, SimpleNameExpression, NameExpression}
 
 /**
  * This class is immutable since it needs to take a snapshot of the environment
@@ -10,33 +11,45 @@ import joos.ast.expressions.{SimpleNameExpression, NameExpression}
  */
 class BlockEnvironment private(
     val typeEnvironment: TypeEnvironment,
-    val variables: Map[NameExpression, TypedDeclarationLike]) {
+    val locals: Map[NameExpression, VariableDeclarationExpression],
+    val parameters: Map[NameExpression, SingleVariableDeclaration])
+{
 
-  def add(variable: TypedDeclarationLike) = {
-    variables.contains(variable.declarationName) match {
-      case true => None
-      case false => Some(new BlockEnvironment(typeEnvironment, variables + ((variable.declarationName, variable))))
+  def add(parameter: SingleVariableDeclaration): Option[BlockEnvironment] = {
+    getVariable(parameter.declarationName) match {
+      case None => Some(new BlockEnvironment(typeEnvironment, locals, parameters + (parameter.declarationName -> parameter)))
+      case _ => None
     }
   }
 
-  def getVariable(name: SimpleNameExpression): Option[TypedDeclarationLike] = {
-    variables.get(name) match {
+  def add(local: VariableDeclarationExpression): Option[BlockEnvironment] = {
+    getVariable(local.declarationName) match {
+      case None => Some(new BlockEnvironment(typeEnvironment, locals + (local.declarationName -> local), parameters))
+      case _ => None
+    }
+  }
+
+  def getVariableOrField(name: SimpleNameExpression): Option[TypedDeclarationLike] = {
+    getVariable(name) match {
       case None => typeEnvironment.containedFields.get(name)
       case x => x
     }
   }
 
-  def getLocalVariable(name: SimpleNameExpression): Option[TypedDeclarationLike] = {
-    variables.get(name)
+  def getVariable(name: SimpleNameExpression): Option[TypedDeclarationLike] = {
+    locals.get(name) match {
+      case None => parameters.get(name)
+      case x => x
+    }
   }
 
   def contains(name: SimpleNameExpression): Boolean = {
-    variables.contains(name) || typeEnvironment.containedFields.contains(name)
+    locals.contains(name) || typeEnvironment.containedFields.contains(name)
   }
 }
 
 object BlockEnvironment {
   def apply()(implicit typeEnvironment: TypeEnvironment): BlockEnvironment = {
-    new BlockEnvironment(typeEnvironment, Map())
+    new BlockEnvironment(typeEnvironment, Map(), Map())
   }
 }

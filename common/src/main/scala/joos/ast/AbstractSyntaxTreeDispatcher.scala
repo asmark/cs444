@@ -14,6 +14,7 @@ trait AbstractSyntaxTreeDispatcher extends StatementDispatcher with ExpressionDi
       case method: MethodDeclaration => this(method)
       case tipe: TypeDeclaration => this(tipe)
       case variable: SingleVariableDeclaration => this(variable)
+      case fragment: VariableDeclarationFragment => this(fragment)
     }
   }
 
@@ -22,6 +23,8 @@ trait AbstractSyntaxTreeDispatcher extends StatementDispatcher with ExpressionDi
   def apply(method: MethodDeclaration) {}
 
   def apply(variable: SingleVariableDeclaration) {}
+
+  def apply(fragment: VariableDeclarationFragment) {}
 
   override def apply(statement: ExpressionStatement) {
     dispatchExpression(statement.expression)

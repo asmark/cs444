@@ -5,8 +5,12 @@ public class BasicIfStatement2 {
         // TODO: Extract this into variable later?
         if (false) {
             return 2;
-        } else {
+        } else if (false) {
+            return 3;
+        } else if (true) {
             return 123;
+        } else {
+            return 4;
         }
     }
 }

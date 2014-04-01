@@ -1,0 +1,18 @@
+public class BasicVariableDeclaration {
+
+    public BasicVariableDeclaration() {}
+
+    public static int test() {
+        int a = 2;
+        boolean b = true;
+        if (true) {
+            int c = 3;
+        } else if (false) {
+            int d = 4;
+        } else if (true) {
+            int e = 6;
+        }
+        int f = 10;
+        return 123;
+    }
+}
