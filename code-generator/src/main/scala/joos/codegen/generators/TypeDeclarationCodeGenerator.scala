@@ -35,9 +35,9 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
       methodDeclaration =>
         appendText(dd(labelReference(methodDeclaration.uniqueName)))
     }
-    appendText(emptyLine())
+    appendText(emptyLine)
 
     methods.foreach(_.generate())
-    appendText(emptyLine())
+    appendText(emptyLine)
   }
 }

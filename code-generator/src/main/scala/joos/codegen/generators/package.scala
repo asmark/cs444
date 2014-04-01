@@ -21,7 +21,7 @@ package object generators {
     push(Esi),
     push(Edi),
     #: ("[END] Function Prologue"),
-    emptyLine()
+    emptyLine
   )
 
   def epilogue = Seq(
