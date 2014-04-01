@@ -124,6 +124,13 @@ package object assemgen {
   }
 
   /**
+   * eax = r1 | r2
+   */
+  def or(r1: Register, r2: Register): AssemblyInstruction = {
+    new AssemblyInstruction("or", Seq(r1, r2))
+  }
+
+  /**
    * left -= right
    */
   def sub(left: Register, right: AssemblyExpression): AssemblyInstruction = {

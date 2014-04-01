@@ -26,18 +26,18 @@ object ComparisonOperations {
 
   private[commonlib] val cmpOr = {
     Seq(
-      #:("[BEGIN] And Library Function"),
-      (compareAnd::)) ++
+      #:("[BEGIN] Or Library Function"),
+      (compareOr::)) ++
         prologue(0) ++
         Seq(
           mov(Eax, at(Ebp + 12)) #: "put left operand in eax",
           mov(Ebx, at(Ebp + 8)) #: "put right operand in ebx",
-          and(Eax, Ebx) #: "and left and right and put answer in eax",
+          or(Eax, Ebx) #: "or left and right and put answer in eax",
           emptyLine
         ) ++
         epilogue ++
         Seq(
-          #:("[END] And Library Function"),
+          #:("[END] Or Library Function"),
           emptyLine
         )
   }

@@ -33,7 +33,7 @@ package object commonlib {
 
     // Define functions
     assemblyManager.appendText(
-      cmpAnd : _*
+      cmpAnd ++ cmpOr : _*
     )
 
 
