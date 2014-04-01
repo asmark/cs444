@@ -13,7 +13,7 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
   override def generate() {
 
     environment.resetVariables()
-    environment.numLocals = method.blockEnvironment.locals.size
+    environment.numLocals = method.locals
     method.parameters.foreach {
       parameter =>
         environment.addParameterSlot(parameter.declarationName)
