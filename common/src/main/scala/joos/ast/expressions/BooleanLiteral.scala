@@ -6,10 +6,10 @@ import joos.core.Enumeration
 import joos.syntax.parsetree.{LeafNode, ParseTreeNode}
 import joos.syntax.tokens.TokenKind
 
-class BooleanLiteral(val name: String) extends LiteralExpression with BooleanLiteral.Value {
+class BooleanLiteral private(val name: String) extends LiteralExpression with BooleanLiteral.Value {
   expressionType = BooleanType
 
-  val value = if (this == BooleanLiteral.TrueLiteral) 1 else 0
+  lazy val value = if (this equals BooleanLiteral.TrueLiteral) 1 else 0
 
   override def toString = name
 
