@@ -1,0 +1,11 @@
+public class BasicWhile {
+    public BasicWhile() {}
+
+    public static int test() {
+        int cnt = 0;
+        while (cnt < 123 && 122 >= cnt) {
+            cnt = cnt + 1;
+        }
+        return cnt;
+    }
+}

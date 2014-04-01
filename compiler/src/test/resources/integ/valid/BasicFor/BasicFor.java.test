@@ -1,0 +1,15 @@
+public class BasicFor {
+    public BasicFor() {}
+
+    public static int test() {
+        int counter = 0;
+        for (int cnt = 0; cnt <= 122 && 123 > cnt; cnt = cnt + 1) {
+            counter = cnt;
+        }
+        if (counter == 122) {
+            return counter+1;
+        } else {
+            return 1;
+        }
+    }
+}
