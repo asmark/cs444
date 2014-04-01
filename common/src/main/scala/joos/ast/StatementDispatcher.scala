@@ -16,6 +16,7 @@ trait StatementDispatcher {
       case node: IfStatement => this(node)
       case node: ReturnStatement => this(node)
       case node: WhileStatement => this(node)
+      case node: EmptyStatement.type => this(node)
     }
   }
 
@@ -32,4 +33,6 @@ trait StatementDispatcher {
   def apply(statement: Block) {
     statement.statements.foreach(apply)
   }
+
+  def apply(statement: EmptyStatement.type) {}
 }

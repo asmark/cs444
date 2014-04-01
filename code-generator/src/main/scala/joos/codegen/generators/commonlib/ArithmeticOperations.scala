@@ -87,7 +87,7 @@ object ArithmeticOperations {
   }
 
   private[commonlib] val modInts = {
-    val beginDivide = nextLabel(s"begin_modulo")
+    val beginModulo = nextLabel(s"begin_modulo")
     Seq(
       #:("[BEGIN] Modulo Integer Library Function"),
       (moduloIntegers::)) ++
@@ -96,9 +96,9 @@ object ArithmeticOperations {
           mov(Edx, 0) #: "Set edx as 0 for signed comparisons",
           mov(Eax, at(Ebp + 12)) #: "put left operand in eax",
           cmp(Eax, Edx) #: "Compare left operand to be greater than zero",
-          jge(beginDivide) #: "If left operand is positive, skip to division",
+          jge(beginModulo) #: "If left operand is positive, skip to division",
           mov(Edx, -1) #: "Else, set edx to -1",
-          (beginDivide ::),
+          (beginModulo ::),
           mov(Ebx, at(Ebp + 8)) #: "put right operand in ebx",
           idiv(Ebx) #: "divide left and right and put answer in eax",
           mov(Eax, Edx) #: "put the remainder in eax",

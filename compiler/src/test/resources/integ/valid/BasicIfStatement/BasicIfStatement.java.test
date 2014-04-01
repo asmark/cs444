@@ -1,0 +1,12 @@
+public class BasicIfStatement {
+    public BasicIfStatement() {}
+
+    public static int test() {
+        // TODO: Extract this into variable later?
+        if (true) {
+            return 123;
+        } else {
+            return 2;
+        }
+    }
+}

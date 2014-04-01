@@ -25,19 +25,27 @@ class InfixExpressionCodeGenerator(expression: InfixExpression)
 
   def generateIntegerOperation {
 
-    val arithmeticMethod = expression.operator match {
+    val method = expression.operator match {
       case Plus => addIntegers
       case Multiply => multiplyIntegers
       case Minus => subtractIntegers
       case Divide => divideIntegers
       case Modulo => moduloIntegers
+      case ConditionalAnd | BitwiseAnd => compareAnd
+      case ConditionalOr | BitwiseInclusiveOr => compareOr
+      case Equal => compareEqual
+      case NotEqual => compareNotEqual
+      case Less => compareLess
+      case LessOrEqual => compareLessEqual
+      case Greater => compareGreater
+      case GreaterOrEqual => compareGreaterEqual
       case op => {
         Logger.logWarning(s"${op} is not supported yet")
         return
       }
     }
 
-    appendText(#:("[BEGIN] Integer Binary Operation"), emptyLine)
+    appendText(#:(s"[BEGIN] Integer Binary Operation ${expression.toString}"), emptyLine)
 
     appendText(#:("Evaluate left operand"))
     expression.left.generate()
@@ -48,7 +56,7 @@ class InfixExpressionCodeGenerator(expression: InfixExpression)
     appendText(push(Eax) #: "Push right hand side as second parameter", emptyLine)
 
     appendText(
-      call(arithmeticMethod),
+      call(method),
       pop(Ebx) #: "Pop left operand",
       pop(Ebx) #: "Pop right operand",
       #:("[END] Integer Binary Operation")

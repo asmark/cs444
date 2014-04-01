@@ -2,11 +2,13 @@ package joos.codegen.generators
 
 import joos.assemgen.AssemblyLine
 import joos.ast.AbstractSyntaxTreeDispatcher
-import joos.ast.declarations.{FieldDeclaration, MethodDeclaration, SingleVariableDeclaration, TypeDeclaration}
+import joos.ast.declarations._
 import joos.ast.expressions._
+import joos.ast.statements.EmptyStatement
 import joos.ast.statements._
 import joos.ast.{AbstractSyntaxTree, AstNode}
 import joos.codegen.AssemblyCodeGeneratorEnvironment
+import scala.Some
 import scala.language.implicitConversions
 
 trait AssemblyCodeGenerator {
@@ -52,6 +54,8 @@ trait AssemblyCodeGenerator {
 
       override def apply(statement: Block) = generator = new BlockCodeGenerator(statement)
 
+      override def apply(statement: EmptyStatement.type) = generator = new EmptyStatementCodeGenerator(statement)
+
       override def apply(expression: ArrayAccessExpression) = generator = new ArrayAccessExpressionCodeGenerator(expression)
 
       override def apply(expression: ArrayCreationExpression) = generator = new ArrayCreationExpressionCodeGenerator(expression)
@@ -83,6 +87,8 @@ trait AssemblyCodeGenerator {
       override def apply(expression: PrefixExpression) = generator = new PrefixExpressionCodeGenerator(expression)
 
       override def apply(expression: VariableDeclarationExpression) = generator = new VariableDeclarationExpressionCodeGenerator(expression)
+
+      override def apply(fragment: VariableDeclarationFragment) = generator = new VariableDeclarationFragmentCodeGenerator(fragment)
 
       override def apply(expression: ThisExpression) = generator = new ThisExpressionCodeGenerator(expression)
 

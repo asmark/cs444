@@ -9,6 +9,28 @@ import joos.codegen.AssemblyCodeGeneratorEnvironment
 class VariableDeclarationExpressionCodeGenerator(expression: VariableDeclarationExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
-  override def generate() {}
+  override def generate() {
+    appendText(
+      #:(s"[BEGIN] Variable Initialization for ${expression.declarationName.standardName}"),
+      #>
+    )
+    expression.fragment.generate()
+    // Initializer value is now in eax
+    environment.addLocalSlot(expression.declarationName)
+    val slot = environment.getVariableSlot(expression.declarationName)
+    assert(slot >= 0)
+    appendText(
+      mov(Ebx, Ebp),
+      sub(Ebx, slot*4) #: "Put the variable into the correct slot above stack",
+      mov(at(Ebx), Eax)
+    )
+
+    appendText(
+      #<,
+      #:(s"[END] Variable Initialization for ${expression.declarationName.standardName}"),
+      emptyLine
+    )
+
+  }
 
 }
