@@ -8,3 +8,7 @@ zip:
 clean:
 	sbt clean
 	rm -f *.jar *.zip
+quick:
+	rm -f *.jar *.zip
+	sbt compiler/assembly
+	mv compiler/target/compiler.jar compiler.jar

@@ -4,12 +4,18 @@ import joos.assemgen.Register._
 import joos.assemgen._
 import joos.ast.declarations.MethodDeclaration
 import joos.codegen.AssemblyCodeGeneratorEnvironment
+import joos.ast.Modifier
 
 class MethodDeclarationCodeGenerator(method: MethodDeclaration)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
   // TODO: Constructors should return "this"
   override def generate() {
+
+    if (method.modifiers contains Modifier.Native) {
+      // TODO: Not sure what to do here?
+      return
+    }
 
     if (method.name.standardName == "test") {
       generateStartCode()
