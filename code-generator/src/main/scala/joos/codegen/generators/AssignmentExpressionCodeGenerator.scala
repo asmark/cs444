@@ -27,7 +27,7 @@ class AssignmentExpressionCodeGenerator(expression: AssignmentExpression)
       #:("Find right"),
       #>
     )
-    
+
     // Should put right in eax
     expression.right.generate()
     appendText(
