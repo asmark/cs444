@@ -14,7 +14,9 @@ class SimpleNameExpressionCodeGenerator(expression: SimpleNameExpression)
     try {
       val slot = environment.getVariableSlot(expression)
       appendText(
-        mov(Eax, at(Ebp - (slot*4))) #: s"Retrieve variable ${expression.standardName}"
+        mov(Edx, Ebp),
+        sub(Edx, slot*4) #: s"Retrieve lvalue address of variable ${expression.standardName}",
+        mov(Eax, at(Edx)) #: s"Retrieve variable ${expression.standardName}"
       )
     } catch {
       // TODO: Implicit this for fields reference
