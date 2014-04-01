@@ -30,14 +30,15 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     }
 
     // Add methods to class definition
-    val methods = tipe.containedMethods.values.flatten
-    methods.foreach {
+    val containedMethods = tipe.containedMethods.values.flatten
+    containedMethods.foreach {
       methodDeclaration =>
         appendText(dd(labelReference(methodDeclaration.uniqueName)))
+
     }
     appendText(emptyLine)
 
-    methods.foreach(_.generate())
+    tipe.methodMap.values.foreach(_.generate())
     appendText(emptyLine)
   }
 }

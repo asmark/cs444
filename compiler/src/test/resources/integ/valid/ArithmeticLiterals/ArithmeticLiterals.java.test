@@ -1,0 +1,9 @@
+public class ArithmeticLiterals {
+
+  public ArithmeticLiterals() {}
+
+  public static int test() {
+    return (((1 + 120 + 2) * 2) / 2 % 157) % 2 + (122*1);
+  }
+
+}

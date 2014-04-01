@@ -1,0 +1,4 @@
+# Everything except test script
+*
+!test.sh
+!.gitignore
