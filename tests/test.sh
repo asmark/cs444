@@ -21,7 +21,7 @@ for dir in ${TEST_DIRS}
 do
   for test_case in `find ${dir} -maxdepth 1 -type d -not -path "*/valid"`
   do
-    echo "Running ${test_case}" | sed 's/\.\..*\/\(a[0-9]\|integ\)\/.*valid\/\(.*\)/\1 \2/g'
+    echo "Running ${test_case}..." | sed 's/\.\..*\/\(a[0-9]\|integ\)\/.*valid\/\(.*\)/\1 \2/g'
     (( num_tests += 1 ))
 
     rm -rf output
@@ -60,11 +60,12 @@ do
     fi
 
     ./main
-    if (( $? != 123 && $? != 13 ))
+    result=$?
+    if (( result != 123 && result != 13 ))
     then
       echo -e "${RED}FAILED at Execution...${NC}"
     else
-      echo -e "${GREEN}PASSED!${NC}"
+      echo -e "${GREEN}PASSED!${NC} (Returned ${result})"
       (( passed_tests += 1 ))
     fi
   done
