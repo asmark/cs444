@@ -12,6 +12,13 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
   // TODO: Constructors should return "this"
   override def generate() {
 
+    environment.resetVariables()
+    environment.numLocals = method.blockEnvironment.locals.size
+    method.parameters.foreach {
+      parameter =>
+        environment.addParameterSlot(parameter.declarationName)
+    }
+
     if (method.modifiers contains Modifier.Native) {
       // TODO: Not sure what to do here?
       return
@@ -28,7 +35,8 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
       #: ("[BEGIN] Method Definition"),
       methodLabel::
     )
-    appendText(prologue(0): _*)
+
+    appendText(prologue(4 * environment.numLocals): _*)
 
     appendText(#: ("[BEGIN] Function Body"), #>)
     method.body.foreach(_.generate())

@@ -45,7 +45,7 @@ class InfixExpressionCodeGenerator(expression: InfixExpression)
       }
     }
 
-    appendText(#:("[BEGIN] Integer Binary Operation"), emptyLine)
+    appendText(#:(s"[BEGIN] Integer Binary Operation ${expression.toString}"), emptyLine)
 
     appendText(#:("Evaluate left operand"))
     expression.left.generate()

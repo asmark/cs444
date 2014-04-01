@@ -5,6 +5,8 @@ import java.io.{File, PrintWriter}
 import joos.assemgen._
 import joos.ast.AbstractSyntaxTree
 import joos.codegen.generators.TypeDeclarationCodeGenerator
+import scala.collection.mutable
+import joos.ast.expressions.SimpleNameExpression
 
 /**
  * Stores the environment passed to code generator
@@ -48,6 +50,43 @@ class AssemblyCodeGeneratorEnvironment(val assemblyManager: AssemblyFileManager,
     writer.flush()
     writer.close()
   }
+
+  // TODO: Refactor this out later
+  private val localSlots = mutable.Map.empty[SimpleNameExpression, Int]
+  private var localIndex = 0
+  var numLocals = 0
+
+  def addLocalSlot(local: SimpleNameExpression) {
+    localSlots.put(local, localIndex)
+    localIndex += 1
+  }
+
+  private val parameterSlots = mutable.Map.empty[SimpleNameExpression, Int]
+  private var parameterIndex = 0
+  def addParameterSlot(parameter: SimpleNameExpression) {
+    parameterSlots.put(parameter, parameterIndex)
+    parameterIndex += 1
+  }
+
+  /**
+   * Gets the slot used by this variable
+   * TODO: Field slots
+   */
+  def getVariableSlot(variable: SimpleNameExpression): Int = {
+    localSlots.get(variable) match {
+      case Some(slot) => slot
+      case None => parameterSlots.get(variable).get + numLocals
+    }
+  }  
+
+  def resetVariables() {
+    localSlots.clear()
+    localIndex = 0
+    numLocals = 0
+    parameterSlots.clear()
+    parameterIndex = 0
+  }
+
 }
 
 object AssemblyCodeGeneratorEnvironment {

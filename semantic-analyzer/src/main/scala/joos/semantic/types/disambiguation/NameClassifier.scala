@@ -45,7 +45,7 @@ class NameClassifier(implicit val unit: CompilationUnit)
     }
 
     private[this] def apply(name: SimpleNameExpression) {
-      this.block.getLocalVariable(name) match {
+      this.block.getVariable(name) match {
         case Some(variable) =>
           name.nameClassification = LocalVariableName
           name.declaration = variable

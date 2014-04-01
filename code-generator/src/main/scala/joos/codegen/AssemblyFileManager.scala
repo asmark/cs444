@@ -2,6 +2,7 @@ package joos.codegen
 
 import collection.mutable
 import joos.assemgen._
+import joos.ast.expressions.SimpleNameExpression
 
 class AssemblyFileManager(val fileName: String) {
   val globals = mutable.HashSet.empty[String]
