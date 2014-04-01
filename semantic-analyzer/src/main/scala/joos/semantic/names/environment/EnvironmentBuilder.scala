@@ -61,6 +61,10 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
     block = method.blockEnvironment
 
     method.body.map(_.accept(this))
+
+    // Link in the entire method block
+    method.blockEnvironment = block
+
   }
 
   override def apply(block: Block) {

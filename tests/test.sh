@@ -33,7 +33,7 @@ do
     if (( $? != 0 )) 
     then
       echo -e "${RED}FAILED at Code Generation...${NC}"
-      break
+      continue
     fi
 
     flag=0
@@ -49,21 +49,22 @@ do
     if (( flag == 1 )) 
     then
       echo -e "${RED}FAILED at Assembler...${NC}"
-      break
+      continue
     fi
 
     ld -melf_i386 -o main output/*.o
     if (( $? != 0 ))
     then
       echo -e "${RED}FAILED at Linker...${NC}"
-      break
+      continue
     fi
 
     ./main
     result=$?
     if (( result != 123 && result != 13 ))
     then
-      echo -e "${RED}FAILED at Execution...${NC}"
+      echo -e "${RED}FAILED at Execution... (Return value was ${result}${NC}"
+      read -p "Press [Enter] to continue..."
     else
       echo -e "${GREEN}PASSED!${NC} (Returned ${result})"
       (( passed_tests += 1 ))

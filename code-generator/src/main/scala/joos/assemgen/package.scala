@@ -117,6 +117,20 @@ package object assemgen {
   }
 
   /**
+   * eax = r1 & r2
+   */
+  def and(r1: Register, r2: Register): AssemblyInstruction = {
+    new AssemblyInstruction("and", Seq(r1, r2))
+  }
+
+  /**
+   * eax = r1 | r2
+   */
+  def or(r1: Register, r2: Register): AssemblyInstruction = {
+    new AssemblyInstruction("or", Seq(r1, r2))
+  }
+
+  /**
    * left -= right
    */
   def sub(left: Register, right: AssemblyExpression): AssemblyInstruction = {
@@ -333,7 +347,7 @@ package object assemgen {
    * Defines a section
    */
   def section(section: AssemblySection): AssemblyLine = {
-    new AnyAssembly("section " + section.name)
+    new AnyAssembly("section ." + section.name)
   }
 
   /**

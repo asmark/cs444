@@ -97,7 +97,7 @@ class StaticNameLinker(implicit unit: CompilationUnit) extends AstEnvironmentVis
 
     // (1) Check local variable
     require(blockEnvironment != null)
-    blockEnvironment.getLocalVariable(name) match {
+    blockEnvironment.getVariable(name) match {
       case Some(localVariable) => {
         declarationType = localVariable.declarationType
       }
