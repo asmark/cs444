@@ -33,7 +33,7 @@ package object commonlib {
 
     // Define functions
     assemblyManager.appendText(
-      cmpAnd ++ cmpOr : _*
+      cmpAnd ++ cmpOr ++ cmpGt ++ cmpLt ++ cmpEq ++ cmpNe ++ cmpLe ++ cmpGe : _*
     )
 
 
@@ -48,8 +48,8 @@ package object commonlib {
 
   val compareAnd = "_lib_cmp_and"
   val compareOr = "_lib_cmp_or"
-  val compareGreater = "_lib_cmp_gr"
-  val compareLess = "_lib_cmp_ls"
+  val compareGreater = "_lib_cmp_gt"
+  val compareLess = "_lib_cmp_lt"
   val compareEqual = "_lib_cmp_eq"
   val compareNotEqual = "_lib_cmp_ne"
   val compareLessEqual = "_lib_cmp_le"

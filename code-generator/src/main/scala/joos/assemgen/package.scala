@@ -347,7 +347,7 @@ package object assemgen {
    * Defines a section
    */
   def section(section: AssemblySection): AssemblyLine = {
-    new AnyAssembly("section " + section.name)
+    new AnyAssembly("section ." + section.name)
   }
 
   /**
