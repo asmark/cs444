@@ -82,13 +82,11 @@ package object assemgen {
     def :: : AssemblyLabel = {
       new AssemblyLabel(string, None)
     }
-  }
 
-  /**
-   * Writes a comment
-   */
-  implicit def #:(comment: String): AssemblyComment = {
-    new AssemblyComment(comment)
+    def ::(expression: AssemblyExpression): AssemblyLabel = {
+      new AssemblyLabel(string, Some(expression))
+    }
+
   }
 
   /**
@@ -105,15 +103,42 @@ package object assemgen {
 
   def #< : Indentation = #<(4)
 
+  /**
+   * Writes a comment
+   */
+  def :#(comment: String): AssemblyComment = {
+    new AssemblyComment(comment)
+  }
+
   def mov(destination: AssemblyExpression, source: AssemblyExpression): AssemblyInstruction = {
     new AssemblyInstruction("mov", Seq(destination, source), None)
+  }
+
+  def movdw(destination: AssemblyExpression, source: AssemblyExpression): AssemblyInstruction = {
+    new AssemblyInstruction("mov dword", Seq(destination, source), None)
+  }
+
+  def movdw(destination: AssemblyExpression, source: LabelReference): AssemblyInstruction = {
+    new AssemblyInstruction("mov dword", Seq(destination, source), None)
+  }
+
+  def lea(destination: AssemblyExpression, source: LabelReference): AssemblyInstruction = {
+    new AssemblyInstruction("lea", Seq(destination, source), None)
+  }
+
+  def inc(reg: Register): AssemblyInstruction = {
+    new AssemblyInstruction("inc", Seq(reg))
+  }
+
+  def dec(reg: Register): AssemblyInstruction = {
+    new AssemblyInstruction("dec", Seq(reg))
   }
 
   /**
    * eax += ebx
    */
-  def add(eax: Register, ebx: Register): AssemblyInstruction = {
-    new AssemblyInstruction("add", Seq(eax, ebx))
+  def add(reg: Register, exp: AssemblyExpression): AssemblyInstruction = {
+    new AssemblyInstruction("add", Seq(reg, exp))
   }
 
   /**
@@ -362,14 +387,6 @@ package object assemgen {
    */
   def extern(label: LabelReference): AssemblyLine = {
     new AnyAssembly("extern " + label.name)
-  }
-
-  /**
-   * Defines a label
-   */
-  @deprecated("Use ::", "5.0.0")
-  def label(name: String): AssemblyLabel = {
-    name.::
   }
 
   implicit def toExpression(value: String): AssemblyExpression = {

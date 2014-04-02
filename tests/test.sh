@@ -4,6 +4,19 @@ RED='\e[0;31m'
 GREEN='\e[0;32m'
 NC='\e[0m'
 
+
+DEBUG=0
+while getopts ":d" opt; do
+  case $opt in
+    d)
+      DEBUG=1
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" ;;
+  esac
+done
+
+
 cp ../joosc . && cp ../compiler.jar .
 if (( $? != 0 ));
 then
@@ -21,8 +34,11 @@ for dir in ${TEST_DIRS}
 do
   for test_case in `find ${dir} -maxdepth 1 -type d -not -path "*/valid"`
   do
-    echo "Running ${test_case}..." | sed 's/\.\..*\/\(a[0-9]\|integ\)\/.*valid\/\(.*\)/\1 \2/g'
+    test_name=`echo ${test_case} | sed 's/\.\..*\/\(a[0-9]\|integ\)\/.*valid\/\(.*\)/\1 \2/g' | sed 's/ /-/g'`
+    echo "Running ${test_name}..."
     (( num_tests += 1 ))
+
+    outdir=`echo "${test_name}"`
 
     rm -rf output
     mkdir output
@@ -35,9 +51,12 @@ do
       echo -e "${RED}FAILED at Code Generation...${NC}"
       continue
     fi
+  
+    rm -rf ${outdir}
+    mv output ${outdir}
 
     flag=0
-    for asm in `find output -type f`
+    for asm in `find ${outdir} -type f`
     do
       nasm -O1 -f elf -g -F dwarf ${asm}
       if (( $? != 0 ))
@@ -52,14 +71,14 @@ do
       continue
     fi
 
-    ld -melf_i386 -o main output/*.o
+    ld -melf_i386 -o ${outdir}/main ${outdir}/*.o
     if (( $? != 0 ))
     then
       echo -e "${RED}FAILED at Linker...${NC}"
       continue
     fi
 
-    ./main
+    ./${outdir}/main
     result=$?
     if (( result != 123 && result != 13 ))
     then
@@ -68,6 +87,12 @@ do
     else
       echo -e "${GREEN}PASSED!${NC} (Returned ${result})"
       (( passed_tests += 1 ))
+    fi
+    
+
+    if (( DEBUG == 1 ))
+    then
+      read -p "DEBUG MODE ON :: Press [Enter] to continue..."
     fi
   done
 done

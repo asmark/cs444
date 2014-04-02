@@ -15,6 +15,10 @@ class AssemblyInstruction(
     new AssemblyLabel(label, Some(this))
   }
 
+  override def :#(comment: String): AssemblyLine = {
+    new AssemblyInstruction(name, operands, Some(new AssemblyComment(comment)))
+  }
+
   override def write(writer: PrintWriter) {
     writer.print(name)
     writer.print(' ')

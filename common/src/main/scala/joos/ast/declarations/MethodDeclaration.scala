@@ -11,6 +11,7 @@ import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.ParseTreeNode
 import joos.syntax.parsetree.TreeNode
 import joos.core.Identifiable
+import scala.collection.mutable
 
 case class MethodDeclaration(
     modifiers: Seq[Modifier],
@@ -22,6 +23,7 @@ case class MethodDeclaration(
     extends BodyDeclaration with DeclarationLike with BlockLike with Identifiable {
   var compilationUnit: CompilationUnit = null
   var typeDeclaration: TypeDeclaration = null
+  var locals = 0
 
   override def toString = {
     val returnTypeString = returnType match {
@@ -97,6 +99,50 @@ case class MethodDeclaration(
       }
     }
   }
+
+  private val localSlots = mutable.Map.empty[SimpleNameExpression, Int]
+  private var localIndex = 1
+  var numLocals = 0
+
+  def addLocalSlot(local: SimpleNameExpression) {
+    localSlots.put(local, localIndex)
+    localIndex += 1
+  }
+
+  def isLocal(variable: SimpleNameExpression): Boolean = {
+    localSlots.contains(variable)
+  }
+
+  def getLocalSlot(variable: SimpleNameExpression): Int = {
+    localSlots(variable)
+  }
+
+  private lazy val parameterSlots = {
+    var parameterIndex = 1
+    val parameterSlots = mutable.Map.empty[SimpleNameExpression, Int]
+    parameters.foreach {
+      parameter =>
+        parameterSlots.put(parameter.declarationName, parameterIndex)
+        parameterIndex += 1
+    }
+    parameterSlots
+  }
+
+  def isParameter(parameter: SimpleNameExpression): Boolean = {
+    parameterSlots.contains(parameter)
+  }
+
+  // Since we push left-to-right we must invert the order
+  def getParameterSlot(parameter: SimpleNameExpression): Int = {
+    parameterSlots.size - parameterSlots(parameter) + 1
+  }
+//
+//  /**
+//   * Gets the slot used by this variable
+//   */
+//  def getVariableSlot(variable: SimpleNameExpression): Int = {
+//    localSlots.get(variable).getOrElse(parameterSlots(variable) + localSlots.size)
+//  }
 
   override def declarationName: NameExpression = name
 }

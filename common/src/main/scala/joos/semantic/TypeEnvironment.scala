@@ -26,6 +26,9 @@ trait TypeEnvironment extends Environment {
     contained
   }
 
+  lazy val instanceFields = containedFields.values.filter(!_.isStatic)
+  lazy val objectSize = instanceFields.size*4
+
   /**
    * Adds the specified {{method}} to the type environment
    */
@@ -147,5 +150,20 @@ trait TypeEnvironment extends Environment {
         }
     }
     ret
+  }
+
+  private lazy val fieldSlots = {
+    var fieldIndex = 0
+    val fieldSlots = mutable.Map.empty[SimpleNameExpression, Int]
+    containedFields.foreach {
+    field =>
+        fieldSlots.put(field._1, fieldIndex)
+        fieldIndex += 1
+    }
+    fieldSlots
+  }
+
+  def getFieldSlot(field: SimpleNameExpression): Int = {
+    fieldSlots(field)
   }
 }
