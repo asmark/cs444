@@ -10,6 +10,7 @@ class FieldDeclarationCodeGenerator(field: FieldDeclaration)
 
   override def generate() {
     field.fragment.generate()
+    val offset = field.typeDeclaration
   }
 
 }

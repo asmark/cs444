@@ -43,8 +43,18 @@ package object generators {
     :# ("[END] Function Epilogue")
   )
 
+  def initField(fieldDeclaration: FieldDeclaration) (implicit environment: AssemblyCodeGeneratorEnvironment) {
+    if (!fieldDeclaration.fragment.initializer.isDefined) {
+      initDefault(fieldDeclaration)
+      return
+    }
+
+    val codeGenerator = new VariableDeclarationFragmentCodeGenerator(fieldDeclaration.fragment)
+    codeGenerator.generate()
+  }
+
   // The default value will be written to EDX
-  def initDefault(fieldDeclaration: FieldDeclaration) = {
+  def initDefault(fieldDeclaration: FieldDeclaration) {
     fieldDeclaration.declarationType match {
       case ArrayType(_,_) => {
         Seq(
