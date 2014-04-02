@@ -11,7 +11,7 @@ class VariableDeclarationExpressionCodeGenerator(expression: VariableDeclaration
 
   override def generate() {
     appendText(
-      #:(s"[BEGIN] Variable Initialization for ${expression.declarationName.standardName}"),
+      :#(s"[BEGIN] Variable Initialization for ${expression.declarationName.standardName}"),
       #>
     )
     expression.fragment.generate()
@@ -27,7 +27,7 @@ class VariableDeclarationExpressionCodeGenerator(expression: VariableDeclaration
 
     appendText(
       #<,
-      #:(s"[END] Variable Initialization for ${expression.declarationName.standardName}"),
+      :#(s"[END] Variable Initialization for ${expression.declarationName.standardName}"),
       emptyLine
     )
 

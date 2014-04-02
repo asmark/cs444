@@ -106,7 +106,7 @@ package object assemgen {
   /**
    * Writes a comment
    */
-  def #:(comment: String): AssemblyComment = {
+  def :#(comment: String): AssemblyComment = {
     new AssemblyComment(comment)
   }
 

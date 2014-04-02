@@ -34,10 +34,10 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
       dd(subtypeTable)
     )
 
-    var index = 0
-    tipe.containedFields.foreach {
+    var index = FieldOffset/4
+    tipe.containedFields.withFilter(!_._2.isStatic).foreach {
       entry =>
-        appendText(entry._2.uniqueName :: dd(FieldOffset + index*4))
+        appendText(entry._2.uniqueName :: dd(index*4))
         index += 1
     }
     appendText(emptyLine)

@@ -8,7 +8,7 @@ object ArithmeticOperations {
 
   private[commonlib] val addInts = {
     Seq(
-      #:("[BEGIN] Add Integer Library Function"),
+      :#("[BEGIN] Add Integer Library Function"),
       (addIntegers::)) ++
         prologue(0) ++
         Seq(
@@ -19,7 +19,7 @@ object ArithmeticOperations {
         ) ++
         epilogue ++
         Seq(
-          #:("[END] Add Integer Library Function"),
+          :#("[END] Add Integer Library Function"),
           emptyLine
         )
   }
@@ -27,7 +27,7 @@ object ArithmeticOperations {
 
   private[commonlib] val subInts = {
     Seq(
-      #:("[BEGIN] Subtract Integer Library Function"),
+      :#("[BEGIN] Subtract Integer Library Function"),
       (subtractIntegers::)) ++
         prologue(0) ++
         Seq(
@@ -38,7 +38,7 @@ object ArithmeticOperations {
         ) ++
         epilogue ++
         Seq(
-          #:("[END] Subtract Integer Library Function"),
+          :#("[END] Subtract Integer Library Function"),
           emptyLine
         )
   }
@@ -46,7 +46,7 @@ object ArithmeticOperations {
 
   private[commonlib] val multInts = {
     Seq(
-      #:("[BEGIN] Multiply Integer Library Function"),
+      :#("[BEGIN] Multiply Integer Library Function"),
       (multiplyIntegers::)) ++
         prologue(0) ++
         Seq(
@@ -57,7 +57,7 @@ object ArithmeticOperations {
         ) ++
         epilogue ++
         Seq(
-          #:("[END] Multiply Integer Library Function"),
+          :#("[END] Multiply Integer Library Function"),
           emptyLine
         )
   }
@@ -65,7 +65,7 @@ object ArithmeticOperations {
   private[commonlib] val divInts = {
     val beginDivide = nextLabel(s"begin_divide")
     Seq(
-      #:("[BEGIN] Divide Integer Library Function"),
+      :#("[BEGIN] Divide Integer Library Function"),
       (divideIntegers::)) ++
         prologue(0) ++
         Seq(
@@ -81,7 +81,7 @@ object ArithmeticOperations {
         ) ++
         epilogue ++
         Seq(
-          #:("[END] Divide Integer Library Function"),
+          :#("[END] Divide Integer Library Function"),
           emptyLine
         )
   }
@@ -89,7 +89,7 @@ object ArithmeticOperations {
   private[commonlib] val modInts = {
     val beginModulo = nextLabel(s"begin_modulo")
     Seq(
-      #:("[BEGIN] Modulo Integer Library Function"),
+      :#("[BEGIN] Modulo Integer Library Function"),
       (moduloIntegers::)) ++
         prologue(0) ++
         Seq(
@@ -106,7 +106,7 @@ object ArithmeticOperations {
         ) ++
         epilogue ++
         Seq(
-          #:("[END] Modulo Integer Library Function"),
+          :#("[END] Modulo Integer Library Function"),
           emptyLine
         )
   }
