@@ -40,7 +40,11 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
 
     appendText(#: ("[BEGIN] Function Body"), #>)
     method.body.foreach(_.generate())
-    appendText(#<, #: ("[BEGIN] Function End"), emptyLine)
+    appendText(#<, #: ("[END] Function Body"), emptyLine)
+
+    if (method.isConstructor) {
+      // TODO: Return this as Eax
+    }
 
     appendText(epilogue: _*)
 
