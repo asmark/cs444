@@ -19,7 +19,7 @@ package object integ {
 
   // TODO: Return expected output eventually for code generation
   def getValidTestCases: Array[File] = {
-    (new File(resourceToPath(ValidTestDirectory))).listFiles().filter(_.getName.contains("BasicVariableReference"))
+    (new File(resourceToPath(ValidTestDirectory))).listFiles()
   }
 
   def getInvalidTestCases: Array[File] = {
