@@ -12,7 +12,7 @@ class IntegerLiteralCodeGenerator(literal: IntegerLiteral)
 
   override def generate() {
     appendText(
-      mov (Eax, literal.value) #: s"Assemble integer literal: ${literal}",
+      mov (Eax, literal.value) :# s"Assemble integer literal: ${literal}",
       emptyLine
     )
   }

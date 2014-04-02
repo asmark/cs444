@@ -4,6 +4,19 @@ RED='\e[0;31m'
 GREEN='\e[0;32m'
 NC='\e[0m'
 
+
+DEBUG=0
+while getopts ":d" opt; do
+  case $opt in
+    d)
+      DEBUG=1
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" ;;
+  esac
+done
+
+
 cp ../joosc . && cp ../compiler.jar .
 if (( $? != 0 ));
 then
@@ -68,6 +81,12 @@ do
     else
       echo -e "${GREEN}PASSED!${NC} (Returned ${result})"
       (( passed_tests += 1 ))
+    fi
+    
+
+    if (( DEBUG == 1 ))
+    then
+      read -p "DEBUG MODE ON :: Press [Enter] to continue..."
     fi
   done
 done

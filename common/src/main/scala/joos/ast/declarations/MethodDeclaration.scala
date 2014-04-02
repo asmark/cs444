@@ -11,6 +11,7 @@ import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.ParseTreeNode
 import joos.syntax.parsetree.TreeNode
 import joos.core.Identifiable
+import scala.collection.mutable
 
 case class MethodDeclaration(
     modifiers: Seq[Modifier],
@@ -97,6 +98,33 @@ case class MethodDeclaration(
         typeDeclaration.packageDeclaration.name.standardName + '.' + typeDeclaration.name.standardName
       }
     }
+  }
+
+  private val localSlots = mutable.Map.empty[SimpleNameExpression, Int]
+  private var localIndex = 1
+  var numLocals = 0
+
+  def addLocalSlot(local: SimpleNameExpression) {
+    localSlots.put(local, localIndex)
+    localIndex += 1
+  }
+
+  private lazy val parameterSlots = {
+    var parameterIndex = 1
+    val parameterSlots = mutable.Map.empty[SimpleNameExpression, Int]
+    parameters.foreach {
+      parameter =>
+        parameterSlots.put(parameter.declarationName, parameterIndex)
+        parameterIndex += 1
+    }
+    parameterSlots
+  }
+
+  /**
+   * Gets the slot used by this variable
+   */
+  def getVariableSlot(variable: SimpleNameExpression): Int = {
+    localSlots.get(variable).getOrElse(parameterSlots(variable))
   }
 
   override def declarationName: NameExpression = name

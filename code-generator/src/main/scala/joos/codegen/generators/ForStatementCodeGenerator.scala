@@ -13,16 +13,16 @@ class ForStatementCodeGenerator(statement: ForStatement)
     val forEnd = nextLabel("for_end")
 
     appendText(
-      #:("[BEGIN] For Statement"),
+      :#("[BEGIN] For Statement"),
       emptyLine,
-      #:("For Loop Initialization"),
+      :#("For Loop Initialization"),
       #>
     )
     statement.initialization.foreach(_.generate())
 
     appendText(
       #<,
-      #:("For Loop Condition"),
+      :#("For Loop Condition"),
       forStart ::,
       #>
     )
@@ -31,13 +31,13 @@ class ForStatementCodeGenerator(statement: ForStatement)
 
     appendText(
       #<,
-      mov(Ebx, 0) #: "Set ebx to false",
-      cmp(Eax, Ebx) #: "Truth test for eax",
-      je(forEnd) #: "Skip to end if condition is false",
+      mov(Ebx, 0) :# "Set ebx to false",
+      cmp(Eax, Ebx) :# "Truth test for eax",
+      je(forEnd) :# "Skip to end if condition is false",
       emptyLine)
 
     appendText(
-      #:("For Loop Body"),
+      :#("For Loop Body"),
       #>
     )
     statement.body.generate()
@@ -45,16 +45,16 @@ class ForStatementCodeGenerator(statement: ForStatement)
     appendText(
       #<,
       emptyLine,
-      #:("For Loop Update"),
+      :#("For Loop Update"),
       #>
     )
     statement.update.foreach(_.generate())
 
     appendText(
       #<,
-      jmp(forStart) #: "Jump to for condition",
+      jmp(forStart) :# "Jump to for condition",
       forEnd ::,
-      #:("[END] For Statement"),
+      :#("[END] For Statement"),
       emptyLine
     )
   }
