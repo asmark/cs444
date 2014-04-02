@@ -31,9 +31,9 @@ class ForStatementCodeGenerator(statement: ForStatement)
 
     appendText(
       #<,
-      mov(Ebx, 0) #: "Set ebx to false",
-      cmp(Eax, Ebx) #: "Truth test for eax",
-      je(forEnd) #: "Skip to end if condition is false",
+      mov(Ebx, 0) :# "Set ebx to false",
+      cmp(Eax, Ebx) :# "Truth test for eax",
+      je(forEnd) :# "Skip to end if condition is false",
       emptyLine)
 
     appendText(
@@ -52,7 +52,7 @@ class ForStatementCodeGenerator(statement: ForStatement)
 
     appendText(
       #<,
-      jmp(forStart) #: "Jump to for condition",
+      jmp(forStart) :# "Jump to for condition",
       forEnd ::,
       #:("[END] For Statement"),
       emptyLine

@@ -12,9 +12,9 @@ object ArithmeticOperations {
       (addIntegers::)) ++
         prologue(0) ++
         Seq(
-          mov(Eax, at(Ebp + 12)) #: "put left operand in eax",
-          mov(Ebx, at(Ebp + 8)) #: "put right operand in ebx",
-          add(Eax, Ebx) #: "add left and right and put answer in eax",
+          mov(Eax, at(Ebp + 12)) :# "put left operand in eax",
+          mov(Ebx, at(Ebp + 8)) :# "put right operand in ebx",
+          add(Eax, Ebx) :# "add left and right and put answer in eax",
           emptyLine
         ) ++
         epilogue ++
@@ -31,9 +31,9 @@ object ArithmeticOperations {
       (subtractIntegers::)) ++
         prologue(0) ++
         Seq(
-          mov(Eax, at(Ebp + 12)) #: "put left operand in eax",
-          mov(Ebx, at(Ebp + 8)) #: "put right operand in ebx",
-          sub(Eax, Ebx) #: "subtract left and right and put answer in eax",
+          mov(Eax, at(Ebp + 12)) :# "put left operand in eax",
+          mov(Ebx, at(Ebp + 8)) :# "put right operand in ebx",
+          sub(Eax, Ebx) :# "subtract left and right and put answer in eax",
           emptyLine
         ) ++
         epilogue ++
@@ -50,9 +50,9 @@ object ArithmeticOperations {
       (multiplyIntegers::)) ++
         prologue(0) ++
         Seq(
-          mov(Eax, at(Ebp + 12)) #: "put left operand in eax",
-          mov(Ebx, at(Ebp + 8)) #: "put right operand in ebx",
-          imul(Eax, Ebx) #: "multiply left and right and put answer in eax",
+          mov(Eax, at(Ebp + 12)) :# "put left operand in eax",
+          mov(Ebx, at(Ebp + 8)) :# "put right operand in ebx",
+          imul(Eax, Ebx) :# "multiply left and right and put answer in eax",
           emptyLine
         ) ++
         epilogue ++
@@ -69,14 +69,14 @@ object ArithmeticOperations {
       (divideIntegers::)) ++
         prologue(0) ++
         Seq(
-          mov(Edx, 0) #: "Set edx as 0 for signed comparisons",
-          mov(Eax, at(Ebp + 12)) #: "put left operand in eax",
-          cmp(Eax, Edx) #: "Compare left operand to be greater than zero",
-          jge(beginDivide) #: "If left operand is positive, skip to division",
-          mov(Edx, -1) #: "Else, set edx to -1",
+          mov(Edx, 0) :# "Set edx as 0 for signed comparisons",
+          mov(Eax, at(Ebp + 12)) :# "put left operand in eax",
+          cmp(Eax, Edx) :# "Compare left operand to be greater than zero",
+          jge(beginDivide) :# "If left operand is positive, skip to division",
+          mov(Edx, -1) :# "Else, set edx to -1",
           beginDivide ::,
-          mov(Ebx, at(Ebp + 8)) #: "put right operand in ebx",
-          idiv(Ebx) #: "divide left and right and put answer in eax",
+          mov(Ebx, at(Ebp + 8)) :# "put right operand in ebx",
+          idiv(Ebx) :# "divide left and right and put answer in eax",
           emptyLine
         ) ++
         epilogue ++
@@ -93,15 +93,15 @@ object ArithmeticOperations {
       (moduloIntegers::)) ++
         prologue(0) ++
         Seq(
-          mov(Edx, 0) #: "Set edx as 0 for signed comparisons",
-          mov(Eax, at(Ebp + 12)) #: "put left operand in eax",
-          cmp(Eax, Edx) #: "Compare left operand to be greater than zero",
-          jge(beginModulo) #: "If left operand is positive, skip to division",
-          mov(Edx, -1) #: "Else, set edx to -1",
+          mov(Edx, 0) :# "Set edx as 0 for signed comparisons",
+          mov(Eax, at(Ebp + 12)) :# "put left operand in eax",
+          cmp(Eax, Edx) :# "Compare left operand to be greater than zero",
+          jge(beginModulo) :# "If left operand is positive, skip to division",
+          mov(Edx, -1) :# "Else, set edx to -1",
           (beginModulo ::),
-          mov(Ebx, at(Ebp + 8)) #: "put right operand in ebx",
-          idiv(Ebx) #: "divide left and right and put answer in eax",
-          mov(Eax, Edx) #: "put the remainder in eax",
+          mov(Ebx, at(Ebp + 8)) :# "put right operand in ebx",
+          idiv(Ebx) :# "divide left and right and put answer in eax",
+          mov(Eax, Edx) :# "put the remainder in eax",
           emptyLine
         ) ++
         epilogue ++

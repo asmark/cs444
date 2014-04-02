@@ -21,7 +21,7 @@ class VariableDeclarationExpressionCodeGenerator(expression: VariableDeclaration
     assert(slot >= 0)
     appendText(
       mov(Ebx, Ebp),
-      sub(Ebx, slot*4) #: "Put the variable into the correct slot above stack",
+      sub(Ebx, slot*4) :# "Put the variable into the correct slot above stack",
       mov(at(Ebx), Eax)
     )
 

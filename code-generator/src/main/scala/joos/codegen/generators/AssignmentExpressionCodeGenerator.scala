@@ -22,7 +22,7 @@ class AssignmentExpressionCodeGenerator(expression: AssignmentExpression)
 
     appendText(
       #<,
-      push(Edx) #: "Save lvalue",
+      push(Edx) :# "Save lvalue",
       emptyLine,
       #:("Find right"),
       #>
@@ -32,8 +32,8 @@ class AssignmentExpressionCodeGenerator(expression: AssignmentExpression)
     expression.right.generate()
     appendText(
       #<,
-      pop(Ebx) #: "Retrieve lvalue",
-      mov(at(Ebx), Eax) #: "Assign lvalue to right",
+      pop(Ebx) :# "Retrieve lvalue",
+      mov(at(Ebx), Eax) :# "Assign lvalue to right",
       emptyLine
     )
   }

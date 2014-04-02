@@ -22,7 +22,7 @@ class PrefixExpressionCodeGenerator(prefix: PrefixExpression)
 
     appendText(
       #<,
-      neg(Eax) #: "Twos complement negation",
+      neg(Eax) :# "Twos complement negation",
       #:("[END] Integer negation"),
       emptyLine
     )
@@ -41,8 +41,8 @@ class PrefixExpressionCodeGenerator(prefix: PrefixExpression)
 
     appendText(
       #<,
-      mov(Ebx, 1) #: "Move true into ebx",
-      xor(Eax, Ebx) #: "XOR to negate boolean",
+      mov(Ebx, 1) :# "Move true into ebx",
+      xor(Eax, Ebx) :# "XOR to negate boolean",
       #:("[END] Boolean negation"),
       emptyLine
     )

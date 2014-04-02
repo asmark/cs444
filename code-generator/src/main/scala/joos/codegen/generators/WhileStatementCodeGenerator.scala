@@ -23,9 +23,9 @@ class WhileStatementCodeGenerator(statement: WhileStatement)
 
     appendText(
       #<,
-      mov(Ebx, 0) #: "Set ebx to false",
-      cmp(Eax, Ebx) #: "Truth test for eax",
-      je(whileEnd) #: "Skip to end if condition is false",
+      mov(Ebx, 0) :# "Set ebx to false",
+      cmp(Eax, Ebx) :# "Truth test for eax",
+      je(whileEnd) :# "Skip to end if condition is false",
       emptyLine)
 
     appendText(
@@ -36,7 +36,7 @@ class WhileStatementCodeGenerator(statement: WhileStatement)
 
     appendText(
       #<,
-      jmp(whileStart) #: "Jump to while condition",
+      jmp(whileStart) :# "Jump to while condition",
       whileEnd ::,
       #:("[END] While Statement"),
       emptyLine
