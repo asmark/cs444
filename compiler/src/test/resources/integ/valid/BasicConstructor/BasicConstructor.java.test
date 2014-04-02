@@ -26,10 +26,10 @@ public class BasicConstructor {
         BasicConstructor a = new BasicConstructor();
         a.a_i = 5;
         a.o_u = new Object();
-        
-        return t.a_i;
 
+        t.a_i = t.a_i - 5;
 
+        return t.a_i + a.a_i;
     }
 
 }
