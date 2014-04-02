@@ -44,11 +44,6 @@ package object generators {
   )
 
   def initField(fieldDeclaration: FieldDeclaration) (implicit environment: AssemblyCodeGeneratorEnvironment) {
-    if (!fieldDeclaration.fragment.initializer.isDefined) {
-      initDefault(fieldDeclaration)
-      return
-    }
-
     val codeGenerator = new FieldDeclarationCodeGenerator(fieldDeclaration)
     codeGenerator.generate()
   }

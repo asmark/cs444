@@ -10,7 +10,7 @@ class FieldDeclarationCodeGenerator(field: FieldDeclaration)
 
   override def generate() {
     field.declarationName.generate()
-    val offset = field.typeDeclaration.getFieldSlot(field.declarationName) * 4;
+    val offset = field.typeDeclaration.getFieldSlot(field.declarationName) * 4
 
     appendText(
       :#("[BEGIN] Initializing field: " + field.declarationName.standardName),
