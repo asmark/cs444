@@ -9,6 +9,7 @@ import joos.ast.types.{SimpleType, PrimitiveType, ArrayType}
 
 package object generators {
   val offsetPostFix = "_offset"
+  val subTypeTable = "_subTypeTable"
 
   def nextLabel(labelPrefix: String = "label") = labelPrefix + "_" + DefaultUniqueIdGenerator.nextId
 

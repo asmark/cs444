@@ -12,10 +12,9 @@ class FieldAccessExpressionCodeGenerator(expression: FieldAccessExpression)
     expression.expression.generate()
 
     val declaration = expression.declaration
+    val offsetLabel = declaration.uniqueName + offsetPostFix
     if (declaration.isStatic) {
       // Assume EAX now has the reference to the type def
-      val offsetLabel = declaration.uniqueName + offsetPostFix
-
       appendText(
         #: (s"[BEG] accessing static field: ${expression.identifier.standardName}"),
         push(Ebx),
@@ -26,17 +25,11 @@ class FieldAccessExpressionCodeGenerator(expression: FieldAccessExpression)
       )
     } else {
       // Assume EAX now has the reference to the object
-      // TODO: turn the calculation below into label
-      val instanceFields = declaration.typeDeclaration.containedFields.filter(
-        pair => if (!pair._2.isStatic) true else false
-      )
-      val offset = instanceFields.keys.toList.indexOf(expression.identifier) * 4
-
       appendText(
         #: (s"[BEG] accessing instance field: ${expression.identifier.standardName}"),
         push(Ebx),
         // The first field in the object is a link to the class table
-        mov(Ebx, toExpression(offset + 4)),
+        mov(Ebx, at(labelReference(offsetLabel))),
         add(Eax, Ebx),
         pop(Ebx),
         #: (s"[END] accessing instance field: ${expression.identifier.standardName}")
