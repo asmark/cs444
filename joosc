@@ -1,4 +1,21 @@
 #!/bin/sh
 
+
+
+while getopts ":i" opt; do
+  case $opt in
+    i)
+      shift 1
+      cd output; git clean -fx; cd ..
+      stdlib=`find compiler/src/test/resources/integ/stdlib -type f`
+      java -jar compiler.jar "$@" ${stdlib}
+      exit $?
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" ;;
+  esac
+done
+
+
 java -jar compiler.jar "$@"
 exit $?
