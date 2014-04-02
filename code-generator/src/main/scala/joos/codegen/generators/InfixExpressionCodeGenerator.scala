@@ -49,16 +49,16 @@ class InfixExpressionCodeGenerator(expression: InfixExpression)
 
     appendText(#:("Evaluate left operand"))
     expression.left.generate()
-    appendText(push(Eax) #: "Push Left hand side as first parameter", emptyLine)
+    appendText(push(Eax) :# "Push Left hand side as first parameter", emptyLine)
 
     appendText(#:("Evaluate right operand"))
     expression.right.generate()
-    appendText(push(Eax) #: "Push right hand side as second parameter", emptyLine)
+    appendText(push(Eax) :# "Push right hand side as second parameter", emptyLine)
 
     appendText(
       call(method),
-      pop(Ebx) #: "Pop left operand",
-      pop(Ebx) #: "Pop right operand",
+      pop(Ebx) :# "Pop left operand",
+      pop(Ebx) :# "Pop right operand",
       #:("[END] Integer Binary Operation")
     )
   }

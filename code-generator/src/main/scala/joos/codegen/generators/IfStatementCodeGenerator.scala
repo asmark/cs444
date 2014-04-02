@@ -23,9 +23,9 @@ class IfStatementCodeGenerator(statement: IfStatement)
 
     appendText(
       #<,
-      mov(Ebx, 0) #: "Set ebx to false",
-      cmp(Eax, Ebx) #: "Truth test for eax",
-      je(falseStart) #: "Skip to false if condition is false",
+      mov(Ebx, 0) :# "Set ebx to false",
+      cmp(Eax, Ebx) :# "Truth test for eax",
+      je(falseStart) :# "Skip to false if condition is false",
       emptyLine
     )
 
@@ -36,7 +36,7 @@ class IfStatementCodeGenerator(statement: IfStatement)
     statement.trueStatement.generate()
     appendText(
       #<,
-      jmp(statementEnd) #: "Jump to statement end",
+      jmp(statementEnd) :# "Jump to statement end",
       emptyLine
     )
 

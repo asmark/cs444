@@ -12,8 +12,8 @@ object ComparisonOperations {
       (name ::)) ++
         prologue(0) ++
         Seq(
-          mov(Eax, at(Ebp + 12)) #: "put left operand in eax",
-          mov(Ebx, at(Ebp + 8)) #: "put right operand in ebx") ++
+          mov(Eax, at(Ebp + 12)) :# "put left operand in eax",
+          mov(Ebx, at(Ebp + 8)) :# "put right operand in ebx") ++
         instructions ++
         Seq(emptyLine) ++
         epilogue ++

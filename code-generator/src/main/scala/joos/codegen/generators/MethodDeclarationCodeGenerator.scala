@@ -51,14 +51,14 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
       case Some(superType) => {
         val superConstructor = superType.constructorMap.values.find(constructor => constructor.parameters.length == 0).get
         appendText(
-          call(superConstructor.uniqueName) #: "Invoke super constructor. Returns pointer in eax"
+          call(superConstructor.uniqueName) :# "Invoke super constructor. Returns pointer in eax"
         )
       }
     }
 
     // Pointer should still be in Eax
     appendText(
-      push(Eax) #: "Preserve pointer to object"
+      push(Eax) :# "Preserve pointer to object"
     )
 
     appendText(#:("[BEGIN] Constructor Default Initialization"), #>)
@@ -70,7 +70,7 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
     appendText(#<, #:("[END] Constructor Body"), emptyLine)
 
     appendText(
-      pop(Eax) #: "Retrieve pointer to object"
+      pop(Eax) :# "Retrieve pointer to object"
     )
     appendText(epilogue: _*)
 

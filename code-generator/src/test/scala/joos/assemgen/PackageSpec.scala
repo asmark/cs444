@@ -37,8 +37,8 @@ class PackageSpec extends FlatSpec with Matchers {
       idiv(Edx),
       mov(Ecx, at(1)),
       mov(Ebx, at(Eax)),
-      mov(Ebx, at(Ebx)) #: "with comment",
-      "inline.label":: add(Eax, Ebx) #: "comment"
+      mov(Ebx, at(Ebx)) :# "with comment",
+      ("inline.label":: add(Eax, Ebx)) :# "comment"
     )
 
     val stream = new ByteOutputStream()
