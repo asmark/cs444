@@ -14,9 +14,9 @@ class IfStatementCodeGenerator(statement: IfStatement)
     val statementEnd = nextLabel("if_statement_end")
 
     appendText(
-      #:("[BEGIN] If Statement"),
+      :#("[BEGIN] If Statement"),
       emptyLine,
-      #:("Evaluate Condition"),
+      :#("Evaluate Condition"),
       #>
     )
     statement.condition.generate()
@@ -30,7 +30,7 @@ class IfStatementCodeGenerator(statement: IfStatement)
     )
 
     appendText(
-      #:("True branch body"),
+      :#("True branch body"),
       #>
     )
     statement.trueStatement.generate()
@@ -41,7 +41,7 @@ class IfStatementCodeGenerator(statement: IfStatement)
     )
 
     appendText(
-      #:("False branch body"),
+      :#("False branch body"),
       falseStart ::,
       #>
     )
@@ -49,7 +49,7 @@ class IfStatementCodeGenerator(statement: IfStatement)
     appendText(
       #<,
       statementEnd ::,
-      #:("[END] If Statement"),
+      :#("[END] If Statement"),
       emptyLine
     )
   }

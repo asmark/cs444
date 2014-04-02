@@ -23,7 +23,7 @@ class PackageSpec extends FlatSpec with Matchers {
       extern("label.2"),
       global("_start"),
       "_start"::,
-      #: ("this is comment"),
+      :# ("this is comment"),
       "label.1"::,
       #>,
       jmp("label.1"),

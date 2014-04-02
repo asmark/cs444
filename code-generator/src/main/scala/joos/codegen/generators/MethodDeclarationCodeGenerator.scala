@@ -37,7 +37,7 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
     val constructorLabel = s"${method.uniqueName}"
     appendGlobal(constructorLabel)
     appendText(
-      #:("[BEGIN] Constructor Definition"),
+      :#("[BEGIN] Constructor Definition"),
       constructorLabel ::
     )
 
@@ -46,7 +46,7 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
     // Expect eax to hold pointer to raw malloc'ed object
     getSuperType(method.typeDeclaration) match {
       case None => {
-        appendText(#:("Object has no super constructor. Not invoking super constructor"))
+        appendText(:#("Object has no super constructor. Not invoking super constructor"))
       }
       case Some(superType) => {
         val superConstructor = superType.constructorMap.values.find(constructor => constructor.parameters.length == 0).get
@@ -61,13 +61,13 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
       push(Eax) :# "Preserve pointer to object"
     )
 
-    appendText(#:("[BEGIN] Constructor Default Initialization"), #>)
+    appendText(:#("[BEGIN] Constructor Default Initialization"), #>)
     // TODO
-    appendText(#<, #:("[END] Constructor Default Initialization"), emptyLine)
+    appendText(#<, :#("[END] Constructor Default Initialization"), emptyLine)
 
-    appendText(#:("[BEGIN] Constructor Body"), #>)
+    appendText(:#("[BEGIN] Constructor Body"), #>)
     method.body.foreach(_.generate())
-    appendText(#<, #:("[END] Constructor Body"), emptyLine)
+    appendText(#<, :#("[END] Constructor Body"), emptyLine)
 
     appendText(
       pop(Eax) :# "Retrieve pointer to object"
@@ -75,7 +75,7 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
     appendText(epilogue: _*)
 
     appendText(
-      #:("[END] Constructor Definition"),
+      :#("[END] Constructor Definition"),
       emptyLine
     )
   }
@@ -89,20 +89,20 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
     appendGlobal(methodLabel)
 
     appendText(
-      #:("[BEGIN] Method Definition"),
+      :#("[BEGIN] Method Definition"),
       methodLabel ::
     )
 
     appendText(prologue(4 * environment.numLocals): _*)
 
-    appendText(#:("[BEGIN] Function Body"), #>)
+    appendText(:#("[BEGIN] Function Body"), #>)
     method.body.foreach(_.generate())
-    appendText(#<, #:("[END] Function Body"), emptyLine)
+    appendText(#<, :#("[END] Function Body"), emptyLine)
 
     appendText(epilogue: _*)
 
     appendText(
-      #:("[END] Method Definition"),
+      :#("[END] Method Definition"),
       emptyLine
     )
   }
@@ -114,9 +114,9 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
 
     appendText(
       startLabel ::,
-      #:("[BEGIN] Static field initializations"),
+      :#("[BEGIN] Static field initializations"),
       // TODO: Initializations
-      #:("[END] Static field initializations"),
+      :#("[END] Static field initializations"),
       emptyLine,
       call(labelReference(method.uniqueName)),
       emptyLine,

@@ -45,13 +45,13 @@ class InfixExpressionCodeGenerator(expression: InfixExpression)
       }
     }
 
-    appendText(#:(s"[BEGIN] Integer Binary Operation ${expression.toString}"), emptyLine)
+    appendText(:#(s"[BEGIN] Integer Binary Operation ${expression.toString}"), emptyLine)
 
-    appendText(#:("Evaluate left operand"))
+    appendText(:#("Evaluate left operand"))
     expression.left.generate()
     appendText(push(Eax) :# "Push Left hand side as first parameter", emptyLine)
 
-    appendText(#:("Evaluate right operand"))
+    appendText(:#("Evaluate right operand"))
     expression.right.generate()
     appendText(push(Eax) :# "Push right hand side as second parameter", emptyLine)
 
@@ -59,7 +59,7 @@ class InfixExpressionCodeGenerator(expression: InfixExpression)
       call(method),
       pop(Ebx) :# "Pop left operand",
       pop(Ebx) :# "Pop right operand",
-      #:("[END] Integer Binary Operation")
+      :#("[END] Integer Binary Operation")
     )
   }
 

@@ -11,9 +11,9 @@ class AssignmentExpressionCodeGenerator(expression: AssignmentExpression)
   override def generate() {
 
     appendText(
-      #:(s"[BEGIN] Assignment Expression ${expression}"),
+      :#(s"[BEGIN] Assignment Expression ${expression}"),
       emptyLine,
-      #:("Find lvalue"),
+      :#("Find lvalue"),
       #>
     )
 
@@ -24,7 +24,7 @@ class AssignmentExpressionCodeGenerator(expression: AssignmentExpression)
       #<,
       push(Edx) :# "Save lvalue",
       emptyLine,
-      #:("Find right"),
+      :#("Find right"),
       #>
     )
 
