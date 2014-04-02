@@ -12,6 +12,7 @@ class AssignmentExpressionCodeGenerator(expression: AssignmentExpression)
 
     appendText(
       :#(s"[BEGIN] Assignment Expression ${expression}"),
+      push(Ecx) :# "Preserve this",
       emptyLine,
       :#("Find lvalue"),
       #>
@@ -34,6 +35,8 @@ class AssignmentExpressionCodeGenerator(expression: AssignmentExpression)
       #<,
       pop(Ebx) :# "Retrieve lvalue",
       mov(at(Ebx), Eax) :# "Assign lvalue to right",
+      pop(Ecx) :# "Retrieve this",
+      :#(s"[END] Assignment Expression ${expression}"),
       emptyLine
     )
   }

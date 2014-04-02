@@ -114,11 +114,27 @@ package object assemgen {
     new AssemblyInstruction("mov", Seq(destination, source), None)
   }
 
+  def movdw(destination: AssemblyExpression, source: LabelReference): AssemblyInstruction = {
+    new AssemblyInstruction("mov dword", Seq(destination, source), None)
+  }
+
+  def lea(destination: AssemblyExpression, source: LabelReference): AssemblyInstruction = {
+    new AssemblyInstruction("lea", Seq(destination, source), None)
+  }
+
+  def inc(reg: Register): AssemblyInstruction = {
+    new AssemblyInstruction("inc", Seq(reg))
+  }
+
+  def dec(reg: Register): AssemblyInstruction = {
+    new AssemblyInstruction("dec", Seq(reg))
+  }
+
   /**
    * eax += ebx
    */
-  def add(eax: Register, ebx: Register): AssemblyInstruction = {
-    new AssemblyInstruction("add", Seq(eax, ebx))
+  def add(reg: Register, exp: AssemblyExpression): AssemblyInstruction = {
+    new AssemblyInstruction("add", Seq(reg, exp))
   }
 
   /**
