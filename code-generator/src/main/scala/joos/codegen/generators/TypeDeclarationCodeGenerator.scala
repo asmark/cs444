@@ -74,9 +74,9 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     environment.sitManager.orderedMethods.foreach(
       method => {
         if (tipe.methodMap.values.toSet.contains(method)) {
-          appendData(dd(labelReference(method.uniqueName)))
+          appendData(dd(labelReference(method.uniqueName)) :#method.uniqueName)
         } else {
-          appendData(toExpression(0))
+          appendData(dd(0) :#method.uniqueName)
         }
       }
     )
