@@ -53,7 +53,7 @@ class AssemblyCodeGeneratorEnvironment(val assemblyManager: AssemblyFileManager,
 
   // TODO: Refactor this out later
   private val localSlots = mutable.Map.empty[SimpleNameExpression, Int]
-  private var localIndex = 0
+  private var localIndex = 1
   var numLocals = 0
 
   def addLocalSlot(local: SimpleNameExpression) {
@@ -62,7 +62,7 @@ class AssemblyCodeGeneratorEnvironment(val assemblyManager: AssemblyFileManager,
   }
 
   private val parameterSlots = mutable.Map.empty[SimpleNameExpression, Int]
-  private var parameterIndex = 0
+  private var parameterIndex = 1
   def addParameterSlot(parameter: SimpleNameExpression) {
     parameterSlots.put(parameter, parameterIndex)
     parameterIndex += 1
@@ -81,10 +81,10 @@ class AssemblyCodeGeneratorEnvironment(val assemblyManager: AssemblyFileManager,
 
   def resetVariables() {
     localSlots.clear()
-    localIndex = 0
+    localIndex = 1
     numLocals = 0
     parameterSlots.clear()
-    parameterIndex = 0
+    parameterIndex = 1
   }
 
 }

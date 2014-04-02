@@ -21,6 +21,7 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
   private[this] var unit: CompilationUnit = null
   private[this] var packaged: PackageDeclaration = null
   private[this] var block: BlockEnvironment = null
+  private[this] var locals = 0
 
   override def apply(unit: CompilationUnit) {
     this.unit = unit
@@ -56,15 +57,14 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
           case None => throw new DuplicatedVariableException(variable.declarationName)
         }
     }
+    locals = 0
     method.compilationUnit = unit
     method.typeDeclaration = typed
     block = method.blockEnvironment
 
     method.body.map(_.accept(this))
 
-    // Link in the entire method block
-    method.blockEnvironment = block
-
+    method.locals = locals
   }
 
   override def apply(block: Block) {
@@ -104,6 +104,7 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
       case None => throw new DuplicatedVariableException(expression.declarationName)
     }
     expression.blockEnvironment = block
+    locals = locals + 1
   }
 
   override def apply(statement: ForStatement) {
