@@ -4,9 +4,9 @@ import AssemblyCodeGeneratorEnvironment._
 import java.io.{File, PrintWriter}
 import joos.assemgen._
 import joos.ast.AbstractSyntaxTree
+import joos.ast.expressions.SimpleNameExpression
 import joos.codegen.generators.TypeDeclarationCodeGenerator
 import scala.collection.mutable
-import joos.ast.expressions.SimpleNameExpression
 
 /**
  * Stores the environment passed to code generator
@@ -24,25 +24,25 @@ class AssemblyCodeGeneratorEnvironment(val assemblyManager: AssemblyFileManager,
 
   def write {
     val writer = new AssemblyCodeWriter(new PrintWriter(new File(s"${OutputDirectory}/${assemblyManager.fileName}")))
-    writer.write(#:(sectionFormatString.format("Text")))
+    writer.write(:#(sectionFormatString.format("Text")))
     writer.write(section(AssemblySection.Text))
 
-    writer.write(#:("Defining Exported Symbols"))
+    writer.write(:#("Defining Exported Symbols"))
     assemblyManager.globals foreach (symbol => writer.write(global(symbol)))
     writer.write(emptyLine)
 
-    writer.write(#:("Defining Imported Symbols"))
+    writer.write(:#("Defining Imported Symbols"))
     // Do not extern things that are globalled here
     namespace.externs -- assemblyManager.globals foreach (symbol => writer.write(extern(symbol)))
     writer.write(emptyLine)
 
-    writer.write(#:("Defining body"))
+    writer.write(:#("Defining body"))
     writer.write(emptyLine)
 
     writer.write(assemblyManager.text: _*)
     writer.write(emptyLine)
 
-    writer.write(#:(sectionFormatString.format("Data")))
+    writer.write(:#(sectionFormatString.format("Data")))
     writer.write(section(AssemblySection.Data))
     writer.write(assemblyManager.data: _*)
     writer.write(emptyLine)
@@ -63,6 +63,7 @@ class AssemblyCodeGeneratorEnvironment(val assemblyManager: AssemblyFileManager,
 
   private val parameterSlots = mutable.Map.empty[SimpleNameExpression, Int]
   private var parameterIndex = 1
+
   def addParameterSlot(parameter: SimpleNameExpression) {
     parameterSlots.put(parameter, parameterIndex)
     parameterIndex += 1
@@ -70,14 +71,31 @@ class AssemblyCodeGeneratorEnvironment(val assemblyManager: AssemblyFileManager,
 
   /**
    * Gets the slot used by this variable
-   * TODO: Field slots
    */
-  def getVariableSlot(variable: SimpleNameExpression): Int = {
+  def getVariableSlot(variable: SimpleNameExpression): Option[Int] = {
     localSlots.get(variable) match {
-      case Some(slot) => slot
-      case None => parameterSlots.get(variable).get + numLocals
+      case Some(slot) => Some(slot)
+      case None =>
+        parameterSlots.get(variable) match {
+          case Some(slot) => Some(slot + numLocals)
+          case None => None
+        }
     }
-  }  
+  }
+
+  private val fieldSlots = mutable.Map.empty[SimpleNameExpression, Int]
+  private var fieldIndex = 0
+  /**
+   * Gets the slot used by this instance field
+   */
+  def addFieldSlot(field: SimpleNameExpression) {
+    fieldSlots.put(field, fieldIndex)
+    fieldIndex += 1
+  }
+
+  def getFieldSlot(field: SimpleNameExpression): Int = {
+    fieldSlots(field)
+  }
 
   def resetVariables() {
     localSlots.clear()
@@ -85,6 +103,11 @@ class AssemblyCodeGeneratorEnvironment(val assemblyManager: AssemblyFileManager,
     numLocals = 0
     parameterSlots.clear()
     parameterIndex = 1
+  }
+
+  def resetFields() {
+    fieldSlots.clear()
+    fieldIndex = 0
   }
 
 }

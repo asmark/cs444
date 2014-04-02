@@ -11,23 +11,23 @@ class VariableDeclarationExpressionCodeGenerator(expression: VariableDeclaration
 
   override def generate() {
     appendText(
-      #:(s"[BEGIN] Variable Initialization for ${expression.declarationName.standardName}"),
+      :#(s"[BEGIN] Variable Initialization for ${expression.declarationName.standardName}"),
       #>
     )
     expression.fragment.generate()
     // Initializer value is now in eax
     environment.addLocalSlot(expression.declarationName)
-    val slot = environment.getVariableSlot(expression.declarationName)
+    val slot = environment.getVariableSlot(expression.declarationName).get
     assert(slot >= 0)
     appendText(
       mov(Ebx, Ebp),
-      sub(Ebx, slot*4) #: "Put the variable into the correct slot above stack",
+      sub(Ebx, slot*4) :# "Put the variable into the correct slot above stack",
       mov(at(Ebx), Eax)
     )
 
     appendText(
       #<,
-      #:(s"[END] Variable Initialization for ${expression.declarationName.standardName}"),
+      :#(s"[END] Variable Initialization for ${expression.declarationName.standardName}"),
       emptyLine
     )
 

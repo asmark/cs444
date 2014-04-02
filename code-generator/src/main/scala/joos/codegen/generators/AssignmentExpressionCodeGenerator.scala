@@ -11,9 +11,10 @@ class AssignmentExpressionCodeGenerator(expression: AssignmentExpression)
   override def generate() {
 
     appendText(
-      #:(s"[BEGIN] Assignment Expression ${expression}"),
+      :#(s"[BEGIN] Assignment Expression ${expression}"),
+      push(Ecx) :# "Preserve this",
       emptyLine,
-      #:("Find lvalue"),
+      :#("Find lvalue"),
       #>
     )
 
@@ -22,9 +23,9 @@ class AssignmentExpressionCodeGenerator(expression: AssignmentExpression)
 
     appendText(
       #<,
-      push(Edx) #: "Save lvalue",
+      push(Edx) :# "Save lvalue",
       emptyLine,
-      #:("Find right"),
+      :#("Find right"),
       #>
     )
 
@@ -32,8 +33,10 @@ class AssignmentExpressionCodeGenerator(expression: AssignmentExpression)
     expression.right.generate()
     appendText(
       #<,
-      pop(Ebx) #: "Retrieve lvalue",
-      mov(at(Ebx), Eax) #: "Assign lvalue to right",
+      pop(Ebx) :# "Retrieve lvalue",
+      mov(at(Ebx), Eax) :# "Assign lvalue to right",
+      pop(Ecx) :# "Retrieve this",
+      :#(s"[END] Assignment Expression ${expression}"),
       emptyLine
     )
   }

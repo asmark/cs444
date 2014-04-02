@@ -3,7 +3,7 @@ package joos.assemgen
 import java.io.PrintWriter
 import joos.core.Writable
 
-trait AssemblyExpression extends Writable {
+trait AssemblyExpression extends AssemblyLine {
   self =>
 
   def +(other: AssemblyExpression) = {

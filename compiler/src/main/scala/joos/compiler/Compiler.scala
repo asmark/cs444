@@ -20,7 +20,7 @@ object Compiler {
       0
     } catch {
       case e: CompilationException => {
-        Logger.logWarning(e.getMessage)
+        Logger.logError(e.getMessage)
         42
       }
     }
