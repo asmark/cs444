@@ -15,10 +15,10 @@ import joos.ast.declarations.{TypeDeclaration, MethodDeclaration}
 class AssemblyCodeGeneratorEnvironment(
     val assemblyManager: AssemblyFileManager,
     val namespace: AssemblyNamespace,
-    val sitManager: SitManager) {
+    val staticDataManager: StaticDataManager) {
 
-  def this(ast: AbstractSyntaxTree, namespace: AssemblyNamespace, sitManager: SitManager) = {
-    this(new AssemblyFileManager(s"${ast.name}.s"), namespace, sitManager)
+  def this(ast: AbstractSyntaxTree, namespace: AssemblyNamespace, staticDataManager: StaticDataManager) = {
+    this(new AssemblyFileManager(s"${ast.name}.s"), namespace, staticDataManager)
 
     implicit val environment = this
     ast.root.typeDeclaration match {

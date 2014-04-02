@@ -27,6 +27,22 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     generateMallocMethods()
   }
 
+  def createSubtypeTable() = {
+    // TODO: Generate subtype table
+    appendGlobal(subtypeTable)
+    appendData(subtypeTable ::, emptyLine)
+
+    environment.staticDataManager.orderedTypes.foreach(
+      target => {
+        if (target.allAncestors.contains(tipe)) {
+          appendData(dd(1) :#target.uniqueName)
+        } else {
+          appendData(dd(0) :#target.uniqueName)
+        }
+      }
+    )
+  }
+
   private def generateTables() {
     appendGlobal(objectInfoTable)
 
@@ -39,10 +55,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
     createSelectorIndexedTable()
 
-    // TODO: Generate subtype table
-    appendGlobal(subtypeTable)
-    appendText(subtypeTable ::, emptyLine)
-
+    createSubtypeTable()
 
 
     // TODO: generate array class info tables
@@ -71,7 +84,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
   private def createSelectorIndexedTable() {
     appendGlobal(selectorTable)
     appendData(selectorTable ::, emptyLine)
-    environment.sitManager.orderedMethods.foreach(
+    environment.staticDataManager.orderedMethods.foreach(
       method => {
         if (tipe.methodMap.values.toSet.contains(method)) {
           appendData(dd(labelReference(method.uniqueName)) :#method.uniqueName)
