@@ -61,7 +61,16 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
       mov(Eax, FieldOffset + tipe.objectSize) :# s"Allocate ${8 + tipe.objectSize} bytes for object",
       call(mallocLabel),
       movdw(at(Eax), selectorTable) :# "Bind selector table",
-      movdw(at(Eax + 4), subtypeTable) :# "Bind subtype table",
+      movdw(at(Eax + 4), subtypeTable) :# "Bind subtype table"
+    )
+    tipe.instanceFields.foreach {
+      field =>
+        val offset = tipe.getFieldSlot(field.declarationName) * 4 + FieldOffset
+        appendText(movdw(at(Eax + offset), 0) :# s"Initialize ${field.declarationName} to default value")
+    }
+    appendText(
+      :#("[END] Constructor Default Initialization"),
+      emptyLine,
       mov(Ecx, Eax) :# "Move this into ecx"
     )
 
