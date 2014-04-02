@@ -40,5 +40,8 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
     tipe.methodMap.values.foreach(_.generate())
     appendText(emptyLine)
+
+    tipe.constructorMap.values.foreach(_.generate())
+    appendText(emptyLine)
   }
 }
