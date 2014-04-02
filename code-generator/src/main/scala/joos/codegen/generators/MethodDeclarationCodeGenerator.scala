@@ -12,17 +12,12 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
 
   override def generate() {
 
-    environment.resetVariables()
-    environment.numLocals = method.locals
-    method.parameters.foreach {
-      parameter =>
-        environment.addParameterSlot(parameter.declarationName)
-    }
-
     if (method.modifiers contains Modifier.Native) {
       // TODO: Not sure what to do here?
       return
     }
+
+    environment.methodEnvironment = method
 
     method.isConstructor match {
       case true => generateConstructorCode()
@@ -40,7 +35,7 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
       constructorLabel ::
     )
 
-    appendText(prologue(4 * environment.numLocals): _*)
+    appendText(prologue(4 * method.locals): _*)
 
     // Expect eax to hold pointer to raw malloc'ed object
     getSuperType(method.typeDeclaration) match {
@@ -92,7 +87,7 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
       methodLabel ::
     )
 
-    appendText(prologue(4 * environment.numLocals): _*)
+    appendText(prologue(4 * method.locals): _*)
 
     appendText(:#("[BEGIN] Function Body"), #>)
     method.body.foreach(_.generate())

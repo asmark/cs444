@@ -11,10 +11,6 @@ class AssignmentExpressionCodeGenerator(expression: AssignmentExpression)
 
   override def generate() {
 
-    if (expression.toString equals "t.a_i = t.a_i + 122") {
-      println("foo")
-    }
-
     appendText(
       :#(s"[BEGIN] Assignment Expression ${expression}"),
       push(Ecx) :# "Preserve this",

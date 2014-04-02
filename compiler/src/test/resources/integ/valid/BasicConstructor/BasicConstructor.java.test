@@ -1,6 +1,7 @@
 public class BasicConstructor {
 
-    public int a_i = 1;
+    // TODO: Change a_i to 1 to see if initialization worked
+    public int a_i = 0;
     public int a_u;
 
     public boolean b_i = true;
@@ -18,7 +19,17 @@ public class BasicConstructor {
     public static int test() {
         BasicConstructor t = new BasicConstructor();
         t.a_i = t.a_i + 122;
+        t.a_i = t.a_i + 1;
+        int j = 1 + 2 + 3 + t.a_i + 4 + 5;
+        int k = -500;
+
+        BasicConstructor a = new BasicConstructor();
+        a.a_i = 5;
+        a.o_u = new Object();
+        
         return t.a_i;
+
+
     }
 
 }

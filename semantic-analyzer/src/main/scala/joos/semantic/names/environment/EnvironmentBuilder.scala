@@ -22,6 +22,7 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
   private[this] var packaged: PackageDeclaration = null
   private[this] var block: BlockEnvironment = null
   private[this] var locals = 0
+  private[this] var methodEnvironment: MethodDeclaration = null
 
   override def apply(unit: CompilationUnit) {
     this.unit = unit
@@ -62,6 +63,7 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
     method.typeDeclaration = typed
     block = method.blockEnvironment
 
+    methodEnvironment = method
     method.body.map(_.accept(this))
 
     method.locals = locals
@@ -105,6 +107,7 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
     }
     expression.blockEnvironment = block
     locals = locals + 1
+    methodEnvironment.addLocalSlot(expression.declarationName)
   }
 
   override def apply(statement: ForStatement) {

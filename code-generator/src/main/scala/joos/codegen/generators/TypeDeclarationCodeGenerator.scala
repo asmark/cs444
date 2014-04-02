@@ -14,11 +14,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
   override def generate() {
 
-    environment.resetFields()
-    tipe.containedFields.foreach {
-      field =>
-        environment.addFieldSlot(field._1)
-    }
+    environment.typeEnvironment = tipe
 
     tipe.methodMap.values.foreach(_.generate())
     appendText(emptyLine)

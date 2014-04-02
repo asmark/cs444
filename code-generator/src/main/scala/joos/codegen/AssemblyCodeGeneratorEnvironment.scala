@@ -7,6 +7,7 @@ import joos.ast.AbstractSyntaxTree
 import joos.ast.expressions.SimpleNameExpression
 import joos.codegen.generators.TypeDeclarationCodeGenerator
 import scala.collection.mutable
+import joos.ast.declarations.{TypeDeclaration, MethodDeclaration}
 
 /**
  * Stores the environment passed to code generator
@@ -21,6 +22,9 @@ class AssemblyCodeGeneratorEnvironment(val assemblyManager: AssemblyFileManager,
       case Some(typeDeclaration) => new TypeDeclarationCodeGenerator(typeDeclaration).generate
     }
   }
+
+  var methodEnvironment: MethodDeclaration = null
+  var typeEnvironment: TypeDeclaration = null
 
   def write {
     val writer = new AssemblyCodeWriter(new PrintWriter(new File(s"${OutputDirectory}/${assemblyManager.fileName}")))
@@ -50,59 +54,6 @@ class AssemblyCodeGeneratorEnvironment(val assemblyManager: AssemblyFileManager,
     writer.flush()
     writer.close()
   }
-
-  // TODO: Refactor this out later
-  private val localSlots = mutable.Map.empty[SimpleNameExpression, Int]
-  private var localIndex = 1
-  var numLocals = 0
-
-  def addLocalSlot(local: SimpleNameExpression) {
-    localSlots.put(local, localIndex)
-    localIndex += 1
-  }
-
-  private val parameterSlots = mutable.Map.empty[SimpleNameExpression, Int]
-  private var parameterIndex = 1
-
-  def addParameterSlot(parameter: SimpleNameExpression) {
-    parameterSlots.put(parameter, parameterIndex)
-    parameterIndex += 1
-  }
-
-  /**
-   * Gets the slot used by this variable
-   */
-  def getVariableSlot(variable: SimpleNameExpression): Int = {
-    localSlots.get(variable).getOrElse(parameterSlots(variable))
-  }
-
-  private val fieldSlots = mutable.Map.empty[SimpleNameExpression, Int]
-  private var fieldIndex = 0
-  /**
-   * Gets the slot used by this instance field
-   */
-  def addFieldSlot(field: SimpleNameExpression) {
-    fieldSlots.put(field, fieldIndex)
-    fieldIndex += 1
-  }
-
-  def getFieldSlot(field: SimpleNameExpression): Int = {
-    fieldSlots(field)
-  }
-
-  def resetVariables() {
-    localSlots.clear()
-    localIndex = 1
-    numLocals = 0
-    parameterSlots.clear()
-    parameterIndex = 1
-  }
-
-  def resetFields() {
-    fieldSlots.clear()
-    fieldIndex = 0
-  }
-
 }
 
 object AssemblyCodeGeneratorEnvironment {

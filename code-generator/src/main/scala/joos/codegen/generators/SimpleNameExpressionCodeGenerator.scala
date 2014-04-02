@@ -5,6 +5,8 @@ import joos.assemgen._
 import joos.ast.NameClassification._
 import joos.ast.expressions.SimpleNameExpression
 import joos.codegen.AssemblyCodeGeneratorEnvironment
+import joos.core.Logger
+import joos.ast.types.{ArrayType, SimpleType}
 
 class SimpleNameExpressionCodeGenerator(expression: SimpleNameExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
@@ -14,7 +16,7 @@ class SimpleNameExpressionCodeGenerator(expression: SimpleNameExpression)
     expression.nameClassification match {
 
       case LocalVariableName => {
-        val slot = environment.getVariableSlot(expression)
+        val slot =  environment.methodEnvironment.getVariableSlot(expression)
         appendText(
           mov(Edx, Ebp) :# "Local Variable access. Move ebp into edx",
           sub(Edx, slot * 4) :# s"Retrieve lvalue address of variable ${expression.standardName}",
@@ -23,7 +25,8 @@ class SimpleNameExpressionCodeGenerator(expression: SimpleNameExpression)
       }
 
       case InstanceFieldName => {
-        val slot = environment.getFieldSlot(expression)
+
+        val slot = environment.typeEnvironment.getFieldSlot(expression)
         // Assume Ecx is pointer to this
         appendText(
           mov(Edx, Ecx) :# "Field Access. Move this into edx",
@@ -31,6 +34,9 @@ class SimpleNameExpressionCodeGenerator(expression: SimpleNameExpression)
           mov(Eax, at(Edx)) :# s"Retrieve field ${expression.standardName}"
         )
       }
+
+      case x =>
+        Logger.logError(s"Attempting to find reference to ${expression} of classification ${x}")
     }
   }
 
