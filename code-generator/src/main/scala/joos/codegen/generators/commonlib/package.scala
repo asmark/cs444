@@ -8,7 +8,7 @@ import joos.codegen.{AssemblyNamespace, AssemblyCodeGeneratorEnvironment, Assemb
 
 package object commonlib {
 
-  def AssemblyCommonLibraryEnvironment(namespace: AssemblyNamespace, sitBuilder: SITManager): AssemblyCodeGeneratorEnvironment = {
+  def AssemblyCommonLibraryEnvironment(namespace: AssemblyNamespace, sitBuilder: SitManager): AssemblyCodeGeneratorEnvironment = {
 
     val assemblyManager = new AssemblyFileManager("_lib.s")
 
@@ -37,7 +37,7 @@ package object commonlib {
     )
 
 
-    new AssemblyCodeGeneratorEnvironment(assemblyManager, namespace, sitBuilder: SITManager)
+    new AssemblyCodeGeneratorEnvironment(assemblyManager, namespace, sitBuilder: SitManager)
   }
 
   val addIntegers = "_lib_add_ints"

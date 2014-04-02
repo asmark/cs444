@@ -2,14 +2,14 @@ package joos.codegen
 
 import joos.ast.AbstractSyntaxTree
 import joos.codegen.generators.commonlib.AssemblyCommonLibraryEnvironment
-import joos.assemgen.SITManager
+import joos.assemgen.SitManager
 
 object CodeGeneration {
 
   def apply(asts: Seq[AbstractSyntaxTree]) {
 
     val namespace = new AssemblyNamespace
-    val sitManager = SITManager(asts)
+    val sitManager = SitManager(asts)
 
     val CommonLibrary = AssemblyCommonLibraryEnvironment(namespace, sitManager)
 

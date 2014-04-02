@@ -13,7 +13,7 @@ trait TypeEnvironment extends Environment {
 
   lazy val inheritedFields: mutable.LinkedHashMap[SimpleNameExpression, FieldDeclaration] = {
     getSuperType(this) match {
-      case Some(superType) => superType.containedFields
+      case Some(directParent) => directParent.containedFields
       case None => mutable.LinkedHashMap.empty
     }
   }
