@@ -54,18 +54,19 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     val mallocThis = mallocTypeLabel(tipe)
     appendGlobal(mallocThis)
 
+    appendText(mallocThis ::)
+    appendText(prologue(0): _*)
+
     appendText(
-      mallocThis ::,
       mov(Eax, FieldOffset + tipe.objectSize) :# s"Allocate ${8 + tipe.objectSize} bytes for object",
       call(mallocLabel),
       movdw(at(Eax), selectorTable) :# "Bind selector table",
       movdw(at(Eax + 4), subtypeTable) :# "Bind subtype table",
       mov(Ecx, Eax) :# "Move this into ecx"
     )
-    // TODO: Initialize fields
-    // TODO: Null check?
 
-    appendText(ret)
+    appendText(epilogue: _*)
+    // TODO: Null check?
 
     // TODO: Generate array malloc
   }

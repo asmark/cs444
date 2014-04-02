@@ -109,6 +109,14 @@ case class MethodDeclaration(
     localIndex += 1
   }
 
+  def isLocal(variable: SimpleNameExpression): Boolean = {
+    localSlots.contains(variable)
+  }
+
+  def getLocalSlot(variable: SimpleNameExpression): Int = {
+    localSlots(variable)
+  }
+
   private lazy val parameterSlots = {
     var parameterIndex = 1
     val parameterSlots = mutable.Map.empty[SimpleNameExpression, Int]
@@ -120,12 +128,21 @@ case class MethodDeclaration(
     parameterSlots
   }
 
-  /**
-   * Gets the slot used by this variable
-   */
-  def getVariableSlot(variable: SimpleNameExpression): Int = {
-    localSlots.get(variable).getOrElse(parameterSlots(variable))
+  def isParameter(parameter: SimpleNameExpression): Boolean = {
+    parameterSlots.contains(parameter)
   }
+
+  // Since we push left-to-right we must invert the order
+  def getParameterSlot(parameter: SimpleNameExpression): Int = {
+    parameterSlots.size - parameterSlots(parameter) + 1
+  }
+//
+//  /**
+//   * Gets the slot used by this variable
+//   */
+//  def getVariableSlot(variable: SimpleNameExpression): Int = {
+//    localSlots.get(variable).getOrElse(parameterSlots(variable) + localSlots.size)
+//  }
 
   override def declarationName: NameExpression = name
 }
