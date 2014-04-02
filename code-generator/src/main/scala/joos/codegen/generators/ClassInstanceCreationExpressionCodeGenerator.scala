@@ -2,7 +2,7 @@ package joos.codegen.generators
 
 import joos.assemgen.Register._
 import joos.assemgen._
-import joos.ast.expressions.{SimpleNameExpression, ClassInstanceCreationExpression}
+import joos.ast.expressions.ClassInstanceCreationExpression
 import joos.ast.declarations.{MethodDeclaration, FieldDeclaration, TypeDeclaration}
 import joos.semantic._
 import joos.codegen._
