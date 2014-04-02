@@ -16,11 +16,12 @@ class VariableDeclarationExpressionCodeGenerator(expression: VariableDeclaration
     )
     expression.fragment.generate()
     // Initializer value is now in eax
-    val slot = environment.methodEnvironment.getVariableSlot(expression.declarationName)
-    assert(slot >= 0)
+//    val slot = environment.methodEnvironment.getVariableSlot(expression.declarationName)
     appendText(
       mov(Ebx, Ebp),
-      sub(Ebx, slot*4) :# "Put the variable into the correct slot above stack",
+      getLocalVariableInstruction(expression.declarationName, environment.methodEnvironment, Ebx)
+          :# "Put the variable into the correct slot",
+//      sub(Ebx, slot*4) :# "Put the variable into the correct slot above stack",
       mov(at(Ebx), Eax)
     )
 

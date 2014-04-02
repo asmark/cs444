@@ -6,7 +6,7 @@ import joos.ast.NameClassification._
 import joos.ast.expressions.SimpleNameExpression
 import joos.codegen.AssemblyCodeGeneratorEnvironment
 import joos.core.Logger
-import joos.ast.types.{ArrayType, SimpleType}
+import joos.ast.types.ArrayType
 
 class SimpleNameExpressionCodeGenerator(expression: SimpleNameExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
@@ -16,10 +16,12 @@ class SimpleNameExpressionCodeGenerator(expression: SimpleNameExpression)
     expression.nameClassification match {
 
       case LocalVariableName => {
-        val slot =  environment.methodEnvironment.getVariableSlot(expression)
+//        val slot = environment.methodEnvironment.getVariableSlot(expression)
         appendText(
           mov(Edx, Ebp) :# "Local Variable access. Move ebp into edx",
-          sub(Edx, slot * 4) :# s"Retrieve lvalue address of variable ${expression.standardName}",
+          //          sub(Edx, slot * 4) :# s"Retrieve lvalue address of variable ${expression.standardName}",
+          getLocalVariableInstruction(expression, environment.methodEnvironment, Edx)
+              :# s"Retrieve lvalue address of variable ${expression.standardName}",
           mov(Eax, at(Edx)) :# s"Retrieve variable ${expression.standardName}"
         )
       }

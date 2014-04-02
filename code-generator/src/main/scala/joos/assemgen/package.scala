@@ -114,6 +114,10 @@ package object assemgen {
     new AssemblyInstruction("mov", Seq(destination, source), None)
   }
 
+  def movdw(destination: AssemblyExpression, source: AssemblyExpression): AssemblyInstruction = {
+    new AssemblyInstruction("mov dword", Seq(destination, source), None)
+  }
+
   def movdw(destination: AssemblyExpression, source: LabelReference): AssemblyInstruction = {
     new AssemblyInstruction("mov dword", Seq(destination, source), None)
   }
