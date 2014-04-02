@@ -38,7 +38,7 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
     appendText(prologue(4 * method.locals): _*)
 
     // Expect eax to hold pointer to raw malloc'ed object
-    getSuperType(method.typeDeclaration) match {
+    getSuperType(environment.typeEnvironment) match {
       case None => {
         appendText(:#("Object has no super constructor. Not invoking super constructor"))
       }
@@ -55,9 +55,14 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
       push(Ecx) :# "Preserve this"
     )
 
-    appendText(:#("[BEGIN] Constructor Default Initialization"), #>)
-    // TODO: Initializations
-    appendText(#<, :#("[END] Constructor Default Initialization"), emptyLine)
+    val tipe = environment.typeEnvironment
+    appendText(:#("[BEGIN] Constructor Default Initialization"))
+    tipe.instanceFields.foreach {
+      field =>
+          val offset = tipe.getFieldSlot(field.declarationName)*4 + FieldOffset
+          appendText(movdw(at(Ecx + offset), 0) :# s"Initialize ${field.declarationName} to default value")
+    }
+    appendText(:#("[END] Constructor Default Initialization"), emptyLine)
 
     appendText(:#("[BEGIN] Constructor Body"), #>)
     method.body.foreach(_.generate())
