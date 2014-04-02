@@ -49,11 +49,11 @@ package object generators {
       return
     }
 
-    val codeGenerator = new VariableDeclarationFragmentCodeGenerator(fieldDeclaration.fragment)
+    val codeGenerator = new FieldDeclarationCodeGenerator(fieldDeclaration)
     codeGenerator.generate()
   }
 
-  // The default value will be written to EDX
+  // TODO: this method should be deprecated and it not quite
   def initDefault(fieldDeclaration: FieldDeclaration) {
     fieldDeclaration.declarationType match {
       case ArrayType(_,_) => {
