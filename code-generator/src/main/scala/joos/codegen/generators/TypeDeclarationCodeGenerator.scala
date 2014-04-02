@@ -1,9 +1,11 @@
 package joos.codegen.generators
 
 import joos.assemgen._
-import joos.ast.declarations.TypeDeclaration
+import joos.ast.declarations.{FieldDeclaration, TypeDeclaration}
 import joos.codegen.AssemblyCodeGeneratorEnvironment
 import joos.ast.Modifier
+import scala.collection.mutable
+import joos.ast.expressions.SimpleNameExpression
 
 class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {

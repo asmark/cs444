@@ -62,13 +62,26 @@ trait TypeEnvironment extends Environment {
     ret
   }
 
-  lazy val allAncestors: Set[TypeDeclaration] = {
+  lazy val allAncestors: mutable.LinkedHashSet[TypeDeclaration] = {
     val allAncestors = supers.map {
       superType => superType.allAncestors + superType
     }
-    allAncestors.foldLeft(Set.empty[TypeDeclaration]) {
+    allAncestors.foldLeft(mutable.LinkedHashSet.empty[TypeDeclaration]) {
       (left, right) => left ++ right
     }
+  }
+
+  lazy val allSuperClasses: mutable.LinkedHashSet[TypeDeclaration] = {
+    val ret = mutable.LinkedHashSet.empty[TypeDeclaration]
+    val superClass = getSuperType(this)
+    superClass match {
+      case Some(directParent) => {
+        directParent.allSuperClasses.foreach(x => ret.add(x))
+        ret.add(directParent)
+      }
+      case None => {}
+    }
+    ret
   }
 
   private def isAllAbstract(method: MethodDeclaration): Boolean = {
