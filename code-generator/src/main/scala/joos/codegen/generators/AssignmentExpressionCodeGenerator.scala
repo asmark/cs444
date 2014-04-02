@@ -2,13 +2,18 @@ package joos.codegen.generators
 
 import joos.assemgen.Register._
 import joos.assemgen._
-import joos.ast.expressions.AssignmentExpression
+import joos.ast.expressions.{IntegerLiteral, AssignmentExpression}
 import joos.codegen.AssemblyCodeGeneratorEnvironment
+import joos.ast.types.{PrimitiveType, SimpleType}
 
 class AssignmentExpressionCodeGenerator(expression: AssignmentExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
   override def generate() {
+
+    if (expression.toString equals "t.a_i = t.a_i + 122") {
+      println("foo")
+    }
 
     appendText(
       :#(s"[BEGIN] Assignment Expression ${expression}"),

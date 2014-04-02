@@ -1,0 +1,24 @@
+public class BasicConstructor {
+
+    public int a_i = 1;
+    public int a_u;
+
+    public boolean b_i = true;
+    public boolean b_u;
+
+    public Object o_i = new Object();
+    public Object o_u;
+
+    public BasicConstructor() {
+        int x = 5;
+        int y = 10;
+        int z = x + y;
+    }
+
+    public static int test() {
+        BasicConstructor t = new BasicConstructor();
+        t.a_i = t.a_i + 122;
+        return t.a_i;
+    }
+
+}

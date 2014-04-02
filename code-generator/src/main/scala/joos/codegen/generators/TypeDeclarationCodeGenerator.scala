@@ -63,7 +63,8 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
       mov(Eax, FieldOffset + tipe.objectSize) :# s"Allocate ${8 + tipe.objectSize} bytes for object",
       call(mallocLabel),
       movdw(at(Eax), selectorTable) :# "Bind selector table",
-      movdw(at(Eax + 4), subtypeTable) :# "Bind subtype table"
+      movdw(at(Eax + 4), subtypeTable) :# "Bind subtype table",
+      mov(Ecx, Eax) :# "Move this into ecx"
     )
     // TODO: Initialize fields
     // TODO: Null check?

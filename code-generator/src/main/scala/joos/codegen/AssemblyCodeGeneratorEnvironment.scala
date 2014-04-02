@@ -72,15 +72,8 @@ class AssemblyCodeGeneratorEnvironment(val assemblyManager: AssemblyFileManager,
   /**
    * Gets the slot used by this variable
    */
-  def getVariableSlot(variable: SimpleNameExpression): Option[Int] = {
-    localSlots.get(variable) match {
-      case Some(slot) => Some(slot)
-      case None =>
-        parameterSlots.get(variable) match {
-          case Some(slot) => Some(slot + numLocals)
-          case None => None
-        }
-    }
+  def getVariableSlot(variable: SimpleNameExpression): Int = {
+    localSlots.get(variable).getOrElse(parameterSlots(variable))
   }
 
   private val fieldSlots = mutable.Map.empty[SimpleNameExpression, Int]

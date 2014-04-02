@@ -17,7 +17,7 @@ class VariableDeclarationExpressionCodeGenerator(expression: VariableDeclaration
     expression.fragment.generate()
     // Initializer value is now in eax
     environment.addLocalSlot(expression.declarationName)
-    val slot = environment.getVariableSlot(expression.declarationName).get
+    val slot = environment.getVariableSlot(expression.declarationName)
     assert(slot >= 0)
     appendText(
       mov(Ebx, Ebp),
