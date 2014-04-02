@@ -14,34 +14,34 @@ class IfStatementCodeGenerator(statement: IfStatement)
     val statementEnd = nextLabel("if_statement_end")
 
     appendText(
-      #:("[BEGIN] If Statement"),
+      :#("[BEGIN] If Statement"),
       emptyLine,
-      #:("Evaluate Condition"),
+      :#("Evaluate Condition"),
       #>
     )
     statement.condition.generate()
 
     appendText(
       #<,
-      mov(Ebx, 0) #: "Set ebx to false",
-      cmp(Eax, Ebx) #: "Truth test for eax",
-      je(falseStart) #: "Skip to false if condition is false",
+      mov(Ebx, 0) :# "Set ebx to false",
+      cmp(Eax, Ebx) :# "Truth test for eax",
+      je(falseStart) :# "Skip to false if condition is false",
       emptyLine
     )
 
     appendText(
-      #:("True branch body"),
+      :#("True branch body"),
       #>
     )
     statement.trueStatement.generate()
     appendText(
       #<,
-      jmp(statementEnd) #: "Jump to statement end",
+      jmp(statementEnd) :# "Jump to statement end",
       emptyLine
     )
 
     appendText(
-      #:("False branch body"),
+      :#("False branch body"),
       falseStart ::,
       #>
     )
@@ -49,7 +49,7 @@ class IfStatementCodeGenerator(statement: IfStatement)
     appendText(
       #<,
       statementEnd ::,
-      #:("[END] If Statement"),
+      :#("[END] If Statement"),
       emptyLine
     )
   }

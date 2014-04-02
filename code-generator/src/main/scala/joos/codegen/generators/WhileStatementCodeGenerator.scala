@@ -13,9 +13,9 @@ class WhileStatementCodeGenerator(statement: WhileStatement)
     val whileEnd = nextLabel("while_end")
 
     appendText(
-      #:("[BEGIN] While Statement"),
+      :#("[BEGIN] While Statement"),
       emptyLine,
-      #:("While Loop Condition"),
+      :#("While Loop Condition"),
       whileStart ::,
       #>
     )
@@ -23,22 +23,22 @@ class WhileStatementCodeGenerator(statement: WhileStatement)
 
     appendText(
       #<,
-      mov(Ebx, 0) #: "Set ebx to false",
-      cmp(Eax, Ebx) #: "Truth test for eax",
-      je(whileEnd) #: "Skip to end if condition is false",
+      mov(Ebx, 0) :# "Set ebx to false",
+      cmp(Eax, Ebx) :# "Truth test for eax",
+      je(whileEnd) :# "Skip to end if condition is false",
       emptyLine)
 
     appendText(
-      #:("While Loop Body"),
+      :#("While Loop Body"),
       #>
     )
     statement.body.generate()
 
     appendText(
       #<,
-      jmp(whileStart) #: "Jump to while condition",
+      jmp(whileStart) :# "Jump to while condition",
       whileEnd ::,
-      #:("[END] While Statement"),
+      :#("[END] While Statement"),
       emptyLine
     )
   }

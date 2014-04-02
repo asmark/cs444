@@ -1,7 +1,7 @@
 package joos.core
 
 trait UniqueIdGenerator {
-  private[this] var counter = -1
+  protected[this] var counter: Int = 0
 
   def nextId(): Int = {
     counter += 1

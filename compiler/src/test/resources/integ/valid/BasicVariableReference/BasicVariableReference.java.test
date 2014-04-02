@@ -9,10 +9,10 @@ public class BasicVariableReference {
             int c = 3;
             int d = 123;
             boolean f = false;
-            if (c == a) {
+            if (c + a - a + c - c == a*a/a) {
                 return 1;
-            } else if (c >= a) {
-                if (true && c <= d && a < d && a != d) {
+            } else if (c >= a && -1 < 0) {
+                if (!f && c <= d && a < d && a != d && !false) {
                     return d;
                 } else {
                     return 4;

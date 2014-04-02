@@ -13,7 +13,7 @@ trait TypeEnvironment extends Environment {
 
   lazy val inheritedFields: mutable.LinkedHashMap[SimpleNameExpression, FieldDeclaration] = {
     getSuperType(this) match {
-      case Some(superType) => superType.containedFields
+      case Some(directParent) => directParent.containedFields
       case None => mutable.LinkedHashMap.empty
     }
   }
@@ -25,6 +25,8 @@ trait TypeEnvironment extends Environment {
     fieldMap.foreach (x => contained.put(x._1, x._2))
     contained
   }
+
+  lazy val objectSize = containedFields.values.filter(!_.isStatic).size*4
 
   /**
    * Adds the specified {{method}} to the type environment
@@ -147,5 +149,20 @@ trait TypeEnvironment extends Environment {
         }
     }
     ret
+  }
+
+  private lazy val fieldSlots = {
+    var fieldIndex = 0
+    val fieldSlots = mutable.Map.empty[SimpleNameExpression, Int]
+    containedFields.foreach {
+    field =>
+        fieldSlots.put(field._1, fieldIndex)
+        fieldIndex += 1
+    }
+    fieldSlots
+  }
+
+  def getFieldSlot(field: SimpleNameExpression): Int = {
+    fieldSlots(field)
   }
 }
