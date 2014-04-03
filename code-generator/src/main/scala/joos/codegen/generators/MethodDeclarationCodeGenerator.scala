@@ -13,7 +13,33 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
   override def generate() {
 
     if (method.modifiers contains Modifier.Native) {
-      // TODO: Not sure what to do here?
+      appendText(
+        :# ("[BEGIN] Native Method"),
+        // Put the only parameter in eax
+        mov(Eax, at(Esp + 4))
+      )
+
+      val registers = Register.values
+      // Save all registers (except eax)
+      for (register <- registers if register != Eax) {
+        appendText(push(register))
+      }
+
+      // Return value should be in eax
+      appendText(call(method.uniqueName))
+
+      // Restore all registers (except eax)
+      for (i <- registers.length - 1 to 0 step -1) {
+        val register = registers(i)
+        if (register != Eax) {
+          appendText(pop(register))
+        }
+      }
+
+      appendText(
+        ret(),
+        :# ("[END] Native Method")
+      )
       return
     }
 
