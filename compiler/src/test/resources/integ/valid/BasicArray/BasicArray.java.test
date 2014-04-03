@@ -2,15 +2,30 @@ public class BasicArray {
   public BasicArray() {}
 
   public static int test() {
-    int[] as = new int[3];
-    as[0] = 0;
-    as[1] = 1;
-    as[2] = 2;
+    int[] ints = new int[3];
+    ints[0] = 0;
+    ints[1] = 1;
+    ints[2] = 2;
 
-    if (as.length != 3) return as.length;
-    if (as[0] != 0) return as[0];
-    if (as[1] != 1) return as[1];
-    if (as[2] != 2) return as[2];
+    if (ints.length != 3) return 1;
+    if (ints[0] != 0) return 2;
+    if (ints[1] != 1) return 3;
+    if (ints[2] != 2) return 4;
+
+    A a0 = new A(0);
+    A a1 = new A(1);
+    A a2 = new A(2);
+
+    A[] as = new A[3];
+    as[0] = a0;
+    as[1] = a1;
+    as[2] = a2;
+    if (as.length != 3) return 5;
+    // TODO: uncomment those once we have !=/== implemented
+//    if (as[0] != a0) return 6;
+//    if (as[1] != a1) return 7;
+//    if (as[2] != a2) return 8;
+
     return 123;
   }
 }
