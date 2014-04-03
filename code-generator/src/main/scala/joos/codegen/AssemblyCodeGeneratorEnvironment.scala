@@ -12,9 +12,13 @@ import joos.ast.declarations.{TypeDeclaration, MethodDeclaration}
 /**
  * Stores the environment passed to code generator
  */
-class AssemblyCodeGeneratorEnvironment(val assemblyManager: AssemblyFileManager, val namespace: AssemblyNamespace) {
-  def this(ast: AbstractSyntaxTree, namespace: AssemblyNamespace) = {
-    this(new AssemblyFileManager(s"${ast.name}.s"), namespace)
+class AssemblyCodeGeneratorEnvironment(
+    val assemblyManager: AssemblyFileManager,
+    val namespace: AssemblyNamespace,
+    val sitManager: SitManager) {
+
+  def this(ast: AbstractSyntaxTree, namespace: AssemblyNamespace, sitManager: SitManager) = {
+    this(new AssemblyFileManager(s"${ast.name}.s"), namespace, sitManager)
 
     implicit val environment = this
     ast.root.typeDeclaration match {

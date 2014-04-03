@@ -38,9 +38,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
       emptyLine
     )
 
-    // TODO: Generate selector table
-    appendGlobal(selectorTable)
-    appendText(selectorTable ::, emptyLine)
+    createSelectorIndexedTable()
 
     // TODO: Generate subtype table
     appendGlobal(subtypeTable)
@@ -79,5 +77,19 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     // TODO: Null check?
 
     // TODO: Generate array malloc
+  }
+
+  private def createSelectorIndexedTable() {
+    appendGlobal(selectorTable)
+    appendData(selectorTable ::, emptyLine)
+    environment.sitManager.orderedMethods.foreach(
+      method => {
+        if (tipe.methodMap.values.toSet.contains(method)) {
+          appendData(dd(labelReference(method.uniqueName)) :#method.uniqueName)
+        } else {
+          appendData(dd(0) :#method.uniqueName)
+        }
+      }
+    )
   }
 }
