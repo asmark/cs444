@@ -1,0 +1,10 @@
+public class HidingStaticFieldAccess {
+
+    public boolean b = false;
+    public static int FIELD = 0;
+    public int i = 1;
+    public int j = 2;
+
+    public HidingStaticFieldAccess() {}
+
+}

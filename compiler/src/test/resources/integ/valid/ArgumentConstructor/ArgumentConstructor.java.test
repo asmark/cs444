@@ -1,0 +1,66 @@
+public class ArgumentConstructor {
+
+    public int a_i = 0;
+    public int a_u;
+
+    public boolean b_i = true;
+    public boolean b_u;
+
+    public Object o_i = new Object();
+    public Object o_u;
+
+    public ArgumentConstructor() {
+        int x = 5;
+        int y = 10;
+        int z = x + y;
+    }
+
+    public ArgumentConstructor(int a, boolean b, Object c) {
+        o_u = c;
+        int x = 2;
+        int y = 10;
+        a_u = a;
+        int z = x + y;
+        b_u = b;
+    }
+
+    public static int test() {
+        ArgumentConstructor t = new ArgumentConstructor(5, true, new Object());
+
+        if (t.a_u != 5) {
+            return 6;
+        } else if (t.b_u != true) {
+            return 7;
+        }
+
+        int j = t.a_u + 100;
+        if (j != 105) {
+            return 1;
+        } else if (t.a_u != 5) {
+            return 5;
+        }
+
+        if (!t.b_u) {
+            return 2;
+        } else if (t.b_u == false) {
+            return 4;
+        }
+
+        int k = 42;
+
+        ArgumentConstructor a = new ArgumentConstructor(118, false, new Object());
+        a.a_i = t.a_u;
+        a.o_u = new Object();
+
+        if (a.a_u != 118) {
+            return 3;
+        } else if (a.b_u != false) {
+            return 9;
+        }
+
+        t.a_i = t.a_i;
+
+        return t.a_u + a.a_u;
+    }
+
+}

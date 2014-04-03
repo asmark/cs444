@@ -38,7 +38,7 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
     appendText(prologue(4 * method.locals): _*)
 
     // Expect eax to hold pointer to raw malloc'ed object
-    getSuperType(method.typeDeclaration) match {
+    getSuperType(environment.typeEnvironment) match {
       case None => {
         appendText(:#("Object has no super constructor. Not invoking super constructor"))
       }
@@ -55,9 +55,13 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
       push(Ecx) :# "Preserve this"
     )
 
-    appendText(:#("[BEGIN] Constructor Default Initialization"), #>)
-    // TODO: Initializations
-    appendText(#<, :#("[END] Constructor Default Initialization"), emptyLine)
+    val tipe = environment.typeEnvironment
+    appendText(:#("[BEGIN] Constructor Initialization"))
+    tipe.instanceFields.foreach {
+      field =>
+        field.generate()
+    }
+    appendText(:#("[END] Constructor Initialization"), emptyLine)
 
     appendText(:#("[BEGIN] Constructor Body"), #>)
     method.body.foreach(_.generate())
@@ -102,6 +106,8 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
   }
 
   def generateStartCode() {
+
+    val tipe = environment.typeEnvironment
     val startLabel = "_start"
 
     appendGlobal(startLabel)
@@ -109,7 +115,23 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
     appendText(
       startLabel ::,
       :#("[BEGIN] Static field initializations"),
-      // TODO: Initializations
+      :#(s"Initialize statics of ${tipe.fullName}"),
+      #>
+    )
+    // Do not use tipe.staticFields since this pulls in inherited ones as well
+    tipe.fieldMap.values.withFilter(_.isStatic).foreach(_.generate())
+
+    appendText(#<)
+
+    tipe.compilationUnit.moduleDeclaration.namespace.getAllTypes(Set(tipe)).foreach {
+      typeDeclaration =>
+        appendText(:#(s"Initialize statics of ${typeDeclaration.fullName}"), #>)
+        typeDeclaration.fieldMap.values.withFilter(_.isStatic).foreach(_.generate())
+        appendText(#<)
+    }
+
+    appendText(
+      #<,
       :#("[END] Static field initializations"),
       emptyLine,
       call(labelReference(method.uniqueName)),

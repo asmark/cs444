@@ -23,12 +23,14 @@ class ClassInstanceCreationExpressionCodeGenerator(expression: ClassInstanceCrea
       argument =>
         appendText(
           :#("Evaluate parameter"),
+          push(Ecx) :# "Save this",
           #>)
 
         argument.generate()
 
         appendText(
           #<,
+          pop(Ecx) :# "Retrieve this",
           push(Eax) :# "Push parameter onto stack",
           emptyLine
         )
@@ -36,6 +38,7 @@ class ClassInstanceCreationExpressionCodeGenerator(expression: ClassInstanceCrea
 
     appendText(
       call(expression.constructor.uniqueName) :# "Call constructor. Returns this as ecx",
+      add(Esp, 4*expression.arguments.size) :# "Pop arguments off stack",
       mov(Eax, Ecx) :# "Return this as eax"
     )
 

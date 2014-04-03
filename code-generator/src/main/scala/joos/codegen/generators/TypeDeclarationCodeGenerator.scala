@@ -8,7 +8,6 @@ import joos.codegen.AssemblyCodeGeneratorEnvironment
 class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
-  val objectInfoTable = objectInfoTableLabel(tipe)
   val selectorTable = selectorTableLabel(tipe)
   val subtypeTable = subtypeTableLabel(tipe)
 
@@ -49,12 +48,14 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
   }
 
   private def generateTables() {
-    appendGlobal(objectInfoTable)
-
-    appendText(
-      objectInfoTable ::,
-      dd(selectorTable),
-      dd(subtypeTable),
+    appendData(:#(s"[BEGIN] Storage location for all static members for ${tipe.fullName}"))
+    tipe.fieldMap.values.filter(_.isStatic).foreach {
+      field =>
+        appendGlobal(field.uniqueName)
+        appendData((field.uniqueName :: dd(0)) :# s"Storage location for static ${field.typeDeclaration.fullName}.${field.declarationName}")
+    }
+    appendData(
+      :#(s"[END] Storage location for all static members for ${tipe.fullName}"),
       emptyLine
     )
 
@@ -70,18 +71,28 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     val mallocThis = mallocTypeLabel(tipe)
     appendGlobal(mallocThis)
 
+    appendText(mallocThis ::)
+    appendText(prologue(0): _*)
+
     appendText(
-      mallocThis ::,
       mov(Eax, FieldOffset + tipe.objectSize) :# s"Allocate ${8 + tipe.objectSize} bytes for object",
       call(mallocLabel),
       movdw(at(Eax), selectorTable) :# "Bind selector table",
-      movdw(at(Eax + 4), subtypeTable) :# "Bind subtype table",
+      movdw(at(Eax + 4), subtypeTable) :# "Bind subtype table"
+    )
+    tipe.instanceFields.foreach {
+      field =>
+        val offset = tipe.getFieldSlot(field.declarationName) * 4 + FieldOffset
+        appendText(movdw(at(Eax + offset), 0) :# s"Initialize ${field.declarationName} to default value")
+    }
+    appendText(
+      :#("[END] Constructor Default Initialization"),
+      emptyLine,
       mov(Ecx, Eax) :# "Move this into ecx"
     )
-    // TODO: Initialize fields
-    // TODO: Null check?
 
-    appendText(ret)
+    appendText(epilogue: _*)
+    // TODO: Null check?
 
     // TODO: Generate array malloc
   }
