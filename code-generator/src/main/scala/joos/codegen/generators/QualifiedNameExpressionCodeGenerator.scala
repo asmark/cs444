@@ -21,10 +21,11 @@ class QualifiedNameExpressionCodeGenerator(expression: QualifiedNameExpression)
         val fieldOwner = expression.qualifier.expressionType match {
           case simple: SimpleType => simple.declaration
           case array: ArrayType =>
+            expression.qualifier.generate()
             appendText(
               :# ("Access Array.length"),
               lea(Edx, at(Eax + ArrayLengthOffset)),
-              mov(Eax, at(Eax + ArrayLengthOffset))
+              mov(Eax, at(Edx))
             )
             return
         }

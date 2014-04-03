@@ -17,7 +17,7 @@ class FieldAccessExpressionCodeGenerator(expression: FieldAccessExpression)
       appendText(
         :# ("Access Array.length"),
         lea(Edx, at(Eax + ArrayLengthOffset)),
-        mov(Eax, at(Eax + ArrayLengthOffset))
+        mov(Eax, at(Edx))
       )
       return
     }

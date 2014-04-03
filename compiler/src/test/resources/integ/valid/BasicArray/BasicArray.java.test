@@ -3,8 +3,15 @@ public class BasicArray {
 
   public static int test() {
     int[] as = new int[3];
+    as[0] = 0;
+    as[1] = 1;
+    as[2] = 2;
+
     // TODO: test length as well once field access is fixed
     if (as.length != 3) return as.length;
+    if (as[0] != 0) return as[0];
+    if (as[1] != 1) return as[1];
+    if (as[2] != 2) return as[2];
     return 123;
   }
 }
