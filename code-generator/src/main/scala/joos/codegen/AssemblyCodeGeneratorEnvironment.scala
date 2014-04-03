@@ -4,9 +4,7 @@ import AssemblyCodeGeneratorEnvironment._
 import java.io.{File, PrintWriter}
 import joos.assemgen._
 import joos.ast.AbstractSyntaxTree
-import joos.ast.expressions.SimpleNameExpression
 import joos.codegen.generators.TypeDeclarationCodeGenerator
-import scala.collection.mutable
 import joos.ast.declarations.{TypeDeclaration, MethodDeclaration}
 
 /**
