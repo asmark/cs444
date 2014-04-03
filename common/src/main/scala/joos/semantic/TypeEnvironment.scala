@@ -142,7 +142,7 @@ trait TypeEnvironment extends Environment {
         map + (newMethod.name -> Set(newMethod))
       } else {
         // Check if we need to widen visibility
-        val currentMethods = map(newMethod.name).find(_.parameters == newMethod.parameters) match {
+        val currentMethods = map(newMethod.name).find(_.returnTypeLocalSignature equals newMethod.returnTypeLocalSignature) match {
           // No existing method with these parameters exists. This is a simple overload
           case None => map(newMethod.name) + newMethod
           // An old method already exists. Check if we must widen visibility
@@ -169,7 +169,7 @@ trait TypeEnvironment extends Environment {
 
     this.supers.foreach {
       superType =>
-        superType.containedMethods.values.flatten foreach {
+        superType.implementedMethods.values.flatten foreach {
           contained =>
             if (!contained.isAbstract) {
               ret = addBinding(contained, ret)

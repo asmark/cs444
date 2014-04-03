@@ -77,8 +77,6 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
   private def createSelectorIndexedTable() {
 
-
-
     def includeOverridden(methods: Traversable[MethodDeclaration]): Map[MethodDeclaration, MethodDeclaration] = {
 
       def getOverridden(method: MethodDeclaration, implementer: MethodDeclaration): Set[MethodDeclaration] = {

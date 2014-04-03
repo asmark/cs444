@@ -8,7 +8,7 @@ public class ClassB extends ClassA {
         return 103;
     }
 
-    protected int m3() {
+    protected int m3(int j) {
         return 104;
     }
 

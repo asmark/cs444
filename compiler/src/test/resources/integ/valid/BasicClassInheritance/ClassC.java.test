@@ -4,7 +4,7 @@ public class ClassC extends ClassB {
     public int a2 = 201;
     protected int b1 = 202;
 
-    protected int m3() {
+    protected int m3(int k) {
         return 203;
     }
 

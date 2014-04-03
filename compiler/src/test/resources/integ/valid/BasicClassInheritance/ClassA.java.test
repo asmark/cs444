@@ -11,7 +11,7 @@ public class ClassA {
         return 4;
     }
 
-    protected int m3() {
+    protected int m3(int i) {
         return 5;
     }
 
