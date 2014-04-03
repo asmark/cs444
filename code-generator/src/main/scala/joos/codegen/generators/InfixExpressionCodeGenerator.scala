@@ -3,10 +3,10 @@ package joos.codegen.generators
 import joos.assemgen.Register._
 import joos.assemgen._
 import joos.ast.Operator._
-import joos.ast.types._
-import joos.codegen.generators.commonlib._
-import joos.codegen.AssemblyCodeGeneratorEnvironment
 import joos.ast.expressions.InfixExpression
+import joos.ast.types._
+import joos.codegen.AssemblyCodeGeneratorEnvironment
+import joos.codegen.generators.commonlib._
 import joos.core.Logger
 
 class InfixExpressionCodeGenerator(expression: InfixExpression)
@@ -47,13 +47,27 @@ class InfixExpressionCodeGenerator(expression: InfixExpression)
 
     appendText(:#(s"[BEGIN] Integer Binary Operation ${expression.toString}"), emptyLine)
 
-    appendText(:#("Evaluate left operand"))
+    appendText(
+      push(Ecx) :# "Save this",
+      :#("Evaluate left operand")
+    )
     expression.left.generate()
-    appendText(push(Eax) :# "Push Left hand side as first parameter", emptyLine)
+    appendText(
+      pop(Ecx) :# "Retrieve this",
+      push(Eax) :# "Push left hand side as first parameter",
+      emptyLine
+    )
 
-    appendText(:#("Evaluate right operand"))
+    appendText(
+      push(Ecx) :# "Save this",
+      :#("Evaluate right operand")
+    )
     expression.right.generate()
-    appendText(push(Eax) :# "Push right hand side as second parameter", emptyLine)
+    appendText(
+      pop(Ecx) :# "Retrieve this",
+      push(Eax) :# "Push right hand side as first parameter",
+      emptyLine
+    )
 
     appendText(
       call(method),

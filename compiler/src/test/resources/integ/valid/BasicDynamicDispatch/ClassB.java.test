@@ -1,0 +1,31 @@
+public class ClassB extends ClassA {
+
+    public int m() {
+        return 100;
+    }
+
+    public ClassB() {}
+
+    public static int test() {
+        ClassA a = new ClassB();
+        if (a.m() != 100) {
+            return 1;   // Dynamic dispatch failed
+        }
+
+        ClassB b = new ClassB();
+        if (b.m() != 100) {
+            return 2;   // Normal dispatch failed
+        }
+
+        a = new ClassA();
+        if (a.m() != 1) {
+            return 3;   // Normal dispatch failed
+        }
+
+        a = new ClassB();
+        if (a.m() != 100) {
+            return 4;   // Dynamic dispatch failed
+        }
+        return 123;
+    }
+}

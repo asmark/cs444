@@ -1,0 +1,41 @@
+public class ClassC extends ClassB {
+
+    public int c1 = 200;
+    public int a2 = 201;
+    protected int b1 = 202;
+
+    public int m3(int k) {
+        return 203;
+    }
+
+    public ClassC() {}
+
+    public static int test() {
+
+        ClassA a_a = new ClassA();
+        ClassA a_b = new ClassB();
+        ClassA a_c = new ClassC();
+
+        ClassB b_b = new ClassB();
+        ClassB b_c = new ClassC();
+
+        ClassC c_c = new ClassC();
+
+        if (a_a.m1() != 3 || a_a.m2() != 4 || a_a.m3(4) != 5) {
+            return 1;
+        } else if (a_b.m1() != 3 || a_b.m2() != 103 || a_b.m3(2) != 104) {
+            return 2;
+        } else if (a_c.m1() != 3 || a_c.m2() != 103 || a_c.m3(0) != 203) {
+            return 3;
+        } else if (b_b.m1() != 3 || b_b.m2() != 103 || b_b.m3(2) != 104) {
+            return 4;
+        } else if (b_c.m1() != 3 || b_c.m2() != 103 || b_c.m3(0) != 203) {
+            return 5;
+        } else if (c_c.m1() != 3 || c_c.m2() != 103 || c_c.m3(0) != 203) {
+            return 6;
+        }
+
+        return 123;
+    }
+
+}
