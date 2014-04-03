@@ -9,41 +9,28 @@ class FieldDeclarationCodeGenerator(field: FieldDeclaration)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
   override def generate() {
-    field.declarationName.generate()
-    val offset = field.typeDeclaration.getFieldSlot(field.declarationName) * 4
+    val tipe = environment.typeEnvironment
+    val offset = tipe.getFieldSlot(field.declarationName) * 4 + FieldOffset
 
-    appendText(
-      :#("[BEGIN] Initializing field: " + field.declarationName.standardName),
-      #>
-    )
-    prologue(0)
+    appendText(:#(s"[BEGIN] Initializing ${field}"))
 
     val rhs = field.fragment.initializer
+    if (rhs.isDefined) {
+      appendText(
+        push(Ecx) :# "Save this",
+        #>,
+        :#("Evaluate right hand side")
+      )
 
-    rhs match {
-      case Some(initializer) => {
-        appendText(:#("Calling initializer"))
-        initializer.generate()
-        // EAX should hold the return value
-        appendText(
-          add(Edx, offset),
-          mov(Edx, Eax)
-        )
-      }
-      case None => {
-        appendText(:#("Assigning default value"))
-        appendText(
-          add(Edx, offset),
-          mov(Edx, toExpression(0))
-        )
-      }
+      rhs.get.generate()
+      // Rhs is in Eax now
+      appendText(
+        #<,
+        pop(Ecx) :# "Restore this",
+        movdw(at(Ecx + offset), Eax) :# s"Assign ${field}",
+        :#("[END] Initializing field: " + field.declarationName)
+      )
     }
-
-    epilogue(0)
-    appendText(
-      #<,
-      :#("[END] Initializing field: " + field.declarationName.standardName)
-    )
   }
 
 }

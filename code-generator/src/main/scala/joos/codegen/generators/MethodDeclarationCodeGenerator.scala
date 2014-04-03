@@ -56,13 +56,12 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
     )
 
     val tipe = environment.typeEnvironment
-    appendText(:#("[BEGIN] Constructor Default Initialization"))
+    appendText(:#("[BEGIN] Constructor Initialization"))
     tipe.instanceFields.foreach {
       field =>
-          val offset = tipe.getFieldSlot(field.declarationName)*4 + FieldOffset
-          appendText(movdw(at(Ecx + offset), 0) :# s"Initialize ${field.declarationName} to default value")
+          field.generate()
     }
-    appendText(:#("[END] Constructor Default Initialization"), emptyLine)
+    appendText(:#("[END] Constructor Initialization"), emptyLine)
 
     appendText(:#("[BEGIN] Constructor Body"), #>)
     method.body.foreach(_.generate())
