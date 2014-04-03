@@ -54,7 +54,9 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
     appendText(:#("[BEGIN] Constructor Initialization"))
     tipe.instanceFields.foreach {
       field =>
-        field.generate()
+          if (field.typeDeclaration equals tipe) {
+            field.generate()
+          }
     }
     appendText(:#("[END] Constructor Initialization"), emptyLine)
 
