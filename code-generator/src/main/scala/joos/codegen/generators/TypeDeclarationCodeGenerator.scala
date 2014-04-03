@@ -8,7 +8,6 @@ import joos.codegen.AssemblyCodeGeneratorEnvironment
 class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
-  val objectInfoTable = objectInfoTableLabel(tipe)
   val selectorTable = selectorTableLabel(tipe)
   val subtypeTable = subtypeTableLabel(tipe)
 
