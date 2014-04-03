@@ -10,14 +10,14 @@ import joos.core.{Logger, DefaultUniqueIdGenerator}
 
 package object generators {
   final val exceptionLabel = "__exception"
-  final val ArrayLengthOffset = 8
-  final val ArrayFirstElementOffset = ArrayLengthOffset + 4
   final val mallocLabel: LabelReference = "__malloc"
 
   val offsetPostFix = "_offset"
 
   val FieldOffset = 8
   val ParameterOffset = 4
+  final val ArrayLengthOffset = 8
+  final val ArrayFirstElementOffset = ArrayLengthOffset + 4
 
   def nextLabel(labelPrefix: String = "label") = labelPrefix + "_" + DefaultUniqueIdGenerator.nextId
 

@@ -31,6 +31,7 @@ class ArrayCreationExpressionCodeGenerator(expression: ArrayCreationExpression)
       mov(at(Eax + ArrayLengthOffset), Ebx) :# "Stores the length at offset 8"
     )
     // TODO: zero initialize all elements
+    // TODO: binds to SIT and SubType table
     appendText(
       :# ("[END] Array Creation")
     )
