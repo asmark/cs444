@@ -26,7 +26,9 @@ trait TypeEnvironment extends Environment {
     contained
   }
 
+  lazy val staticFields = containedFields.values.filter(_.isStatic)
   lazy val instanceFields = containedFields.values.filter(!_.isStatic)
+
   lazy val objectSize = instanceFields.size*4
 
   /**
