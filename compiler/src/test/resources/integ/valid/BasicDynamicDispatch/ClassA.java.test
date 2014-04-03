@@ -1,0 +1,9 @@
+public class ClassA {
+
+    protected int m() {
+        return 1;
+    }
+
+    public ClassA() {}
+
+}

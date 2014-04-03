@@ -1,0 +1,20 @@
+public class ClassA {
+
+    public int a1 = 1;
+    protected int a2 = 2;
+
+    protected int m1() {
+        return 3;
+    }
+
+    protected int m2() {
+        return 4;
+    }
+
+    protected int m3() {
+        return 5;
+    }
+
+    public ClassA() {}
+
+}

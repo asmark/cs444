@@ -14,7 +14,7 @@ class integrationSpec extends FlatSpec with Matchers {
 
   // TODO: Validate output with expected output in /integ/check directory
   behavior of "Compiling valid joos"
-  getValidTestCases.foreach {
+  getValidTestCases.filter(_.getName.contains("Dispatch")).foreach {
     testCase =>
       it should s"accept ${testCase.getName}" taggedAs IntegrationTest in {
         val files = getJavaFiles(testCase) ++ standardLibrary

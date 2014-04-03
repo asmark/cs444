@@ -2,9 +2,9 @@ package joos.codegen.generators
 
 import joos.assemgen.Register._
 import joos.assemgen._
-import joos.codegen.generators.commonlib._
-import joos.ast.expressions.MethodInvocationExpression
+import joos.ast.expressions.{Expression, SimpleNameExpression, QualifiedNameExpression, MethodInvocationExpression}
 import joos.codegen.AssemblyCodeGeneratorEnvironment
+import joos.codegen.generators.commonlib._
 
 class MethodInvocationExpressionCodeGenerator(invocation: MethodInvocationExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment)
@@ -41,38 +41,51 @@ class MethodInvocationExpressionCodeGenerator(invocation: MethodInvocationExpres
         )
     }
 
-    invocation.expression match {
-      case Some(prefixType) => {
-        appendText(
-          :#(s"Evaluate method owner instance ${invocation.expression}"),
-          #>
-        )
-        prefixType.generate()
-        appendText(
-          #<,
-          :#(s"Placed method owner (${prefixType.expressionType}) into eax")
-        )
-      }
-      case None => {
-        appendText(
-          mov(Eax, Ecx) :# s"Method owner is this in ${invocation}. Move this into eax",
-          push(Eax) :# "Push prefix type argument for null check",
-          call(nullCheck) :# "Call null check on prefix object",
-          pop(Eax) :# "Pop prefix object back into eax"
-        )
-      }
+    if (invocation.methodName.standardName.contains("m")) {
+      println("foo");
     }
 
+    invocation.expression match {
+      case Some(prefixType) => {
+        getPrefixType(prefixType)
+      }
+
+      case None => {
+        invocation.methodName match {
+          case QualifiedNameExpression(prefixType, methodName) => {
+            getPrefixType(prefixType)
+          }
+          case SimpleNameExpression(methodName) => {
+            appendText(
+              mov(Eax, Ecx) :# s"Method owner is this in ${invocation}. Move this into eax"
+            )
+          }
+        }
+        checkNullInstance()
+      }
+    }
 
     val selectorIndex = environment.staticDataManager.getMethodIndex(invocation.declaration)
 
     appendText(
       mov(Eax, at(Eax)) :# "Move selector table into eax",
-      mov(Eax, at(Eax + selectorIndex*4)) :# "Load method declaration into Eax",
+      mov(Eax, at(Eax + selectorIndex * 4)) :# "Load method declaration into Eax",
       call(Eax) :# "Call method. Returns arguments in eax",
       add(Esp, 4 * invocation.arguments.size) :# "Pop arguments off stack",
       :#(s"[END] Method invocation expression ${invocation}"),
       emptyLine
+    )
+  }
+
+  def getPrefixType(prefix: Expression) {
+    appendText(
+      :#(s"Evaluate method owner instance ${prefix}"),
+      #>
+    )
+    prefix.generate()
+    appendText(
+      #<,
+      :#(s"Placed method owner (${prefix}) into eax")
     )
   }
 
@@ -106,6 +119,14 @@ class MethodInvocationExpressionCodeGenerator(invocation: MethodInvocationExpres
       )
 
     }
+  }
+
+  private def checkNullInstance() {
+    appendText(
+      push(Eax) :# "Push prefix type argument for null check",
+      call(nullCheck) :# "Call null check on prefix object",
+      pop(Eax) :# "Pop prefix object back into eax"
+    )
   }
 
 }
