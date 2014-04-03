@@ -21,30 +21,8 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     tipe.constructorMap.values.foreach(_.generate())
     appendText(emptyLine)
 
-    // Add malloc method
     generateTables()
     generateMallocMethods()
-  }
-
-  def createSubtypeTable() = {
-    appendGlobal(subtypeTable)
-    appendData(subtypeTable ::, emptyLine)
-
-    environment.staticDataManager.orderedTypes.foreach(
-      target => {
-        if (target.allAncestors.map(x => x.uniqueName).contains(tipe.uniqueName)) {
-          appendData(dd(1) :#target.uniqueName)
-        } else {
-          if (target.uniqueName equals tipe.uniqueName) {
-            appendData(dd(1) :#target.uniqueName)
-          } else {
-            appendData(dd(0) :#target.uniqueName)
-          }
-        }
-      }
-    )
-
-    appendData(emptyLine)
   }
 
   private def generateTables() {
@@ -100,15 +78,35 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
   private def createSelectorIndexedTable() {
     appendGlobal(selectorTable)
     appendData(selectorTable ::, emptyLine)
-    environment.staticDataManager.orderedMethods.foreach(
-      method => {
-        if (tipe.methods.map(x => x.uniqueName).toSet.contains(method.uniqueName)) {
-          appendData(dd(labelReference(method.uniqueName)) :#method.uniqueName)
+    val containedMethods = tipe.containedMethods.values.flatten.toSet
+
+    environment.staticDataManager.orderedMethods.foreach {
+      method =>
+        if (containedMethods.contains(method)) {
+          appendData(dd(method.uniqueName) :# method.returnTypeLocalSignature)
         } else {
-          appendData(dd(0) :#method.uniqueName)
+          appendData(dd(0) :# method.returnTypeLocalSignature)
         }
-      }
-    )
+    }
+
     appendData(emptyLine)
   }
+
+  def createSubtypeTable() {
+    appendGlobal(subtypeTable)
+    appendData(subtypeTable ::, emptyLine)
+
+    environment.staticDataManager.orderedTypes.foreach {
+      target =>
+        if (tipe.allAncestors.contains(target) || (tipe.fullName equals target.fullName)) {
+          appendData(dd(1) :# target.fullName)
+        } else {
+          appendData(dd(0) :# target.fullName)
+        }
+    }
+
+
+    appendData(emptyLine)
+  }
+
 }
