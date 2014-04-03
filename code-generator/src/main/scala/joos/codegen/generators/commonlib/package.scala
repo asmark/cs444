@@ -27,23 +27,52 @@ package object commonlib {
       addInts ++ subInts ++ multInts ++ divInts ++ modInts: _*)
 
     // -- Comparison operations
-    val comparisonOperations = Seq(compareAnd, compareOr, compareGreater, compareLess, compareEqual, compareNotEqual, compareLessEqual, compareGreaterEqual)
+    val comparisonOperations = Seq(
+      compareAnd,
+      compareOr,
+      compareGreater,
+      compareLess,
+      compareEqual,
+      compareNotEqual,
+      compareLessEqual,
+      compareGreaterEqual)
     // Export functions
     exportFunctions(comparisonOperations: _*)
 
     // Define functions
     assemblyManager.appendText(
-      cmpAnd ++ cmpOr ++ cmpGt ++ cmpLt ++ cmpEq ++ cmpNe ++ cmpLe ++ cmpGe : _*
+      cmpAnd ++ cmpOr ++ cmpGt ++ cmpLt ++ cmpEq ++ cmpNe ++ cmpLe ++ cmpGe: _*
     )
 
     // For testing native method
     val nativeMethodAddOne = "NATIVEshengmin.BasicNativeMethod.nativeAddOne"
     assemblyManager.appendText(
-      nativeMethodAddOne::,
+      nativeMethodAddOne ::,
       add(Eax, 1),
-      ret()
+      ret(),
+      emptyLine
     )
     exportFunctions(nativeMethodAddOne)
+
+    // Null check library function. Assumes operand is on stack
+    val nullCheckOk = nextLabel("_null_check_ok")
+    assemblyManager.appendText(
+      :#("[BEGIN] Null Check Library Function"),
+      nullCheck ::
+    )
+    assemblyManager.appendText(prologue(0): _*)
+    assemblyManager.appendText(
+      mov(Ebx, 0) :# "put null into ebx",
+      cmp(Ebx, at(Ebp + 8)) :# "check if parameter passed is null",
+      jne(nullCheckOk) :# "Skip to end if argument is not null",
+      call(exceptionLabel) :# "throw exception if null",
+      nullCheckOk ::,
+      emptyLine
+    )
+    assemblyManager.appendText(epilogue: _*)
+    assemblyManager.appendText(:#("[END] Null Check Library Function"), emptyLine)
+
+    exportFunctions(nullCheck)
 
     new AssemblyCodeGeneratorEnvironment(assemblyManager, namespace, sitBuilder: StaticDataManager)
   }
@@ -62,4 +91,6 @@ package object commonlib {
   val compareNotEqual = "_lib_cmp_ne"
   val compareLessEqual = "_lib_cmp_le"
   val compareGreaterEqual = "_lib_cmp_ge"
+
+  val nullCheck = "_lib_null_check"
 }

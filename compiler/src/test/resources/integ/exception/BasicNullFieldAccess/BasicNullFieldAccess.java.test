@@ -1,0 +1,11 @@
+public class BasicNullFieldAccess {
+
+    public int field = 1;
+
+    public BasicNullFieldAccess() {}
+
+    public static int test() {
+        BasicNullFieldAccess c = null;
+        return c.field;
+    }
+}

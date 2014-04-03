@@ -6,6 +6,7 @@ import joos.ast.NameClassification._
 import joos.ast.expressions.QualifiedNameExpression
 import joos.ast.types.{ArrayType, SimpleType}
 import joos.codegen.AssemblyCodeGeneratorEnvironment
+import joos.codegen.generators.commonlib._
 import joos.core.Logger
 
 class QualifiedNameExpressionCodeGenerator(expression: QualifiedNameExpression)
@@ -16,13 +17,22 @@ class QualifiedNameExpressionCodeGenerator(expression: QualifiedNameExpression)
     expression.nameClassification match {
 
       case InstanceFieldName => {
-        expression.qualifier.generate()
+
         val fieldOwner = expression.qualifier.expressionType match {
           case simple: SimpleType => simple.declaration
           case array: ArrayType =>
             Logger.logWarning(s"No support for array accesses yet in ${expression}")
             return
         }
+
+        // Prefix type returned in Eax
+        expression.qualifier.generate()
+        appendText(
+          push(Eax) :# "Push prefix type argument for null check",
+          call(nullCheck) :# "Call null check on prefix object",
+          pop(Eax) :# "Pop prefix object back into eax",
+          emptyLine
+        )
 
         val slot = fieldOwner.getFieldSlot(expression.name)
         appendText(
@@ -37,7 +47,7 @@ class QualifiedNameExpressionCodeGenerator(expression: QualifiedNameExpression)
       }
 
       case StaticFieldName => {
-//        expression.qualifier.generate()
+        //        expression.qualifier.generate()
         val fieldOwner = expression.qualifier.expressionType match {
           case simple: SimpleType => simple.declaration
         }

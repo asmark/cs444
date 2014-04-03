@@ -2,6 +2,7 @@
 
 RED='\e[0;31m'
 GREEN='\e[0;32m'
+BLUE='\e[0;34m'
 NC='\e[0m'
 
 
@@ -34,7 +35,8 @@ for dir in ${TEST_DIRS}
 do
   for test_case in `find ${dir} -maxdepth 1 -type d -not -path "*/valid"`
   do
-    test_name=`echo ${test_case} | sed 's/\.\..*\/\(a[0-9]\|integ\)\/.*valid\/\(.*\)/\1 \2/g' | sed 's/ /-/g'`
+    echo ${test_case}
+    test_name=`echo ${test_case} | sed 's/\.\..*\/\(a[0-9]\|integ\)\/.*\(exception\|valid\)\/\(.*\)/\1 \3/g' | sed 's/ /-/g'`
     echo "Running ${test_name}..."
     (( num_tests += 1 ))
 
@@ -80,12 +82,25 @@ do
 
     ./${outdir}/main
     result=$?
-    if (( result != 123 && result != 13 ))
+
+    if [[ ${test_case} == *exception* ]]
+    then
+      expected=13
+    else
+      expected=123
+    fi
+
+    if (( result != expected ))
     then
       echo -e "${RED}FAILED at Execution... (Return value was ${result}${NC}"
       read -p "Press [Enter] to continue..."
     else
-      echo -e "${GREEN}PASSED!${NC} (Returned ${result})"
+      if (( result == 123 )) 
+      then
+        echo -e "${GREEN}PASSED!${NC} (Returned ${result})"
+      else
+        echo -e "${BLUE}PASSED!${NC} Threw an exception. (Returned ${result})"
+      fi
       (( passed_tests += 1 ))
     fi
     
