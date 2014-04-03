@@ -6,6 +6,6 @@ public class BasicNullFieldAccess {
 
     public static int test() {
         BasicNullFieldAccess c = null;
-        return c.field;
+        return c.field; // should throw an exception
     }
 }

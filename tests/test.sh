@@ -35,7 +35,6 @@ for dir in ${TEST_DIRS}
 do
   for test_case in `find ${dir} -maxdepth 1 -type d -not -path "*/valid"`
   do
-    echo ${test_case}
     test_name=`echo ${test_case} | sed 's/\.\..*\/\(a[0-9]\|integ\)\/.*\(exception\|valid\)\/\(.*\)/\1 \3/g' | sed 's/ /-/g'`
     echo "Running ${test_name}..."
     (( num_tests += 1 ))

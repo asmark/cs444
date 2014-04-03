@@ -47,7 +47,6 @@ class QualifiedNameExpressionCodeGenerator(expression: QualifiedNameExpression)
       }
 
       case StaticFieldName => {
-        //        expression.qualifier.generate()
         val fieldOwner = expression.qualifier.expressionType match {
           case simple: SimpleType => simple.declaration
         }
