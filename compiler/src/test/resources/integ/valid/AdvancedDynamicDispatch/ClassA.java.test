@@ -3,7 +3,7 @@ public class ClassA {
     public int a1 = 1;
     protected int a2 = 2;
 
-    protected int m1() {
+    public int m1() {
         return 3;
     }
 

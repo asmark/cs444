@@ -416,10 +416,6 @@ package object assemgen {
     new AnyAssembly(value.toString)
   }
 
-  implicit def toExpression(value: Long): AssemblyExpression = {
-    new AnyAssembly(value.toString)
-  }
-
   /**
    * Refers to a label
    */

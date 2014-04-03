@@ -105,7 +105,7 @@ trait TypeEnvironment extends Environment {
       map + (newMethod.name -> Set(newMethod))
     } else {
       // Check if we need to widen visibility
-      val currentMethods = map(newMethod.name).find(_.parameters == newMethod.parameters) match {
+      val currentMethods = map(newMethod.name).find(_.localSignature == newMethod.localSignature) match {
         // No existing method with these parameters exists. This is a simple overload
         case None => map(newMethod.name) + newMethod
         // An old method already exists. Check if we must widen visibility
@@ -142,7 +142,7 @@ trait TypeEnvironment extends Environment {
         map + (newMethod.name -> Set(newMethod))
       } else {
         // Check if we need to widen visibility
-        val currentMethods = map(newMethod.name).find(_.returnTypeLocalSignature equals newMethod.returnTypeLocalSignature) match {
+        val currentMethods = map(newMethod.name).find(_.localSignature equals newMethod.localSignature) match {
           // No existing method with these parameters exists. This is a simple overload
           case None => map(newMethod.name) + newMethod
           // An old method already exists. Check if we must widen visibility
