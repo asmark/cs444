@@ -3,6 +3,10 @@ public class BasicArray {
 
   public static int test() {
     int[] ints = new int[3];
+    if (ints[0] != 0) return 9;
+    if (ints[1] != 0) return 10;
+    if (ints[2] != 0) return 11;
+
     ints[0] = 0;
     ints[1] = 1;
     ints[2] = 2;
@@ -17,6 +21,9 @@ public class BasicArray {
     A a2 = new A(2);
 
     A[] as = new A[3];
+    if (as[0] != null) return 12;
+    if (as[1] != null) return 13;
+    if (as[2] != null) return 14;
     as[0] = a0;
     as[1] = a1;
     as[2] = a2;
