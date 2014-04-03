@@ -65,6 +65,24 @@ class NamespaceTrie {
     typeDeclaration map node.addType
   }
 
+  def getAllTypes(exclude : Set[TypeDeclaration] = Set()): Seq[TypeDeclaration] = {
+    var types = Seq.empty[TypeDeclaration]
+    val queue = mutable.Queue[TrieNode](root)
+    while (!queue.isEmpty) {
+      queue.dequeue() match {
+        case PackageNode(children) => {
+          children.values.foreach(queue.enqueue(_))
+        }
+        case TypeNode(typeDeclaration) => {
+          if (!exclude.contains(typeDeclaration)) {
+            types +:= typeDeclaration
+          }
+        }
+      }
+    }
+    types
+  }
+
   def getAllTypesInPackage(packageName: NameExpression): Seq[TypeDeclaration] = {
     var node: Option[TrieNode] = Some(root)
     packageName.standardName.split('.').foreach {
@@ -108,4 +126,5 @@ class NamespaceTrie {
       case _ => None
     }
   }
+
 }

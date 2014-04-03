@@ -1,0 +1,8 @@
+public class BasicStaticFieldInitialize {
+
+    public static int HELLO = 4;
+    public static int WORLD = 5;
+
+    public BasicStaticFieldInitialize() {}
+
+}
