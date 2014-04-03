@@ -21,7 +21,6 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     tipe.constructorMap.values.foreach(_.generate())
     appendText(emptyLine)
 
-    // Add malloc method
     generateTables()
     generateMallocMethods()
   }
@@ -38,14 +37,9 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
       emptyLine
     )
 
-    // TODO: Generate selector table
-    appendGlobal(selectorTable)
-    appendText(selectorTable ::, emptyLine)
+    createSelectorIndexedTable()
 
-    // TODO: Generate subtype table
-    appendGlobal(subtypeTable)
-    appendText(subtypeTable ::, emptyLine)
-
+    createSubtypeTable()
 
 
     // TODO: generate array class info tables
@@ -80,4 +74,39 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
     // TODO: Generate array malloc
   }
+
+  private def createSelectorIndexedTable() {
+    appendGlobal(selectorTable)
+    appendData(selectorTable ::, emptyLine)
+    val containedMethods = tipe.containedMethods.values.flatten.toSet
+
+    environment.staticDataManager.orderedMethods.foreach {
+      method =>
+        if (containedMethods.contains(method)) {
+          appendData(dd(method.uniqueName) :# method.returnTypeLocalSignature)
+        } else {
+          appendData(dd(0) :# method.returnTypeLocalSignature)
+        }
+    }
+
+    appendData(emptyLine)
+  }
+
+  def createSubtypeTable() {
+    appendGlobal(subtypeTable)
+    appendData(subtypeTable ::, emptyLine)
+
+    environment.staticDataManager.orderedTypes.foreach {
+      target =>
+        if (tipe.allAncestors.contains(target) || (tipe.fullName equals target.fullName)) {
+          appendData(dd(1) :# target.fullName)
+        } else {
+          appendData(dd(0) :# target.fullName)
+        }
+    }
+
+
+    appendData(emptyLine)
+  }
+
 }

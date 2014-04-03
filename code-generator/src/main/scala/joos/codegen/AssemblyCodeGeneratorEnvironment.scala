@@ -4,17 +4,19 @@ import AssemblyCodeGeneratorEnvironment._
 import java.io.{File, PrintWriter}
 import joos.assemgen._
 import joos.ast.AbstractSyntaxTree
-import joos.ast.expressions.SimpleNameExpression
 import joos.codegen.generators.TypeDeclarationCodeGenerator
-import scala.collection.mutable
 import joos.ast.declarations.{TypeDeclaration, MethodDeclaration}
 
 /**
  * Stores the environment passed to code generator
  */
-class AssemblyCodeGeneratorEnvironment(val assemblyManager: AssemblyFileManager, val namespace: AssemblyNamespace) {
-  def this(ast: AbstractSyntaxTree, namespace: AssemblyNamespace) = {
-    this(new AssemblyFileManager(s"${ast.name}.s"), namespace)
+class AssemblyCodeGeneratorEnvironment(
+    val assemblyManager: AssemblyFileManager,
+    val namespace: AssemblyNamespace,
+    val staticDataManager: StaticDataManager) {
+
+  def this(ast: AbstractSyntaxTree, namespace: AssemblyNamespace, staticDataManager: StaticDataManager) = {
+    this(new AssemblyFileManager(s"${ast.name}.s"), namespace, staticDataManager)
 
     implicit val environment = this
     ast.root.typeDeclaration match {

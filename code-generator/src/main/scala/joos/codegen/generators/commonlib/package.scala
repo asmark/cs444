@@ -8,19 +8,19 @@ import joos.codegen.{AssemblyNamespace, AssemblyCodeGeneratorEnvironment, Assemb
 
 package object commonlib {
 
-  def AssemblyCommonLibraryEnvironment(namespace: AssemblyNamespace): AssemblyCodeGeneratorEnvironment = {
+  def AssemblyCommonLibraryEnvironment(namespace: AssemblyNamespace, sitBuilder: StaticDataManager): AssemblyCodeGeneratorEnvironment = {
 
     val assemblyManager = new AssemblyFileManager("_lib.s")
 
-    def exportFunctions(functions: Seq[String]) {
+    def exportFunctions(functions: String*) {
       namespace.externs ++= functions
-      assemblyManager.appendGlobal(functions :_*)
+      assemblyManager.appendGlobal(functions: _*)
     }
 
     // -- Integer Operation Functions
     val integerOperations = Seq(addIntegers, subtractIntegers, multiplyIntegers, divideIntegers, moduloIntegers)
     // Export functions
-    exportFunctions(integerOperations)
+    exportFunctions(integerOperations: _*)
 
     // Define functions
     assemblyManager.appendText(
@@ -29,15 +29,23 @@ package object commonlib {
     // -- Comparison operations
     val comparisonOperations = Seq(compareAnd, compareOr, compareGreater, compareLess, compareEqual, compareNotEqual, compareLessEqual, compareGreaterEqual)
     // Export functions
-    exportFunctions(comparisonOperations)
+    exportFunctions(comparisonOperations: _*)
 
     // Define functions
     assemblyManager.appendText(
       cmpAnd ++ cmpOr ++ cmpGt ++ cmpLt ++ cmpEq ++ cmpNe ++ cmpLe ++ cmpGe : _*
     )
 
+    // For testing native method
+    val nativeMethodAddOne = "NATIVEshengmin.BasicNativeMethod.nativeAddOne"
+    assemblyManager.appendText(
+      nativeMethodAddOne::,
+      add(Eax, 1),
+      ret()
+    )
+    exportFunctions(nativeMethodAddOne)
 
-    new AssemblyCodeGeneratorEnvironment(assemblyManager, namespace)
+    new AssemblyCodeGeneratorEnvironment(assemblyManager, namespace, sitBuilder: StaticDataManager)
   }
 
   val addIntegers = "_lib_add_ints"

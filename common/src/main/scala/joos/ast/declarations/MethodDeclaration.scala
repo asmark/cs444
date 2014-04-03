@@ -53,8 +53,7 @@ case class MethodDeclaration(
   }
 
   lazy val returnTypeLocalSignature = {
-    var mods: String = null
-    this.modifiers.foreach(mod => mods += mod.name + " ")
+    val mods = modifiers.mkString("", " ", " ")
     mods + (returnType match {
       case Some(someType) => getTypeName(someType) + " " + localSignature
       case None => localSignature
