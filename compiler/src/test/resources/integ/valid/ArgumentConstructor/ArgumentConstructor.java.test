@@ -1,6 +1,5 @@
 public class ArgumentConstructor {
 
-    // TODO: Change a_i to 1 to see if initialization worked
     public int a_i = 0;
     public int a_u;
 

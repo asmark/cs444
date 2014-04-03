@@ -1,0 +1,19 @@
+public class BasicStaticFieldAccessDriver extends BasicStaticFieldAccess {
+
+    public int x = 4;
+    public boolean y = true;
+
+    public BasicStaticFieldAccessDriver() {
+        x = 10;
+    }
+
+    public static int test() {
+        BasicStaticFieldAccess.FIELD = 5;
+        if (BasicStaticFieldAccessDriver.FIELD != 5) {
+            return 1;
+        }
+        BasicStaticFieldAccessDriver.FIELD = 123;
+
+        return BasicStaticFieldAccess.FIELD;
+    }
+}

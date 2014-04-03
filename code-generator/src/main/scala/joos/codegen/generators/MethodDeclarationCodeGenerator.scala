@@ -56,13 +56,12 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
     )
 
     val tipe = environment.typeEnvironment
-    appendText(:#("[BEGIN] Constructor Default Initialization"))
+    appendText(:#("[BEGIN] Constructor Initialization"))
     tipe.instanceFields.foreach {
       field =>
-          val offset = tipe.getFieldSlot(field.declarationName)*4 + FieldOffset
-          appendText(movdw(at(Ecx + offset), 0) :# s"Initialize ${field.declarationName} to default value")
+        field.generate()
     }
-    appendText(:#("[END] Constructor Default Initialization"), emptyLine)
+    appendText(:#("[END] Constructor Initialization"), emptyLine)
 
     appendText(:#("[BEGIN] Constructor Body"), #>)
     method.body.foreach(_.generate())
@@ -107,6 +106,8 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
   }
 
   def generateStartCode() {
+
+    val tipe = environment.typeEnvironment
     val startLabel = "_start"
 
     appendGlobal(startLabel)
@@ -114,7 +115,23 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
     appendText(
       startLabel ::,
       :#("[BEGIN] Static field initializations"),
-      // TODO: Initializations
+      :#(s"Initialize statics of ${tipe.fullName}"),
+      #>
+    )
+    // Do not use tipe.staticFields since this pulls in inherited ones as well
+    tipe.fieldMap.values.withFilter(_.isStatic).foreach(_.generate())
+
+    appendText(#<)
+
+    tipe.compilationUnit.moduleDeclaration.namespace.getAllTypes(Set(tipe)).foreach {
+      typeDeclaration =>
+        appendText(:#(s"Initialize statics of ${typeDeclaration.fullName}"), #>)
+        typeDeclaration.fieldMap.values.withFilter(_.isStatic).foreach(_.generate())
+        appendText(#<)
+    }
+
+    appendText(
+      #<,
       :#("[END] Static field initializations"),
       emptyLine,
       call(labelReference(method.uniqueName)),

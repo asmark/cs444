@@ -1,0 +1,28 @@
+public class HidingStaticFieldAccessDriver extends HidingStaticFieldAccess {
+
+    public int x = 4;
+    public static int FIELD = 0;
+    public boolean y = true;
+
+    public HidingStaticFieldAccessDriver() {
+        x = 10;
+    }
+
+    public static int test() {
+        HidingStaticFieldAccess.FIELD = 5;
+        if (HidingStaticFieldAccessDriver.FIELD != 0) {
+            return 1;
+        } else if (HidingStaticFieldAccess.FIELD != 5) {
+            return 2;
+        }
+
+        HidingStaticFieldAccessDriver.FIELD = 123;
+        if (123 != HidingStaticFieldAccessDriver.FIELD) {
+            return 3;
+        } else if (5 != HidingStaticFieldAccess.FIELD) {
+            return 4;
+        }
+
+        return HidingStaticFieldAccess.FIELD + HidingStaticFieldAccessDriver.FIELD - HidingStaticFieldAccess.FIELD ;
+    }
+}

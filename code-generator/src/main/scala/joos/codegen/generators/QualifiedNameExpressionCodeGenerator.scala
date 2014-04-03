@@ -17,14 +17,14 @@ class QualifiedNameExpressionCodeGenerator(expression: QualifiedNameExpression)
 
       case InstanceFieldName => {
         expression.qualifier.generate()
-        val declaration = expression.qualifier.expressionType match {
+        val fieldOwner = expression.qualifier.expressionType match {
           case simple: SimpleType => simple.declaration
           case array: ArrayType =>
             Logger.logWarning(s"No support for array accesses yet in ${expression}")
             return
         }
 
-        val slot = declaration.getFieldSlot(expression.name)
+        val slot = fieldOwner.getFieldSlot(expression.name)
         appendText(
           :#(s"[BEGIN] Access qualified instance field ${expression}"),
           #>,
@@ -33,6 +33,23 @@ class QualifiedNameExpressionCodeGenerator(expression: QualifiedNameExpression)
           mov(Eax, at(Edx)) :# s"Retrieve field ${expression.standardName}",
           #<,
           :#(s"[END] Access qualified instance field ${expression}")
+        )
+      }
+
+      case StaticFieldName => {
+//        expression.qualifier.generate()
+        val fieldOwner = expression.qualifier.expressionType match {
+          case simple: SimpleType => simple.declaration
+        }
+
+        val staticField = fieldOwner.containedFields(expression.name)
+        appendText(
+          :#(s"[BEGIN] Access qualified static field ${expression}"),
+          #>,
+          movdw(Edx, staticField.uniqueName) :# s"Move location of ${staticField.declarationName} storage to eax",
+          mov(Eax, at(Edx)) :# s"Retrieve field",
+          #<,
+          :#(s"[END] Access qualified static field ${expression}")
         )
       }
 

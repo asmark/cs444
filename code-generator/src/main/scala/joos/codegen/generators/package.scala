@@ -17,8 +17,6 @@ package object generators {
 
   def nextLabel(labelPrefix: String = "label") = labelPrefix + "_" + DefaultUniqueIdGenerator.nextId
 
-  def objectInfoTableLabel(tipe: TypeDeclaration) = s"object_info_${tipe.uniqueName}"
-
   def selectorTableLabel(tipe: TypeDeclaration) = s"selector_table_${tipe.uniqueName}"
 
   def subtypeTableLabel(tipe: TypeDeclaration) = s"subtype_table_${tipe.uniqueName}"
@@ -59,8 +57,13 @@ package object generators {
     :#("[END] Function Epilogue")
   )
 
-  // The default value will be written to EDX
-  def initDefault(fieldDeclaration: FieldDeclaration) = {
+  def initField(fieldDeclaration: FieldDeclaration) (implicit environment: AssemblyCodeGeneratorEnvironment) {
+    val codeGenerator = new FieldDeclarationCodeGenerator(fieldDeclaration)
+    codeGenerator.generate()
+  }
+
+  // TODO: this method should be deprecated and it not quite
+  def initDefault(fieldDeclaration: FieldDeclaration) {
     fieldDeclaration.declarationType match {
       case ArrayType(_, _) => {
         Seq(

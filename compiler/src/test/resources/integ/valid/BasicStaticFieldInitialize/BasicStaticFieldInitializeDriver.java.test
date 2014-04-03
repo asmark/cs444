@@ -1,0 +1,14 @@
+public class BasicStaticFieldInitializeDriver {
+
+    public static int FIELD = 100;
+
+    public BasicStaticFieldInitializeDriver() {}
+
+    public static int test() {
+        int x = BasicStaticFieldInitializeDriver.FIELD;
+        int y = BasicStaticFieldInitialize.HELLO * 5;
+        int z = BasicStaticFieldInitialize.WORLD;
+
+        return x + y + z - 2;
+    }
+}
