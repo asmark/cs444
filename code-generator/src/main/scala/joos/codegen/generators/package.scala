@@ -9,8 +9,10 @@ import joos.core.{Logger, DefaultUniqueIdGenerator}
 
 
 package object generators {
-  val mallocLabel = "__malloc"
-  val exceptionLabel = "__exception"
+  final val exceptionLabel = "__exception"
+  final val ArrayLengthOffset = 8
+  final val mallocLabel: LabelReference = "__malloc"
+
   val offsetPostFix = "_offset"
 
   val FieldOffset = 8

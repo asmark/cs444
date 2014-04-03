@@ -1,0 +1,10 @@
+public class BasicArray {
+  public BasicArray() {}
+
+  public static int test() {
+    int[] as = new int[3];
+    // TODO: test length as well once field access is fixed
+    if (as.length != 3) return as.length;
+    return 123;
+  }
+}
