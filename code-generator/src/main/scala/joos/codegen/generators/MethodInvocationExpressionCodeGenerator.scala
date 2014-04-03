@@ -4,15 +4,22 @@ import joos.assemgen.Register._
 import joos.assemgen._
 import joos.ast.expressions.MethodInvocationExpression
 import joos.codegen.AssemblyCodeGeneratorEnvironment
-import scala.Some
 
 class MethodInvocationExpressionCodeGenerator(invocation: MethodInvocationExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment)
     extends AssemblyCodeGenerator {
 
   override def generate() {
+    require(invocation.declaration != null)
 
+    invocation.declaration.isNative match {
+      case true => generateNativeMethodCall()
+      case false => generateMethodCall()
+    }
 
+  }
+
+  def generateMethodCall() {
     appendText(
       :#(s"[BEGIN] Method invocation expression ${invocation}")
     )
@@ -53,17 +60,49 @@ class MethodInvocationExpressionCodeGenerator(invocation: MethodInvocationExpres
       }
     }
 
+
+    val selectorIndex = environment.staticDataManager.getMethodIndex(invocation.declaration)
+
+    appendText(
+      mov(Eax, at(Eax)) :# "Move selector table into eax",
+      mov(Eax, at(Eax + selectorIndex)) :# "Load method declaration into Eax",
+      call(Eax) :# "Call method. Returns arguments in eax",
+      add(Esp, 4 * invocation.arguments.size) :# "Pop arguments off stack",
+      :#(s"[END] Method invocation expression ${invocation}"),
+      emptyLine
+    )
   }
 
-  val selectorIndex = environment.staticDataManager.getMethodIndex(invocation.methodName.declaration)
 
-  appendText(
-    mov(Eax, at(Eax)) :# "Move selector table into eax",
-    mov(Eax, at(Eax + selectorIndex)) :# "Load method declaration into Eax",
-    call(Eax) :# "Call method. Returns arguments in eax",
-    add(Esp, 4 * invocation.arguments.size) :# "Pop arguments off stack",
-    :#(s"[END] Method invocation expression ${invocation}"),
-    emptyLine
-  )
+  def generateNativeMethodCall() {
+    val method = invocation.declaration
+    if (method.isNative) {
+      // There should only be one parameter
+      assert(invocation.arguments.size == 1)
+      invocation.arguments.foreach(_.generate())
+      appendText(
+        :#("[BEGIN] Native Method Call")
+      )
+
+      val registers = Register.values.filter(register => register != Eax && register != Esp)
+      // Save all registers (except eax, esp)
+      for (register <- registers) {
+        appendText(push(register))
+      }
+
+      // Return value should be in eax
+      appendText(call(method.uniqueName))
+
+      // Restore all registers (except eax, esp)
+      for (i <- registers.length - 1 to 0 by -1) {
+        appendText(pop(registers(i)))
+      }
+
+      appendText(
+        :#("[END] Native Method Call")
+      )
+
+    }
+  }
 
 }

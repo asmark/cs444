@@ -31,13 +31,6 @@ class StaticDataManager(asts: Seq[AbstractSyntaxTree]) {
       }
   }
 
-
-  def getMethodIndex(method: DeclarationLike): Int = {
-    method match {
-      case methodDeclaration: MethodDeclaration => getMethodIndex(methodDeclaration)
-    }
-  }
-
   def getMethodIndex(method: MethodDeclaration): Int = {
     methodIds.get(method.uniqueName).get._2
   }
