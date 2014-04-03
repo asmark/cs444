@@ -11,7 +11,7 @@ case class ClassInstanceCreationExpression(classType: Type, arguments: IndexedSe
    * Constructor it's linked to
    */
   var constructor: MethodDeclaration = _
-  override def toString = s"new ${classType}(${arguments.mkString(", ")}})"
+  override def toString = s"new ${classType}(${arguments.mkString(", ")})"
 }
 
 object ClassInstanceCreationExpression {

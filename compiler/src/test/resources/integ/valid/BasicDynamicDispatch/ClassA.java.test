@@ -1,6 +1,6 @@
 public class ClassA {
 
-    protected int m() {
+    public int m() {
         return 1;
     }
 

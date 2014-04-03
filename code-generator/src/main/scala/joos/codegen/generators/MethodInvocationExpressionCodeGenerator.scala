@@ -19,7 +19,7 @@ class MethodInvocationExpressionCodeGenerator(invocation: MethodInvocationExpres
     }
   }
 
-  def generateMethodCall() {
+  private def generateMethodCall() {
     appendText(
       :#(s"[BEGIN] Method invocation expression ${invocation}")
     )
@@ -39,10 +39,6 @@ class MethodInvocationExpressionCodeGenerator(invocation: MethodInvocationExpres
           push(Eax) :# "Push parameter onto stack",
           emptyLine
         )
-    }
-
-    if (invocation.methodName.standardName.contains("m")) {
-      println("foo");
     }
 
     invocation.expression match {
@@ -77,7 +73,7 @@ class MethodInvocationExpressionCodeGenerator(invocation: MethodInvocationExpres
     )
   }
 
-  def getPrefixType(prefix: Expression) {
+  private def getPrefixType(prefix: Expression) {
     appendText(
       :#(s"Evaluate method owner instance ${prefix}"),
       #>
@@ -90,7 +86,7 @@ class MethodInvocationExpressionCodeGenerator(invocation: MethodInvocationExpres
   }
 
 
-  def generateNativeMethodCall() {
+  private def generateNativeMethodCall() {
     val method = invocation.declaration
     if (method.isNative) {
       // There should only be one parameter

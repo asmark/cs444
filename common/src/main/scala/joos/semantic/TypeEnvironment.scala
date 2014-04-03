@@ -106,12 +106,16 @@ trait TypeEnvironment extends Environment {
     } else {
       // Check if we need to widen visibility
       val currentMethods = map(newMethod.name).find(_.parameters == newMethod.parameters) match {
-        // No existing method with these parameters exists. This is a simple override
+        // No existing method with these parameters exists. This is a simple overload
         case None => map(newMethod.name) + newMethod
           // An old method already exists. Check if we must widen visibility
         case Some(oldMethod) => {
+          // Set overloaded method
+          assert(newMethod.overloads.isEmpty)
+          newMethod.overloads = Some(oldMethod)
           if (oldMethod.modifiers.contains(Modifier.Protected) && newMethod.modifiers.contains(Modifier.Public)) {
             // Remove the old (Protected) method in favour of the new (Public) one
+            // Key thing is to remove old method from the map
             map(newMethod.name) - oldMethod + newMethod
           } else {
             // Overwrite the method anyways.. because why not?
@@ -125,7 +129,7 @@ trait TypeEnvironment extends Environment {
   }
 
   lazy val containedMethods: Map[SimpleNameExpression, Set[MethodDeclaration]] = {
-    (inheritedMethods.values.flatten ++ methodMap.values).foldRight(Map.empty[SimpleNameExpression, Set[MethodDeclaration]]) {
+    (methodMap.values ++ inheritedMethods.values.flatten).foldRight(Map.empty[SimpleNameExpression, Set[MethodDeclaration]]) {
       (method: MethodDeclaration, map: Map[SimpleNameExpression, Set[MethodDeclaration]]) =>
         addBindingAndWidenVisibility(method, map)
     }
