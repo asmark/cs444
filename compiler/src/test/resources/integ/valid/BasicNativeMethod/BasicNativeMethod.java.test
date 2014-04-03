@@ -1,0 +1,17 @@
+package shengmin;
+
+public class BasicNativeMethod {
+
+  public BasicNativeMethod() {
+  }
+
+  public static native int nativeAddOne(int a);
+
+  public static int test() {
+    if (BasicNativeMethod.nativeAddOne(100) != 101) return 1;
+    if (BasicNativeMethod.nativeAddOne(0) != 1) return 1;
+    if (BasicNativeMethod.nativeAddOne(1) != 2) return 1;
+
+    return 123;
+  }
+}
