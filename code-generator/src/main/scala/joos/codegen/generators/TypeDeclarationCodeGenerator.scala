@@ -105,7 +105,6 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
         }
     }
 
-
     appendData(emptyLine)
   }
 

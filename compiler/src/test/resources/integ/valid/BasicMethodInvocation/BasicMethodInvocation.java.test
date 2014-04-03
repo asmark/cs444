@@ -1,0 +1,16 @@
+public class BasicMethodInvocation {
+
+    public int f = 100;
+
+    public BasicMethodInvocation() {}
+
+    public int method() {
+        return f + 23;
+    }
+
+    public static int test() {
+        BasicMethodInvocation b = new BasicMethodInvocation();
+        return b.method();
+    }
+
+}

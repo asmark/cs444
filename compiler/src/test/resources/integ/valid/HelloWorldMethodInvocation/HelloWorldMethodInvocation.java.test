@@ -1,0 +1,24 @@
+import java.io.*;
+
+public class HelloWorldMethodInvocation {
+
+    public HelloWorldMethodInvocation() {}
+
+    public static int test() {
+        OutputStream os = new OutputStream();
+        os.write('H');
+        os.write('e');
+        os.write('l');
+        os.write('l');
+        os.write('o');
+        os.write(' ');
+        os.write('W');
+        os.write('o');
+        os.write('r');
+        os.write('l');
+        os.write('d');
+        os.write('!');
+        os.write('\n');
+        return 123;
+    }
+}

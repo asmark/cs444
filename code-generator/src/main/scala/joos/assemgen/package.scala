@@ -300,6 +300,14 @@ package object assemgen {
   }
 
   /**
+   * Pushes program counter onto the stack
+   * Jumps to the address referenced in register
+   */
+  def call(reg: Register): AssemblyInstruction = {
+    new AssemblyInstruction("call", Seq(reg))
+  }
+
+  /**
    * Pops the program counter from the stack
    */
   def ret(): AssemblyInstruction = {
