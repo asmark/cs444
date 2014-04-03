@@ -1,0 +1,7 @@
+public class BasicStaticFieldAccess {
+
+    public static int FIELD = 0;
+
+    public BasicStaticFieldAccess() {}
+
+}

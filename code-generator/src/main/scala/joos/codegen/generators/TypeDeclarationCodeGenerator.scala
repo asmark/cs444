@@ -28,24 +28,6 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
   }
 
   private def generateTables() {
-    appendGlobal(objectInfoTable)
-
-    appendData(
-      objectInfoTable ::,
-      dd(selectorTable),
-      dd(subtypeTable)
-    )
-
-    appendData(:#(s"[BEGIN] Static field locations for ${tipe.fullName}"))
-    tipe.staticFields.foreach {
-      field =>
-        appendData(dd(field.uniqueName) :# s"Location of static member ${field.typeDeclaration.fullName}.${field.declarationName}")
-    }
-    appendData(
-      :#(s"[END] Static field locations for ${tipe.fullName}"),
-      emptyLine
-    )
-
     appendData(:#(s"[BEGIN] Storage location for all static members for ${tipe.fullName}"))
     tipe.fieldMap.values.filter(_.isStatic).foreach {
       field =>
@@ -56,11 +38,6 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
       :#(s"[END] Storage location for all static members for ${tipe.fullName}"),
       emptyLine
     )
-
-
-
-
-
 
     // TODO: Generate selector table
     appendGlobal(selectorTable)
