@@ -20,7 +20,7 @@ then
   exit 1
 fi
 
-TEST_DIRS=`find ../compiler/src/test/resources -regextype posix-egrep -regex ".*/(valid|exception)*" -type d | grep -i "${TEST_FILTER}" | grep "/integ/"` # integ only for now
+TEST_DIRS=`find ../compiler/src/test/resources -regextype posix-egrep -regex ".*/(valid|exception)" -type d | grep "/integ/"` # integ only for now
 STD_LIB=`find ../compiler/src/test/resources/integ/stdlib -type f`
 
 num_tests=0
@@ -28,7 +28,7 @@ passed_tests=0
 
 for dir in ${TEST_DIRS}
 do
-  for test_case in `find ${dir} -maxdepth 1 -type d -not -path "*/valid" -not -path "*/exception"`
+  for test_case in `find ${dir} -maxdepth 1 -type d -not -path "*/valid" -not -path "*/exception" | grep -i "${TEST_FILTER}"`
   do
     test_name=`echo ${test_case} | sed 's/\.\..*\/\(a[0-9]\|integ\)\/.*\(exception\|valid\)\/\(.*\)/\1 \3/g' | sed 's/ /-/g'`
     echo "Running ${test_name}..."
@@ -40,7 +40,6 @@ do
     mkdir output
     cp ../output/runtime.s output
     
-    echo "test case is ${test_case}"
     files=`find ${test_case} -type f`
     ./joosc ${files} ${STD_LIB}
     if (( $? != 0 )) 

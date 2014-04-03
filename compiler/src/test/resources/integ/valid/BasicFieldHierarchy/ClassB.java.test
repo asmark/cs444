@@ -2,6 +2,7 @@ public class ClassB extends ClassA {
     public int b;
     public int b1;
     public int b2;
+    public int a;
 
     protected static int s;
 

@@ -1,8 +1,18 @@
 public class ClassC extends ClassB {
     public int c;
+    public int b2;
     public void dummy() {}
     public int c2;
+    public int a;
+
     public ClassC() {}
 
-    public static int test() { return 123; }
+    public static int test() {
+        ClassA x = new ClassC();
+        if (x.a != 0 || x.a1 != 1) {
+            return 1;
+        }
+
+        return 123;
+    }
 }
