@@ -16,7 +16,6 @@ class MethodInvocationExpressionCodeGenerator(invocation: MethodInvocationExpres
       case true => generateNativeMethodCall()
       case false => generateMethodCall()
     }
-
   }
 
   def generateMethodCall() {
@@ -55,7 +54,7 @@ class MethodInvocationExpressionCodeGenerator(invocation: MethodInvocationExpres
       }
       case None => {
         appendText(
-          mov(Eax, Ecx) :# s"Method owner is this in ${invocation.expression}. Move this into eax"
+          mov(Eax, Ecx) :# s"Method owner is this in ${invocation}. Move this into eax"
         )
       }
     }
@@ -65,7 +64,7 @@ class MethodInvocationExpressionCodeGenerator(invocation: MethodInvocationExpres
 
     appendText(
       mov(Eax, at(Eax)) :# "Move selector table into eax",
-      mov(Eax, at(Eax + selectorIndex)) :# "Load method declaration into Eax",
+      mov(Eax, at(Eax + selectorIndex*4)) :# "Load method declaration into Eax",
       call(Eax) :# "Call method. Returns arguments in eax",
       add(Esp, 4 * invocation.arguments.size) :# "Pop arguments off stack",
       :#(s"[END] Method invocation expression ${invocation}"),
