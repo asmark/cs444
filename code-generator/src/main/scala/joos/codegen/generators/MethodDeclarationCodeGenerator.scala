@@ -20,9 +20,7 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
       case true => generateConstructorCode()
       case false => generateMethodCode()
     }
-
   }
-
 
   def generateConstructorCode() {
     val constructorLabel = s"${method.uniqueName}"

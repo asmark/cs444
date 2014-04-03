@@ -2,7 +2,7 @@ package joos.codegen.generators
 
 import joos.assemgen.Register._
 import joos.assemgen._
-import joos.ast.declarations.TypeDeclaration
+import joos.ast.declarations.{MethodDeclaration, TypeDeclaration}
 import joos.codegen.AssemblyCodeGeneratorEnvironment
 
 class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
@@ -76,23 +76,43 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
   }
 
   private def createSelectorIndexedTable() {
+
+
+
+    def includeOverridden(methods: Traversable[MethodDeclaration]): Map[MethodDeclaration, MethodDeclaration] = {
+
+      def getOverridden(method: MethodDeclaration, implementer: MethodDeclaration): Set[MethodDeclaration] = {
+        Set(method) ++ (method.overloads match {
+          case Some(overloaded) =>
+            getOverridden(overloaded, implementer)
+          case None => Set.empty
+        })
+      }
+
+      methods.foldRight(Map.empty[MethodDeclaration, MethodDeclaration]) {
+        (implementer, implementerMap) =>
+            implementerMap ++ getOverridden(implementer, implementer).map(_ -> implementer)
+      }
+    }
+
     appendGlobal(selectorTable)
     appendData(selectorTable ::, emptyLine)
-    val containedMethods = tipe.containedMethods.values.flatten.toSet
+    val containedMethods = tipe.implementedMethods.values.flatten
+    val supportedMethods = includeOverridden(containedMethods)
 
     environment.staticDataManager.orderedMethods.foreach {
       method =>
-        if (containedMethods.contains(method)) {
-          appendData(dd(method.uniqueName) :# method.returnTypeLocalSignature)
-        } else {
-          appendData(dd(0) :# method.returnTypeLocalSignature)
-        }
+          supportedMethods.get(method) match {
+            case Some(implementer) =>
+              appendData(dd(implementer.uniqueName) :# s"${method.uniqueName} implemented by ${implementer.uniqueName}")
+            case None => appendData(dd(0) :# s"${method.uniqueName} not implemented by ${tipe.uniqueName}")
+          }
     }
 
     appendData(emptyLine)
   }
 
-  def createSubtypeTable() {
+  private def createSubtypeTable() {
     appendGlobal(subtypeTable)
     appendData(subtypeTable ::, emptyLine)
 
