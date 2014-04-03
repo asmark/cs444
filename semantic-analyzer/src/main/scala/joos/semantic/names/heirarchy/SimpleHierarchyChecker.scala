@@ -34,7 +34,6 @@ class SimpleHierarchyChecker(implicit module: ModuleDeclaration, unit: Compilati
     analyzeLocalMethods(typeDeclaration)
   }
 
-
   def analyzeLocalMethods(typeDeclaration: TypeDeclaration) {
     for (method <- typeDeclaration.methods) {
       if (method.isConstructor) {
