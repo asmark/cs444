@@ -6,8 +6,7 @@ public class BasicArray {
     as[0] = 0;
     as[1] = 1;
     as[2] = 2;
-
-    // TODO: test length as well once field access is fixed
+    
     if (as.length != 3) return as.length;
     if (as[0] != 0) return as[0];
     if (as[1] != 1) return as[1];
