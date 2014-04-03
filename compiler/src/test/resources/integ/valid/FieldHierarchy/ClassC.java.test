@@ -4,5 +4,5 @@ public class ClassC extends ClassB {
     public int c2;
     public ClassC() {}
 
-    public static int test() { return 13; }
+    public static int test() { return 123; }
 }

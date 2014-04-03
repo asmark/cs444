@@ -199,10 +199,10 @@ package object assemgen {
   }
 
   /**
-   * Prepares {{eax}} and {{ebx}} for conditional jumps
+   * Prepares {{left}} and {{right}} for conditional jumps
    */
-  def cmp(eax: Register, ebx: Register): AssemblyInstruction = {
-    new AssemblyInstruction("cmp", Seq(eax, ebx))
+  def cmp(left: AssemblyExpression, right: AssemblyExpression): AssemblyInstruction = {
+    new AssemblyInstruction("cmp", Seq(left, right))
   }
 
   /**

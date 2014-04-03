@@ -2,6 +2,7 @@ package joos.codegen.generators
 
 import joos.assemgen.Register._
 import joos.assemgen._
+import joos.codegen.generators.commonlib._
 import joos.ast.expressions.MethodInvocationExpression
 import joos.codegen.AssemblyCodeGeneratorEnvironment
 
@@ -54,7 +55,10 @@ class MethodInvocationExpressionCodeGenerator(invocation: MethodInvocationExpres
       }
       case None => {
         appendText(
-          mov(Eax, Ecx) :# s"Method owner is this in ${invocation}. Move this into eax"
+          mov(Eax, Ecx) :# s"Method owner is this in ${invocation}. Move this into eax",
+          push(Eax) :# "Push prefix type argument for null check",
+          call(nullCheck) :# "Call null check on prefix object",
+          pop(Eax) :# "Pop prefix object back into eax"
         )
       }
     }

@@ -1,0 +1,13 @@
+public class BasicNullMethodInvocation {
+
+    protected int method() {
+        return 1;
+    }
+
+    public BasicNullMethodInvocation() {}
+
+    public static int test() {
+        BasicNullMethodInvocation c = null;
+        return c.method();   // Should throw exception
+    }
+}
