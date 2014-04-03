@@ -59,8 +59,13 @@ package object generators {
     :#("[END] Function Epilogue")
   )
 
-  // The default value will be written to EDX
-  def initDefault(fieldDeclaration: FieldDeclaration) = {
+  def initField(fieldDeclaration: FieldDeclaration) (implicit environment: AssemblyCodeGeneratorEnvironment) {
+    val codeGenerator = new FieldDeclarationCodeGenerator(fieldDeclaration)
+    codeGenerator.generate()
+  }
+
+  // TODO: this method should be deprecated and it not quite
+  def initDefault(fieldDeclaration: FieldDeclaration) {
     fieldDeclaration.declarationType match {
       case ArrayType(_, _) => {
         Seq(
