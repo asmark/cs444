@@ -122,8 +122,11 @@ package object assemgen {
     new AssemblyInstruction("mov dword", Seq(destination, source), None)
   }
 
-  def lea(destination: AssemblyExpression, source: LabelReference): AssemblyInstruction = {
-    new AssemblyInstruction("lea", Seq(destination, source), None)
+  /**
+   * destination = source representing an address
+   */
+  def lea(destination: AssemblyExpression, source: MemoryReference): AssemblyInstruction = {
+    new AssemblyInstruction("lea", Seq(destination, source))
   }
 
   def inc(reg: Register): AssemblyInstruction = {
@@ -168,6 +171,14 @@ package object assemgen {
    */
   def imul(eax: Register, ebx: Register): AssemblyInstruction = {
     new AssemblyInstruction("imul", Seq(eax, ebx))
+  }
+
+  /**
+   * Signed multiplication
+   * eax = ebx * constant
+   */
+  def imul(eax: Register, ebx: Register, constant: Int): AssemblyInstruction = {
+    new AssemblyInstruction("imul", Seq(eax, ebx, constant))
   }
 
   /**
