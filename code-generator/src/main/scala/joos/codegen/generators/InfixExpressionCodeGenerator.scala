@@ -8,6 +8,7 @@ import joos.ast.types._
 import joos.codegen.AssemblyCodeGeneratorEnvironment
 import joos.codegen.generators.commonlib._
 import joos.core.Logger
+import joos.ast._
 
 class InfixExpressionCodeGenerator(expression: InfixExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
@@ -83,10 +84,27 @@ class InfixExpressionCodeGenerator(expression: InfixExpression)
   }
 
   private def generateStringOperation {
+    if (expression.operator == Plus) {
+      // String + String
+      appendText(
+        :# ("[BEGIN] String + String")
+      )
+      expression.left.generate()
+      appendText(push(Eax))
+      expression.right.generate()
+      appendText(
+        pop(Ecx) :# "this = Left String",
+        push(Eax) :# "Push right string as the first parameter",
+        push(Ecx) :# "Push 'this'",
+        call(StringConcatMethod.uniqueName) :# "Call String.concat",
+        pop(Ecx) :# "Restore 'this'",
+        pop(Ebx),
+        :# ("[END] String + String")
+      )
+      return
+    }
+
     val method = expression.operator match {
-      case Plus =>
-        Logger.logWarning(s"String concatenation in ${expression} is not supported yet")
-        return
       case Equal => compareEqual
       case NotEqual => compareNotEqual
     }

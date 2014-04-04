@@ -1,10 +1,11 @@
 package joos
 
 import joos.ast.declarations.SingleVariableDeclaration
-import joos.ast.expressions.{NameExpression, QualifiedNameExpression, IntegerLiteral}
+import joos.ast.expressions._
 import joos.ast.types.PrimitiveType._
 import joos.ast.types._
-import joos.syntax.tokens.{TokenKind, TerminalToken}
+import joos.syntax.tokens.TerminalToken
+import joos.syntax.tokens.TokenKind
 
 package object ast {
   implicit def toExpression(value: Int): IntegerLiteral = {
@@ -15,13 +16,22 @@ package object ast {
     NameExpression(name).asInstanceOf[QualifiedNameExpression]
   }
 
-  final lazy val StringCharArrayConstructor = {
-    require(StringType.declaration != null)
-    val charType = IndexedSeq(ArrayType(CharType))
-    StringType.declaration.methods.find {
-      method =>
-        method.isConstructor && matches(method.parameters, charType)
-    }.get
+  final lazy val StringCharArrayConstructor = findConstructor(StringType, IndexedSeq(ArrayType(CharType))).get
+
+  final lazy val StringConcatMethod = findDeclaredMethod(StringType, "concat", IndexedSeq(StringType)).get
+
+  private[this] def findConstructor(tipe: Type, parameterTypes: IndexedSeq[Type]) = {
+    require(tipe.declaration != null)
+    tipe.declaration.methods.find {
+      method => method.isConstructor && matches(method.parameters, parameterTypes)
+    }
+  }
+
+  private[this] def findDeclaredMethod(tipe: Type, name: String, parameterTypes: IndexedSeq[Type]) = {
+    require(tipe.declaration != null)
+    tipe.declaration.methods.find {
+      method => method.name == SimpleNameExpression(name) && matches(method.parameters, parameterTypes)
+    }
   }
 
   private[this] def matches(as: IndexedSeq[SingleVariableDeclaration], bs: IndexedSeq[Type]): Boolean = {
