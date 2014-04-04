@@ -2,60 +2,38 @@ package joos.codegen.generators
 
 import joos.assemgen.Register._
 import joos.assemgen._
-import joos.codegen.AssemblyCodeGeneratorEnvironment
 import joos.ast.expressions.InstanceOfExpression
-import joos.semantic._
 import joos.ast.types._
+import joos.codegen.AssemblyCodeGeneratorEnvironment
+import joos.core.Logger
 
 class InstanceOfExpressionCodeGenerator(expression: InstanceOfExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
   override def generate() {
-    expression.expression.generate()
-
-
-    expression.classType match {
-      case dst: SimpleType => {
-        expression.expression.expressionType match {
-          case ArrayType(_,_) => {
-            require(dst.declaration.fullName == javaLangObject.standardName ||
-                dst.declaration.fullName == javaLangObject.standardName ||
-                dst.declaration.fullName == javaIOSerializable.standardName)
-            appendText(
-              mov(Eax, 1) :#"Set result to true for array casting to Object, Cloneable or IOSerializable"
-            )
-          }
-          case NullType => {
-            appendText(
-              mov(Eax, 0) :#"Set result to false for null casting to reference type"
-            )
-          }
-          case src: SimpleType => {
-            val dstTypeDeclration = environment.typeEnvironment.compilationUnit.getVisibleType(dst.name)
-            require(dstTypeDeclration.isDefined)
-            val dstTypeIdx = environment.staticDataManager.getTypeIndex(dstTypeDeclration.get)
-
-            appendText(:#(s"[BEGIN] Casting ${src.standardName} to ${dst.standardName}"))
-            prologue(0)
-            appendText(
-              #>,
-              mov(Ebx, Eax),
-              add(Ebx, toExpression(SelectorTableOffset)),
-              mov(Ebx, at(Ebx)) :#"EBX should point to the sub type table",
-              add(Ebx, dstTypeIdx),
-              mov(Ebx, at(Ebx)) :#"Look up value in the subtype table",
-              mov(Eax, Ebx) :#s"Set result to true/false for ${src.standardName} casting to ${dst.standardName}",
-              #<
-            )
-            epilogue(0)
-            appendText(:#(s"[END] Casting Casting ${src.standardName} to ${dst.standardName}"))
-          }
-          case _ => {}
-        }
+    expression.expression.expressionType match {
+      case leftType: SimpleType => {
+        require(leftType.declaration != null)
+        val rightType = expression.classType
+        val subtypeIndex = environment.staticDataManager.getTypeIndex(rightType.declaration)
+        appendText(
+          :#(s"[BEGIN] InstanceOf check ${expression}"),
+          :#("Look up left hand side"),
+          #>
+        )
+        expression.expression.generate()
+        appendText(
+          #<,
+          emptyLine,
+          mov(Eax, at(Eax + SubtypeTableOffset)) :# "Put address of subtype table in eax",
+          mov(Eax, at(Eax + 4 * subtypeIndex)) :# "Look up value in subtype table for instance check",
+          :#(s"[END] InstanceOf check ${expression}")
+        )
       }
-      case ArrayType(_,_) => {
 
-      }
+        // TODO: Array instanceof check
+      case _ =>
+        Logger.logWarning(s"No Support for ${expression.expressionType} in instanceof checks in ${expression}")
     }
   }
 
