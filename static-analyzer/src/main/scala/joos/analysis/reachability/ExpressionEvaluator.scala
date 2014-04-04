@@ -115,6 +115,13 @@ class ExpressionEvaluator extends ExpressionDispatcher {
           case (left: Numeric[_], right: Numeric[_]) => Some(left == right)
           case _ => None
         }
+      case NotEqual =>
+        values match {
+          case (left: Boolean, right: Boolean) => Some(left != right)
+          case (null, null) => Some(false)
+          case (left: Numeric[_], right: Numeric[_]) => Some(left != right)
+          case _ => None
+        }
       case ConditionalAnd | BitwiseAnd =>
         values match {
           case (left: Boolean, right: Boolean) => Some(left && right)
