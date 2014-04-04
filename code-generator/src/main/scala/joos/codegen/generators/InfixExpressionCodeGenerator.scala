@@ -15,37 +15,16 @@ class InfixExpressionCodeGenerator(expression: InfixExpression)
   override def generate() {
 
     (expression.left.expressionType, expression.right.expressionType) match {
-      case (StringType, _) | (_, StringType) => {
-        // TODO: Handle Strings
-        Logger.logWarning("No support for string + operator yet.")
-      }
+      case (StringType, _) | (_, StringType) =>
+        generateStringOperation
+      case (SimpleType(_) | ArrayType(_,_), SimpleType(_) | ArrayType(_,_)) => generateObjectOperation
       case _ => generateIntegerOperation
     }
   }
 
-  def generateIntegerOperation {
+  private def generateInfixOperation(method: LabelReference) {
 
-    val method = expression.operator match {
-      case Plus => addIntegers
-      case Multiply => multiplyIntegers
-      case Minus => subtractIntegers
-      case Divide => divideIntegers
-      case Modulo => moduloIntegers
-      case ConditionalAnd | BitwiseAnd => compareAnd
-      case ConditionalOr | BitwiseInclusiveOr => compareOr
-      case Equal => compareEqual
-      case NotEqual => compareNotEqual
-      case Less => compareLess
-      case LessOrEqual => compareLessEqual
-      case Greater => compareGreater
-      case GreaterOrEqual => compareGreaterEqual
-      case op => {
-        Logger.logWarning(s"${op} is not supported yet")
-        return
-      }
-    }
-
-    appendText(:#(s"[BEGIN] Integer Binary Operation ${expression.toString}"), emptyLine)
+    appendText(:#(s"[BEGIN] Binary Operation ${expression.toString}"), emptyLine)
 
     appendText(
       push(Ecx) :# "Save this",
@@ -69,12 +48,59 @@ class InfixExpressionCodeGenerator(expression: InfixExpression)
       emptyLine
     )
 
+    // TODO: Maybe have to save "this" before going into method?
     appendText(
       call(method),
       pop(Ebx) :# "Pop left operand",
       pop(Ebx) :# "Pop right operand",
-      :#("[END] Integer Binary Operation")
+      :#("[END] Binary Operation")
     )
+  }
+
+
+  private def generateIntegerOperation {
+
+    val method = expression.operator match {
+      case Plus => addIntegers
+      case Multiply => multiplyIntegers
+      case Minus => subtractIntegers
+      case Divide => divideIntegers
+      case Modulo => moduloIntegers
+      case ConditionalAnd | BitwiseAnd => compareAnd
+      case ConditionalOr | BitwiseInclusiveOr => compareOr
+      case Equal => compareEqual
+      case NotEqual => compareNotEqual
+      case Less => compareLess
+      case LessOrEqual => compareLessEqual
+      case Greater => compareGreater
+      case GreaterOrEqual => compareGreaterEqual
+      case op => {
+        Logger.logWarning(s"${op} is not supported yet")
+        return
+      }
+    }
+    generateInfixOperation(method)
+  }
+
+  private def generateStringOperation {
+    val method = expression.operator match {
+      case Plus =>
+        Logger.logWarning(s"String concatenation in ${expression} is not supported yet")
+        return
+      case Equal => compareEqual
+      case NotEqual => compareNotEqual
+    }
+
+    generateInfixOperation(method)
+  }
+
+  private def generateObjectOperation {
+    val method = expression.operator match {
+      case Equal => compareEqual
+      case NotEqual => compareNotEqual
+    }
+
+    generateInfixOperation(method)
   }
 
 }

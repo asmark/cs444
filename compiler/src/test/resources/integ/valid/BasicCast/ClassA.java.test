@@ -1,6 +1,5 @@
 public class ClassA {
     public int a;
-    public static native int m(int i);
 
     public ClassA() {
         a = 0;

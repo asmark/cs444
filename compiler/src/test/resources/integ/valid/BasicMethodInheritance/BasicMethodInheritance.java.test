@@ -1,6 +1,5 @@
 public class BasicMethodInheritance {
     public int b;
-    public static native int m(int i);
     public void method_b() {}
 
     public BasicMethodInheritance() {
