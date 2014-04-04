@@ -1,0 +1,36 @@
+public class ConditionalLazy {
+  public ConditionalLazy() {}
+
+  public static int test() {
+    int a = 100;
+    if (true && (a = 10) == 10);
+    if (a != 10) return 1;
+
+    int b = 50;
+    if (false && (b = 10) == 10) {
+      return 3;
+    }
+    if (b != 50) return 2;
+
+    int c = 40;
+    if (true || (c = 10) == 10);
+    if (c != 40) return 5;
+
+    int d = 70;
+    if (false || (d = 10) == 10);
+    if (d != 10) return 6;
+
+
+    if ((true && 1 == 2) != false) return 4;
+    if ((false && 1 == 2) != false) return 7;
+    if ((true && 1 == 1) != true) return 8;
+    if ((false && 1 == 1) != false) return 9;
+
+    if ((true || 1 == 1) != true) return 10;
+    if ((true || 1 == 2) != true) return 11;
+    if ((false || 1 == 1) != true) return 12;
+    if ((false || 1 == 2) != false) return 13;
+
+    return 123;
+  }
+}

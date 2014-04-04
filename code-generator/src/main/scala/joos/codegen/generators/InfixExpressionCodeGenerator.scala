@@ -31,13 +31,9 @@ class InfixExpressionCodeGenerator(infix: InfixExpression)
       case LessOrEqual => generateInfixOperation(compareLessEqual)
       case Greater => generateInfixOperation(compareGreater)
       case GreaterOrEqual => generateInfixOperation(compareGreaterEqual)
-      case ConditionalAnd =>
-        Logger.logWarning(s"We don't support ${ConditionalAnd}")
-        generateInfixOperation(compareAnd)
+      case ConditionalAnd => generateLazy(needsTrue = true, "conditional.and")
       case BitwiseAnd => generateInfixOperation(compareAnd)
-      case ConditionalOr =>
-        Logger.logWarning(s"We don't support ${ConditionalOr}")
-        generateInfixOperation(compareOr)
+      case ConditionalOr => generateLazy(needsTrue = false, "conditional.or")
       case BitwiseInclusiveOr => generateInfixOperation(compareOr)
       case BitwiseExclusiveOr =>
         Logger.logWarning(s"We don't support ${BitwiseExclusiveOr}")
@@ -45,6 +41,87 @@ class InfixExpressionCodeGenerator(infix: InfixExpression)
       case NotEqual => generateInfixOperation(compareNotEqual)
     }
   }
+
+  private[this] def generateLazy(needsTrue: Boolean, label: String) {
+    val rightStart = nextLabel(label)
+    val rightEnd = nextLabel(label)
+    appendText(
+      emptyLine,
+      :# (s"[BEGIN] ${label}"),
+      emptyLine
+    )
+    infix.left.generate()
+    appendText(
+      emptyLine,
+      cmp(Eax, if (needsTrue) 1 else 0) :# s"if left == ${needsTrue}",
+      je(rightStart),
+      :# (s"left == ${!needsTrue}, no need to evaluate right"),
+      jmp(rightEnd),
+      emptyLine,
+      rightStart::,
+      :# (s"left == ${needsTrue} => return right")
+    )
+    infix.right.generate()
+    appendText(
+      rightEnd::,
+      emptyLine,
+      :# (s"[END] ${label}")
+    )
+  }
+//
+//  private[this] def generateLazyOr() {
+//    val rightStart = nextLabel("conditional.or")
+//    val rightEnd = nextLabel("conditional.or")
+//    appendText(
+//      emptyLine,
+//      :# ("[BEGIN] ||"),
+//      emptyLine
+//    )
+//    infix.left.generate()
+//    appendText(
+//      emptyLine,
+//      cmp(Eax, 0) :# "if (left == false)",
+//      je(rightStart),
+//      :# ("left == true, no need to evaluate right"),
+//      jmp(rightEnd),
+//      emptyLine,
+//      rightStart::
+//    )
+//    infix.right.generate()
+//    appendText(
+//      :# ("left == false => return right"),
+//      rightEnd::,
+//      emptyLine,
+//      :# ("[END] ||")
+//    )
+//  }
+//
+//  private[this] def generateLazyAnd() {
+//    val rightStart = nextLabel("conditional.and")
+//    val rightEnd = nextLabel("conditional.and")
+//    appendText(
+//      emptyLine,
+//      :# ("[BEGIN] &&"),
+//      emptyLine
+//    )
+//    infix.left.generate()
+//    appendText(
+//      emptyLine,
+//      cmp(Eax, 1) :# "if (left == true)",
+//      je(rightStart),
+//      :# ("left == false, no need to evaluate right"),
+//      jmp(rightEnd),
+//      emptyLine,
+//      rightStart::
+//    )
+//    infix.right.generate()
+//    appendText(
+//      :# ("left == true => return right"),
+//      rightEnd::,
+//      emptyLine,
+//      :# ("[END] &&")
+//    )
+//  }
 
   private[this] def generateStringConcat() {
     val leftType = if (infix.left.expressionType == NullType) ObjectType else infix.left.expressionType

@@ -11,7 +11,7 @@ public class J1_stringconcat {
 	String str = ""+1+"111";
 	if (Integer.parseInt("4"+"2")==42)
 	    str = str+"22";
-	else 
+	else
 	    str = str+"33";
 	int i=0;
 	while (i<10) {
