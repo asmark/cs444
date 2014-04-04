@@ -1,0 +1,20 @@
+public class StringConcat {
+  public StringConcat() {}
+
+  public static int test() {
+    String s1 = "a";
+    String s2 = "bc";
+    String s3 = "def";
+
+    // String + String
+    if (!(s1 + s2).equals((Object) "abc")) return 1;
+    if (!(s1 + s2 + s3).equals((Object) "abcdef")) return 2;
+
+    // Primitive + String
+    if (!(10 + s3).equals((Object) "10def")) return 3;
+    if (!('a' + s3).equals((Object) "adef")) return 4;
+
+    // String + Primitive
+    return 123;
+  }
+}

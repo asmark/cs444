@@ -32,16 +32,6 @@ public class StringLiteral {
     if (s1.indexOf("def") != 3) return 10;
     if (s1.indexOf("deg") >= 0) return 11;
 
-    // String + String
-//    if (!(s1 + s2).equals(concatted)) {
-//      System.out.println(s1 + s2);
-//      return 13;
-//    }
-//    if (!(s1 + s2 + s3).equals((Object) "abcdefg123  456  ")) {
-//      System.out.println(s1 + s2 + s3);
-//      return 14;
-//    }
-
     return 123;
   }
 }

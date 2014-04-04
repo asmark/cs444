@@ -5,7 +5,6 @@ import joos.assemgen._
 import joos.ast.Operator._
 import joos.ast._
 import joos.ast.expressions.InfixExpression
-import joos.ast.types.NumericType
 import joos.ast.types._
 import joos.codegen.AssemblyCodeGeneratorEnvironment
 import joos.codegen.generators.commonlib._
@@ -19,19 +18,11 @@ class InfixExpressionCodeGenerator(infix: InfixExpression)
     infix.operator match {
       case Plus =>
         types match {
-          case (StringType, StringType) => generateStringPlusString()
-          case (StringType, right: PrimitiveType) =>
-            Logger.logWarning(s"We don't support ${StringType} + ${right}")
-          case (left: PrimitiveType, StringType) =>
-            Logger.logWarning(s"We don't support ${left} + ${StringType}")
           case (StringType, NullType) =>
             Logger.logWarning("We don't support String + null")
           case (NullType, StringType) =>
             Logger.logWarning("We don't support null + String")
-          case (StringType, right) =>
-            Logger.logWarning(s"We don't support ${StringType} + ${right}")
-          case (left, StringType) =>
-            Logger.logWarning(s"We don't support ${left} + ${StringType}")
+          case (StringType, _) | (_, StringType) => generateStringConcat()
           case (_: NumericType, _: NumericType) => generateInfixOperation(addIntegers)
           case (left, right) =>
             Logger.logWarning(s"We don't support ${left} + ${right}")
@@ -59,24 +50,40 @@ class InfixExpressionCodeGenerator(infix: InfixExpression)
     }
   }
 
-  private[this] def generateStringPlusString() {
-//    // String + String
-//    appendText(
-//      :#("[BEGIN] String + String")
-//    )
-//    infix.left.generate()
-//    appendText(push(Eax))
-//    infix.right.generate()
-//    appendText(
-//      call(nullCheck),
-//      pop(Ecx) :# "this = Left String",
-//      push(Eax) :# "Push right string as the first parameter",
-//      push(Ecx) :# "Push 'this'",
-//      call(StringConcatMethod.uniqueName) :# "Call String.concat",
-//      pop(Ecx) :# "Restore 'this'",
-//      pop(Ebx),
-//      :#("[END] String + String")
-//    )
+  private[this] def generateStringConcat() {
+    val leftValueOf = findDeclaredMethod(StringType, "valueOf", IndexedSeq(infix.left.expressionType)).get
+    val rightValueOf = findDeclaredMethod(StringType, "valueOf", IndexedSeq(infix.right.expressionType)).get
+
+    appendText(
+      :#("[BEGIN] String + Any | Any + String")
+    )
+    infix.left.generate()
+    appendText(
+      emptyLine,
+      push(Eax) :# "[left]",
+      push(Ecx) :# "Save 'this'",
+      call(leftValueOf.uniqueName) :# "Call String.valueOf(left)",
+      pop(Ecx) :# "Restore 'this'",
+      emptyLine
+    )
+    infix.right.generate()
+    appendText(
+      push(Eax) :# "[right, left]",
+      push(Ecx) :# "Save 'this'",
+      call(rightValueOf.uniqueName) :# "Call String.valueOf(right)",
+      pop(Ecx) :# "Restore 'this'",
+      pop(Ebx) :# "[left]",
+      emptyLine,
+      call(nullCheck),
+      pop(Ecx) :# "ecx = left, []",
+      push(Eax) :# "[right]",
+      push(Ecx) :# "Push 'this'",
+      call(StringConcatMethod.uniqueName) :# "Call left.concat(right)",
+      pop(Ecx) :# "Restore 'this'",
+      pop(Ebx) :# "[]",
+      :#("[END] String + Any | Any + String"),
+      emptyLine
+    )
   }
 
   private[this] def generateInfixOperation(method: LabelReference) {

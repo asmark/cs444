@@ -20,14 +20,14 @@ package object ast {
 
   final lazy val StringConcatMethod = findDeclaredMethod(StringType, "concat", IndexedSeq(StringType)).get
 
-  private[this] def findConstructor(tipe: Type, parameterTypes: IndexedSeq[Type]) = {
+  def findConstructor(tipe: Type, parameterTypes: IndexedSeq[Type]) = {
     require(tipe.declaration != null)
     tipe.declaration.methods.find {
       method => method.isConstructor && matches(method.parameters, parameterTypes)
     }
   }
 
-  private[this] def findDeclaredMethod(tipe: Type, name: String, parameterTypes: IndexedSeq[Type]) = {
+  def findDeclaredMethod(tipe: Type, name: String, parameterTypes: IndexedSeq[Type]) = {
     require(tipe.declaration != null)
     tipe.declaration.methods.find {
       method => method.name == SimpleNameExpression(name) && matches(method.parameters, parameterTypes)
