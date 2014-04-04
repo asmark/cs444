@@ -16,25 +16,35 @@ class InstanceOfExpressionCodeGenerator(expression: InstanceOfExpression)
         require(leftType.declaration != null)
         val rightType = expression.classType
         val subtypeIndex = environment.staticDataManager.getTypeIndex(rightType.declaration)
-        appendText(
-          :#(s"[BEGIN] InstanceOf check ${expression}"),
-          :#("Look up left hand side"),
-          #>
-        )
-        expression.expression.generate()
-        appendText(
-          #<,
-          emptyLine,
-          mov(Eax, at(Eax + SubtypeTableOffset)) :# "Put address of subtype table in eax",
-          mov(Eax, at(Eax + 4 * subtypeIndex)) :# "Look up value in subtype table for instance check",
-          :#(s"[END] InstanceOf check ${expression}")
-        )
+        generateObjectCheck(subtypeIndex)
       }
 
-        // TODO: Array instanceof check
+      case ArrayType(innerType, dimensions) => {
+        require(innerType.declaration != null)
+        val rightType = innerType
+        val subtypeIndex = environment.staticDataManager.getArrayTypeIndex(rightType.declaration)
+        generateObjectCheck(subtypeIndex)
+      }
+
       case _ =>
-        Logger.logWarning(s"No Support for ${expression.expressionType} in instanceof checks in ${expression}")
+        Logger.logWarning(s"No Support for ${expression.expression.expressionType} in instanceof checks in ${expression}")
     }
+  }
+
+  private def generateObjectCheck(subtypeIndex: Int) {
+    appendText(
+      :#(s"[BEGIN] InstanceOf check ${expression}"),
+      :#("Look up left hand side"),
+      #>
+    )
+    expression.expression.generate()
+    appendText(
+      #<,
+      emptyLine,
+      mov(Eax, at(Eax + SubtypeTableOffset)) :# "Put address of subtype table in eax",
+      mov(Eax, at(Eax + 4 * subtypeIndex)) :# "Look up value in subtype table for instance check",
+      :#(s"[END] InstanceOf check ${expression}")
+    )
   }
 
 }
