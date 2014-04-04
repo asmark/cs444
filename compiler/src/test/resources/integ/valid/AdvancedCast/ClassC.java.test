@@ -1,0 +1,52 @@
+public class ClassC extends ClassB implements InterfaceD, InterfaceE {
+    public int c;
+    public int b2;
+    public int dummy() { return 2; }
+    public int c2;
+    public int a;
+
+    public int callD() {
+        return 1;
+    }
+
+    public int callE() {
+        return 2;
+    }
+
+    public ClassC() {
+        a = 3;
+    }
+
+    public static int test() {
+        ClassA ca = new ClassA();
+        ClassB cb = new ClassB();
+        Object cc = new ClassC();
+
+        ca = (ClassA) cb;
+        if (ca.a != 2) {
+            return 1;
+        }
+
+        if (cb.a != 2) {
+            return 2;
+        }
+
+        ClassC newc = (ClassC) cc;
+        newc.a = 2;
+        if (newc.a != 2) {
+            return 3;
+        }
+
+        int tmp = newc.callD();
+        if (tmp != 1) {
+            return 4;
+        }
+
+        tmp = newc.callE();
+        if (tmp != 2) {
+            return 5;
+        }
+
+        return 123;
+    }
+}

@@ -50,6 +50,9 @@ public class ClassC extends ClassB {
             return 7;
         }
 
+        ClassB b2 = new ClassB();
+        ClassA a2 = (ClassA) b2;
+
         return 123;
     }
 }

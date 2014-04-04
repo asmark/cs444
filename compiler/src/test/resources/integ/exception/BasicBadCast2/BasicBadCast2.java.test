@@ -1,0 +1,12 @@
+public class BasicBadCast2 {
+
+    public int m() { return 1; }
+
+    public BasicBadCast2() {}
+
+    public static int test() {
+        BasicBadCast2 b = new BasicBadCast2();
+        DisjointInterface f = (DisjointInterface) (Object) b;
+        return 123;
+    }
+}

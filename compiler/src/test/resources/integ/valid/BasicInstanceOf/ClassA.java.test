@@ -1,9 +1,7 @@
 public class ClassA {
     public int a;
-    public int a1;
 
     public ClassA() {
-        a = 3;
-        a1 = 1;
+        a = 0;
     }
 }
