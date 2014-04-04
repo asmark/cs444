@@ -3,35 +3,91 @@ package joos.codegen.generators
 import joos.assemgen.Register._
 import joos.assemgen._
 import joos.ast.Operator._
+import joos.ast._
 import joos.ast.expressions.InfixExpression
+import joos.ast.types.NumericType
 import joos.ast.types._
 import joos.codegen.AssemblyCodeGeneratorEnvironment
 import joos.codegen.generators.commonlib._
 import joos.core.Logger
-import joos.ast._
 
-class InfixExpressionCodeGenerator(expression: InfixExpression)
+class InfixExpressionCodeGenerator(infix: InfixExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
   override def generate() {
-
-    (expression.left.expressionType, expression.right.expressionType) match {
-      case (StringType, _) | (_, StringType) =>
-        generateStringOperation
-      case (SimpleType(_) | ArrayType(_,_), SimpleType(_) | ArrayType(_,_)) => generateObjectOperation
-      case _ => generateIntegerOperation
+    val types = (infix.left.expressionType, infix.right.expressionType)
+    infix.operator match {
+      case Plus =>
+        types match {
+          case (StringType, StringType) => generateStringPlusString()
+          case (StringType, right: PrimitiveType) =>
+            Logger.logWarning(s"We don't support ${StringType} + ${right}")
+          case (left: PrimitiveType, StringType) =>
+            Logger.logWarning(s"We don't support ${left} + ${StringType}")
+          case (StringType, NullType) =>
+            Logger.logWarning("We don't support String + null")
+          case (NullType, StringType) =>
+            Logger.logWarning("We don't support null + String")
+          case (StringType, right) =>
+            Logger.logWarning(s"We don't support ${StringType} + ${right}")
+          case (left, StringType) =>
+            Logger.logWarning(s"We don't support ${left} + ${StringType}")
+          case (_: NumericType, _: NumericType) => generateInfixOperation(addIntegers)
+          case (left, right) =>
+            Logger.logWarning(s"We don't support ${left} + ${right}")
+        }
+      case Minus => generateInfixOperation(subtractIntegers)
+      case Multiply => generateInfixOperation(multiplyIntegers)
+      case Divide => generateInfixOperation(divideIntegers)
+      case Modulo => generateInfixOperation(moduloIntegers)
+      case Less => generateInfixOperation(compareLess)
+      case LessOrEqual => generateInfixOperation(compareLessEqual)
+      case Greater => generateInfixOperation(compareGreater)
+      case GreaterOrEqual => generateInfixOperation(compareGreaterEqual)
+      case ConditionalAnd =>
+        Logger.logWarning(s"We don't support ${ConditionalAnd}")
+        generateInfixOperation(compareAnd)
+      case BitwiseAnd => generateInfixOperation(compareAnd)
+      case ConditionalOr =>
+        Logger.logWarning(s"We don't support ${ConditionalOr}")
+        generateInfixOperation(compareOr)
+      case BitwiseInclusiveOr => generateInfixOperation(compareOr)
+      case BitwiseExclusiveOr =>
+        Logger.logWarning(s"We don't support ${BitwiseExclusiveOr}")
+      case Equal => generateInfixOperation(compareEqual)
+      case NotEqual => generateInfixOperation(compareNotEqual)
     }
   }
 
-  private def generateInfixOperation(method: LabelReference) {
+  private[this] def generateStringPlusString() {
+//    // String + String
+//    appendText(
+//      :#("[BEGIN] String + String")
+//    )
+//    infix.left.generate()
+//    appendText(push(Eax))
+//    infix.right.generate()
+//    appendText(
+//      call(nullCheck),
+//      pop(Ecx) :# "this = Left String",
+//      push(Eax) :# "Push right string as the first parameter",
+//      push(Ecx) :# "Push 'this'",
+//      call(StringConcatMethod.uniqueName) :# "Call String.concat",
+//      pop(Ecx) :# "Restore 'this'",
+//      pop(Ebx),
+//      :#("[END] String + String")
+//    )
+  }
 
-    appendText(:#(s"[BEGIN] Binary Operation ${expression.toString}"), emptyLine)
+  private[this] def generateInfixOperation(method: LabelReference) {
+
+    appendText(:#(s"[BEGIN] Binary Operation ${infix.toString}"), emptyLine)
 
     appendText(
       push(Ecx) :# "Save this",
       :#("Evaluate left operand")
     )
-    expression.left.generate()
+    infix.left.generate()
     appendText(
       pop(Ecx) :# "Retrieve this",
       push(Eax) :# "Push left hand side as first parameter",
@@ -42,7 +98,7 @@ class InfixExpressionCodeGenerator(expression: InfixExpression)
       push(Ecx) :# "Save this",
       :#("Evaluate right operand")
     )
-    expression.right.generate()
+    infix.right.generate()
     appendText(
       pop(Ecx) :# "Retrieve this",
       push(Eax) :# "Push right hand side as first parameter",
@@ -57,68 +113,4 @@ class InfixExpressionCodeGenerator(expression: InfixExpression)
       :#("[END] Binary Operation")
     )
   }
-
-
-  private def generateIntegerOperation {
-
-    val method = expression.operator match {
-      case Plus => addIntegers
-      case Multiply => multiplyIntegers
-      case Minus => subtractIntegers
-      case Divide => divideIntegers
-      case Modulo => moduloIntegers
-      case ConditionalAnd | BitwiseAnd => compareAnd
-      case ConditionalOr | BitwiseInclusiveOr => compareOr
-      case Equal => compareEqual
-      case NotEqual => compareNotEqual
-      case Less => compareLess
-      case LessOrEqual => compareLessEqual
-      case Greater => compareGreater
-      case GreaterOrEqual => compareGreaterEqual
-      case op => {
-        Logger.logWarning(s"${op} is not supported yet")
-        return
-      }
-    }
-    generateInfixOperation(method)
-  }
-
-  private def generateStringOperation {
-    if (expression.operator == Plus) {
-      // String + String
-      appendText(
-        :# ("[BEGIN] String + String")
-      )
-      expression.left.generate()
-      appendText(push(Eax))
-      expression.right.generate()
-      appendText(
-        pop(Ecx) :# "this = Left String",
-        push(Eax) :# "Push right string as the first parameter",
-        push(Ecx) :# "Push 'this'",
-        call(StringConcatMethod.uniqueName) :# "Call String.concat",
-        pop(Ecx) :# "Restore 'this'",
-        pop(Ebx),
-        :# ("[END] String + String")
-      )
-      return
-    }
-
-    val method = expression.operator match {
-      case Equal => compareEqual
-      case NotEqual => compareNotEqual
-    }
-
-    generateInfixOperation(method)
-  }
-
-  private def generateObjectOperation {
-    val method = expression.operator match {
-      case Equal => compareEqual
-      case NotEqual => compareNotEqual
-    }
-
-    generateInfixOperation(method)
-  }
-
 }

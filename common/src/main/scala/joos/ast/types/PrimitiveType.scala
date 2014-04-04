@@ -13,11 +13,11 @@ class PrimitiveType(val name: String) extends Type with PrimitiveType.Value {
 object PrimitiveType extends Enumeration {
   type T = PrimitiveType
 
-  final val IntegerType = this + new PrimitiveType("int")
-  final val CharType = this + new PrimitiveType("char")
+  final val IntegerType = this + new PrimitiveType("int") with NumericType
+  final val CharType = this + new PrimitiveType("char") with NumericType
   final val BooleanType = this + new PrimitiveType("boolean")
-  final val ByteType = this + new PrimitiveType("byte")
-  final val ShortType = this + new PrimitiveType("short")
+  final val ByteType = this + new PrimitiveType("byte") with NumericType
+  final val ShortType = this + new PrimitiveType("short") with NumericType
 
   private[this] def extractNumericToken(numericType: ParseTreeNode) = {
     numericType.children(0).children(0).token match {
