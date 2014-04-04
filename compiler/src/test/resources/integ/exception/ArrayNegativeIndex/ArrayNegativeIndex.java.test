@@ -1,0 +1,9 @@
+public class ArrayNegativeIndex {
+  public ArrayNegativeIndex() {}
+
+  public static int test() {
+    int[] ints = new int[2];
+    int a = ints[-1];
+    return 123;
+  }
+}

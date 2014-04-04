@@ -32,14 +32,15 @@ class ArrayCreationExpressionCodeGenerator(expression: ArrayCreationExpression)
     )
 
     val loopEnd = nextLabel("array.initialization.end")
-    // Initialize all elements to 0
     appendText(
+      :# ("[BEGIN] Array Initialization"),
       imul(Ebx, Ebx, 4),
       cmp(Ebx, 0),
       je(loopEnd),
-      movdw(at(Eax + Ebx + ArrayLengthOffset), 0),
+      movdw(at(Eax + Ebx + ArrayLengthOffset), 0) :# "Initialize array element to 0",
       sub(Ebx, 4),
-      loopEnd::
+      loopEnd::,
+      :# ("[END] Array Initialization")
     )
 
     // TODO: binds to SIT and SubType table

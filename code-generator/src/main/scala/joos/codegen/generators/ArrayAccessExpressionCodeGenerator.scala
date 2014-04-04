@@ -23,13 +23,18 @@ class ArrayAccessExpressionCodeGenerator(expression: ArrayAccessExpression)
     )
     expression.index.generate()
     // eax has the index
-    val accessLabel = nextLabel("array.access")
+    val nonNegativeLabel = nextLabel("array.access")
+    val lessThanLabel = nextLabel("array.access")
     appendText(
       pop(Ebx) :# "ebx = array reference",
-      cmp(Eax, at(Ebx + ArrayLengthOffset)) :# "Array bound check",
-      jl(accessLabel),
+      cmp(Eax, at(Ebx + ArrayLengthOffset)) :# "Array index < Array.length",
+      jl(lessThanLabel),
       call(exceptionLabel),
-      accessLabel::,
+      lessThanLabel::,
+      cmp(Eax, 0) :# "Array index >= 0",
+      jge(nonNegativeLabel),
+      call(exceptionLabel),
+      nonNegativeLabel::,
       imul(Eax, Eax, 4),
       add(Eax, ArrayFirstElementOffset),
       lea(Edx, at(Ebx + Eax)),
