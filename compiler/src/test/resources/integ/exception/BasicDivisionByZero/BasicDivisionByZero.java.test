@@ -1,0 +1,11 @@
+public class BasicDivisionByZero {
+
+    public BasicDivisionByZero() {}
+
+    public static int test() {
+        int i = 4;
+        int j = 0;
+        return i/j;
+    }
+
+}
