@@ -1,3 +1,5 @@
+import java.io.Serializable;
+
 public class BasicArrayInstanceOf {
 
     public BasicArrayInstanceOf() {}
@@ -5,12 +7,16 @@ public class BasicArrayInstanceOf {
     public static int test() {
 
         BasicArrayInstanceOf[] bArray = new BasicArrayInstanceOf[3];
-        if (!(bArray instanceof Object)) {
+        if (!(bArray instanceof java.lang.Object)) {
             return 1;
         } else if (!(bArray instanceof BasicArrayInstanceOf[])) {
             return 2;
         } else if (!(bArray instanceof Object[])) {
             return 4;
+        } else if (!(bArray instanceof java.lang.Cloneable)) {
+            return 11;
+        } else if (!(bArray instanceof java.io.Serializable)) {
+            return 12;
         }
 
         Object[] oArray = new String[3];
@@ -18,11 +24,25 @@ public class BasicArrayInstanceOf {
             return 5;
         } else if (!(oArray instanceof Object[])) {
             return 6;
+        } else if (!(oArray instanceof Cloneable)) {
+            return 8;
+        } else if (!(oArray instanceof Serializable)) {
+            return 10;
         } else if (!(oArray instanceof Object)) {
             return 7;
         }
 
-        // TODO: Primitive array instanceof check
+        int[] iArray = new int[1];
+        if (!(iArray instanceof int[])) {
+            return 15;
+        } else if (!(iArray instanceof Cloneable)) {
+            return 18;
+        } else if (!(iArray instanceof Serializable)) {
+            return 20;
+        } else if (!(iArray instanceof Object)) {
+            return 17;
+        }
+
         return 123;
     }
 }

@@ -5,6 +5,7 @@ import joos.assemgen._
 import joos.ast.declarations.{MethodDeclaration, TypeDeclaration}
 import joos.codegen.AssemblyCodeGeneratorEnvironment
 import joos.semantic._
+import joos.ast.types.PrimitiveType
 
 class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
@@ -77,7 +78,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
   private def createSelectorIndexedTable() {
 
     appendGlobal(classTable)
-    appendData(classTable ::, dd(selectorTable))
+    appendData(classTable ::, dd(selectorTable), emptyLine)
 
     def includeOverridden(methods: Traversable[MethodDeclaration]): Map[MethodDeclaration, MethodDeclaration] = {
 
@@ -120,7 +121,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     // Arrays only have the java.lang.Object methods
     environment.staticDataManager.orderedMethods.foreach {
       method =>
-        if (method.typeDeclaration.fullName equals javaLangObject.standardName) {
+        if (isArraySuperType(method.typeDeclaration)) {
           appendData(dd(method.uniqueName) :# s"${method.uniqueName} implemented by ${method.uniqueName}")
         } else {
           appendData(dd(0) :# s"${method.uniqueName} not implemented by ${arrayPrefixLabel(tipe.uniqueName)}")
@@ -158,10 +159,10 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     appendGlobal(arrayPrefixLabel(subtypeTable))
     appendData(arrayPrefixLabel(subtypeTable) ::, emptyLine)
 
-    // Handle normal types first. Arrays are not subtype of any objects but Object
+    // Handle normal types first. Arrays are not subtype of any objects but Object Serializable and Cloneable
     environment.staticDataManager.orderedTypes.foreach {
       target =>
-        if (target.fullName equals javaLangObject.standardName) {
+        if (isArraySuperType(target)) {
           appendData(dd(1) :# target.fullName)
         } else {
           appendData(dd(0) :# target.fullName)
@@ -171,11 +172,17 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     // Handle other array types. Arrays are covariant
     environment.staticDataManager.orderedTypes.foreach {
       target =>
-        if (tipe.allAncestors.contains(target) || (tipe.fullName equals target.fullName)) {
+        if (tipe.allAncestors.contains(target) || (tipe.fullName equals target.fullName) || isArraySuperType(tipe)) {
           appendData(dd(1) :# arrayPrefixLabel(target.fullName))
         } else {
           appendData(dd(0) :# arrayPrefixLabel(target.fullName))
         }
+    }
+
+    // Append primitive array types
+    PrimitiveType.values.foreach {
+      primitive =>
+        appendData(dd(0) :# arrayPrefixLabel(primitive.uniqueName))
     }
 
     appendData(emptyLine)

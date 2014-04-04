@@ -22,9 +22,11 @@ package object generators {
 
   def arrayPrefixLabel(suffix: String) = s"array_${suffix}"
 
-  def selectorTableLabel(tipe: TypeDeclaration) = s"selector_table_${tipe.uniqueName}"
+  def selectorTableLabel(name: String): String = s"selector_table_${name}"
+  def selectorTableLabel(tipe: TypeDeclaration): String = selectorTableLabel(tipe.uniqueName)
 
-  def subtypeTableLabel(tipe: TypeDeclaration) = s"subtype_table_${tipe.uniqueName}"
+  def subtypeTableLabel(name: String): String = s"subtype_table_${name}"
+  def subtypeTableLabel(tipe: TypeDeclaration): String = subtypeTableLabel(tipe.uniqueName)
 
   def mallocTypeLabel(tipe: TypeDeclaration) = s"malloc_${tipe.uniqueName}"
 

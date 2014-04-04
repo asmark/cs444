@@ -31,6 +31,12 @@ package object semantic {
   val javaLangCloneable = NameExpression("java.lang.Cloneable")
   val javaIOSerializable = NameExpression("java.io.Serializable")
 
+  def isArraySuperType(tipe: TypeDeclaration) = {
+    ((tipe.fullName equals javaIOSerializable.standardName) ||
+        (tipe.fullName equals javaLangCloneable.standardName) ||
+        (tipe.fullName equals javaLangObject.standardName))
+  }
+
   def getSuperType(typeDeclaration: TypeDeclaration): Option[TypeDeclaration] = {
     require(typeDeclaration.compilationUnit != null)
     val compilationUnit = typeDeclaration.compilationUnit
