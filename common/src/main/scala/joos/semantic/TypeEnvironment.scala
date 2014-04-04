@@ -90,93 +90,17 @@ trait TypeEnvironment extends Environment {
     return true
   }
 
-  private def addBinding(method: MethodDeclaration, map: Map[SimpleNameExpression, Set[MethodDeclaration]]) = {
-    if (map.get(method.name).isEmpty) {
-      map + (method.name -> Set(method))
-    } else {
-      val currentMethods = map(method.name) + method
-      map + (method.name -> currentMethods)
-    }
-  }
-
-  // HACK: This is a total hack. Don't expect to understand anything by looking at this.
-  private def addBindingAndWidenVisibility(newMethod: MethodDeclaration, map: Map[SimpleNameExpression, Set[MethodDeclaration]]) = {
-    if (map.get(newMethod.name).isEmpty) {
-      map + (newMethod.name -> Set(newMethod))
-    } else {
-      // Check if we need to widen visibility
-      val currentMethods = map(newMethod.name).find(_.localSignature == newMethod.localSignature) match {
-        // No existing method with these parameters exists. This is a simple overload
-        case None => map(newMethod.name) + newMethod
-        // An old method already exists. Check if we must widen visibility
-        case Some(oldMethod) => {
-          // Set overloaded method
-          if (oldMethod.modifiers.contains(Modifier.Protected) && newMethod.modifiers.contains(Modifier.Public)) {
-            // Remove the old (Protected) method in favour of the new (Public) one
-            // Key thing is to remove old method from the map
-            map(newMethod.name) - oldMethod + newMethod
-          } else if (oldMethod.modifiers.contains(Modifier.Abstract) && !newMethod.modifiers.contains(Modifier.Abstract)) {
-            // Get rid of old abstract methods with concrete ones
-            map(newMethod.name) - oldMethod + newMethod
-          } else {
-            // Overwrite the method anyways.. because why not?
-            // Does this even work? Who knows. All the tests pass.
-            map(newMethod.name) + newMethod
-          }
-        }
-      }
-      map + (newMethod.name -> currentMethods)
-    }
-  }
-
-  lazy val containedMethods: Map[SimpleNameExpression, Set[MethodDeclaration]] = {
-    (methodMap.values).foldLeft(inheritedMethods) {
-      (map: Map[SimpleNameExpression, Set[MethodDeclaration]], method: MethodDeclaration) =>
-        addBindingAndWidenVisibility(method, map)
-    }
-  }
-
-  lazy val dispatchableMethods: Map[SimpleNameExpression, Set[MethodDeclaration]] = {
-
-    def addBindingAndWidenVisibility(newMethod: MethodDeclaration, map: Map[SimpleNameExpression, Set[MethodDeclaration]]) = {
-      if (map.get(newMethod.name).isEmpty) {
-        map + (newMethod.name -> Set(newMethod))
-      } else {
-        // Check if we need to widen visibility
-        val currentMethods = map(newMethod.name).find(_.localSignature equals newMethod.localSignature) match {
-          // No existing method with these parameters exists. This is a simple overload
-          case None => map(newMethod.name) + newMethod
-          // An old method already exists. Check if we must widen visibility
-          case Some(oldMethod) => {
-            map(newMethod.name) + newMethod
-          }
-        }
-        map + (newMethod.name -> currentMethods)
-      }
-    }
-
-    (methodMap.values).foldLeft(superTypeMethods) {
-      (map: Map[SimpleNameExpression, Set[MethodDeclaration]], method: MethodDeclaration) =>
-        addBindingAndWidenVisibility(method, map)
-    }
-  }
-
-  lazy val superTypeMethods = {
-    var ret = Map.empty[SimpleNameExpression, Set[MethodDeclaration]]
-
-    this.supers.foreach {
-      superType =>
-        superType.dispatchableMethods.values.flatten foreach {
-          contained =>
-              if (!contained.isStatic) {
-                ret = addBinding(contained, ret)
-              }
-        }
-    }
-    ret
-  }
-
   lazy val inheritedMethods: Map[SimpleNameExpression, Set[MethodDeclaration]] = {
+
+    def addBinding(method: MethodDeclaration, map: Map[SimpleNameExpression, Set[MethodDeclaration]]) = {
+      if (map.get(method.name).isEmpty) {
+        map + (method.name -> Set(method))
+      } else {
+        val currentMethods = map(method.name) + method
+        map + (method.name -> currentMethods)
+      }
+    }
+
     var ret = Map.empty[SimpleNameExpression, Set[MethodDeclaration]]
 
     this.supers.foreach {
@@ -198,6 +122,95 @@ trait TypeEnvironment extends Environment {
     }
     ret
   }
+
+  lazy val containedMethods: Map[SimpleNameExpression, Set[MethodDeclaration]] = {
+
+    // HACK: This is a total hack. Don't expect to understand anything by looking at this.
+    def addBindingAndWidenVisibility(newMethod: MethodDeclaration, map: Map[SimpleNameExpression, Set[MethodDeclaration]]) = {
+      if (map.get(newMethod.name).isEmpty) {
+        map + (newMethod.name -> Set(newMethod))
+      } else {
+        // Check if we need to widen visibility
+        val currentMethods = map(newMethod.name).find(_.localSignature == newMethod.localSignature) match {
+          // No existing method with these parameters exists. This is a simple overload
+          case None => map(newMethod.name) + newMethod
+          // An old method already exists. Check if we must widen visibility
+          case Some(oldMethod) => {
+            // Set overloaded method
+            if (oldMethod.modifiers.contains(Modifier.Protected) && newMethod.modifiers.contains(Modifier.Public)) {
+              // Remove the old (Protected) method in favour of the new (Public) one
+              // Key thing is to remove old method from the map
+              map(newMethod.name) - oldMethod + newMethod
+            } else if (oldMethod.modifiers.contains(Modifier.Abstract) && !newMethod.modifiers.contains(Modifier.Abstract)) {
+              // Get rid of old abstract methods with concrete ones
+              map(newMethod.name) - oldMethod + newMethod
+            } else {
+              // Overwrite the method anyways.. because why not?
+              // Does this even work? Who knows. All the tests pass.
+              map(newMethod.name) + newMethod
+            }
+          }
+        }
+        map + (newMethod.name -> currentMethods)
+      }
+    }
+
+    (methodMap.values).foldLeft(inheritedMethods) {
+      (map: Map[SimpleNameExpression, Set[MethodDeclaration]], method: MethodDeclaration) =>
+        addBindingAndWidenVisibility(method, map)
+    }
+  }
+
+
+
+  lazy val dispatchableMethods: Map[SimpleNameExpression, Seq[MethodDeclaration]] = {
+
+    def addBindingAndWidenVisibility(newMethod: MethodDeclaration, map: Map[SimpleNameExpression, Seq[MethodDeclaration]]) = {
+      if (map.get(newMethod.name).isEmpty) {
+        map + (newMethod.name -> Seq(newMethod))
+      } else {
+        // Check if we need to widen visibility
+        val currentMethods = map(newMethod.name).find(_.localSignature equals newMethod.localSignature) match {
+          // No existing method with these parameters exists. This is a simple overload
+          case None => map(newMethod.name) :+ newMethod
+          // An old method already exists. Check if we must widen visibility
+          case Some(oldMethod) => {
+            map(newMethod.name) :+ newMethod
+          }
+        }
+        map + (newMethod.name -> currentMethods)
+      }
+    }
+
+    (methodMap.values).foldLeft(superTypeMethods) {
+      (map: Map[SimpleNameExpression, Seq[MethodDeclaration]], method: MethodDeclaration) =>
+        addBindingAndWidenVisibility(method, map)
+    }
+  }
+
+  lazy val superTypeMethods = {
+
+    def addBinding(method: MethodDeclaration, map: Map[SimpleNameExpression, Seq[MethodDeclaration]]) = {
+      if (map.get(method.name).isEmpty) {
+        map + (method.name -> Seq(method))
+      } else {
+        val currentMethods = map(method.name) :+ method
+        map + (method.name -> currentMethods)
+      }
+    }
+
+    var ret = Map.empty[SimpleNameExpression, Seq[MethodDeclaration]]
+
+    this.supers.foreach {
+      superType =>
+        superType.dispatchableMethods.values.flatten foreach {
+          contained =>
+                ret = addBinding(contained, ret)
+        }
+    }
+    ret
+  }
+
 
   private lazy val fieldSlots = {
     var fieldIndex = 0

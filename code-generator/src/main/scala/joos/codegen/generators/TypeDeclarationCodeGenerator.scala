@@ -78,14 +78,10 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
   private def createSelectorIndexedTable() {
 
-    if (tipe.fullName == "java.lang.Integer") {
-      println("foo")
-    }
-
     appendGlobal(classTable)
     appendData(classTable ::, dd(selectorTable), emptyLine)
 
-    def mapOverrides(contained: Iterable[MethodDeclaration], dispatchable: Set[MethodDeclaration]) = {
+    def mapOverrides(contained: Iterable[MethodDeclaration], dispatchable: Iterable[MethodDeclaration]) = {
       val overrides = mutable.HashMap[Int, MethodDeclaration]()
       contained.foreach {
         containedMethod =>
@@ -98,9 +94,10 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
       overrides
     }
+
     appendGlobal(selectorTable)
     appendData(selectorTable ::, emptyLine)
-    val dispatchableMethods = tipe.dispatchableMethods.values.flatten.toSet
+    val dispatchableMethods = tipe.dispatchableMethods.values.flatten
     val containedMethods = tipe.containedMethods.values.flatten
     val overrides = mapOverrides(containedMethods, dispatchableMethods)
 
