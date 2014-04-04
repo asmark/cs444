@@ -5,6 +5,7 @@ import joos.ast.declarations.ModuleDeclaration
 import joos.semantic.names.environment.EnvironmentBuilder
 import joos.semantic.names.heirarchy.{SimpleHierarchyChecker, AdvancedHierarchyChecker}
 import joos.semantic.names.link.TypeLinker
+import joos.ast.types._
 
 object NameResolution {
 
@@ -28,6 +29,10 @@ object NameResolution {
         ast dispatch getAnalyzers(ast).apply(i)
       }
     }
+
+    // Linking dummy StringType, ObjectType
+    StringType.declaration = module.namespace.getQualifiedType(StringType.standardName).get
+    ObjectType.declaration = module.namespace.getQualifiedType(ObjectType.standardName).get
   }
 
 }

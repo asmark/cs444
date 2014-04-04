@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 public class BasicArray {
   public BasicArray() {}
 
@@ -32,6 +34,21 @@ public class BasicArray {
 //    if (as[0] != a0) return 6;
 //    if (as[1] != a1) return 7;
 //    if (as[2] != a2) return 8;
+
+
+    char[] xs = new char[3];
+    xs[0] = '1';
+    xs[1] = '2';
+    xs[2] = '3';
+
+    char[] ys = new char[3];
+    ys[0] = '1';
+    ys[1] = '2';
+    ys[2] = '3';
+
+    if (!Arrays.equals(xs,ys)) {
+        return 9;
+    }
 
     return 123;
   }

@@ -10,7 +10,7 @@ case class IntegerLiteral(token: TerminalToken) extends LiteralExpression {
 
   override def toString = token.lexeme
 
-  val value = if (token.lexeme.toLong equals 2147483648L) Integer.MIN_VALUE else token.lexeme.toInt
+  lazy val value = if (token.lexeme.toLong > Int.MaxValue) Integer.MIN_VALUE else token.lexeme.toInt
 }
 
 object IntegerLiteral {

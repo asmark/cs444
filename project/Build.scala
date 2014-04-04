@@ -28,7 +28,8 @@ object Joos1wCompilerBuild extends Build {
       "-unchecked",
       "-target:jvm-1.6",
       "-encoding", "utf8",
-      "-language:postfixOps"
+      "-language:postfixOps",
+      "-language:implicitConversions"
     ),
     libraryDependencies ++= Seq(
       Dependencies.scalaTest,

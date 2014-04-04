@@ -5,6 +5,7 @@ import joos.ast.CompilationUnit
 import joos.ast.types.PrimitiveType._
 import joos.ast.visitor.CompilationUnitUserBuilder
 import joos.core.TernaryBoolean._
+import joos.ast.types._
 
 class ReachabilityChecker(unit: CompilationUnit) extends (() => Unit) {
   override def apply() {
