@@ -4,8 +4,8 @@ import joos.assemgen.Register._
 import joos.assemgen._
 import joos.codegen.AssemblyCodeGeneratorEnvironment
 import joos.ast.expressions.InstanceOfExpression
-import joos.ast.types.{PrimitiveType, ArrayType, SimpleType}
 import joos.semantic._
+import joos.ast.types._
 
 class InstanceOfExpressionCodeGenerator(expression: InstanceOfExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
@@ -25,7 +25,7 @@ class InstanceOfExpressionCodeGenerator(expression: InstanceOfExpression)
               mov(Eax, 1) :#"Set result to true for array casting to Object, Cloneable or IOSerializable"
             )
           }
-          case PrimitiveType.NullType => {
+          case NullType => {
             appendText(
               mov(Eax, 0) :#"Set result to false for null casting to reference type"
             )

@@ -55,7 +55,7 @@ class CastExpressionCodeGenerator(expression: CastExpression)
                 dst.declaration.fullName == javaLangObject.standardName ||
                 dst.declaration.fullName == javaIOSerializable.standardName)
           }
-          case PrimitiveType.NullType => {
+          case NullType => {
             //TODO: Do nothing?
 
           }
