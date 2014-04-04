@@ -18,36 +18,35 @@ public class ClassC extends ClassB implements InterfaceD, InterfaceE {
     }
 
     public static int test() {
-        int ret = 115;
         ClassA ca = new ClassA();
         ClassB cb = new ClassB();
         Object cc = new ClassC();
 
         ca = (ClassA) cb;
-        if (ca.a == 0) {
-            ret = ret + 1;
+        if (ca.a != 2) {
+            return 1;
         }
 
-        if (cb.a == 2) {
-            ret = ret + 1;
+        if (cb.a != 2) {
+            return 2;
         }
 
         ClassC newc = (ClassC) cc;
         newc.a = 2;
-
-        if (newc.a == 2) {
-            ret = ret + 1;
+        if (newc.a != 2) {
+            return 3;
         }
 
         int tmp = newc.callD();
-        if (tmp == 1) {
-            ret = ret + 1;
-        }
-        tmp = newc.callE();
-        if (tmp == 2) {
-            ret = ret + 1;
+        if (tmp != 1) {
+            return 4;
         }
 
-        return ret;
+        tmp = newc.callE();
+        if (tmp != 2) {
+            return 5;
+        }
+
+        return 123;
     }
 }

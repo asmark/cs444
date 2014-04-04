@@ -1,0 +1,10 @@
+public class BasicBadCast {
+
+    public BasicBadCast() {}
+
+    public static int test() {
+        Object o = new Object();
+        BasicBadCast b = (BasicBadCast) o;
+        return 123;
+    }
+}
