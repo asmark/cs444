@@ -47,6 +47,11 @@ public class BasicArrayInstanceOf {
             return 17;
         }
 
+        oArray = null;
+        if (oArray instanceof String[]) {
+            return 30;
+        }
+
         return 123;
     }
 }
