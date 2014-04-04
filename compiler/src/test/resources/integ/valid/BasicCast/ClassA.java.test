@@ -9,6 +9,6 @@ public class ClassA {
         ClassA a = new ClassA();
         Object o = (Object) a;
         o.hashCode();
-        return 123;
+        return (int)123;
     }
 }

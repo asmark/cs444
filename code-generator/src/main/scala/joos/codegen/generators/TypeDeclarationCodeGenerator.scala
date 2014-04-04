@@ -6,6 +6,7 @@ import joos.ast.declarations.{MethodDeclaration, TypeDeclaration}
 import joos.codegen.AssemblyCodeGeneratorEnvironment
 import joos.semantic._
 import joos.ast.types.PrimitiveType
+import scala.collection.mutable
 
 class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
@@ -80,30 +81,29 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     appendGlobal(classTable)
     appendData(classTable ::, dd(selectorTable), emptyLine)
 
-    def includeOverridden(methods: Traversable[MethodDeclaration]): Map[MethodDeclaration, MethodDeclaration] = {
-
-      def getOverridden(method: MethodDeclaration, implementer: MethodDeclaration): Set[MethodDeclaration] = {
-        Set(method) ++ (method.overloads match {
-          case Some(overloaded) =>
-            getOverridden(overloaded, implementer)
-          case None => Set.empty
-        })
+    def mapOverrides(contained: Iterable[MethodDeclaration], dispatchable: Iterable[MethodDeclaration]) = {
+      val overrides = mutable.HashMap[Int, MethodDeclaration]()
+      contained.foreach {
+        containedMethod =>
+          dispatchable.filter(_.localSignature == containedMethod.localSignature).foreach {
+            overriddenMethod => overrides.put(overriddenMethod.id, containedMethod)
+          }
       }
 
-      methods.foldRight(Map.empty[MethodDeclaration, MethodDeclaration]) {
-        (implementer, implementerMap) =>
-          implementerMap ++ getOverridden(implementer, implementer).map(_ -> implementer)
-      }
+      contained.foreach(x => overrides.put(x.id, x))
+
+      overrides
     }
 
     appendGlobal(selectorTable)
     appendData(selectorTable ::, emptyLine)
-    val containedMethods = tipe.implementedMethods.values.flatten
-    val supportedMethods = includeOverridden(containedMethods)
+    val dispatchableMethods = tipe.dispatchableMethods.values.flatten
+    val containedMethods = tipe.containedMethods.values.flatten
+    val overrides = mapOverrides(containedMethods, dispatchableMethods)
 
     environment.staticDataManager.orderedMethods.foreach {
       method =>
-        supportedMethods.get(method) match {
+        overrides.get(method.id) match {
           case Some(implementer) => {
             appendData(dd(implementer.uniqueName) :# s"${method.uniqueName} implemented by ${implementer.uniqueName}")
           }

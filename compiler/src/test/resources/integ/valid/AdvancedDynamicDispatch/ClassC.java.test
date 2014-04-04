@@ -35,6 +35,16 @@ public class ClassC extends ClassB {
             return 6;
         }
 
+        InterB x = c_c;
+
+        if (x.m1() != 3 || x.m2() != 103 || ((ClassC)x).m3(10) != 203) {
+            return 7;
+        }
+
+        if (ClassB.add(6,7) != 13) {
+            return 8;
+        }
+
         return 123;
     }
 

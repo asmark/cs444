@@ -5,6 +5,7 @@ import joos.assemgen._
 import joos.ast.expressions.{Expression, SimpleNameExpression, QualifiedNameExpression, MethodInvocationExpression}
 import joos.codegen.AssemblyCodeGeneratorEnvironment
 import joos.codegen.generators.commonlib._
+import joos.ast.declarations.MethodDeclaration
 
 class MethodInvocationExpressionCodeGenerator(invocation: MethodInvocationExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment)
@@ -12,11 +13,36 @@ class MethodInvocationExpressionCodeGenerator(invocation: MethodInvocationExpres
 
   override def generate() {
     require(invocation.declaration != null)
+    val method = invocation.declaration
 
-    invocation.declaration.isNative match {
-      case true => generateNativeMethodCall()
-      case false => generateMethodCall()
+    (method.isNative, method.isStatic) match {
+      case (true, _) => generateNativeMethodCall()
+      case (false, true) => generateStaticInvocation(method)
+      case (false, false) => generateMethodCall()
     }
+  }
+
+  private[this] def generateStaticInvocation(method: MethodDeclaration) {
+    assert(invocation.expression.isEmpty)
+
+    appendText(
+      :#(s"[BEGIN] Static method invocation: ${invocation}")
+    )
+
+    for (argument <- invocation.arguments) {
+      argument.generate()
+      appendText(
+        push(Eax)
+      )
+    }
+
+    appendText(
+      push(Ecx),
+      call(method.uniqueName),
+      pop(Ecx),
+      add(Esp, 4 * invocation.arguments.size),
+      :#(s"[END] Static method invocation: ${invocation}")
+    )
   }
 
   private def generateMethodCall() {

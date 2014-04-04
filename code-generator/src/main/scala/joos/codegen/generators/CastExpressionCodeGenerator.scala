@@ -7,153 +7,148 @@ import joos.core.Logger
 import joos.assemgen._
 import joos.assemgen.Register._
 
-class CastExpressionCodeGenerator(expression: CastExpression)
+class CastExpressionCodeGenerator(castExpression: CastExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
+  // CastExpression := (leftType) rightType
   override def generate() {
-    expression.expression.generate()
+    castExpression.expression.expressionType match {
 
-    expression.expression.expressionType match {
-      case leftType: SimpleType => {
+      case SimpleType(_) | ArrayType(_,_) => {
+        castExpression.castType match {
+          case ArrayType(leftElementType, _) => {
+            val subtypeIndex = leftElementType match {
+              case leftSimpleType: SimpleType => {
+                require(leftSimpleType.declaration != null)
+                environment.staticDataManager.getArrayTypeIndex(leftSimpleType.declaration)
+              }
+              case leftPrimitiveType: PrimitiveType => {
+                environment.staticDataManager.getArrayTypeIndex(leftPrimitiveType)
+              }
+            }
 
-        expression.castType match {
-          case rightType : SimpleType => {
+            generateObjectCheck(subtypeIndex)
+          }
+          case rightType: SimpleType => {
+            // Castable to Object, Cloneable and Serializable.
+            require(rightType.declaration != null)
             val subtypeIndex = environment.staticDataManager.getTypeIndex(rightType.declaration)
+            generateObjectCheck(subtypeIndex)
+          }
+          case NullType => castExpression.expression.generate()
+        }
+      }
+
+      case PrimitiveType.ShortType => {
+        castExpression.castType match {
+          case PrimitiveType.ByteType | PrimitiveType.CharType => {
+            castExpression.expression.generate()
+            castExpression.expression.generate()
+            val negativeLabel = nextLabel("negative_short")
+            val endLabel = nextLabel("end")
+            appendText(:#("[BEGIN] Casting Short to Byte/Char"))
+            prologue(0)
             appendText(
-              :#(s"[BEGIN] Cast Expression ${expression}"),
-              mov(Ebx, at(Eax+SubtypeTableOffset)) :# "Move subtype table of left into ebx",
-              mov(Ebx, at(Ebx + 4 * subtypeIndex)) :# "Look up value in subtype table for instance check",
-              cmp(Ebx, 0) :# "Throw exception if it cannot be cast",
-              je(exceptionLabel)
-              :#(s"[END] Cast Expression ${expression}")
+              mov(Ebx, toExpression(255)),
+              cmp(Eax, 0),
+              jl(labelReference(negativeLabel)),
+              // Positive
+              and(Eax, Ebx),
+              jmp(endLabel),
+              // Negative
+              negativeLabel::,
+              neg(Eax),
+              and(Eax, Ebx),
+              neg(Eax),
+              endLabel::
             )
+            epilogue(0)
+            appendText(:#("[END] Casting Casting Short to Byte/Char"))
           }
-
-          case rightType : PrimitiveType => {
-            // Not sure if we need this
-            appendText(je(exceptionLabel))
-            Logger.logInformation(s"Exception when casting object type to primitive type in ${expression}")
-          }
-
-          case x => {
-            Logger.logWarning(s"No support to cast ${leftType} as ${x} in ${expression}")
-          }
-
+          case _ => castExpression.expression.generate()
         }
-
       }
-
-      case leftType: PrimitiveType => {
-
-        expression.castType match {
-          case rightType: PrimitiveType => {
-
+      case PrimitiveType.IntegerType => {
+        castExpression.castType match {
+          case PrimitiveType.ByteType | PrimitiveType.CharType => {
+            castExpression.expression.generate()
+            val negativeLabel = nextLabel("negative_int")
+            val endLabel = nextLabel("end")
+            appendText(:#("[BEGIN] Casting Int to Byte/Char"))
+            prologue(0)
+            appendText(
+              mov(Ebx, toExpression(255)),
+              cmp(Eax, 0),
+              jl(labelReference(negativeLabel)),
+              // Positive
+              and(Eax, Ebx),
+              jmp(endLabel),
+              // Negative
+              negativeLabel::,
+              neg(Eax),
+              and(Eax, Ebx),
+              neg(Eax),
+              endLabel::
+            )
+            epilogue(0)
+            appendText(:#("[END] Casting Int to Byte/Char"))
           }
-          case _ => {
-
+          case PrimitiveType.ShortType => {
+            castExpression.expression.generate()
+            val negativeLabel = nextLabel("negative_int")
+            val endLabel = nextLabel("end")
+            appendText(:#("[BEGIN] Casting Int to Short"))
+            prologue(0)
+            appendText(
+              mov(Ebx, toExpression(65535)),
+              cmp(Eax, 0),
+              jl(labelReference(negativeLabel)),
+              // Positive
+              and(Eax, Ebx),
+              jmp(endLabel),
+              // Negative
+              negativeLabel::,
+              neg(Eax),
+              and(Eax, Ebx),
+              neg(Eax),
+              endLabel::
+            )
+            epilogue(0)
+            appendText(:#("[END] Casting Int to Short"))
           }
+          case _ => castExpression.expression.generate()
         }
-
-
       }
+      case PrimitiveType.ByteType | PrimitiveType.CharType | PrimitiveType.BooleanType =>
+        castExpression.expression.generate()
 
-      case x =>
-        Logger.logWarning(s"No support to cast ${x} in ${expression}")
+      case _ =>
+        Logger.logWarning(s"No Support for ${castExpression.expression.expressionType} in instanceof checks in ${castExpression}")
     }
 
-
-
-    //    // EAX should have a reference to the object/class etc
-    //
-    //    expression.castType match {
-    //      case PrimitiveType.ByteType => {
-    //        expression.castType match {
-    //          case PrimitiveType.ShortType | PrimitiveType.IntegerType=> {
-    //            appendText(:#("[BEGIN] Casting to Byte"))
-    //            prologue(0)
-    //            appendText(
-    //              mov(Ebx, toExpression(255)),
-    //              and(Eax, Ebx)
-    //            )
-    //            epilogue(0)
-    //            appendText(:#("[END] Casting to Byte"))
-    //          }
-    //          case _ =>
-    //        }
-    //      }
-    //      case PrimitiveType.ShortType => {
-    //        expression.castType match {
-    //          case PrimitiveType.IntegerType => {
-    //            appendText(:#("[BEGIN] Casting Int to Short"))
-    //            prologue(0)
-    //            appendText(
-    //              mov(Ebx, toExpression(255)),
-    //              and(Eax, Ebx)
-    //            )
-    //            epilogue(0)
-    //            appendText(:#("[END] Casting Int to Short"))
-    //          }
-    //          case _ => {}
-    //        }
-    //      }
-    //      case PrimitiveType.CharType => {} // Place holder
-    //      case dst: SimpleType => {
-    //        expression.expression.expressionType match {
-    //          case ArrayType(_,_) => {
-    //            require(dst.declaration.fullName == javaLangObject.standardName ||
-    //                dst.declaration.fullName == javaLangObject.standardName ||
-    //                dst.declaration.fullName == javaIOSerializable.standardName)
-    //          }
-    //          case NullType => {
-    //            //TODO: Do nothing?
-    //
-    //          }
-    //          case src: SimpleType => {
-    //            val dstTypeDeclration = environment.typeEnvironment.compilationUnit.getVisibleType(dst.name)
-    //            require(dstTypeDeclration.isDefined)
-    //
-    //            val dstSit = selectorTableLabel(dstTypeDeclration.get)
-    //            val dstSubTypeTable = subtypeTableLabel(dstTypeDeclration.get)
-    //            val dstTypeOffset = environment.staticDataManager.getTypeIndex(dstTypeDeclration.get) * 4
-    //
-    //            val validLabel = "valid" + DefaultUniqueIdGenerator.nextId()
-    //            val endLabel = "end" + DefaultUniqueIdGenerator.nextId()
-    //
-    //            appendText(:#(s"[BEGIN] Casting ${src.standardName} to ${dst.standardName}"))
-    //            prologue(0)
-    //            appendText(
-    //              #>,
-    //              push(Eax) :#"Save EAX",
-    //              mov(Ebx, Eax),
-    //              add(Ebx, toExpression(SelectorTableOffset)),
-    //              mov(Ebx, at(Ebx)) :#"EBX should point to the sub type table",
-    //              add(Ebx, dstTypeOffset),
-    //              mov(Ebx, at(Ebx)) :#"Look up value in the subtype table",
-    //              cmp(Ebx, toExpression(1)),
-    //              je(labelReference(validLabel)),
-    //              call(labelReference(exceptionLabel)) :#"Cast error",
-    //              jmp(labelReference(endLabel)),
-    //              validLabel ::,
-    //              mov(Ebx, Eax) :#"Update selector table",
-    //              add(Ebx, toExpression(SelectorTableOffset)),
-    //              movdw(at(Ebx), labelReference(dstSit)),
-    //              add(Ebx, toExpression(SubtypeTableOffset - SelectorTableOffset)) :#"Update sub type table",
-    //              movdw(at(Ebx), labelReference(dstSubTypeTable)),
-    //              endLabel ::,
-    //              pop(Eax) :#"Restore EAX",
-    //              #<
-    //            )
-    //            epilogue(0)
-    //            appendText(:#(s"[END] Casting Casting ${src.standardName} to ${dst.standardName}"))
-    //          }
-    //          case _ => {}
-    //        }
-    //      }
-    //      case ArrayType(_,_) => {
-    //
-    //      }
-    //      case _ => {}
-    //    }
   }
 
+  private def generateObjectCheck(subtypeIndex: Int) {
+    appendText(
+      :#(s"[BEGIN] Cast check ${castExpression}"),
+      :#("Look up left hand side"),
+      #>
+    )
+
+    castExpression.expression.generate()
+
+    val endLabel = nextLabel("is_null_object")
+    appendText(
+      #<,
+      emptyLine,
+      cmp(Eax, 0),
+      je(endLabel),
+      mov(Ebx, at(Eax + SubtypeTableOffset)) :# "Put address of subtype table in eax",
+      mov(Ebx, at(Ebx + 4 * subtypeIndex)) :# "Look up value in subtype table for instance check",
+      cmp(Ebx, 0) :# "Throw exception if it cannot be cast",
+      je(exceptionLabel),
+      endLabel::,
+      :#(s"[END] Cast check ${castExpression}")
+    )
+  }
 }

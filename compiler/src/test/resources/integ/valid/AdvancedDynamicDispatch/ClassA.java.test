@@ -1,4 +1,4 @@
-public class ClassA {
+public class ClassA implements InterA {
 
     public int a1 = 1;
     protected int a2 = 2;

@@ -1,0 +1,26 @@
+public class StringConcat {
+  public StringConcat() {}
+
+  public static int test() {
+    String s1 = "a";
+    String s2 = "bc";
+    String s3 = "def";
+
+    // String + String
+    if (!(s1 + s2).equals((Object) "abc")) return 1;
+    if (!(s1 + s2 + s3).equals((Object) "abcdef")) return 2;
+
+    // Any + String
+    if (!(10 + s3).equals((Object) "10def")) return 3;
+    if (!('a' + s3).equals((Object) "adef")) return 4;
+    if (!(true + s3).equals((Object) "truedef")) return 5;
+    if (!(null + s3).equals((Object) "nulldef")) return 9;
+
+    // String + Any
+    if (!(s3 + 12).equals((Object) "def12")) return 6;
+    if (!(s3 + 'b').equals((Object) "defb")) return 7;
+    if (!(s2 + false).equals((Object) "bcfalse")) return 8;
+    if (!(s2 + null).equals((Object) "bcnull")) return 10;
+    return 123;
+  }
+}

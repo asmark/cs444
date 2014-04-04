@@ -1,0 +1,7 @@
+public interface InterB extends InterA {
+
+    public int m1();
+
+    protected int m2();
+
+}

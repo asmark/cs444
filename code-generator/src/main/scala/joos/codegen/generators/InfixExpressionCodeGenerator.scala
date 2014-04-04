@@ -3,34 +3,127 @@ package joos.codegen.generators
 import joos.assemgen.Register._
 import joos.assemgen._
 import joos.ast.Operator._
+import joos.ast._
 import joos.ast.expressions.InfixExpression
 import joos.ast.types._
 import joos.codegen.AssemblyCodeGeneratorEnvironment
 import joos.codegen.generators.commonlib._
 import joos.core.Logger
 
-class InfixExpressionCodeGenerator(expression: InfixExpression)
+class InfixExpressionCodeGenerator(infix: InfixExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
   override def generate() {
-
-    (expression.left.expressionType, expression.right.expressionType) match {
-      case (StringType, _) | (_, StringType) =>
-        generateStringOperation
-      case (SimpleType(_) | ArrayType(_,_), SimpleType(_) | ArrayType(_,_)) => generateObjectOperation
-      case _ => generateIntegerOperation
+    val types = (infix.left.expressionType, infix.right.expressionType)
+    infix.operator match {
+      case Plus =>
+        types match {
+          case (StringType, _) | (_, StringType) => generateStringConcat()
+          case (_: NumericType, _: NumericType) => generateInfixOperation(addIntegers)
+          case (left, right) =>
+            Logger.logWarning(s"We don't support ${left} + ${right}")
+        }
+      case Minus => generateInfixOperation(subtractIntegers)
+      case Multiply => generateInfixOperation(multiplyIntegers)
+      case Divide => generateInfixOperation(divideIntegers)
+      case Modulo => generateInfixOperation(moduloIntegers)
+      case Less => generateInfixOperation(compareLess)
+      case LessOrEqual => generateInfixOperation(compareLessEqual)
+      case Greater => generateInfixOperation(compareGreater)
+      case GreaterOrEqual => generateInfixOperation(compareGreaterEqual)
+      case ConditionalAnd => generateLazy(needsTrue = true, "conditional.and")
+      case BitwiseAnd => generateInfixOperation(compareAnd)
+      case ConditionalOr => generateLazy(needsTrue = false, "conditional.or")
+      case BitwiseInclusiveOr => generateInfixOperation(compareOr)
+      case BitwiseExclusiveOr =>
+        Logger.logWarning(s"We don't support ${BitwiseExclusiveOr}")
+      case Equal => generateInfixOperation(compareEqual)
+      case NotEqual => generateInfixOperation(compareNotEqual)
     }
   }
 
-  private def generateInfixOperation(method: LabelReference) {
+  private[this] def generateLazy(needsTrue: Boolean, label: String) {
+    val rightStart = nextLabel(label)
+    val rightEnd = nextLabel(label)
+    appendText(
+      emptyLine,
+      :#(s"[BEGIN] ${label}"),
+      emptyLine
+    )
+    infix.left.generate()
+    appendText(
+      emptyLine,
+      cmp(Eax, if (needsTrue) 1 else 0) :# s"if left == ${needsTrue}",
+      je(rightStart),
+      :#(s"left == ${!needsTrue}, no need to evaluate right"),
+      jmp(rightEnd),
+      emptyLine,
+      rightStart ::,
+      :#(s"left == ${needsTrue} => return right")
+    )
+    infix.right.generate()
+    appendText(
+      rightEnd ::,
+      emptyLine,
+      :#(s"[END] ${label}")
+    )
+  }
 
-    appendText(:#(s"[BEGIN] Binary Operation ${expression.toString}"), emptyLine)
+  private[this] def generateStringConcat() {
+    val leftType = infix.left.expressionType match {
+      case NullType | _: ArrayType => ObjectType
+      case _ => infix.left.expressionType
+    }
+    val rightType = infix.right.expressionType match {
+      case NullType | _: ArrayType => ObjectType
+      case _ => infix.right.expressionType
+    }
+    val leftValueOf = findDeclaredMethod(StringType, "valueOf", IndexedSeq(leftType)).get
+    val rightValueOf = findDeclaredMethod(StringType, "valueOf", IndexedSeq(rightType)).get
+
+    appendText(
+      :#("[BEGIN] String + Any | Any + String")
+    )
+    infix.left.generate()
+    appendText(
+      emptyLine,
+      push(Eax) :# "[left: Any]",
+      push(Ecx) :# "Save 'this'",
+      call(leftValueOf.uniqueName) :# "Call String.valueOf(left)",
+      pop(Ecx) :# "Restore 'this'",
+      pop(Ebx) :# "[]",
+      push(Eax) :# "[left: String]",
+      emptyLine
+    )
+    infix.right.generate()
+    appendText(
+      push(Eax) :# "[right: Any, left: String]",
+      push(Ecx) :# "Save 'this'",
+      call(rightValueOf.uniqueName) :# "Call String.valueOf(right)",
+      pop(Ecx) :# "Restore 'this'",
+      pop(Ebx) :# "[left: String]",
+      emptyLine,
+      pop(Ebx) :# "ebx = left, []",
+      push(Eax) :# "[right: String]",
+      push(Ecx) :# "Push 'this'",
+      mov(Ecx, Ebx),
+      call(StringConcatMethod.uniqueName) :# "Call left.concat(right)",
+      pop(Ecx) :# "Restore 'this'",
+      pop(Ebx) :# "[]",
+      :#("[END] String + Any | Any + String"),
+      emptyLine
+    )
+  }
+
+  private[this] def generateInfixOperation(method: LabelReference) {
+
+    appendText(:#(s"[BEGIN] Binary Operation ${infix.toString}"), emptyLine)
 
     appendText(
       push(Ecx) :# "Save this",
       :#("Evaluate left operand")
     )
-    expression.left.generate()
+    infix.left.generate()
     appendText(
       pop(Ecx) :# "Retrieve this",
       push(Eax) :# "Push left hand side as first parameter",
@@ -41,7 +134,7 @@ class InfixExpressionCodeGenerator(expression: InfixExpression)
       push(Ecx) :# "Save this",
       :#("Evaluate right operand")
     )
-    expression.right.generate()
+    infix.right.generate()
     appendText(
       pop(Ecx) :# "Retrieve this",
       push(Eax) :# "Push right hand side as first parameter",
@@ -56,51 +149,4 @@ class InfixExpressionCodeGenerator(expression: InfixExpression)
       :#("[END] Binary Operation")
     )
   }
-
-
-  private def generateIntegerOperation {
-
-    val method = expression.operator match {
-      case Plus => addIntegers
-      case Multiply => multiplyIntegers
-      case Minus => subtractIntegers
-      case Divide => divideIntegers
-      case Modulo => moduloIntegers
-      case ConditionalAnd | BitwiseAnd => compareAnd
-      case ConditionalOr | BitwiseInclusiveOr => compareOr
-      case Equal => compareEqual
-      case NotEqual => compareNotEqual
-      case Less => compareLess
-      case LessOrEqual => compareLessEqual
-      case Greater => compareGreater
-      case GreaterOrEqual => compareGreaterEqual
-      case op => {
-        Logger.logWarning(s"${op} is not supported yet")
-        return
-      }
-    }
-    generateInfixOperation(method)
-  }
-
-  private def generateStringOperation {
-    val method = expression.operator match {
-      case Plus =>
-        Logger.logWarning(s"String concatenation in ${expression} is not supported yet")
-        return
-      case Equal => compareEqual
-      case NotEqual => compareNotEqual
-    }
-
-    generateInfixOperation(method)
-  }
-
-  private def generateObjectOperation {
-    val method = expression.operator match {
-      case Equal => compareEqual
-      case NotEqual => compareNotEqual
-    }
-
-    generateInfixOperation(method)
-  }
-
 }

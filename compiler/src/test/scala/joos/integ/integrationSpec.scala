@@ -12,7 +12,6 @@ class integrationSpec extends FlatSpec with Matchers {
 
   val standardLibrary = getStandardLibrary.flatMap(getJavaFiles)
 
-  // TODO: Validate output with expected output in /integ/check directory
   behavior of "Compiling valid joos"
   getValidTestCases.foreach {
     testCase =>
