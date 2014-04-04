@@ -30,7 +30,19 @@ class ArrayCreationExpressionCodeGenerator(expression: ArrayCreationExpression)
       pop(Ebx),
       mov(at(Eax + ArrayLengthOffset), Ebx) :# "Stores the length at offset 8"
     )
-    // TODO: zero initialize all elements
+
+    val loopEnd = nextLabel("array.initialization.end")
+    appendText(
+      :# ("[BEGIN] Array Initialization"),
+      imul(Ebx, Ebx, 4),
+      cmp(Ebx, 0),
+      je(loopEnd),
+      movdw(at(Eax + Ebx + ArrayLengthOffset), 0) :# "Initialize array element to 0",
+      sub(Ebx, 4),
+      loopEnd::,
+      :# ("[END] Array Initialization")
+    )
+
     // TODO: binds to SIT and SubType table
     appendText(
       :# ("[END] Array Creation")

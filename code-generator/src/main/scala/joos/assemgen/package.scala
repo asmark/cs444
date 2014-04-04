@@ -334,6 +334,10 @@ package object assemgen {
     new AssemblyInstruction("leave")
   }
 
+  def loop(label: LabelReference): AssemblyInstruction = {
+    new AssemblyInstruction("loop", Seq(label))
+  }
+
   /**
    * System call
    */
