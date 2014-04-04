@@ -2,9 +2,11 @@ package joos.codegen.generators
 
 import joos.assemgen.Register._
 import joos.assemgen._
+import joos.ast.types.PrimitiveType
 import joos.codegen.generators.commonlib.ArithmeticOperations._
 import joos.codegen.generators.commonlib.ComparisonOperations._
 import joos.codegen.{AssemblyNamespace, AssemblyCodeGeneratorEnvironment, AssemblyFileManager}
+import joos.semantic.isArraySuperType
 
 package object commonlib {
 
@@ -74,7 +76,62 @@ package object commonlib {
 
     exportFunctions(nullCheck)
 
-    new AssemblyCodeGeneratorEnvironment(assemblyManager, namespace, sitBuilder: StaticDataManager)
+    PrimitiveType.values.foreach {
+      primitive =>
+
+      // Primitive ARRAY selector table
+        val arraySelectorTableLabel = arrayPrefixLabel(selectorTableLabel(primitive.uniqueName))
+        exportFunctions(arraySelectorTableLabel)
+        assemblyManager.appendData(arraySelectorTableLabel ::)
+
+        sitBuilder.orderedMethods.foreach {
+          method =>
+            if (isArraySuperType(method.typeDeclaration)) {
+              assemblyManager.appendData(dd(method.uniqueName) :# s"${method.uniqueName} implemented by ${method.uniqueName}")
+            } else {
+              assemblyManager.appendData(dd(0) :# s"${method.uniqueName} not implemented by ${arrayPrefixLabel(primitive.uniqueName)}")
+            }
+        }
+        assemblyManager.appendData(emptyLine)
+
+        //  Primitive ARRAY subtype table
+        val arraySubtypeTableLabel = arrayPrefixLabel(subtypeTableLabel(primitive.uniqueName))
+        exportFunctions(arraySubtypeTableLabel)
+        assemblyManager.appendData(arraySubtypeTableLabel ::)
+
+        // Append subtypes of plain objects
+        sitBuilder.orderedTypes.foreach {
+          tipe =>
+            if (isArraySuperType(tipe)) {
+              assemblyManager.appendData(dd(1) :# s"${tipe.fullName}")
+            } else {
+              assemblyManager.appendData(dd(0) :# s"${tipe.fullName}")
+            }
+        }
+
+        // Append subtypes of array objects
+        sitBuilder.orderedTypes.foreach {
+          tipe =>
+            if (isArraySuperType(tipe)) {
+              assemblyManager.appendData(dd(1) :# s"${arrayPrefixLabel(tipe.fullName)}")
+            } else {
+              assemblyManager.appendData(dd(0) :# s"${arrayPrefixLabel(tipe.fullName)}")
+            }
+        }
+
+        // Append subtypes of other primitive array types
+        PrimitiveType.values.foreach {
+          other =>
+            if (primitive == other) {
+              assemblyManager.appendData(dd(1) :# s"${arrayPrefixLabel(other.uniqueName)}")
+            } else {
+              assemblyManager.appendData(dd(0) :# s"${arrayPrefixLabel(other.uniqueName)}")
+            }
+        }
+        assemblyManager.appendData(emptyLine)
+    }
+
+    new AssemblyCodeGeneratorEnvironment(assemblyManager, namespace, sitBuilder)
   }
 
   val addIntegers = "_lib_add_ints"
@@ -93,4 +150,5 @@ package object commonlib {
   val compareGreaterEqual = "_lib_cmp_ge"
 
   val nullCheck = "_lib_null_check"
+
 }

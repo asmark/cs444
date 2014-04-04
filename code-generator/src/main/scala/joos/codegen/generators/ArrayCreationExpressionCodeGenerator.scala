@@ -4,7 +4,7 @@ import joos.assemgen.Register._
 import joos.assemgen._
 import joos.codegen.AssemblyCodeGeneratorEnvironment
 import joos.ast.expressions.ArrayCreationExpression
-import joos.ast.types.SimpleType
+import joos.ast.types.{PrimitiveType, SimpleType}
 
 class ArrayCreationExpressionCodeGenerator(expression: ArrayCreationExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
@@ -25,12 +25,12 @@ class ArrayCreationExpressionCodeGenerator(expression: ArrayCreationExpression)
     // TODO: Check Array.length >= 0
     val (selectorIndexTable, subtypeTable) = expression.arrayType match {
       case innerType: SimpleType => {
-        (new LabelReference(arrayPrefixLabel(selectorTableLabel(innerType.declaration))) ->
-        new LabelReference(arrayPrefixLabel(subtypeTableLabel(innerType.declaration))))
+        arrayPrefixLabel(selectorTableLabel(innerType.declaration)) ->
+        arrayPrefixLabel(subtypeTableLabel(innerType.declaration))
       }
-      case _ => {
-        // TODO: Link primitive tables in later
-        (toExpression(0) -> toExpression(0))
+      case primitive: PrimitiveType => {
+        arrayPrefixLabel(selectorTableLabel(primitive.uniqueName)) ->
+        arrayPrefixLabel(subtypeTableLabel(primitive.uniqueName))
       }
     }
 

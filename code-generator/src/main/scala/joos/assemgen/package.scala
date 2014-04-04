@@ -4,6 +4,7 @@ import java.io.PrintWriter
 import joos.ast.declarations.{TypeDeclaration, FieldDeclaration, MethodDeclaration}
 import joos.ast.expressions.StringLiteral
 import scala.language.implicitConversions
+import joos.ast.types.PrimitiveType
 
 package object assemgen {
 
@@ -60,6 +61,12 @@ package object assemgen {
   implicit class RichTypeDeclaration(val tipe: TypeDeclaration) extends AnyVal {
     def uniqueName: String = {
       s"type.${tipe.fullName}.${tipe.id}"
+    }
+  }
+
+  implicit class RichPrimitiveType(val primitive: PrimitiveType) extends AnyVal {
+    def uniqueName: String = {
+      s"primitive.${primitive.name}.${primitive.id}"
     }
   }
 

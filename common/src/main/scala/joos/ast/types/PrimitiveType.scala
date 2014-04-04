@@ -1,7 +1,7 @@
 package joos.ast.types
 
 import joos.ast.AstConstructionException
-import joos.core.Enumeration
+import joos.core.{UniqueIdGenerator, Enumeration}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 import joos.syntax.tokens.TerminalToken

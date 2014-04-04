@@ -5,6 +5,7 @@ import joos.ast.declarations.{MethodDeclaration, TypeDeclaration}
 import joos.core.UniqueIdGenerator
 import scala.collection.mutable
 import joos.semantic._
+import joos.ast.types.PrimitiveType
 
 class StaticDataManager(asts: Seq[AbstractSyntaxTree]) {
   val typeIds = mutable.HashMap.empty[String, (TypeDeclaration, Int)]
@@ -42,12 +43,16 @@ class StaticDataManager(asts: Seq[AbstractSyntaxTree]) {
     typeIds.get(tipe.uniqueName).get._2 + typeIds.size
   }
 
-  lazy val orderedMethods: IndexedSeq[MethodDeclaration] = {
-    methodIds.toSeq.sortWith((left, right) => left._2._2 < right._2._2).map(pair => pair._2._1).toIndexedSeq
+  def getArrayTypeIndex(primitive: PrimitiveType): Int = {
+    typeIds.size * 2 + primitive.id
   }
 
-  lazy val orderedTypes: IndexedSeq[TypeDeclaration] = {
-    typeIds.toSeq.sortWith((left, right) => left._2._2 < right._2._2).map(pair => pair._2._1).toIndexedSeq
+  lazy val orderedMethods = {
+    methodIds.toSeq.sortWith((left, right) => left._2._2 < right._2._2).map(pair => pair._2._1)
+  }
+
+  lazy val orderedTypes = {
+    typeIds.toSeq.sortWith((left, right) => left._2._2 < right._2._2).map(pair => pair._2._1)
   }
 }
 

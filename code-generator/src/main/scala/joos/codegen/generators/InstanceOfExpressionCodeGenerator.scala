@@ -20,9 +20,10 @@ class InstanceOfExpressionCodeGenerator(expression: InstanceOfExpression)
       }
 
       case ArrayType(innerType, dimensions) => {
-        require(innerType.declaration != null)
-        val rightType = innerType
-        val subtypeIndex = environment.staticDataManager.getArrayTypeIndex(rightType.declaration)
+        val subtypeIndex = innerType match {
+          case primitive: PrimitiveType => environment.staticDataManager.getArrayTypeIndex(primitive)
+          case simpleType: SimpleType => environment.staticDataManager.getArrayTypeIndex(simpleType.declaration)
+        }
         generateObjectCheck(subtypeIndex)
       }
 
