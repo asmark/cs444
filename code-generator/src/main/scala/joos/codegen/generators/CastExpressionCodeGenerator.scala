@@ -31,7 +31,7 @@ class CastExpressionCodeGenerator(expression: CastExpression)
 
           case rightType : PrimitiveType => {
             // Not sure if we need this
-            je(exceptionLabel)
+            appendText(je(exceptionLabel))
             Logger.logInformation(s"Exception when casting object type to primitive type in ${expression}")
           }
 
@@ -40,6 +40,20 @@ class CastExpressionCodeGenerator(expression: CastExpression)
           }
 
         }
+
+      }
+
+      case leftType: PrimitiveType => {
+
+        expression.castType match {
+          case rightType: PrimitiveType => {
+
+          }
+          case _ => {
+
+          }
+        }
+
 
       }
 
