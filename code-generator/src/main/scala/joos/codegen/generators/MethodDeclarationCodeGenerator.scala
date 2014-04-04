@@ -88,7 +88,7 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
       methodLabel ::
     )
 
-    appendText(prologue(4 * method.locals): _*)
+    appendText(prologue(4 * method.locals+1): _*)
 
     appendText(:#("[BEGIN] Function Body"), #>)
     method.body.foreach(_.generate())

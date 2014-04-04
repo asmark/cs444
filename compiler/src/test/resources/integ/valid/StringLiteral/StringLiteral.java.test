@@ -14,7 +14,7 @@ public class StringLiteral {
 //    if (!s1.substring(2, 5).equals("cdf")) return 6;
 //    if (!s1.trim().equals("456")) return 7;
     // TODO: uncomment this test
-//    if (s1.toString() != s1) return 8
+    if (s1.toString() != s1) return 8;
     if (s1.compareTo(s2) <= 0) return 8;
     if (s1.compareTo(s1) != 0) return 9;
     if (s1.indexOf("def") != 3) return 10;
