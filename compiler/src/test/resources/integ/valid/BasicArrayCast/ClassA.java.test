@@ -10,7 +10,7 @@ public class ClassA {
         Object o = (Object) as;
         Object[] os = (Object[]) as;
 
-        Cloneable cl = (Cloneable) as;
+        Integer[] cl = (Integer[]) o;
 
         o.hashCode();
         return 123;
