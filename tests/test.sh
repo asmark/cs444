@@ -54,7 +54,7 @@ do
     flag=0
     for asm in `find ${outdir} -type f`
     do
-      ./nasm -O1 -f elf -g -F dwarf ${asm}
+      nasm -O1 -f elf -g -F dwarf ${asm}
       if (( $? != 0 ))
       then
         flag=1
