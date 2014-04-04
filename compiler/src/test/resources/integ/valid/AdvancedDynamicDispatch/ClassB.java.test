@@ -1,4 +1,4 @@
-public class ClassB extends ClassA {
+public class ClassB extends ClassA implements InterA, InterB {
 
     protected int b1 = 101;
     protected int b2 = 102;
@@ -10,6 +10,10 @@ public class ClassB extends ClassA {
 
     protected int m3(int j) {
         return 104;
+    }
+
+    public static int add(int i, int j) {
+        return i + j;
     }
 
     public ClassB() {}

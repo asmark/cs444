@@ -25,7 +25,6 @@ case class MethodDeclaration(
   var compilationUnit: CompilationUnit = null
   var typeDeclaration: TypeDeclaration = null
   var locals = 0
-  var overloads: Option[MethodDeclaration] = None
 
   override def toString = {
     val returnTypeString = returnType match {
