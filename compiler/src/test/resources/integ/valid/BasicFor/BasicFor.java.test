@@ -3,6 +3,15 @@ public class BasicFor {
 
     public static int test() {
         int counter = 0;
+
+        for (int i  = 0; i <= 10; i = i + 1) {
+            counter = counter + i;
+        }
+        if (counter != 55) {
+            return 2;
+        }
+
+        counter = 0;
         for (int cnt = 0; cnt <= 122 && 123 > cnt; cnt = cnt + 1) {
             counter = cnt;
         }

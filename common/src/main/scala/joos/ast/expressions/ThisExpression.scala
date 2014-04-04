@@ -9,11 +9,10 @@ class ThisExpression extends Expression {
 }
 
 object ThisExpression extends Expression {
-  private[this] final val instance = new ThisExpression
 
   def apply(ptn: ParseTreeNode): ThisExpression = {
     ptn match {
-      case LeafNode(token) if token.kind == TokenKind.This => instance
+      case LeafNode(token) if token.kind == TokenKind.This => new ThisExpression
       case _ => throw new AstConstructionException("No valid production rule to make ThisExpression")
     }
   }
