@@ -11,16 +11,11 @@ import joos.semantic.types.TypeCheckingException
 class InstanceOfExpressionCodeGenerator(instanceOf: InstanceOfExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
+  // InstaceOf := leftType instanceof rightType
   override def generate() {
     instanceOf.expression.expressionType match {
-      case leftType: SimpleType => {
-        require(leftType.declaration != null)
-        val rightType = instanceOf.classType
-        val subtypeIndex = environment.staticDataManager.getTypeIndex(rightType.declaration)
-        generateObjectCheck(subtypeIndex)
-      }
 
-      case ArrayType(_, _) => {
+      case SimpleType(_) | ArrayType(_,_) => {
         instanceOf.classType match {
           case ArrayType(rightElementType, _) => {
             val subtypeIndex = rightElementType match {
@@ -37,6 +32,7 @@ class InstanceOfExpressionCodeGenerator(instanceOf: InstanceOfExpression)
           }
           case rightType: SimpleType => {
             // Castable to Object, Cloneable and Serializable.
+            require(rightType.declaration != null)
             val subtypeIndex = environment.staticDataManager.getTypeIndex(rightType.declaration)
             generateObjectCheck(subtypeIndex)
           }
