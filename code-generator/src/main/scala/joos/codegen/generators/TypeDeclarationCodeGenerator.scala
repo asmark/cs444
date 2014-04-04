@@ -89,7 +89,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
       methods.foldRight(Map.empty[MethodDeclaration, MethodDeclaration]) {
         (implementer, implementerMap) =>
-            implementerMap ++ getOverridden(implementer, implementer).map(_ -> implementer)
+          implementerMap ++ getOverridden(implementer, implementer).map(_ -> implementer)
       }
     }
 
@@ -100,13 +100,14 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
     environment.staticDataManager.orderedMethods.foreach {
       method =>
-          supportedMethods.get(method) match {
-            case Some(implementer) => {
-              if (!implementer.isNative)
-                appendData(dd(implementer.uniqueName) :# s"${method.uniqueName} implemented by ${implementer.uniqueName}")
+        supportedMethods.get(method) match {
+          case Some(implementer) => {
+            if (!implementer.isNative) {
+              appendData(dd(implementer.uniqueName) :# s"${method.uniqueName} implemented by ${implementer.uniqueName}")
             }
-            case None => appendData(dd(0) :# s"${method.uniqueName} not implemented by ${tipe.uniqueName}")
           }
+          case None => appendData(dd(0) :# s"${method.uniqueName} not implemented by ${tipe.uniqueName}")
+        }
     }
 
     appendData(emptyLine)
