@@ -40,7 +40,7 @@ class SimpleNameExpressionCodeGenerator(expression: SimpleNameExpression)
       case TypeName => {
         val staticType = environment.typeEnvironment.compilationUnit.getVisibleType(expression).get
         appendText(
-          movdw(Edx, selectorTableLabel(staticType)) :# s"Static access. Move ${expression} into edx",
+          movdw(Edx, classTableLabel(staticType)) :# s"Static access. Move ${expression} into edx",
           mov(Eax, Edx) :# s"Move selector table into edx"
         )
       }

@@ -4,13 +4,15 @@ import joos.ast._
 import joos.ast.compositions.{BlockLike, DeclarationLike}
 import joos.ast.expressions.{NameExpression, SimpleNameExpression}
 import joos.ast.statements.Block
-import joos.ast.types.PrimitiveType
-import joos.ast.types.{SimpleType, Type, ArrayType}
+import joos.ast.types._
 import joos.core.Identifiable
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.ParseTreeNode
 import joos.syntax.parsetree.TreeNode
 import scala.collection.mutable
+import scala.Some
+import joos.syntax.language.ProductionRule
+import joos.syntax.parsetree.TreeNode
 
 case class MethodDeclaration(
     modifiers: Seq[Modifier],
@@ -90,12 +92,12 @@ case class MethodDeclaration(
 
   private[this] def getTypeName(t: Type): String = {
     t match {
-      case t: PrimitiveType => t.name
       case ArrayType(x, _) => getTypeName(x)
       case SimpleType(name) => {
         val typeDeclaration = compilationUnit.getVisibleType(name).get
         typeDeclaration.packageDeclaration.name.standardName + '.' + typeDeclaration.name.standardName
       }
+      case _ => t.standardName
     }
   }
 
@@ -171,7 +173,7 @@ object MethodDeclaration {
           children
           ) => {
             val modifiers = Modifier(children(0))
-            val returnType: Option[Type] = if (typeString.equals("Type")) Some(Type(children(1))) else Some(PrimitiveType.VoidType)
+            val returnType: Option[Type] = if (typeString.equals("Type")) Some(Type(children(1))) else Some(VoidType)
             val methodDeclaratorNode = children(2)
 
             methodDeclaratorNode match {
@@ -250,7 +252,7 @@ object MethodDeclaration {
           children
           ) => {
             val modifiers = Modifier(children(0))
-            val returnType: Option[Type] = if (typeString.equals("Type")) Some(Type(children(1))) else Some(PrimitiveType.VoidType)
+            val returnType: Option[Type] = if (typeString.equals("Type")) Some(Type(children(1))) else Some(VoidType)
             val methodDeclaratorNode = children(2)
 
             methodDeclaratorNode match {

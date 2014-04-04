@@ -4,11 +4,12 @@ import joos.ast.AstConstructionException
 import joos.ast.types.PrimitiveType._
 import joos.syntax.parsetree.{LeafNode, ParseTreeNode}
 import joos.syntax.tokens.TokenKind
+import joos.ast.types.NullType
 
 class NullLiteral extends LiteralExpression {
   expressionType = NullType
 
-  override def toString = NullType.name
+  override def toString = expressionType.standardName
 }
 
 object NullLiteral {

@@ -4,7 +4,6 @@ import joos.assemgen.AssemblyLine
 import joos.ast.AbstractSyntaxTreeDispatcher
 import joos.ast.declarations._
 import joos.ast.expressions._
-import joos.ast.statements.EmptyStatement
 import joos.ast.statements._
 import joos.ast.{AbstractSyntaxTree, AstNode}
 import joos.codegen.AssemblyCodeGeneratorEnvironment

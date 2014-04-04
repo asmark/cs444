@@ -21,6 +21,7 @@ class ArrayCreationExpressionCodeGenerator(expression: ArrayCreationExpression)
       :# ("[BEGIN] Array Creation")
     )
     // Number of elements is in eax
+    // TODO: Check Array.length >= 0
     expression.size.generate()
     appendText(
       push(Eax) :# "Saves number of elements",
@@ -31,14 +32,17 @@ class ArrayCreationExpressionCodeGenerator(expression: ArrayCreationExpression)
       mov(at(Eax + ArrayLengthOffset), Ebx) :# "Stores the length at offset 8"
     )
 
+    val loopStart = nextLabel("array.initialization.start")
     val loopEnd = nextLabel("array.initialization.end")
     appendText(
       :# ("[BEGIN] Array Initialization"),
       imul(Ebx, Ebx, 4),
+      loopStart::,
       cmp(Ebx, 0),
       je(loopEnd),
       movdw(at(Eax + Ebx + ArrayLengthOffset), 0) :# "Initialize array element to 0",
       sub(Ebx, 4),
+      jmp(loopStart),
       loopEnd::,
       :# ("[END] Array Initialization")
     )

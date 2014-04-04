@@ -24,23 +24,6 @@ class MethodInvocationExpressionCodeGenerator(invocation: MethodInvocationExpres
       :#(s"[BEGIN] Method invocation expression ${invocation}")
     )
 
-    invocation.arguments.foreach {
-      argument =>
-        appendText(
-          :#("Evaluate parameter"),
-          push(Ecx) :# "Save this",
-          #>)
-
-        argument.generate()
-
-        appendText(
-          #<,
-          pop(Ecx) :# "Retrieve this",
-          push(Eax) :# "Push parameter onto stack",
-          emptyLine
-        )
-    }
-
     invocation.expression match {
       case Some(prefixType) => {
         getPrefixType(prefixType)
@@ -61,12 +44,37 @@ class MethodInvocationExpressionCodeGenerator(invocation: MethodInvocationExpres
       }
     }
 
-    val selectorIndex = environment.staticDataManager.getMethodIndex(invocation.declaration)
+    appendText(mov(Ebx, Eax) :# "Move method owner into Ebx")
 
+    invocation.arguments.foreach {
+      argument =>
+        appendText(
+          :#("Evaluate parameter"),
+          push(Ecx) :# "Save this",
+          push(Ebx) :# "Save method owner",
+          #>)
+
+        argument.generate()
+
+        appendText(
+          #<,
+          pop(Ebx) :# "Retrieve method owner",
+          pop(Ecx) :# "Retrieve this",
+          push(Eax) :# "Push parameter onto stack",
+          emptyLine
+        )
+    }
+
+    appendText(mov(Eax, Ebx) :# "Move method owner into Eax")
+
+    val selectorIndex = environment.staticDataManager.getMethodIndex(invocation.declaration)
     appendText(
+      push(Ecx) :# "Save this",
+      mov(Ecx, Eax) :# "Inject reference to new this",
       mov(Eax, at(Eax)) :# "Move selector table into eax",
       mov(Eax, at(Eax + selectorIndex * 4)) :# "Load method declaration into Eax",
       call(Eax) :# "Call method. Returns arguments in eax",
+      pop(Ecx) :# "Retrieve this",
       add(Esp, 4 * invocation.arguments.size) :# "Pop arguments off stack",
       :#(s"[END] Method invocation expression ${invocation}"),
       emptyLine
