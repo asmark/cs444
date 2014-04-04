@@ -18,10 +18,6 @@ class InfixExpressionCodeGenerator(infix: InfixExpression)
     infix.operator match {
       case Plus =>
         types match {
-          case (StringType, NullType) =>
-            Logger.logWarning("We don't support String + null")
-          case (NullType, StringType) =>
-            Logger.logWarning("We don't support null + String")
           case (StringType, _) | (_, StringType) => generateStringConcat()
           case (_: NumericType, _: NumericType) => generateInfixOperation(addIntegers)
           case (left, right) =>
@@ -51,8 +47,10 @@ class InfixExpressionCodeGenerator(infix: InfixExpression)
   }
 
   private[this] def generateStringConcat() {
-    val leftValueOf = findDeclaredMethod(StringType, "valueOf", IndexedSeq(infix.left.expressionType)).get
-    val rightValueOf = findDeclaredMethod(StringType, "valueOf", IndexedSeq(infix.right.expressionType)).get
+    val leftType = if (infix.left.expressionType == NullType) ObjectType else infix.left.expressionType
+    val rightType = if (infix.right.expressionType == NullType) ObjectType else infix.right.expressionType
+    val leftValueOf = findDeclaredMethod(StringType, "valueOf", IndexedSeq(leftType)).get
+    val rightValueOf = findDeclaredMethod(StringType, "valueOf", IndexedSeq(rightType)).get
 
     appendText(
       :#("[BEGIN] String + Any | Any + String")
@@ -60,23 +58,24 @@ class InfixExpressionCodeGenerator(infix: InfixExpression)
     infix.left.generate()
     appendText(
       emptyLine,
-      push(Eax) :# "[left]",
+      push(Eax) :# "[left: Any]",
       push(Ecx) :# "Save 'this'",
       call(leftValueOf.uniqueName) :# "Call String.valueOf(left)",
       pop(Ecx) :# "Restore 'this'",
+      pop(Ebx) :# "[]",
+      push(Eax) :# "[left: String]",
       emptyLine
     )
     infix.right.generate()
     appendText(
-      push(Eax) :# "[right, left]",
+      push(Eax) :# "[right: Any, left: String]",
       push(Ecx) :# "Save 'this'",
       call(rightValueOf.uniqueName) :# "Call String.valueOf(right)",
       pop(Ecx) :# "Restore 'this'",
-      pop(Ebx) :# "[left]",
+      pop(Ebx) :# "[left: String]",
       emptyLine,
-      call(nullCheck),
       pop(Ecx) :# "ecx = left, []",
-      push(Eax) :# "[right]",
+      push(Eax) :# "[right: String]",
       push(Ecx) :# "Push 'this'",
       call(StringConcatMethod.uniqueName) :# "Call left.concat(right)",
       pop(Ecx) :# "Restore 'this'",
