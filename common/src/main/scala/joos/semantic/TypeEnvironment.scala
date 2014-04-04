@@ -111,8 +111,6 @@ trait TypeEnvironment extends Environment {
         // An old method already exists. Check if we must widen visibility
         case Some(oldMethod) => {
           // Set overloaded method
-//          assert(newMethod.overloads.isEmpty)
-          newMethod.overloads = Some(oldMethod)
           if (oldMethod.modifiers.contains(Modifier.Protected) && newMethod.modifiers.contains(Modifier.Public)) {
             // Remove the old (Protected) method in favour of the new (Public) one
             // Key thing is to remove old method from the map
@@ -135,7 +133,7 @@ trait TypeEnvironment extends Environment {
     }
   }
 
-  lazy val implementedMethods: Map[SimpleNameExpression, Set[MethodDeclaration]] = {
+  lazy val dispatchableMethods: Map[SimpleNameExpression, Set[MethodDeclaration]] = {
 
     def addBindingAndWidenVisibility(newMethod: MethodDeclaration, map: Map[SimpleNameExpression, Set[MethodDeclaration]]) = {
       if (map.get(newMethod.name).isEmpty) {
@@ -147,10 +145,7 @@ trait TypeEnvironment extends Environment {
           case None => map(newMethod.name) + newMethod
           // An old method already exists. Check if we must widen visibility
           case Some(oldMethod) => {
-            // Set overloaded method
-            //          assert(newMethod.overloads.isEmpty)
-            newMethod.overloads = Some(oldMethod)
-            map(newMethod.name) - oldMethod + newMethod
+            map(newMethod.name) + newMethod
           }
         }
         map + (newMethod.name -> currentMethods)
@@ -169,16 +164,9 @@ trait TypeEnvironment extends Environment {
 
     this.supers.foreach {
       superType =>
-        superType.implementedMethods.values.flatten foreach {
+        superType.dispatchableMethods.values.flatten foreach {
           contained =>
-            if (!contained.isAbstract) {
               ret = addBinding(contained, ret)
-            } else {
-              // All abs
-              if (isAllAbstract(contained)) {
-                ret = addBinding(contained, ret)
-              }
-            }
         }
     }
     ret
