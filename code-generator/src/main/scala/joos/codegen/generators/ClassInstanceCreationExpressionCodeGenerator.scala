@@ -14,8 +14,6 @@ class ClassInstanceCreationExpressionCodeGenerator(expression: ClassInstanceCrea
 
     appendText(
       :#(s"[BEGIN] Class Instance Creation ${expression}"),
-      emptyLine,
-      call(mallocTypeLabel(tipe)) :# "Allocate raw bytes for object. Returns this in ecx",
       emptyLine
     )
 
@@ -23,23 +21,26 @@ class ClassInstanceCreationExpressionCodeGenerator(expression: ClassInstanceCrea
       argument =>
         appendText(
           :#("Evaluate parameter"),
-          push(Ecx) :# "Save this",
+          push(Ecx) :# "Save old this",
           #>)
 
         argument.generate()
 
         appendText(
           #<,
-          pop(Ecx) :# "Retrieve this",
+          pop(Ecx) :# "Retrieve old this",
           push(Eax) :# "Push parameter onto stack",
           emptyLine
         )
     }
 
     appendText(
+      push(Ecx) :# "Save old this",
+      call(mallocTypeLabel(tipe)) :# "Allocate raw bytes for object. Returns this in ecx",
       call(expression.constructor.uniqueName) :# "Call constructor. Returns this as ecx",
-      add(Esp, 4*expression.arguments.size) :# "Pop arguments off stack",
-      mov(Eax, Ecx) :# "Return this as eax"
+      mov(Eax, Ecx) :# "Return new object as eax",
+      pop(Ecx) :# "Retrieve old this",
+      add(Esp, 4 * expression.arguments.size) :# "Pop arguments off stack"
     )
 
     appendText(

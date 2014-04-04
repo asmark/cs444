@@ -26,10 +26,16 @@ package object generators {
 
   def mallocTypeLabel(tipe: TypeDeclaration) = s"malloc_${tipe.uniqueName}"
 
+  def classTableLabel(tipe: TypeDeclaration) = s"class_table_${tipe.uniqueName}"
+
   def getLocalVariableInstruction(variable: SimpleNameExpression, method: MethodDeclaration, register: Register) = {
     if (method.isParameter(variable)) {
       val slot = method.getParameterSlot(variable)
-      add(register, (slot * 4) + ParameterOffset)
+      if (method.isConstructor) {
+        add(register, ((slot+1) * 4) + ParameterOffset)
+      } else {
+        add(register, ((slot+1) * 4) + ParameterOffset)
+      }
     } else {
       assert(method.isLocal(variable))
       val slot = method.getLocalSlot(variable)

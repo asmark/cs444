@@ -32,7 +32,7 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
 
     appendText(prologue(4 * method.locals): _*)
 
-    // Expect eax to hold pointer to raw malloc'ed object
+    // Expect ecx to hold pointer to raw malloc'ed object
     getSuperType(environment.typeEnvironment) match {
       case None => {
         appendText(:#("Object has no super constructor. Not invoking super constructor"))

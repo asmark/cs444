@@ -10,6 +10,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
   val selectorTable = selectorTableLabel(tipe)
   val subtypeTable = subtypeTableLabel(tipe)
+  val classTable = classTableLabel(tipe)
 
   override def generate() {
 
@@ -76,6 +77,9 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
   }
 
   private def createSelectorIndexedTable() {
+
+    appendGlobal(classTable)
+    appendData(classTable::, dd(selectorTable))
 
     def includeOverridden(methods: Traversable[MethodDeclaration]): Map[MethodDeclaration, MethodDeclaration] = {
 
