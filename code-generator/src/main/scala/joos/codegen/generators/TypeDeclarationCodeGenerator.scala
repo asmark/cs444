@@ -11,6 +11,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
   val selectorTable = selectorTableLabel(tipe)
   val subtypeTable = subtypeTableLabel(tipe)
+  val classTable = classTableLabel(tipe)
 
   override def generate() {
 
@@ -123,6 +124,9 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
   private def createSelectorIndexedTable() {
 
+    appendGlobal(classTable)
+    appendData(classTable ::, dd(selectorTable))
+
     def includeOverridden(methods: Traversable[MethodDeclaration]): Map[MethodDeclaration, MethodDeclaration] = {
 
       def getOverridden(method: MethodDeclaration, implementer: MethodDeclaration): Set[MethodDeclaration] = {
@@ -135,7 +139,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
       methods.foldRight(Map.empty[MethodDeclaration, MethodDeclaration]) {
         (implementer, implementerMap) =>
-            implementerMap ++ getOverridden(implementer, implementer).map(_ -> implementer)
+          implementerMap ++ getOverridden(implementer, implementer).map(_ -> implementer)
       }
     }
 
@@ -146,11 +150,12 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
     environment.staticDataManager.orderedMethods.foreach {
       method =>
-          supportedMethods.get(method) match {
-            case Some(implementer) =>
-              appendData(dd(implementer.uniqueName) :# s"${method.uniqueName} implemented by ${implementer.uniqueName}")
-            case None => appendData(dd(0) :# s"${method.uniqueName} not implemented by ${tipe.uniqueName}")
+        supportedMethods.get(method) match {
+          case Some(implementer) => {
+            appendData(dd(implementer.uniqueName) :# s"${method.uniqueName} implemented by ${implementer.uniqueName}")
           }
+          case None => appendData(dd(0) :# s"${method.uniqueName} not implemented by ${tipe.uniqueName}")
+        }
     }
 
     appendData(emptyLine)

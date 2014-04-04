@@ -69,9 +69,12 @@ class MethodInvocationExpressionCodeGenerator(invocation: MethodInvocationExpres
 
     val selectorIndex = environment.staticDataManager.getMethodIndex(invocation.declaration)
     appendText(
+      push(Ecx) :# "Save this",
+      mov(Ecx, Eax) :# "Inject reference to new this",
       mov(Eax, at(Eax)) :# "Move selector table into eax",
       mov(Eax, at(Eax + selectorIndex * 4)) :# "Load method declaration into Eax",
       call(Eax) :# "Call method. Returns arguments in eax",
+      pop(Ecx) :# "Retrieve this",
       add(Esp, 4 * invocation.arguments.size) :# "Pop arguments off stack",
       :#(s"[END] Method invocation expression ${invocation}"),
       emptyLine

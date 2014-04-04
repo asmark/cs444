@@ -1,0 +1,48 @@
+public class DoubleInstantiation {
+
+    public String a;
+    public String b;
+
+    public boolean set(String h, String i, String j, String k) {
+        a = h;
+        b = k;
+        return true;
+    }
+
+    public DoubleInstantiation(String x, String y) {
+        a = x;
+        b = y;
+    }
+
+    public static int test() {
+        String s = "abc";
+        Object g = new String("abc");
+        Object j = String.valueOf("x");
+
+        if (s.compareTo("abc") != 0) {
+            return 1;
+        } else if (s.compareTo(g) != 0) {
+            return 7;
+        } else if (((String)g).compareTo(s) != 0) {
+            return 8;
+        }
+
+        DoubleInstantiation d = new DoubleInstantiation(String.valueOf(1), "asd");
+        if (d.a.compareTo("1") != 0) {
+            return 2;
+        } else if (d.b.compareTo(new String("asd")) != 0) {
+            return 3;
+        }
+
+        d.set(s, String.valueOf('b'), "z", new String("c"));
+
+        if (d.a.compareTo(s) != 0) {
+            return 4;
+        } else if (d.b.compareTo("c") != 0) {
+            return 5;
+        }
+
+        return 123;
+    }
+
+}
