@@ -12,14 +12,12 @@ package object generators {
   final val exceptionLabel = "__exception"
   final val mallocLabel: LabelReference = "__malloc"
 
-  val offsetPostFix = "_offset"
-
   val FieldOffset = 8
   val ParameterOffset = 4
   final val ArrayLengthOffset = 8
   final val ArrayFirstElementOffset = ArrayLengthOffset + 4
-  final val SelectorTableOffset = 4
-  final val SubtypeTableOffset = 8
+  final val SelectorTableOffset = 0
+  final val SubtypeTableOffset = 4
 
   def nextLabel(labelPrefix: String = "label") = labelPrefix + "_" + DefaultUniqueIdGenerator.nextId
 

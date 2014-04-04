@@ -62,10 +62,10 @@ class CastExpressionCodeGenerator(expression: CastExpression)
           case src: SimpleType => {
             val dstTypeDeclration = environment.typeEnvironment.compilationUnit.getVisibleType(dst.name)
             require(dstTypeDeclration.isDefined)
-            val dstTypeId = dstTypeDeclration.get.uniqueName
+
             val dstSit = selectorTableLabel(dstTypeDeclration.get)
             val dstSubTypeTable = subtypeTableLabel(dstTypeDeclration.get)
-            val dstTypeIdx = environment.staticDataManager.getTypeIndex(dstTypeDeclration.get)
+            val dstTypeOffset = environment.staticDataManager.getTypeIndex(dstTypeDeclration.get) * 4
 
             val validLabel = "valid" + DefaultUniqueIdGenerator.nextId()
             val endLabel = "end" + DefaultUniqueIdGenerator.nextId()
@@ -78,10 +78,11 @@ class CastExpressionCodeGenerator(expression: CastExpression)
               mov(Ebx, Eax),
               add(Ebx, toExpression(SelectorTableOffset)),
               mov(Ebx, at(Ebx)) :#"EBX should point to the sub type table",
-              add(Ebx, dstTypeIdx),
+              add(Ebx, dstTypeOffset),
               mov(Ebx, at(Ebx)) :#"Look up value in the subtype table",
               cmp(Ebx, toExpression(1)),
               je(labelReference(validLabel)),
+              call(labelReference(exceptionLabel)) :#"Cast error",
               jmp(labelReference(endLabel)),
               validLabel ::,
               mov(Ebx, Eax) :#"Update selector table",

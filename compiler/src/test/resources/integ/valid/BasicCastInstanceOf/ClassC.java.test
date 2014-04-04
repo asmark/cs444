@@ -1,0 +1,39 @@
+public class ClassC extends ClassB {
+    public int c;
+    public int b2;
+    public void dummy() {}
+    public int c2;
+    public int a;
+
+    public ClassC() {}
+
+    public static int test() {
+        ClassA x = new ClassC();
+        if (x.a != 0 || x.a1 != 1) {
+            return 1;
+        }
+
+        int ret = 119;
+        ClassB b = new ClassB();
+        ClassA a = (ClassA) b;
+        Object c = new ClassC();
+
+        if (a instanceof ClassA) {
+            ret = ret + 1;
+        }
+
+        if (b instanceof ClassB) {
+            ret = ret + 1;
+        }
+
+        if (b instanceof ClassA) {
+            ret = ret + 1;
+        }
+
+        if (a instanceof Object) {
+            ret = ret + 1;
+        }
+
+        return ret;
+    }
+}

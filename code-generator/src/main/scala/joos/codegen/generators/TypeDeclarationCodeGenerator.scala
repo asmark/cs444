@@ -101,8 +101,10 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     environment.staticDataManager.orderedMethods.foreach {
       method =>
           supportedMethods.get(method) match {
-            case Some(implementer) =>
-              appendData(dd(implementer.uniqueName) :# s"${method.uniqueName} implemented by ${implementer.uniqueName}")
+            case Some(implementer) => {
+              if (!implementer.isNative)
+                appendData(dd(implementer.uniqueName) :# s"${method.uniqueName} implemented by ${implementer.uniqueName}")
+            }
             case None => appendData(dd(0) :# s"${method.uniqueName} not implemented by ${tipe.uniqueName}")
           }
     }
