@@ -22,9 +22,12 @@ fi
 
 TEST_DIRS=`find ../compiler/src/test/resources -regextype posix-egrep -regex ".*/(valid|exception)" -type d | grep "/integ/"` # integ only for now
 STD_LIB=`find ../compiler/src/test/resources/integ/stdlib -type f`
+FILE_FAILED_TESTS=failed-tests.txt
 
 num_tests=0
 passed_tests=0
+
+rm -f ${FILE_FAILED_TESTS}
 
 for dir in ${TEST_DIRS}
 do
@@ -86,6 +89,7 @@ do
 
     if (( result != expected ))
     then
+      echo "${test_name}" >> ${FILE_FAILED_TESTS}
       echo -e "${RED}FAILED at Execution... (Return value was ${result}${NC}"
       read -p "Press [Enter] to continue..."
     else
