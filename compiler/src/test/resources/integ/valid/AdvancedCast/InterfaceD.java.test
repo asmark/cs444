@@ -1,0 +1,3 @@
+public interface InterfaceD {
+    public int callD();
+}

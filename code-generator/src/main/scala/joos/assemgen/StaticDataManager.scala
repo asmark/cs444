@@ -35,6 +35,10 @@ class StaticDataManager(asts: Seq[AbstractSyntaxTree]) {
     methodIds.get(method.uniqueName).get._2
   }
 
+  def getTypeIndex(tipe: TypeDeclaration): Int = {
+      typeIds.get(tipe.uniqueName).get._2
+  }
+
   lazy val orderedMethods: IndexedSeq[MethodDeclaration] = {
     methodIds.toSeq.sortWith((left, right) => left._2._2 < right._2._2).map(pair => pair._2._1).toIndexedSeq
   }

@@ -2,20 +2,19 @@ package joos.codegen
 
 import joos.assemgen.Register._
 import joos.assemgen._
-import joos.ast.declarations.{MethodDeclaration, FieldDeclaration, TypeDeclaration}
+import joos.ast.declarations.{MethodDeclaration, TypeDeclaration}
 import joos.ast.expressions.SimpleNameExpression
-import joos.ast.types._
-import joos.core.{Logger, DefaultUniqueIdGenerator}
+import joos.core.DefaultUniqueIdGenerator
 
 
 package object generators {
   final val exceptionLabel = "__exception"
-  final val mallocLabel: LabelReference = "__malloc"
+  final val mallocLabel = "__malloc"
 
-  val offsetPostFix = "_offset"
-
-  val FieldOffset = 8
-  val ParameterOffset = 4
+  final val FieldOffset = 8
+  final val SelectorTableOffset = 0
+  final val SubtypeTableOffset = 4
+  final val ParameterOffset = 4
   final val ArrayLengthOffset = 8
   final val ArrayFirstElementOffset = ArrayLengthOffset + 4
 
@@ -60,48 +59,4 @@ package object generators {
     ret(),
     :#("[END] Function Epilogue")
   )
-
-  def initField(fieldDeclaration: FieldDeclaration)(implicit environment: AssemblyCodeGeneratorEnvironment) {
-    val codeGenerator = new FieldDeclarationCodeGenerator(fieldDeclaration)
-    codeGenerator.generate()
-  }
-
-  // TODO: this method should be deprecated and it not quite
-  def initDefault(fieldDeclaration: FieldDeclaration) {
-    fieldDeclaration.declarationType match {
-      case ArrayType(_, _) => {
-        Seq(
-          mov(Edx, 0) :# "Init default ArrayType"
-        )
-      }
-      case PrimitiveType.IntegerType => {
-        Seq(
-          mov(Edx, 0) :# "Init default IntegerType"
-        )
-      }
-      case PrimitiveType.BooleanType => {
-        Seq(
-          mov(Edx, 0) :# "Init default BooleanType"
-        )
-      }
-      case PrimitiveType.CharType => {
-        Seq(
-          mov(Edx, 0) :# "Init default CharType"
-        )
-      }
-      case PrimitiveType.ShortType => {
-        Seq(
-          mov(Edx, 0) :# "Init default Short"
-        )
-      }
-      case NullType | VoidType => {
-        Logger.logError("Field should not be of type null of void")
-      }
-      case SimpleType(_) => {
-        Seq(
-          mov(Edx, 0) :# "Init default SimpleType"
-        )
-      }
-    }
-  }
 }

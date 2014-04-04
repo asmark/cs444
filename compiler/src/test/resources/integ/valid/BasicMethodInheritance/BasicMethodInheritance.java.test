@@ -1,0 +1,15 @@
+public class BasicMethodInheritance {
+    public int b;
+    public static native int m(int i);
+    public void method_b() {}
+
+    public BasicMethodInheritance() {
+        b = 1;
+    }
+
+    public static int test() {
+        BasicMethodInheritance cb = new BasicMethodInheritance();
+        cb.hashCode();
+        return 123;
+    }
+}
