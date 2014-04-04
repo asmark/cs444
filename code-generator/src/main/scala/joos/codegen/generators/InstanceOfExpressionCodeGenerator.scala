@@ -11,18 +11,22 @@ class InstanceOfExpressionCodeGenerator(expression: InstanceOfExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
 
   override def generate() {
-    expression.expression.expressionType match {
-      case leftType: SimpleType => {
-        require(leftType.declaration != null)
-        val rightType = expression.classType
+    expression.classType match {
+      case rightType: SimpleType => {
+        require(rightType.declaration != null)
         val subtypeIndex = environment.staticDataManager.getTypeIndex(rightType.declaration)
         generateObjectCheck(subtypeIndex)
       }
 
       case ArrayType(innerType, dimensions) => {
         val subtypeIndex = innerType match {
-          case primitive: PrimitiveType => environment.staticDataManager.getArrayTypeIndex(primitive)
-          case simpleType: SimpleType => environment.staticDataManager.getArrayTypeIndex(simpleType.declaration)
+          case primitive: PrimitiveType => {
+            environment.staticDataManager.getArrayTypeIndex(primitive)
+          }
+          case simpleType: SimpleType => {
+            require(simpleType.declaration != null)
+            environment.staticDataManager.getArrayTypeIndex(simpleType.declaration)
+          }
         }
         generateObjectCheck(subtypeIndex)
       }
