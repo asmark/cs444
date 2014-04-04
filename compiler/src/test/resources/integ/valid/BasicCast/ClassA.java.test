@@ -1,0 +1,14 @@
+public class ClassA {
+    public int a;
+    public static native int m(int i);
+
+    public ClassA() {
+        a = 0;
+    }
+
+    public static int test() {
+        ClassA a = new ClassA();
+        Object o = (Object) a;
+        return 123;
+    }
+}
