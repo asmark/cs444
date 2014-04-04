@@ -9,6 +9,7 @@ public class ClassA {
     public static int test() {
         ClassA a = new ClassA();
         Object o = (Object) a;
+        o.hashCode();
         return 123;
     }
 }
