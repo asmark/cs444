@@ -24,7 +24,7 @@ class ArrayCreationExpressionCodeGenerator(expression: ArrayCreationExpression)
     expression.size.generate()
     appendText(
       push(Eax) :# "Saves number of elements",
-      add(Eax, 2) :# "Allocates two more fields for SIT and SubType table",
+      add(Eax, 3) :# "Allocates two more fields for SIT and SubType table",
       imul(Eax, Eax, 4),
       call(mallocLabel),
       pop(Ebx),
