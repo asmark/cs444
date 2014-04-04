@@ -70,12 +70,14 @@ object ArithmeticOperations {
         prologue(0) ++
         Seq(
           mov(Edx, 0) :# "Set edx as 0 for signed comparisons",
+          mov(Ebx, at(Ebp + 8)) :# "put right operand in ebx",
+          cmp(Edx, Ebx) :# "Compare right hand side to zero to see if divide by zero",
+          je(exceptionLabel) :# "Throw an exception if division by zero",
           mov(Eax, at(Ebp + 12)) :# "put left operand in eax",
           cmp(Eax, Edx) :# "Compare left operand to be greater than zero",
           jge(beginDivide) :# "If left operand is positive, skip to division",
           mov(Edx, -1) :# "Else, set edx to -1",
           beginDivide ::,
-          mov(Ebx, at(Ebp + 8)) :# "put right operand in ebx",
           idiv(Ebx) :# "divide left and right and put answer in eax",
           emptyLine
         ) ++
@@ -94,12 +96,14 @@ object ArithmeticOperations {
         prologue(0) ++
         Seq(
           mov(Edx, 0) :# "Set edx as 0 for signed comparisons",
+          mov(Ebx, at(Ebp + 8)) :# "put right operand in ebx",
+          cmp(Edx, Ebx) :# "Compare right hand side to zero to see if divide by zero",
+          je(exceptionLabel) :# "Throw an exception if division by zero",
           mov(Eax, at(Ebp + 12)) :# "put left operand in eax",
           cmp(Eax, Edx) :# "Compare left operand to be greater than zero",
           jge(beginModulo) :# "If left operand is positive, skip to division",
           mov(Edx, -1) :# "Else, set edx to -1",
           (beginModulo ::),
-          mov(Ebx, at(Ebp + 8)) :# "put right operand in ebx",
           idiv(Ebx) :# "divide left and right and put answer in eax",
           mov(Eax, Edx) :# "put the remainder in eax",
           emptyLine
