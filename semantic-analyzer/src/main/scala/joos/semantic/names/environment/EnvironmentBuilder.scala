@@ -2,12 +2,11 @@ package joos.semantic.names.environment
 
 import joos.ast._
 import joos.ast.declarations._
-import joos.ast.expressions.{SimpleNameExpression, VariableDeclarationExpression}
-import joos.ast.statements.WhileStatement
+import joos.ast.expressions.VariableDeclarationExpression
 import joos.ast.statements._
 import joos.ast.visitor.AstVisitor
 import joos.semantic.BlockEnvironment
-import scala.collection.mutable
+import joos.syntax.parser.JoosParseException
 
 /**
  * Environment builder is responsible for the following name resolution checks:
@@ -39,9 +38,15 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
     typed.compilationUnit = unit
     typed.packageDeclaration = packaged
 
+    if (!typed.modifiers.contains(Modifier.Protected) && !typed.modifiers.contains(Modifier.Public)) {
+      throw new JoosParseException(s"Package private classes are not allowed in ${typed.name}")
+    }
+
     typed.fields foreach {
       field =>
-        if (typed.fieldMap.contains(field.declarationName)) {
+        if (!field.modifiers.contains(Modifier.Protected) && !field.modifiers.contains(Modifier.Public)) {
+          throw new JoosParseException(s"Package private fields are not allowed in ${field.declarationName}")
+        } else if (typed.fieldMap.contains(field.declarationName)) {
           throw new DuplicatedFieldException(field.declarationName)
         }
         typed.add(field)
@@ -51,6 +56,11 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
   }
 
   override def apply(method: MethodDeclaration) {
+
+    if (!method.modifiers.contains(Modifier.Protected) && !method.modifiers.contains(Modifier.Public)) {
+      throw new JoosParseException(s"Package private methods are not allowed in ${method.name}}")
+    }
+
     method.blockEnvironment = method.parameters.foldRight(BlockEnvironment()) {
       (variable, environment) =>
         environment.add(variable) match {
@@ -70,7 +80,7 @@ class EnvironmentBuilder(implicit module: ModuleDeclaration) extends AstVisitor 
   }
 
   override def apply(block: Block) {
-//    val oldEnvironment = this.block
+    //    val oldEnvironment = this.block
     block.blockEnvironment = this.block
     block.statements.foreach(_.accept(this))
     this.block = block.blockEnvironment

@@ -2,20 +2,16 @@
 
 RED='\e[0;31m'
 GREEN='\e[0;32m'
+BLUE='\e[0;34m'
 NC='\e[0m'
 
+TEST_FILTER=".*"
+if (( $# >= 1 ))
+then
+  TEST_FILTER="$@"
+fi
 
 DEBUG=0
-while getopts ":d" opt; do
-  case $opt in
-    d)
-      DEBUG=1
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG" ;;
-  esac
-done
-
 
 cp ../joosc . && cp ../compiler.jar .
 if (( $? != 0 ));
@@ -24,7 +20,7 @@ then
   exit 1
 fi
 
-TEST_DIRS=`find ../compiler/src/test/resources -type d -name valid | grep integ` # integ only for now
+TEST_DIRS=`find ../compiler/src/test/resources -regextype posix-egrep -regex ".*/(valid|exception)" -type d | grep "/integ/"` # integ only for now
 STD_LIB=`find ../compiler/src/test/resources/integ/stdlib -type f`
 
 num_tests=0
@@ -32,9 +28,9 @@ passed_tests=0
 
 for dir in ${TEST_DIRS}
 do
-  for test_case in `find ${dir} -maxdepth 1 -type d -not -path "*/valid"`
+  for test_case in `find ${dir} -maxdepth 1 -type d -not -path "*/valid" -not -path "*/exception" | grep -i "${TEST_FILTER}"`
   do
-    test_name=`echo ${test_case} | sed 's/\.\..*\/\(a[0-9]\|integ\)\/.*valid\/\(.*\)/\1 \2/g' | sed 's/ /-/g'`
+    test_name=`echo ${test_case} | sed 's/\.\..*\/\(a[0-9]\|integ\)\/.*\(exception\|valid\)\/\(.*\)/\1 \3/g' | sed 's/ /-/g'`
     echo "Running ${test_name}..."
     (( num_tests += 1 ))
 
@@ -80,12 +76,25 @@ do
 
     ./${outdir}/main
     result=$?
-    if (( result != 123 && result != 13 ))
+
+    if [[ ${test_case} == *exception* ]]
+    then
+      expected=13
+    else
+      expected=123
+    fi
+
+    if (( result != expected ))
     then
       echo -e "${RED}FAILED at Execution... (Return value was ${result}${NC}"
       read -p "Press [Enter] to continue..."
     else
-      echo -e "${GREEN}PASSED!${NC} (Returned ${result})"
+      if (( result == 123 )) 
+      then
+        echo -e "${GREEN}PASSED!${NC} (Returned ${result})"
+      else
+        echo -e "${BLUE}PASSED!${NC} Threw an exception. (Returned ${result})"
+      fi
       (( passed_tests += 1 ))
     fi
     

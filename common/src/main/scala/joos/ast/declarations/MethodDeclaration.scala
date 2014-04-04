@@ -6,11 +6,10 @@ import joos.ast.expressions.{NameExpression, SimpleNameExpression}
 import joos.ast.statements.Block
 import joos.ast.types.PrimitiveType
 import joos.ast.types.{SimpleType, Type, ArrayType}
-import joos.semantic.BlockEnvironment
+import joos.core.Identifiable
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.ParseTreeNode
 import joos.syntax.parsetree.TreeNode
-import joos.core.Identifiable
 import scala.collection.mutable
 
 case class MethodDeclaration(
@@ -24,6 +23,7 @@ case class MethodDeclaration(
   var compilationUnit: CompilationUnit = null
   var typeDeclaration: TypeDeclaration = null
   var locals = 0
+  var overloads: Option[MethodDeclaration] = None
 
   override def toString = {
     val returnTypeString = returnType match {
@@ -135,13 +135,14 @@ case class MethodDeclaration(
   def getParameterSlot(parameter: SimpleNameExpression): Int = {
     parameterSlots.size - parameterSlots(parameter) + 1
   }
-//
-//  /**
-//   * Gets the slot used by this variable
-//   */
-//  def getVariableSlot(variable: SimpleNameExpression): Int = {
-//    localSlots.get(variable).getOrElse(parameterSlots(variable) + localSlots.size)
-//  }
+
+  //
+  //  /**
+  //   * Gets the slot used by this variable
+  //   */
+  //  def getVariableSlot(variable: SimpleNameExpression): Int = {
+  //    localSlots.get(variable).getOrElse(parameterSlots(variable) + localSlots.size)
+  //  }
 
   override def declarationName: NameExpression = name
 }

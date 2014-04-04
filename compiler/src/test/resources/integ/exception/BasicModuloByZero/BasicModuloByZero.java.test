@@ -1,0 +1,9 @@
+public class BasicModuloByZero {
+
+    public BasicModuloByZero() {}
+
+    public static int test() {
+        int j = 4 + 5 / 5 * 4 + 9 * 2 - 14;
+        return j / ((( -1 + 7 + 6 + 10 * 2 -10 + 3) / 5) - 5);
+    }
+}

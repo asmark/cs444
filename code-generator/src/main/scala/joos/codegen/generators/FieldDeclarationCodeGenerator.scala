@@ -2,8 +2,8 @@ package joos.codegen.generators
 
 import joos.assemgen.Register._
 import joos.assemgen._
-import joos.codegen.AssemblyCodeGeneratorEnvironment
 import joos.ast.declarations.FieldDeclaration
+import joos.codegen.AssemblyCodeGeneratorEnvironment
 
 class FieldDeclarationCodeGenerator(field: FieldDeclaration)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
@@ -48,22 +48,28 @@ class FieldDeclarationCodeGenerator(field: FieldDeclaration)
     appendText(:#(s"[BEGIN] Initializing instance field ${field.declarationName}"))
 
     val rhs = field.fragment.initializer
-    if (rhs.isDefined) {
-      appendText(
-        push(Ecx) :# "Save this",
-        #>,
-        :#("Evaluate right hand side")
-      )
+    rhs match {
+      case Some(initializer) => {
+        appendText(
+          push(Ecx) :# "Save this",
+          #>,
+          :#("Evaluate right hand side")
+        )
 
-      rhs.get.generate()
-      // Rhs is in Eax now
-      appendText(
-        #<,
-        pop(Ecx) :# "Restore this",
-        movdw(at(Ecx + offset), Eax) :# s"Assign ${field}",
-        :#(s"[END] Initializing instance field ${field.declarationName}")
-      )
+        initializer.generate()
+        // Rhs is in Eax now
+        appendText(
+          #<,
+          pop(Ecx) :# "Restore this"
+        )
+      }
+      case None => appendText(mov(Eax, 0) :# s"${field.declarationName} has no initializer")
     }
+
+    appendText(
+      movdw(at(Ecx + offset), Eax) :# s"Assign ${field}",
+      :#(s"[END] Initializing instance field ${field.declarationName}")
+    )
   }
 
 }

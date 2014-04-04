@@ -122,8 +122,11 @@ package object assemgen {
     new AssemblyInstruction("mov dword", Seq(destination, source), None)
   }
 
-  def lea(destination: AssemblyExpression, source: LabelReference): AssemblyInstruction = {
-    new AssemblyInstruction("lea", Seq(destination, source), None)
+  /**
+   * destination = source representing an address
+   */
+  def lea(destination: AssemblyExpression, source: MemoryReference): AssemblyInstruction = {
+    new AssemblyInstruction("lea", Seq(destination, source))
   }
 
   def inc(reg: Register): AssemblyInstruction = {
@@ -171,6 +174,14 @@ package object assemgen {
   }
 
   /**
+   * Signed multiplication
+   * eax = ebx * constant
+   */
+  def imul(eax: Register, ebx: Register, constant: Int): AssemblyInstruction = {
+    new AssemblyInstruction("imul", Seq(eax, ebx, constant))
+  }
+
+  /**
    * Signed division
    * eax = edx:eax / ebx
    * edx = edx:eax % ebx
@@ -199,10 +210,10 @@ package object assemgen {
   }
 
   /**
-   * Prepares {{eax}} and {{ebx}} for conditional jumps
+   * Prepares {{left}} and {{right}} for conditional jumps
    */
-  def cmp(eax: Register, ebx: Register): AssemblyInstruction = {
-    new AssemblyInstruction("cmp", Seq(eax, ebx))
+  def cmp(left: AssemblyExpression, right: AssemblyExpression): AssemblyInstruction = {
+    new AssemblyInstruction("cmp", Seq(left, right))
   }
 
   /**
@@ -323,6 +334,10 @@ package object assemgen {
     new AssemblyInstruction("leave")
   }
 
+  def loop(label: LabelReference): AssemblyInstruction = {
+    new AssemblyInstruction("loop", Seq(label))
+  }
+
   /**
    * System call
    */
@@ -402,10 +417,6 @@ package object assemgen {
   }
 
   implicit def toExpression(value: Int): AssemblyExpression = {
-    new AnyAssembly(value.toString)
-  }
-
-  implicit def toExpression(value: Long): AssemblyExpression = {
     new AnyAssembly(value.toString)
   }
 

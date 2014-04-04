@@ -20,9 +20,7 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
       case true => generateConstructorCode()
       case false => generateMethodCode()
     }
-
   }
-
 
   def generateConstructorCode() {
     val constructorLabel = s"${method.uniqueName}"
@@ -56,7 +54,9 @@ class MethodDeclarationCodeGenerator(method: MethodDeclaration)
     appendText(:#("[BEGIN] Constructor Initialization"))
     tipe.instanceFields.foreach {
       field =>
-        field.generate()
+          if (field.typeDeclaration equals tipe) {
+            field.generate()
+          }
     }
     appendText(:#("[END] Constructor Initialization"), emptyLine)
 

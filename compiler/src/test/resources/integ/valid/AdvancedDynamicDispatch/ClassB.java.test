@@ -1,0 +1,17 @@
+public class ClassB extends ClassA {
+
+    protected int b1 = 101;
+    protected int b2 = 102;
+
+
+    protected int m2() {
+        return 103;
+    }
+
+    protected int m3(int j) {
+        return 104;
+    }
+
+    public ClassB() {}
+
+}

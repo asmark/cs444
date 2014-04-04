@@ -1,0 +1,9 @@
+public class ArrayOutOfBound {
+  public ArrayOutOfBound() {}
+
+  public static int test() {
+    int[] ints = new int[5];
+    int a = ints[5];
+    return 123;
+  }
+}
