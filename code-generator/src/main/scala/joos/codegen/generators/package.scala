@@ -4,7 +4,7 @@ import joos.assemgen.Register._
 import joos.assemgen._
 import joos.ast.declarations.{MethodDeclaration, FieldDeclaration, TypeDeclaration}
 import joos.ast.expressions.SimpleNameExpression
-import joos.ast.types.{SimpleType, PrimitiveType, ArrayType}
+import joos.ast.types._
 import joos.core.{Logger, DefaultUniqueIdGenerator}
 
 
@@ -30,11 +30,11 @@ package object generators {
   def getLocalVariableInstruction(variable: SimpleNameExpression, method: MethodDeclaration, register: Register) = {
     if (method.isParameter(variable)) {
       val slot = method.getParameterSlot(variable)
-      add(register, (slot*4) + ParameterOffset)
+      add(register, (slot * 4) + ParameterOffset)
     } else {
       assert(method.isLocal(variable))
       val slot = method.getLocalSlot(variable)
-      sub(register, slot*4)
+      sub(register, slot * 4)
     }
   }
 
@@ -61,7 +61,7 @@ package object generators {
     :#("[END] Function Epilogue")
   )
 
-  def initField(fieldDeclaration: FieldDeclaration) (implicit environment: AssemblyCodeGeneratorEnvironment) {
+  def initField(fieldDeclaration: FieldDeclaration)(implicit environment: AssemblyCodeGeneratorEnvironment) {
     val codeGenerator = new FieldDeclarationCodeGenerator(fieldDeclaration)
     codeGenerator.generate()
   }
@@ -94,7 +94,7 @@ package object generators {
           mov(Edx, 0) :# "Init default Short"
         )
       }
-      case PrimitiveType.NullType | PrimitiveType.VoidType => {
+      case NullType | VoidType => {
         Logger.logError("Field should not be of type null of void")
       }
       case SimpleType(_) => {

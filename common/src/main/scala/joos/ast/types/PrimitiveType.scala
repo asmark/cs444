@@ -18,8 +18,6 @@ object PrimitiveType extends Enumeration {
   final val BooleanType = this + new PrimitiveType("boolean")
   final val ByteType = this + new PrimitiveType("byte")
   final val ShortType = this + new PrimitiveType("short")
-  final val VoidType = this + new PrimitiveType("void")
-  final val NullType = this + new PrimitiveType("null")
 
   private[this] def extractNumericToken(numericType: ParseTreeNode) = {
     numericType.children(0).children(0).token match {
