@@ -78,6 +78,10 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
   private def createSelectorIndexedTable() {
 
+    if (tipe.fullName == "java.lang.Integer") {
+      println("foo")
+    }
+
     appendGlobal(classTable)
     appendData(classTable ::, dd(selectorTable), emptyLine)
 

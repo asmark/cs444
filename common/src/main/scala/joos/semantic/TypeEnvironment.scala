@@ -115,6 +115,9 @@ trait TypeEnvironment extends Environment {
             // Remove the old (Protected) method in favour of the new (Public) one
             // Key thing is to remove old method from the map
             map(newMethod.name) - oldMethod + newMethod
+          } else if (oldMethod.modifiers.contains(Modifier.Abstract) && !newMethod.modifiers.contains(Modifier.Abstract)) {
+            // Get rid of old abstract methods with concrete ones
+            map(newMethod.name) - oldMethod + newMethod
           } else {
             // Overwrite the method anyways.. because why not?
             // Does this even work? Who knows. All the tests pass.
@@ -159,14 +162,15 @@ trait TypeEnvironment extends Environment {
   }
 
   lazy val superTypeMethods = {
-    //    (superInterfaces.map(getTypeDeclaration) ++ getSuperType(this)).reduceRight(_.containedMethods ++ _.containedMethods)
     var ret = Map.empty[SimpleNameExpression, Set[MethodDeclaration]]
 
     this.supers.foreach {
       superType =>
         superType.dispatchableMethods.values.flatten foreach {
           contained =>
-              ret = addBinding(contained, ret)
+              if (!contained.isStatic) {
+                ret = addBinding(contained, ret)
+              }
         }
     }
     ret
