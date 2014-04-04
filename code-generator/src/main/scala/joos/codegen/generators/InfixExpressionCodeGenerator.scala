@@ -47,7 +47,7 @@ class InfixExpressionCodeGenerator(infix: InfixExpression)
     val rightEnd = nextLabel(label)
     appendText(
       emptyLine,
-      :# (s"[BEGIN] ${label}"),
+      :#(s"[BEGIN] ${label}"),
       emptyLine
     )
     infix.left.generate()
@@ -55,23 +55,29 @@ class InfixExpressionCodeGenerator(infix: InfixExpression)
       emptyLine,
       cmp(Eax, if (needsTrue) 1 else 0) :# s"if left == ${needsTrue}",
       je(rightStart),
-      :# (s"left == ${!needsTrue}, no need to evaluate right"),
+      :#(s"left == ${!needsTrue}, no need to evaluate right"),
       jmp(rightEnd),
       emptyLine,
-      rightStart::,
-      :# (s"left == ${needsTrue} => return right")
+      rightStart ::,
+      :#(s"left == ${needsTrue} => return right")
     )
     infix.right.generate()
     appendText(
-      rightEnd::,
+      rightEnd ::,
       emptyLine,
-      :# (s"[END] ${label}")
+      :#(s"[END] ${label}")
     )
   }
 
   private[this] def generateStringConcat() {
-    val leftType = if (infix.left.expressionType == NullType) ObjectType else infix.left.expressionType
-    val rightType = if (infix.right.expressionType == NullType) ObjectType else infix.right.expressionType
+    val leftType = infix.left.expressionType match {
+      case NullType | _: ArrayType => ObjectType
+      case _ => infix.left.expressionType
+    }
+    val rightType = infix.right.expressionType match {
+      case NullType | _: ArrayType => ObjectType
+      case _ => infix.right.expressionType
+    }
     val leftValueOf = findDeclaredMethod(StringType, "valueOf", IndexedSeq(leftType)).get
     val rightValueOf = findDeclaredMethod(StringType, "valueOf", IndexedSeq(rightType)).get
 
