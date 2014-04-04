@@ -18,6 +18,8 @@ package object generators {
   val ParameterOffset = 4
   final val ArrayLengthOffset = 8
   final val ArrayFirstElementOffset = ArrayLengthOffset + 4
+  final val SelectorTableOffset = 4
+  final val SubtypeTableOffset = 8
 
   def nextLabel(labelPrefix: String = "label") = labelPrefix + "_" + DefaultUniqueIdGenerator.nextId
 
