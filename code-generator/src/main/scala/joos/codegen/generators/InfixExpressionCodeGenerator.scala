@@ -31,13 +31,9 @@ class InfixExpressionCodeGenerator(infix: InfixExpression)
       case LessOrEqual => generateInfixOperation(compareLessEqual)
       case Greater => generateInfixOperation(compareGreater)
       case GreaterOrEqual => generateInfixOperation(compareGreaterEqual)
-      case ConditionalAnd =>
-        Logger.logWarning(s"We don't support ${ConditionalAnd}")
-        generateInfixOperation(compareAnd)
+      case ConditionalAnd => generateLazy(needsTrue = true, "conditional.and")
       case BitwiseAnd => generateInfixOperation(compareAnd)
-      case ConditionalOr =>
-        Logger.logWarning(s"We don't support ${ConditionalOr}")
-        generateInfixOperation(compareOr)
+      case ConditionalOr => generateLazy(needsTrue = false, "conditional.or")
       case BitwiseInclusiveOr => generateInfixOperation(compareOr)
       case BitwiseExclusiveOr =>
         Logger.logWarning(s"We don't support ${BitwiseExclusiveOr}")
@@ -46,9 +42,42 @@ class InfixExpressionCodeGenerator(infix: InfixExpression)
     }
   }
 
+  private[this] def generateLazy(needsTrue: Boolean, label: String) {
+    val rightStart = nextLabel(label)
+    val rightEnd = nextLabel(label)
+    appendText(
+      emptyLine,
+      :#(s"[BEGIN] ${label}"),
+      emptyLine
+    )
+    infix.left.generate()
+    appendText(
+      emptyLine,
+      cmp(Eax, if (needsTrue) 1 else 0) :# s"if left == ${needsTrue}",
+      je(rightStart),
+      :#(s"left == ${!needsTrue}, no need to evaluate right"),
+      jmp(rightEnd),
+      emptyLine,
+      rightStart ::,
+      :#(s"left == ${needsTrue} => return right")
+    )
+    infix.right.generate()
+    appendText(
+      rightEnd ::,
+      emptyLine,
+      :#(s"[END] ${label}")
+    )
+  }
+
   private[this] def generateStringConcat() {
-    val leftType = if (infix.left.expressionType == NullType) ObjectType else infix.left.expressionType
-    val rightType = if (infix.right.expressionType == NullType) ObjectType else infix.right.expressionType
+    val leftType = infix.left.expressionType match {
+      case NullType | _: ArrayType => ObjectType
+      case _ => infix.left.expressionType
+    }
+    val rightType = infix.right.expressionType match {
+      case NullType | _: ArrayType => ObjectType
+      case _ => infix.right.expressionType
+    }
     val leftValueOf = findDeclaredMethod(StringType, "valueOf", IndexedSeq(leftType)).get
     val rightValueOf = findDeclaredMethod(StringType, "valueOf", IndexedSeq(rightType)).get
 
