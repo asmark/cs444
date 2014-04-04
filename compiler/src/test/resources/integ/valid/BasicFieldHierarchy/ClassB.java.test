@@ -7,7 +7,7 @@ public class ClassB extends ClassA {
     protected static int s;
 
     public ClassB() {
-        b = 0;
+        b = 3;
         b1 = 1;
         b2 = 2;
     }

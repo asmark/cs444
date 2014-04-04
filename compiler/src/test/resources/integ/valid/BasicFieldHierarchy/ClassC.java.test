@@ -8,9 +8,46 @@ public class ClassC extends ClassB {
     public ClassC() {}
 
     public static int test() {
-        ClassA x = new ClassC();
-        if (x.a != 0 || x.a1 != 1) {
+        // Check constructor initialization of super fields
+        ClassC x = new ClassC();
+        if (x.a != 0 || x.a1 != 1 || x.b != 3 || x.b1 != 1 || x.b2 != 0 || x.c != 0 || x.c2 != 0) {
             return 1;
+        }
+
+        // Access fields via different static type
+        ClassA y = x;
+        if (x.a != 0 || x.a1 != 1) {
+            return 2;
+        }
+
+        // Update fields
+        y.a = 2;
+        y.a1 = 3;
+        if (y.a != 2 || y.a1 != 3) {
+            return 3;
+        }
+
+        // See if fields are updated in runtime type
+        if (x.a != 2 || x.a1 != 3 || x.b !=3 || x.b1 != 1 || x.b2 != 0 || x.c != 0 || x.c2 != 0) {
+            return 4;
+        }
+
+        y = new ClassA();
+        // Fields should be initialized according to ClassA
+        if (y.a != 3 || y.a1 != 1) {
+            return 5;
+        }
+
+        y = new ClassB();
+        // Fields should be initialized according to ClassB
+        if (y.a != 0  || y.a1 != 1) {
+            return 6;
+        }
+
+        ClassB z = new ClassB();
+        // Fields should be initialized according to ClassB
+        if (z.a != 0  || z.a1 != 1 || z.b != 3 || z.b1 != 1 || z.b2 != 2) {
+            return 7;
         }
 
         return 123;
