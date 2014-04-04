@@ -4,6 +4,7 @@ import joos.assemgen.Register._
 import joos.assemgen._
 import joos.codegen.AssemblyCodeGeneratorEnvironment
 import joos.ast.expressions.ArrayCreationExpression
+import joos.ast.types.{PrimitiveType, SimpleType}
 
 class ArrayCreationExpressionCodeGenerator(expression: ArrayCreationExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
@@ -22,6 +23,17 @@ class ArrayCreationExpressionCodeGenerator(expression: ArrayCreationExpression)
     )
     // Number of elements is in eax
     // TODO: Check Array.length >= 0
+    val (selectorIndexTable, subtypeTable) = expression.arrayType match {
+      case innerType: SimpleType => {
+        arrayPrefixLabel(selectorTableLabel(innerType.declaration)) ->
+        arrayPrefixLabel(subtypeTableLabel(innerType.declaration))
+      }
+      case primitive: PrimitiveType => {
+        arrayPrefixLabel(selectorTableLabel(primitive.uniqueName)) ->
+        arrayPrefixLabel(subtypeTableLabel(primitive.uniqueName))
+      }
+    }
+
     expression.size.generate()
     appendText(
       push(Eax) :# "Saves number of elements",
@@ -29,7 +41,9 @@ class ArrayCreationExpressionCodeGenerator(expression: ArrayCreationExpression)
       imul(Eax, Eax, 4),
       call(mallocLabel),
       pop(Ebx),
-      mov(at(Eax + ArrayLengthOffset), Ebx) :# "Stores the length at offset 8"
+      movdw(at(Eax + SelectorTableOffset), selectorIndexTable) :# s"Bind selector table at offset ${SelectorTableOffset}",
+      movdw(at(Eax + SubtypeTableOffset), subtypeTable) :# s"Bind subtype table at offset ${SubtypeTableOffset}",
+      mov(at(Eax + ArrayLengthOffset), Ebx) :# s"Stores the length at offset ${ArrayLengthOffset}"
     )
 
     val loopStart = nextLabel("array.initialization.start")
@@ -47,7 +61,6 @@ class ArrayCreationExpressionCodeGenerator(expression: ArrayCreationExpression)
       :# ("[END] Array Initialization")
     )
 
-    // TODO: binds to SIT and SubType table
     appendText(
       :# ("[END] Array Creation")
     )
