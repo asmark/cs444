@@ -45,8 +45,9 @@ class InstanceOfExpressionCodeGenerator(instanceOf: InstanceOfExpression)
         }
       }
 
-      case _ =>
-        Logger.logWarning(s"No Support for ${instanceOf.expression.expressionType} in instanceof checks in ${instanceOf}")
+      case NullType => instanceOf.expression.generate()
+
+      case _ => Logger.logWarning(s"No Support for ${instanceOf.expression.expressionType} in instanceof checks in ${instanceOf}")
     }
   }
 

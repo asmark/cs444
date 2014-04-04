@@ -68,6 +68,7 @@ class CastExpressionCodeGenerator(castExpression: CastExpression)
           case _ => castExpression.expression.generate()
         }
       }
+
       case PrimitiveType.IntegerType => {
         castExpression.castType match {
           case PrimitiveType.ByteType | PrimitiveType.CharType => {
@@ -119,11 +120,14 @@ class CastExpressionCodeGenerator(castExpression: CastExpression)
           case _ => castExpression.expression.generate()
         }
       }
+
       case PrimitiveType.ByteType | PrimitiveType.CharType | PrimitiveType.BooleanType =>
         castExpression.expression.generate()
 
+      case NullType => castExpression.expression.generate()
+
       case _ =>
-        Logger.logWarning(s"No Support for ${castExpression.expression.expressionType} in instanceof checks in ${castExpression}")
+        Logger.logWarning(s"No Support for ${castExpression.expression.expressionType} in casting checks in ${castExpression}")
     }
 
   }
@@ -144,7 +148,7 @@ class CastExpressionCodeGenerator(castExpression: CastExpression)
       cmp(Eax, 0),
       je(endLabel),
       mov(Ebx, at(Eax + SubtypeTableOffset)) :# "Put address of subtype table in eax",
-      mov(Ebx, at(Ebx + 4 * subtypeIndex)) :# "Look up value in subtype table for instance check",
+      mov(Ebx, at(Ebx + 4 * subtypeIndex)) :# "Look up value in subtype table for casting check",
       cmp(Ebx, 0) :# "Throw exception if it cannot be cast",
       je(exceptionLabel),
       endLabel::,
