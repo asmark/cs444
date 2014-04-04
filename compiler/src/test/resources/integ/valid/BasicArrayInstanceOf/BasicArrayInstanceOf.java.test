@@ -30,6 +30,10 @@ public class BasicArrayInstanceOf {
             return 10;
         } else if (!(oArray instanceof Object)) {
             return 7;
+        } else if (!(((Object) oArray) instanceof Object[])) {
+            return 11;
+        } else if (!(((Cloneable) oArray) instanceof String[])) {
+            return 12;
         }
 
         int[] iArray = new int[1];
@@ -41,6 +45,11 @@ public class BasicArrayInstanceOf {
             return 20;
         } else if (!(iArray instanceof Object)) {
             return 17;
+        }
+
+        oArray = null;
+        if (oArray instanceof String[]) {
+            return 30;
         }
 
         return 123;

@@ -1,0 +1,18 @@
+public class ClassA {
+    public int a;
+
+    public ClassA() {
+        a = 0;
+    }
+
+    public static int test() {
+        ClassA[] as = new ClassA[3];
+        Object o = (Object) as;
+        Object[] os = (Object[]) as;
+
+        Cloneable cl = (Cloneable) as;
+
+        o.hashCode();
+        return 123;
+    }
+}
