@@ -6,7 +6,6 @@ import joos.codegen.AssemblyCodeGeneratorEnvironment
 import joos.core.Logger
 import joos.assemgen._
 import joos.assemgen.Register._
-import joos.semantic.types.TypeCheckingException
 
 class CastExpressionCodeGenerator(castExpression: CastExpression)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
@@ -36,14 +35,7 @@ class CastExpressionCodeGenerator(castExpression: CastExpression)
             val subtypeIndex = environment.staticDataManager.getTypeIndex(rightType.declaration)
             generateObjectCheck(subtypeIndex)
           }
-          case NullType => {}
-            castExpression.expression.generate()
-//          case NullType => {
-//            // TODO: this should go into static type check
-//            throw new TypeCheckingException(
-//              "instanceof",
-//              s"${castExpression.castType.standardName} are not related types ${castExpression.expression.expressionType.standardName}")
-//          }
+          case NullType => castExpression.expression.generate()
         }
       }
 
@@ -60,7 +52,7 @@ class CastExpressionCodeGenerator(castExpression: CastExpression)
               mov(Ebx, toExpression(255)),
               cmp(Eax, 0),
               jl(labelReference(negativeLabel)),
-              // Postive
+              // Positive
               and(Eax, Ebx),
               jmp(endLabel),
               // Negative
@@ -73,9 +65,7 @@ class CastExpressionCodeGenerator(castExpression: CastExpression)
             epilogue(0)
             appendText(:#("[END] Casting Casting Short to Byte/Char"))
           }
-          case _ => {
-            castExpression.expression.generate()
-          }
+          case _ => castExpression.expression.generate()
         }
       }
       case PrimitiveType.IntegerType => {
@@ -90,7 +80,7 @@ class CastExpressionCodeGenerator(castExpression: CastExpression)
               mov(Ebx, toExpression(255)),
               cmp(Eax, 0),
               jl(labelReference(negativeLabel)),
-              // Postive
+              // Positive
               and(Eax, Ebx),
               jmp(endLabel),
               // Negative
@@ -113,7 +103,7 @@ class CastExpressionCodeGenerator(castExpression: CastExpression)
               mov(Ebx, toExpression(65535)),
               cmp(Eax, 0),
               jl(labelReference(negativeLabel)),
-              // Postive
+              // Positive
               and(Eax, Ebx),
               jmp(endLabel),
               // Negative
@@ -126,14 +116,11 @@ class CastExpressionCodeGenerator(castExpression: CastExpression)
             epilogue(0)
             appendText(:#("[END] Casting Int to Short"))
           }
-          case _ =>{
-            castExpression.expression.generate()
-          }
+          case _ => castExpression.expression.generate()
         }
       }
-      case PrimitiveType.ByteType | PrimitiveType.CharType | PrimitiveType.BooleanType => {
+      case PrimitiveType.ByteType | PrimitiveType.CharType | PrimitiveType.BooleanType =>
         castExpression.expression.generate()
-      }
 
       case _ =>
         Logger.logWarning(s"No Support for ${castExpression.expression.expressionType} in instanceof checks in ${castExpression}")
