@@ -68,60 +68,6 @@ class InfixExpressionCodeGenerator(infix: InfixExpression)
       :# (s"[END] ${label}")
     )
   }
-//
-//  private[this] def generateLazyOr() {
-//    val rightStart = nextLabel("conditional.or")
-//    val rightEnd = nextLabel("conditional.or")
-//    appendText(
-//      emptyLine,
-//      :# ("[BEGIN] ||"),
-//      emptyLine
-//    )
-//    infix.left.generate()
-//    appendText(
-//      emptyLine,
-//      cmp(Eax, 0) :# "if (left == false)",
-//      je(rightStart),
-//      :# ("left == true, no need to evaluate right"),
-//      jmp(rightEnd),
-//      emptyLine,
-//      rightStart::
-//    )
-//    infix.right.generate()
-//    appendText(
-//      :# ("left == false => return right"),
-//      rightEnd::,
-//      emptyLine,
-//      :# ("[END] ||")
-//    )
-//  }
-//
-//  private[this] def generateLazyAnd() {
-//    val rightStart = nextLabel("conditional.and")
-//    val rightEnd = nextLabel("conditional.and")
-//    appendText(
-//      emptyLine,
-//      :# ("[BEGIN] &&"),
-//      emptyLine
-//    )
-//    infix.left.generate()
-//    appendText(
-//      emptyLine,
-//      cmp(Eax, 1) :# "if (left == true)",
-//      je(rightStart),
-//      :# ("left == false, no need to evaluate right"),
-//      jmp(rightEnd),
-//      emptyLine,
-//      rightStart::
-//    )
-//    infix.right.generate()
-//    appendText(
-//      :# ("left == true => return right"),
-//      rightEnd::,
-//      emptyLine,
-//      :# ("[END] &&")
-//    )
-//  }
 
   private[this] def generateStringConcat() {
     val leftType = if (infix.left.expressionType == NullType) ObjectType else infix.left.expressionType
