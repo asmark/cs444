@@ -136,7 +136,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
     environment.staticDataManager.orderedTypes.foreach {
       target =>
-        if (tipe.allAncestors.contains(target) || (tipe.fullName equals target.fullName)) {
+        if (tipe.allAncestors.map(ancesotr => ancesotr.uniqueName).contains(target.uniqueName) || (tipe.fullName equals target.fullName)) {
           appendData(dd(1) :# target.fullName)
         } else {
           appendData(dd(0) :# target.fullName)
@@ -145,7 +145,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
     environment.staticDataManager.orderedTypes.foreach {
       target =>
-        if (tipe.allAncestors.contains(target) || (tipe.fullName equals target.fullName)) {
+        if (tipe.allAncestors.map(ancestor => ancestor.uniqueName).contains(target.uniqueName) || (tipe.fullName equals target.fullName)) {
           appendData(dd(0) :# arrayPrefixLabel(target.fullName))
         } else {
           appendData(dd(0) :# arrayPrefixLabel(target.fullName))
@@ -172,7 +172,9 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     // Handle other array types. Arrays are covariant
     environment.staticDataManager.orderedTypes.foreach {
       target =>
-        if (tipe.allAncestors.contains(target) || (tipe.fullName equals target.fullName) || isArraySuperType(tipe)) {
+        if (tipe.allAncestors.map(ancestor => ancestor.uniqueName).contains(target.uniqueName) ||
+            (tipe.fullName equals target.fullName) ||
+            isArraySuperType(tipe)) {
           appendData(dd(1) :# arrayPrefixLabel(target.fullName))
         } else {
           appendData(dd(0) :# arrayPrefixLabel(target.fullName))
