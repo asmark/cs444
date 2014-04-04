@@ -28,6 +28,13 @@ class CastExpressionCodeGenerator(expression: CastExpression)
               :#(s"[END] Cast Expression ${expression}")
             )
           }
+
+          case rightType : PrimitiveType => {
+            // Not sure if we need this
+            je(exceptionLabel)
+            Logger.logInformation(s"Exception when casting object type to primitive type in ${expression}")
+          }
+
           case x => {
             Logger.logWarning(s"No support to cast ${leftType} as ${x} in ${expression}")
           }
