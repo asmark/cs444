@@ -38,12 +38,6 @@ class StaticDataManager(asts: Seq[AbstractSyntaxTree]) {
     typeIds.get(tipe.uniqueName).get._2
   }
 
-  def getArrayMethodIndex(method: MethodDeclaration)(implicit unit: CompilationUnit): Int = {
-    val idx = getTypeDeclaration(javaLangObject).methodMap.values.map(method => method.uniqueName).toIndexedSeq.indexOf(method.uniqueName)
-    require(idx >= 0)
-    idx
-  }
-
   def getArrayTypeIndex(tipe: TypeDeclaration): Int = {
     typeIds.get(tipe.uniqueName).get._2 + typeIds.size
   }
