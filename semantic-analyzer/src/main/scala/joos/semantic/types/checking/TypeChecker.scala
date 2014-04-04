@@ -10,6 +10,7 @@ import joos.semantic._
 import joos.semantic.types._
 import joos.ast.expressions.{SimpleNameExpression, QualifiedNameExpression}
 import joos.semantic.types.disambiguation.FieldNameLinker
+import joos.ast.types._
 
 class TypeChecker(implicit val unit: CompilationUnit)
     extends AstEnvironmentVisitor
@@ -117,13 +118,13 @@ class TypeChecker(implicit val unit: CompilationUnit)
       val expectedReturnType = checkMethodReturns.get
       statement.expression match {
         case Some(expression) =>
-          if (expectedReturnType == PrimitiveType.VoidType || !isAssignable(expectedReturnType, expression.expressionType)) {
+          if (expectedReturnType == VoidType || !isAssignable(expectedReturnType, expression.expressionType)) {
             throw new TypeCheckingException(
               "ReturnStatement",
               s"Return statement attempted to return ${expression.expressionType}. Expected ${expectedReturnType}")
           }
         case None => {
-          if (expectedReturnType != PrimitiveType.VoidType) {
+          if (expectedReturnType != VoidType) {
             throw new TypeCheckingException("ReturnStatement", s"Empty return statement but expected ${expectedReturnType}")
           }
         }

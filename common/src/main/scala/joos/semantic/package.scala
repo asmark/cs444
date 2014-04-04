@@ -1,14 +1,13 @@
 package joos
 
 import joos.ast._
-import joos.ast.declarations.{BodyDeclaration, TypeDeclaration}
+import joos.ast.declarations.TypeDeclaration
 import joos.ast.expressions.NameExpression
-import joos.ast.types.PrimitiveType._
+import joos.ast.types.NullType
 import joos.ast.types._
 import joos.core.Logger
 import scala.Some
 import scala.collection.mutable
-import joos.semantic._
 
 package object semantic {
 
@@ -117,7 +116,7 @@ package object semantic {
           case _ => false
         }
       }
-      case (dst: SimpleType, ArrayType(_, _) |  SimpleType(_) | NullType) if dst.declaration.fullName == javaLangObject.standardName => true
+      case (dst: SimpleType, ArrayType(_, _) | SimpleType(_) | NullType) if dst.declaration.fullName == javaLangObject.standardName => true
       case (dst: SimpleType, ArrayType(_, _)) if dst.declaration.fullName == javaLangCloneable.standardName => true
       case (dst: SimpleType, ArrayType(_, _)) if dst.declaration.fullName == javaIOSerializable.standardName => true
       case (dstSimpleType: SimpleType, srcType) => {
