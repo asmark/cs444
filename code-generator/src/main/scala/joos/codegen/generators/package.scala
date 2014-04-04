@@ -20,6 +20,8 @@ package object generators {
 
   def nextLabel(labelPrefix: String = "label") = labelPrefix + "_" + DefaultUniqueIdGenerator.nextId
 
+  def arrayPrefixLabel(suffix: String) = s"array_${suffix}"
+
   def selectorTableLabel(tipe: TypeDeclaration) = s"selector_table_${tipe.uniqueName}"
 
   def subtypeTableLabel(tipe: TypeDeclaration) = s"subtype_table_${tipe.uniqueName}"

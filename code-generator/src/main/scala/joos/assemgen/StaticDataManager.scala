@@ -1,11 +1,10 @@
 package joos.assemgen
 
-import joos.ast.AbstractSyntaxTree
+import joos.ast.{CompilationUnit, AbstractSyntaxTree}
 import joos.ast.declarations.{MethodDeclaration, TypeDeclaration}
 import joos.core.UniqueIdGenerator
 import scala.collection.mutable
-import joos.ast.expressions.SimpleNameExpression
-import joos.ast.compositions.DeclarationLike
+import joos.semantic._
 
 class StaticDataManager(asts: Seq[AbstractSyntaxTree]) {
   val typeIds = mutable.HashMap.empty[String, (TypeDeclaration, Int)]
@@ -36,7 +35,11 @@ class StaticDataManager(asts: Seq[AbstractSyntaxTree]) {
   }
 
   def getTypeIndex(tipe: TypeDeclaration): Int = {
-      typeIds.get(tipe.uniqueName).get._2
+    typeIds.get(tipe.uniqueName).get._2
+  }
+
+  def getArrayTypeIndex(tipe: TypeDeclaration): Int = {
+    typeIds.get(tipe.uniqueName).get._2 + typeIds.size
   }
 
   lazy val orderedMethods: IndexedSeq[MethodDeclaration] = {

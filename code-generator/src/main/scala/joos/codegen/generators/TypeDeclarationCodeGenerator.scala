@@ -4,6 +4,7 @@ import joos.assemgen.Register._
 import joos.assemgen._
 import joos.ast.declarations.{MethodDeclaration, TypeDeclaration}
 import joos.codegen.AssemblyCodeGeneratorEnvironment
+import joos.semantic._
 
 class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
@@ -39,11 +40,10 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     )
 
     createSelectorIndexedTable()
+    createSelectorIndexedTableForArray()
 
     createSubtypeTable()
-
-
-    // TODO: generate array class info tables
+    createSubtypeTableForArray()
   }
 
   private def generateMallocMethods() {
@@ -72,8 +72,6 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
     appendText(epilogue: _*)
     // TODO: Null check?
-
-    // TODO: Generate array malloc
   }
 
   private def createSelectorIndexedTable() {
@@ -115,6 +113,22 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     appendData(emptyLine)
   }
 
+  private def createSelectorIndexedTableForArray(): Unit = {
+    appendGlobal(arrayPrefixLabel(selectorTable))
+    appendData(arrayPrefixLabel(selectorTable) ::, emptyLine)
+
+    // Arrays only have the java.lang.Object methods
+    environment.staticDataManager.orderedMethods.foreach {
+      method =>
+        if (method.typeDeclaration.fullName equals javaLangObject.standardName) {
+          appendData(dd(method.uniqueName) :# s"${method.uniqueName} implemented by ${method.uniqueName}")
+        } else {
+          appendData(dd(0) :# s"${method.uniqueName} not implemented by ${arrayPrefixLabel(tipe.uniqueName)}")
+        }
+    }
+    appendData(emptyLine)
+  }
+
   private def createSubtypeTable() {
     appendGlobal(subtypeTable)
     appendData(subtypeTable ::, emptyLine)
@@ -125,6 +139,42 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
           appendData(dd(1) :# target.fullName)
         } else {
           appendData(dd(0) :# target.fullName)
+        }
+    }
+
+    environment.staticDataManager.orderedTypes.foreach {
+      target =>
+        if (tipe.allAncestors.contains(target) || (tipe.fullName equals target.fullName)) {
+          appendData(dd(0) :# arrayPrefixLabel(target.fullName))
+        } else {
+          appendData(dd(0) :# arrayPrefixLabel(target.fullName))
+        }
+    }
+
+    appendData(emptyLine)
+  }
+
+  private def createSubtypeTableForArray(): Unit = {
+    appendGlobal(arrayPrefixLabel(subtypeTable))
+    appendData(arrayPrefixLabel(subtypeTable) ::, emptyLine)
+
+    // Handle normal types first. Arrays are not subtype of any objects but Object
+    environment.staticDataManager.orderedTypes.foreach {
+      target =>
+        if (target.fullName equals javaLangObject.standardName) {
+          appendData(dd(1) :# target.fullName)
+        } else {
+          appendData(dd(0) :# target.fullName)
+        }
+    }
+
+    // Handle other array types. Arrays are covariant
+    environment.staticDataManager.orderedTypes.foreach {
+      target =>
+        if (tipe.allAncestors.contains(target) || (tipe.fullName equals target.fullName)) {
+          appendData(dd(1) :# arrayPrefixLabel(target.fullName))
+        } else {
+          appendData(dd(0) :# arrayPrefixLabel(target.fullName))
         }
     }
 
