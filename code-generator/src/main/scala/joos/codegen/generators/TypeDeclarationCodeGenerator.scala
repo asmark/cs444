@@ -79,7 +79,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
   private def createSelectorIndexedTable() {
 
     appendGlobal(classTable)
-    appendData(classTable::, dd(selectorTable))
+    appendData(classTable ::, dd(selectorTable))
 
     def includeOverridden(methods: Traversable[MethodDeclaration]): Map[MethodDeclaration, MethodDeclaration] = {
 
@@ -106,9 +106,7 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
       method =>
         supportedMethods.get(method) match {
           case Some(implementer) => {
-            if (!implementer.isNative) {
-              appendData(dd(implementer.uniqueName) :# s"${method.uniqueName} implemented by ${implementer.uniqueName}")
-            }
+            appendData(dd(implementer.uniqueName) :# s"${method.uniqueName} implemented by ${implementer.uniqueName}")
           }
           case None => appendData(dd(0) :# s"${method.uniqueName} not implemented by ${tipe.uniqueName}")
         }
