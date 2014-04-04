@@ -4,6 +4,7 @@ import joos.assemgen.Register._
 import joos.assemgen._
 import joos.ast.declarations.{MethodDeclaration, TypeDeclaration}
 import joos.codegen.AssemblyCodeGeneratorEnvironment
+import joos.semantic._
 
 class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     (implicit val environment: AssemblyCodeGeneratorEnvironment) extends AssemblyCodeGenerator {
@@ -25,6 +26,49 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
     generateMallocMethods()
   }
 
+  def createSubtypeTableForArray(): Unit = {
+    appendGlobal(toArrayUniqueId(subtypeTable))
+    appendData(toArrayUniqueId(subtypeTable) ::, emptyLine)
+
+    environment.staticDataManager.orderedTypes.foreach {
+      target =>
+        if (tipe.allAncestors.contains(target) || (tipe.fullName equals target.fullName)) {
+          appendData(dd(0) :# target.fullName)
+        } else {
+          appendData(dd(0) :# target.fullName)
+        }
+    }
+
+    environment.staticDataManager.orderedTypes.foreach {
+      target =>
+        if (tipe.allAncestors.contains(target) || (tipe.fullName equals target.fullName)) {
+          appendData(dd(1) :# toArrayUniqueId(target.fullName))
+        } else {
+          appendData(dd(0) :# toArrayUniqueId(target.fullName))
+        }
+    }
+
+    appendData(emptyLine)
+  }
+
+  def createSelectorIndexedTableForArray(): Unit = {
+    appendGlobal(toArrayUniqueId(selectorTable))
+    appendData(toArrayUniqueId(selectorTable)::, emptyLine)
+
+    environment.staticDataManager.orderedMethods.foreach {
+      method =>
+        appendData(dd(0) :#"Array does not implement this method")
+    }
+
+    environment.typeEnvironment.compilationUnit.getVisibleType(javaLangObject).get.methodMap.values.filter(!_.isConstructor).toIndexedSeq.foreach(
+      method => {
+        appendData(dd(labelReference(method.uniqueName)) :#s"Array implements method ${method.declarationName.standardName}")
+      }
+    )
+
+    appendData(emptyLine)
+  }
+
   private def generateTables() {
     appendData(:#(s"[BEGIN] Storage location for all static members for ${tipe.fullName}"))
     tipe.fieldMap.values.filter(_.isStatic).foreach {
@@ -41,7 +85,9 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
 
     createSubtypeTable()
 
+    createSubtypeTableForArray()
 
+    createSelectorIndexedTableForArray()
     // TODO: generate array class info tables
   }
 
@@ -120,6 +166,15 @@ class TypeDeclarationCodeGenerator(tipe: TypeDeclaration)
           appendData(dd(1) :# target.fullName)
         } else {
           appendData(dd(0) :# target.fullName)
+        }
+    }
+
+    environment.staticDataManager.orderedTypes.foreach {
+      target =>
+        if (tipe.allAncestors.contains(target) || (tipe.fullName equals target.fullName)) {
+          appendData(dd(0) :# toArrayUniqueId(target.fullName))
+        } else {
+          appendData(dd(0) :# toArrayUniqueId(target.fullName))
         }
     }
 

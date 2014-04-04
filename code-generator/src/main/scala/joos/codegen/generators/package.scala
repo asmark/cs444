@@ -21,6 +21,8 @@ package object generators {
 
   def nextLabel(labelPrefix: String = "label") = labelPrefix + "_" + DefaultUniqueIdGenerator.nextId
 
+  def toArrayUniqueId(Id: String) = s"Array_${Id}"
+
   def selectorTableLabel(tipe: TypeDeclaration) = s"selector_table_${tipe.uniqueName}"
 
   def subtypeTableLabel(tipe: TypeDeclaration) = s"subtype_table_${tipe.uniqueName}"
