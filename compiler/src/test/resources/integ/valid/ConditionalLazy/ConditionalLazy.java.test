@@ -31,6 +31,10 @@ public class ConditionalLazy {
     if ((false || 1 == 1) != true) return 12;
     if ((false || 1 == 2) != false) return 13;
 
+    String s = null;
+    if (false && s.charAt(0) == '0');
+    if (true || s.charAt(0) == '1');
+
     return 123;
   }
 }
