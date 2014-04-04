@@ -16,8 +16,7 @@ class StringLiteralCodeGenerator(literal: StringLiteral)
     appendText(
       emptyLine,
       #>,
-      :#(s"[BEGIN] Create String Literal: ${literal}"),
-      push(Ecx) :# "Save this"
+      :#(s"[BEGIN] Create String Literal: ${literal}")
     )
 
     ArrayCreationExpression(CharType, literal.text.length).generate()
@@ -29,14 +28,15 @@ class StringLiteralCodeGenerator(literal: StringLiteral)
 
     appendText(
       :#("[BEGIN] Create String Object"),
-      push(Eax),
+      push(Eax) :# "Give underlying char array as parameter to constructor",
+      push(Ecx) :# "Save old this",
       call(mallocTypeLabel(StringType.declaration)) :# "ecx = newly allocated object",
-      pop(Eax),
-      push(Eax),
+//      pop(Ebx) :# "Retrieve old this",
+//      push(Ebx) :# "Save old this",
       call(StringCharArrayConstructor.uniqueName) :# "Call String(char[])",
-      pop(Eax),
-      mov(Eax, Ecx),
-      pop(Ecx),
+      mov(Eax, Ecx) :# "Set this string instance as return type",
+      pop(Ecx) :# "Retrieve old this",
+      pop(Ebx) :# "Pop parameter",
       :#("[END] Create String Object")
     )
 

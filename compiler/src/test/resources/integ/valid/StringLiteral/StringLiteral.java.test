@@ -10,11 +10,14 @@ public class StringLiteral {
     if (s1.charAt(0) != 'a') return 2;
     if (s1.charAt(3) != 'd') return 3;
     if (s1.charAt(6) != 'g') return 4;
-//    if (!s1.concat(s2).equals("abcdefg123")) return 5;
-//    if (!s1.substring(2, 5).equals("cdf")) return 6;
-//    if (!s1.trim().equals("456")) return 7;
+    Object concatted = new String("abcdefg123");
+    Object substringed = "cdf";
+    Object trimmed = String.valueOf("456");
+//    if (!s1.concat(s2).equals(concatted)) return 5;
+//    if (!s1.substring(2, 5).equals(substringed) return 6;
+//    if (!s1.trim().equals(trimmed)) return 7;
     // TODO: uncomment this test
-    if (s1.toString() != s1) return 8;
+    //if (s1.toString() != s1) return 8;
     if (s1.compareTo(s2) <= 0) return 8;
     if (s1.compareTo(s1) != 0) return 9;
     if (s1.indexOf("def") != 3) return 10;
