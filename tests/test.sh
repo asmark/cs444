@@ -20,7 +20,7 @@ then
   exit 1
 fi
 
-TEST_DIRS=`find ../compiler/src/test/resources -regextype posix-egrep -regex ".*/(valid|exception)" -type d | grep "/integ/"` # integ only for now
+TEST_DIRS=`find ../compiler/src/test/resources -regextype posix-egrep -regex ".*/(valid|exception)" -type d | grep "/a5/"` # integ only for now
 STD_LIB=`find ../compiler/src/test/resources/integ/stdlib -type f`
 FILE_FAILED_TESTS=failed-tests.txt
 
