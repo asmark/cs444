@@ -8,17 +8,16 @@ public class ClassC extends ClassB {
     public ClassC() {}
 
     public static int test() {
-        ClassA x = new ClassC();
-        if (x.a != 0 || x.a1 != 1) {
-            return 1;
-        }
-
-        int ret = 119;
+        int ret = 115;
+        ClassA a = new ClassA();
         ClassB b = new ClassB();
-        ClassA a = (ClassA) b;
         Object c = new ClassC();
 
         if (a instanceof ClassA) {
+            ret = ret + 1;
+        }
+
+        if (a instanceof Object) {
             ret = ret + 1;
         }
 
@@ -30,8 +29,24 @@ public class ClassC extends ClassB {
             ret = ret + 1;
         }
 
-        if (a instanceof Object) {
+        if (b instanceof Object) {
             ret = ret + 1;
+        }
+
+        if (c instanceof ClassA) {
+            ret = ret + 1;
+        }
+
+        if (c instanceof ClassC) {
+            ret = ret + 1;
+        }
+
+        if (c instanceof ClassB) {
+            ret = ret + 1;
+        }
+
+        if (b instanceof ClassC) {
+            ret = ret - 1;
         }
 
         return ret;
