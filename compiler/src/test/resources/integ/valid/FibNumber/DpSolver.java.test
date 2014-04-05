@@ -1,0 +1,18 @@
+public class DpSolver implements Solver {
+  public DpSolver() {}
+
+  public int solve(int n) {
+    if (n == 1) return 1;
+    if (n == 2) return 1;
+
+    int[] table = new int[n + 1];
+    table[1] = 1;
+    table[2] = 1;
+
+    for (int i = 3; i <= n; i = i + 1) {
+      table[i] = table[i - 1] + table[i - 2];
+    }
+
+    return table[n];
+  }
+}

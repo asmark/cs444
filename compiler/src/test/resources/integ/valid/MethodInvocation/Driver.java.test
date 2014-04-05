@@ -1,0 +1,39 @@
+public class Driver {
+  public Driver() {}
+
+  public static int test() {
+    Driver driver = new Driver();
+    return driver.run();
+  }
+
+  public int run() {
+    int a = 20;
+    for (int i = 0; i < 20; i = Driver.addOne(i)) {
+      a = Driver.addOne(a);
+      a = iSubOne(a);
+      a = Driver.addOne(a);
+      a = this.iSubOne(a);
+      a = a + (Driver.addOne(a) - iAddOne(a)) + (iAddOne(a) - Driver.addOne(a));
+      a = a + (Driver.addOne(a) - this.iAddOne(a)) + (this.iAddOne(a) - Driver.addOne(a));
+    }
+
+    if (a != 20) return a;
+    return 123;
+  }
+
+  public int iAddOne(int n) {
+    return Driver.addOne(n);
+  }
+
+  public int iSubOne(int n) {
+    return Driver.subOne(n);
+  }
+
+  public static int subOne(int n) {
+    return n - 1;
+  }
+
+  public static int addOne(int n) {
+    return n + 1;
+  }
+}
