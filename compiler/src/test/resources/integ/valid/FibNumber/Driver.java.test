@@ -1,0 +1,39 @@
+public class Driver {
+  public Driver() {}
+
+  public static int test() {
+    int end = 12;
+    int[] answers = new int[end + 1];
+
+    answers[1] = 1;
+    answers[2] = 1;
+    answers[3] = 2;
+    answers[4] = 3;
+    answers[5] = 5;
+    answers[6] = 8;
+    answers[7] = 13;
+    answers[8] = 21;
+    answers[9] = 34;
+    answers[10] = 55;
+    answers[11] = 89;
+    answers[12] = 144;
+
+    for (int i = 1; i <= end; i = i + 1) {
+      Solver solver = new RecSolver();
+      int answer = solver.solve(i);
+      System.out.println(answer);
+      if (answer != answers[i]) {
+        return i;
+      }
+
+      solver = new DpSolver();
+      answer = solver.solve(i);
+      System.out.println(answer);
+      if (answer != answers[i]) {
+        return i;
+      }
+    }
+
+    return 123;
+  }
+}

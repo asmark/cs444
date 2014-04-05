@@ -1,0 +1,3 @@
+public interface Solver {
+  public int solve(int n);
+}
