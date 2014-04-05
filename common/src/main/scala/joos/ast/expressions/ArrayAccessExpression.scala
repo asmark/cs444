@@ -1,12 +1,14 @@
 package joos.ast.expressions
 
-import joos.ast.AstConstructionException
+import joos.ast.{ArrayAccessExpressionLike, AstConstructionException}
 import joos.syntax.language.ProductionRule
 import joos.syntax.parsetree.{TreeNode, ParseTreeNode}
 
 case class ArrayAccessExpression(reference: Expression, index: Expression)
-    extends Expression {
+    extends Expression with ArrayAccessExpressionLike {
   override def toString = s"${reference}[${index}]"
+
+  override def isArrayAccess = true
 }
 
 object ArrayAccessExpression {
