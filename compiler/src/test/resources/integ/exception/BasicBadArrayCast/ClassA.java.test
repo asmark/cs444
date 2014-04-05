@@ -10,7 +10,7 @@ public class ClassA {
         Object o = (Object) as;
         Object[] os = (Object[]) as;
 
-        Integer[] cl = (Integer[]) o;
+        Integer[] is = (Integer[]) os;
 
         o.hashCode();
         return 123;
